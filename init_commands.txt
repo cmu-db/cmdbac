@@ -1,0 +1,7 @@
+INSERT INTO crawler_status VALUES ('Found'), ('Deploying'), ('Deployed');
+INSERT INTO crawler_type VALUES ('Django: Application'), ('Django: Library'), ('Ruby on Rails'), ('CakePHP');
+iNSERT INTO crawler_result VALUES ('Success'), ('Fail: Missing Dependency'), ('Fail: Other Reason'), ('Can Not Deploy');
+
+
+
+

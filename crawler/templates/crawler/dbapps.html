@@ -1,0 +1,41 @@
+{% extends "crawler/base.html" %}
+
+{% block main %}
+<h1 class="page-header">Database Applications</h1>
+
+<h2 class="sub-header">Statistics</h2>
+# of Database Applications: {{ num_dbapps }}<br>
+
+# of Deployment that Success: {{ num_suc }}<br>
+# of Deployment that Missing Dependency: {{ num_mis }}<br>
+
+<h2 class="sub-header">Detail</h2>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Record NO.</th>
+                <th>Repository ID</th>
+                <th>Type</th>
+                <th># of Lines in Model File</th>
+                <th>Status</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+                {% if dbapps %}
+                {% for app in dbapps %}
+                <tr>
+                    <td>{{ app.pk }}</td>
+                    <td>{{ app.repo_id }}</td>
+                    <td>{{ app.app_type.app_type }}</td>
+                    <td>{{ app.model_size }}</td>
+                    <td>{{ app.status.status }}</td>
+                    <td>{{ app.result.result }}</td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
