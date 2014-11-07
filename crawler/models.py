@@ -1,37 +1,17 @@
 from django.db import models
 
 # Create your models here.
-class User(models.Model):
-    id = models.IntegerField(primary_key=True)
-    login = models.CharField(max_length=200)
-    http_url = models.CharField(max_length=200)
 
 class Repository(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=200)
-    full_name = models.CharField(max_length=200)
-    owner = models.ForeignKey('User')
-    num_tables = models.IntegerField()
-    #pushed_at = models.DateTimeField()
-    http_url = models.CharField(max_length=200)
-    download_url = models.CharField(max_length=200)
-    #requirements_path = models.CharField(max_length = 100, blank=True)
-    #manage_path = models.CharField(max_length = 100, blank=True)
-    #settings_path = models.CharField(max_length = 100, blank=True)
-    #models_path = models.CharField(max_length=100, blank=True)
-    #model_size = models.IntegerField(blank=True, null=True)
-    app_type = models.ForeignKey('Type')
-    #status = models.ForeignKey('Status')
-    #result = models.ForeignKey('Result', blank=True, null=True)
-
-    #class Meta:
-    #    unique_together = ('repo_id', 'pushed_at')
+    full_name = models.CharField(max_length=200, primary_key=True)
+    repo_type = models.ForeignKey('Type')
 
 class Result(models.Model):
     result = models.CharField(max_length = 200, primary_key=True)
 
 class Attempt(models.Model):
-    app = models.ForeignKey('Repository')
+    time = models.DateTimeField()
+    repo = models.ForeignKey('Repository')
     result = models.ForeignKey('Result')
     log = models.TextField()
 
@@ -39,17 +19,7 @@ class Status(models.Model):
     status = models.CharField(max_length = 200, primary_key=True)
 
 class Type(models.Model):
-    app_type = models.CharField(max_length = 200, primary_key=True)
-
-
-#class Library:
-#    repo_id = models.IntegerField()
-#    pushed_at = models.DateTimeField()
-#    url = models.CharField(max_length = 160)
-#    setup_path = models.CharField(max_length = 100)
-#
-#    class Meta:
-#        unique_together = ('repo_id', 'pushed_at')
+    repo_type = models.CharField(max_length = 200, primary_key=True)
 
 class Package(models.Model):
     package_type = models.ForeignKey('Type')
@@ -60,10 +30,14 @@ class Package(models.Model):
         unique_together = ('package_type', 'name', 'version')
 
 class Dependency(models.Model):
-    app = models.ForeignKey('Repository')
+    attempt = models.ForeignKey('Attempt')
     package = models.ForeignKey('Package')
+    source = models.ForeignKey('Source')
     class Meta:
-        unique_together = ('app', 'package')
+        unique_together = ('attempt', 'package')
+
+class Source(models.Model):
+    source = models.CharField(max_length=200, primary_key=True)
 
 class Module(models.Model):
     name = models.CharField(max_length = 200)

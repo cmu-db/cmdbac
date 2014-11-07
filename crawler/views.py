@@ -12,13 +12,20 @@ def home(request):
     return render(request, 'crawler/index.html', context)
 
 
-def dbapps(request):
+def statistics(request):
     dbapps = Application.objects.filter(model_size__gt=threshold, app_type=Type.objects.get(app_type='Django: Application')).order_by('pk')
     context = {'dbapps': dbapps}
     context['num_dbapps'] = len(dbapps)
     context['num_suc'] = Application.objects.filter(app_type=Type.objects.get(app_type='Django: Application'), model_size__gt=threshold, result=Result.objects.get(result='Success')).count
     context['num_mis'] = Application.objects.filter(app_type=Type.objects.get(app_type='Django: Application'), model_size__gt=threshold, result=Result.objects.get(result='Fail: Missing Dependency')).count
-    return render(request, 'crawler/dbapps.html', context)
+    return render(request, 'crawler/statistics.html', context)
+
+def repositories(request):
+    full_names = Repository.objects.values_list('full_name', flat=True).order_by('full_name')
+    context = {'full_names': full_names}
+    return render(request, 'crawler/repositoreis.html', context)
+
+def repository(request, id):
 
 def dps(request):
     dps = Package.objects.all().order_by('name', 'version')

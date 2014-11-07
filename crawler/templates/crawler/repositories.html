@@ -1,0 +1,27 @@
+{% extends "crawler/base.html" %}
+
+{% block main %}
+<h1 class="page-header">Repositories</h1>
+
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Full Name</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+                {% if full_names %}
+                {% for full_name in full_names %}
+                <tr>
+                    <td>{{ full_name }}</td>
+                    <td>Unknown</td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -23,10 +23,10 @@ def query(sql):
     return cursor
 
 def run_command(command):
-#    print command
+    print command
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     out, err = p.communicate()
-#    print out
+    print out
     return out
 
 def pip_freeze():
@@ -81,16 +81,29 @@ def iter_modules_recur(package_id, modules, base):
 
 
 def create_mapping(package_id, package_name, package_version):
-    print package_name + "==" + package_version
+    print 'creating mapping for ' + package_name + '==' + package_version
     pip_uninstall(package_name, package_version)
     old_modules = iter_modules('')
     old_modules_name = [name for _, name, _ in old_modules]
+    print 'old modules length = ' + str(len(old_modules_name))
+    print old_modules_name
+    print list(old_modules)
+    print old_modules
     pip_install(package_name, package_version, False)
     new_modules = iter_modules('')
+#    new_modules_name = [name for _, name, _ in new_modules]
+#    print 'new modules length = ' + str(len(new_modules_name))
+#    print new_modules_name
     diff_modules = [x for x in new_modules if x[1] not in old_modules_name]
+    diff_modules_name = [name for _, name, _ in diff_modules]
+    print 'diff modules length = ' + str(len(diff_modules_name))
+    print diff_modules_name
+    print list(diff_modules)
     if len(diff_modules):
+        print 'found modules'
         iter_modules_recur(package_id, diff_modules, '')
     else:
+        print 'not found modules'
         save_package_module(package_id, 'no_modules_in_this_package')
 
 
@@ -102,55 +115,112 @@ def crawled(package_name, package_version):
     and crawler_package.version = '""" + package_version + "'"
     cursor = query(sql)
     result = cursor.fetchone()
-    print result[0]
     if result[0]:
         return True
     else:
         return False
 
-if __name__ == "__main__":
+def recover_packages(old_packages):
+    new_packages = pip_freeze()
+    diff_packages = new_packages - old_packages
+    for package in diff_packages:
+        print 'uninstall ' + package
+        package_name, package_version = package.split("==")
+        pip_uninstall(package_name, package_version)
 
-    sql = """select crawler_package.id, crawler_package.name, crawler_package.version
+def package_exist(package_name, package_version):
+    sql = """select count(*)
     from crawler_package
-    where crawler_package.id not in
-    (
-    select crawler_package.id
+    where crawler_package.name = '""" + package_name + """'
+    and crawler_package.version = '""" + package_version + "'"
+    cursor = query(sql)
+    result = cursor.fetchone()
+    if result[0]:
+        return True
+    else:
+        return False
+
+def get_package_id(package_name, package_version):
+    sql = """select id
     from crawler_package
-    inner join crawler_module
-    on crawler_package.id = crawler_module.package_id
-    )
-    """
+    where name = '""" + package_name + """'
+    and version = '""" + package_version + "'"
+    cursor = query(sql)
+    result = cursor.fetchone()
+    return result[0]
+
+def save_package(pacakge_name, package_version):
+    sql = """insert into crawler_package (package_type_id, name, version)
+    values ('Django', '""" + package_name + "','" + package_version +"')"
+    query(sql)
+    db.commit()
+
+if __name__ == "__main__":
     
    # sql = """select crawler_package.id, crawler_package.name, crawler_package.version
    # from crawler_package
    # """
 
-    try:
+    old_packages = pip_freeze()
+
+    while True:
+        sql = """select crawler_package.id, crawler_package.name, crawler_package.version
+        from crawler_package
+        where crawler_package.id not in
+        (
+        select crawler_package.id
+        from crawler_package
+        inner join crawler_module
+        on crawler_package.id = crawler_module.package_id
+        )
+        """
         cursor = query(sql)
         results = cursor.fetchall()
         for row in results:
-            package_id = row[0]
-            package_name = row[1]
-            package_version = row[2]
+            try:
+                recover_packages(old_packages)
+                package_id = row[0]
+                package_name = row[1]
+                package_version = row[2]
+                print """#######################################
+                #######################################
+                processing """ + package_name + '==' + package_version
+                if crawled(package_name, package_version):
+                    print 'crawled'
+                    continue
+                print 'old package length = ' + str(len(old_packages))
+                print old_packages
+                pip_install(package_name, package_version, True)
+                new_packages = pip_freeze()
+                print 'new package length = ' + str(len(new_packages))
+                print new_packages
 
-            old_packages = pip_freeze()
-            print len(old_packages)
-            pip_install(package_name, package_version, True)
-            new_packages = pip_freeze()
+                diff_packages = new_packages - old_packages
 
-            diff_packages = new_packages - old_packages
+                print 'diff package length = ' + str(len(diff_packages))
+                print diff_packages
 
-            for package in diff_packages:
-                package_name, package_version = package.split("==")
-                if not crawled(package_name, package_version):
-                    create_mapping(package_id, package_name, package_version)
+                if not len(diff_packages):
+                    print 'install failed'
+                    save_package_module(package_id, 'cant_resolve_because_install_failed')
+                    continue
 
-            for package in diff_packages:
-                package_name, package_version = package.split("==")
-                pip_uninstall(package_name, package_version)
-    except:
-        print "Error: unable to fecth data"
-        traceback.print_exc()
 
+                for package in diff_packages:
+                    package_name, package_version = package.split("==")
+                    print """**********
+                    **********
+                    processing """ + package_name + '==' + package_version
+                    if not package_exist(package_name, package_version):
+                        save_package(package_name, package_version)
+                        
+                        
+                    if not crawled(package_name, package_version):
+                        package_id = get_package_id(package_name, package_version)
+                        print 'package_id = ' + str(package_id)
+                        create_mapping(package_id, package_name, package_version)
+            except:
+                traceback.print_exc()
+                print "Error: unable to fecth data"
 
 db.close()
