@@ -2,68 +2,67 @@
     {
         "model": "crawler.type",
         "fields": {
-            "repo_type": "Django",
-            }
+            "repo_type": "Django"
+        }
     },
     {
         "model": "crawler.type",
         "fields": {
-            "repo_type": "Ruby on Rails",
-            }
+            "repo_type": "Ruby on Rails"
+        }
     },
     {
         "model": "crawler.source",
         "fields": {
-            "source": "File",
-            }
+            "source": "File"
+        }
     },
     {
         "model": "crawler.source",
         "fields": {
-            "source": "Database",
-            }
+            "source": "Database"
+        }
     },
     {
         "model": "crawler.result",
         "fields": {
-            "result": "Succuss",
-            }
+            "result": "Success"
+        }
     },
     {
         "model": "crawler.result",
         "fields": {
-            "result": "Not an Application",
-            }
+            "result": "Not an Application"
+        }
     },
     {
         "model": "crawler.result",
         "fields": {
-            "result": "Download Error",
-            }
+            "result": "Download Error"
+        }
     },
     {
         "model": "crawler.result",
         "fields": {
-            "result": "Missing Required Files",
-            }
+            "result": "Missing Required Files"
+        }
     },
     {
         "model": "crawler.result",
         "fields": {
-            "result": "Duplicate Required Files",
-            }
+            "result": "Duplicate Required Files"
+        }
     },
     {
         "model": "crawler.result",
         "fields": {
-            "result": "Running Error",
-            }
+            "result": "Running Error"
+        }
     },
     {
         "model": "crawler.result",
         "fields": {
-            "result": "Deploying",
-            }
-    },
-
+            "result": "Deploying"
+        }
+    }
 ]

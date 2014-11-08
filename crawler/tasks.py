@@ -23,7 +23,7 @@ import urlparse
 from string import Template
 
 token = '5b3563b9b8c4b044530eeb363b633ac1c9535356'
-sys_path = '/usr/local/lib/python2.7/dist-packages'
+sys_path = '/tmp/lib/python2.7/site-packages'
 
 isCount = 0
 isntCount = 0
@@ -34,7 +34,7 @@ def query(url):
     while True:
         try:
             response = urllib2.urlopen(request)
-            print('response from: 'url)
+            print('response from: ' + url)
         except urllib2.HTTPError as e:
             traceback.print_exc()
             time.sleep(5)
@@ -250,8 +250,8 @@ def download(full_name):
 
 def pip_freeze():
     out = run_command("vagrant ssh -c 'pip freeze'")
-    out.rstrip().split('\n')
-    out = [p for p in out if not v.startswith('#') ]
+    out = out.rstrip().split('\n')
+    out = [line for line in out if not line.startswith('#') ]
     return out
 
 def exist(package):
@@ -415,9 +415,11 @@ def run_package_crawler():
                 traceback.print_exc()
                 continue
             for version in versions:
-                print package + "==" + version
                 #package_type = Type.objects.get(app_type = 'Django: Library')
-                Package.objects.get_or_create(package_type='Django', name=package, version=version)
+                pkg, created = Package.objects.get_or_create(package_type=Type(repo_type='Django'), name=package, version=version)
+                if created:
+                    print "found new package: " + package + "==" + version
+
 
 def iter_names(module_name):
     try:
@@ -431,14 +433,14 @@ def iter_names(module_name):
 
 def iter_modules_recur(package_id, modules, base):
     for module in modules:
-        newBase = os.path.join(base, module[1])
+        newBase = join(base, module[1])
         module_name = newBase.replace('/', '.')
         print """+++++++++++++++++++++++++++++
         found module: """ + module_name
         module = Module.objects.get_or_create(name=module_name, package__id=package_id)
         #iter_names(module.pk)
         if module[2]:
-            iter_modules_recur(package_id, pkgutil.iter_modules([os.path.join(sys_path, newBase)]), newBase)
+            iter_modules_recur(package_id, pkgutil.iter_modules([join(sys_path, newBase)]), newBase)
 
 def create_mapping(package):
     print 'creating mapping for ' + package.name + '==' + package.version
@@ -464,14 +466,8 @@ def create_mapping(package):
 def run_package_deployer():
     old_packages = pip_freeze()
     while True:
-        cursor = query(sql)
-        results = cursor.fetchall()
         packages = Package.objects.exclude(pk__in=Module.objects.values_list('package', flat=True))
         for package in packages:
-            try:
-                recover_packages(old_packages)
-            
-        for row in results:
             try:
                 recover_packages(old_packages)
                 print """##############################################################################################
@@ -510,6 +506,53 @@ def run_package_deployer():
                 traceback.print_exc()
                 print "Error: unable to fecth data"
 
+def pip_install_2(package):
+    command = "pip install --user --no-deps " + package.name + '==' + package.version
+    run_command(command)
+
+def pip_clear():
+    command = "rm -rf /tmp/dir/"
+    run_command(command)
+
+def iter_modules(path):
+    return list(pkgutil.iter_modules([join(sys_path, path)]))
+
+def iter_modules_recur_2(package, modules, base):
+    for module in modules:
+        newBase = join(base, module[1])
+        module_name = newBase.replace('/', '.')
+        print """+++++++++++++++++++++++++++++
+        found module: """ + module_name
+        obj, created = Module.objects.get_or_create(name=module_name, package=package)
+        if created:
+            print 'found new module: ' + obj.name
+
+        if module[2]:
+            iter_modules_recur_2(package, pkgutil.iter_modules([join(sys_path, newBase)]), newBase)
+
+@shared_task
+def run_package_deployer_2():
+    pip_clear()
+    while True:
+        packages = Package.objects.exclude(pk__in=Module.objects.values_list('package', flat=True))
+        for package in packages:
+            print 'try to install: ' + package.name + '==' + package.version + 'locally'
+            try:
+                pip_install_2(package)
+                modules = iter_modules('')
+                if len(modules):
+                    iter_modules_recur_2(package, modules, '')
+                else:
+                    module, created = Module.objects.get_or_create(name='package_install_failed', package=package)
+                    if created:
+                        print 'found new module: ' + module.name
+            except:
+                traceback.print_exc()
+            pip_clear()
+        time.sleep(1)
+
+
+github_host = 'https://github.com'
 def crawl_repo(url):
     while True:
         print url
@@ -518,17 +561,18 @@ def crawl_repo(url):
         titles = soup.find_all(class_='title')
         for title in titles:
             full_name = title.contents[1].string
-            Repository.objects.get_or_create(full_name=full_name, repo_type='Django')
+            repo, created = Repository.objects.get_or_create(full_name=full_name, repo_type=Type(repo_type="Django"))
+            if created:
+                print "found new repository: " + full_name
             time.sleep(1)
         next_page = soup.find(class_='next_page')
         if not next_page or not next_page.has_attr('href'):
             break;
         url = github_host + next_page['href']
 
-@shard_task
+@shared_task
 def run_repo_crawler():
     template = Template('https://github.com/search?utf8=%E2%9C%93&q=models.py+in%3Apath+filename%3Amodels.py+size%3A${size}&type=Code&ref=searchresults')
-    github_host = 'https://github.com'
 # model file less than min_size don't use database
     min_size = 60
 # less then 1000 files larger than threshold_size
@@ -548,7 +592,7 @@ def search_file(directory_name, file_name):
     return out
 
 
-@shard_task
+@shared_task
 def run_repo_deployer():
     download_url_template = Template('https://api.github.com/repos/${full_name}/tarball')
     while True:
@@ -576,7 +620,7 @@ def run_repo_deployer():
                 attempt.save()
                 delete(directory_name)
                 continue
-            else if len(manage) != 1:
+            elif len(manage) != 1:
                 attempt.result = "Duplicate Required Files"
                 attempt.log = "find more than one manage.py"
                 attempt.save()
@@ -590,7 +634,7 @@ def run_repo_deployer():
                 attempt.save()
                 delete(directory_name)
                 continue
-            else if len(settings) != 1:
+            elif len(settings) != 1:
                 attempt.result = "Duplicate Required Files"
                 attempt.log = "find more than one settings.py"
                 attempt.save()
