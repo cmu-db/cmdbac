@@ -23,7 +23,7 @@ import urlparse
 from string import Template
 
 token = '5b3563b9b8c4b044530eeb363b633ac1c9535356'
-sys_path = '/tmp/lib/python2.7/site-packages'
+sys_path = '/tmp/pip/lib/python2.7/site-packages'
 
 isCount = 0
 isntCount = 0
@@ -84,9 +84,12 @@ def run_command(command):
 
 
 def appendSettings(directory, settingsPath):
+    settings = """
+    SECRET_KEY = 'abcdefghijklmnopqrstuvwxyz'
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+    """
     with open(directory + settingsPath, "a") as settingsFile:
-        settingsFile.write("SECRET_KEY = 'abcdefghijklmnopqrstuvwxyz'\n")
-        settingsFile.write("ALLOWED_HOSTS = ['localhost', '127.0.0.1']\n")
+        settingsFile.write(settings)
 
 def solveDependency(module_name):
     module = Module.objects.filter(name = module_name)
@@ -507,11 +510,11 @@ def run_package_deployer():
                 print "Error: unable to fecth data"
 
 def pip_install_2(package):
-    command = "pip install --user --no-deps " + package.name + '==' + package.version
+    command = "pip install --user --no-deps --build /tmp/pip/build " + package.name + '==' + package.version
     run_command(command)
 
 def pip_clear():
-    command = "rm -rf /tmp/dir/"
+    command = "rm -rf /tmp/pip/"
     run_command(command)
 
 def iter_modules(path):

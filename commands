@@ -1,3 +1,0 @@
-python /vagrant/thingdeux-bias-exposed-d8a09ac/manage.py runserver > /vagrant/log 2>&1 &
-sleep 5
-cat /vangrant/log

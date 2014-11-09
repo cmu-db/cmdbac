@@ -9,19 +9,41 @@
         <thead>
             <tr>
                 <th>Full Name</th>
+                <th>Type</th>
                 <th>Result</th>
+                <th>GitHub</th>
+                <th>Download</th>
             </tr>
         </thead>
         <tbody>
-                {% if full_names %}
-                {% for full_name in full_names %}
+                {% if repositories %}
+                {% for repository in repositories %}
                 <tr>
-                    <td>{{ full_name }}</td>
+                    <td>{{ repository.full_name }}</td>
+                    <td>{{ repository.repo_type.repo_type }}</td>
                     <td>Unknown</td>
+                    <td><a href="https://github.com/{{ repository.full_name }}">github</a></td>
+                    <td><a href="https://api.github.com/repos/{{ repository.full_name }}/tarball">download</a></td>
                 </tr>
                 {% endfor %}
                 {% endif %}
         </tbody>
     </table>
+</div>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if repositories.has_previous %}
+            <a href="?page={{ repositories.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ repositories.number }} of {{ repositories.paginator.num_pages }}.
+        </span>
+
+        {% if repositories.has_next %}
+            <a href="?page={{ repositories.next_page_number }}">next</a>
+        {% endif %}
+    </span>
 </div>
 {% endblock %}

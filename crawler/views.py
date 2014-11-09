@@ -1,41 +1,73 @@
 from django.shortcuts import render
 from models import *
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Create your views here.
-threshold = 5
-def home(request):
-    apps = Application.objects.all().order_by('pk')
-    context = {'apps' : apps}
-    context['num_django'] = len(apps)
-    context['num_apps'] = Application.objects.filter(app_type=Type.objects.get(app_type='Django: Application')).count()
-    context['num_dbapps'] = Application.objects.filter(model_size__gt=threshold, app_type=Type.objects.get(app_type='Django: Application')).count()
-    return render(request, 'crawler/index.html', context)
 
+def home(request):
+    return render(request, 'crawler/index.html', {})
+
+class Statistic:
+    def __init__(self, repo_type, num_repo, num_pkg):
+        self.repo_type = repo_type
+        self.num_repo = num_repo
+        self.num_pkg = num_pkg
 
 def statistics(request):
-    dbapps = Application.objects.filter(model_size__gt=threshold, app_type=Type.objects.get(app_type='Django: Application')).order_by('pk')
-    context = {'dbapps': dbapps}
-    context['num_dbapps'] = len(dbapps)
-    context['num_suc'] = Application.objects.filter(app_type=Type.objects.get(app_type='Django: Application'), model_size__gt=threshold, result=Result.objects.get(result='Success')).count
-    context['num_mis'] = Application.objects.filter(app_type=Type.objects.get(app_type='Django: Application'), model_size__gt=threshold, result=Result.objects.get(result='Fail: Missing Dependency')).count
+    context = {}
+    types = Type.objects.all()
+    stats = []
+    for t in types:
+        repo_type = t.repo_type
+        num_repo = Repository.objects.filter(repo_type=t).count()
+        num_pkg = Package.objects.filter(package_type=t).count()
+        stat = Statistic(repo_type, num_repo, num_pkg)
+        stats.append(stat)
+    context['stats'] = stats
     return render(request, 'crawler/statistics.html', context)
 
 def repositories(request):
-    full_names = Repository.objects.values_list('full_name', flat=True).order_by('full_name')
-    context = {'full_names': full_names}
-    return render(request, 'crawler/repositoreis.html', context)
+    repositories = Repository.objects.all().order_by('full_name')
+    paginator = Paginator(repositories, 100) # Show 100 contacts per page
+    page = request.GET.get('page')
+    try:
+        repositories = paginator.page(page)
+    except PageNotAnInteger:
+# If page is not an integer, deliver first page.
+        repositories = paginator.page(1)
+    except EmptyPage:
+# If page is out of range (e.g. 9999), deliver last page of results.
+        repositories = paginator.page(paginator.num_pages)
+    context = {"repositories": repositories}
+    return render(request, 'crawler/repositories.html', context)
 
-def repository(request, id):
+def repository(request, full_name):
+    repository = Repository.objects.all().get(full_name=full_name)
+    attemps = Attempt.objects.all().filter(repo=repository)
+    context = {}
+    context['repository'] = repository
+    context['attemps'] = attemps
+    return render(request, 'crawler/repository.html', context)
 
-def dps(request):
-    dps = Package.objects.all().order_by('name', 'version')
-    context = {'dps': dps}
-    context['num_dps'] = len(dps)
-    return render(request, 'crawler/dps.html', context)
-
-def modules(request, id):
-    modules = Module.objects.filter(package=id).order_by('name')
-    context = {'modules': modules}
-    context['num_modules'] = len(modules)
-    context['dp'] = Package.objects.get(pk=id)
-    return render(request, 'crawler/modules.html', context)
+def packages(request):
+    packages = Package.objects.all().order_by('name', 'version')
+    paginator = Paginator(packages, 100) # Show 100 contacts per page
+    page = request.GET.get('page')
+    try:
+        packages = paginator.page(page)
+    except PageNotAnInteger:
+# If page is not an integer, deliver first page.
+        packages = paginator.page(1)
+    except EmptyPage:
+# If page is out of range (e.g. 9999), deliver last page of results.
+        packages = paginator.page(paginator.num_pages)
+    context = {'packages': packages}
+    return render(request, 'crawler/packages.html', context)
+     
+def package(request, id):
+    package = Package.objects.get(id=id)
+    modules = Module.objects.filter(package__id=id)
+    context = {}
+    context['package'] = package
+    context['modules'] = modules
+    return render(request, 'crawler/package.html', context)
