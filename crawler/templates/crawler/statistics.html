@@ -1,0 +1,29 @@
+{% extends "crawler/base.html" %}
+
+{% block main %}
+<h1 class="page-header">Statistics<h1>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Type Name</th>
+                <th># of Repo</th>
+                <th># of Pkg</th>
+            </tr>
+        </thead>
+        <tbody>
+                {% if stats %}
+                {% for stat in stats %}
+                <tr>
+                    <td>{{ stat.repo_type }}</td>
+                    <td>{{ stat.num_repo }}</td>
+                    <td>{{ stat.num_pkg }}</td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+        </tbody>
+    </table>
+</div>
+
+    
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "crawler/base.html" %}
+
+{% block main %}
+<h1 class="page-header">Repository {{ repository.fullname }}</h1>
+
+<h2 class="sub-header">Attemps</h2>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Result</th>
+                <th>Dependencies</th>
+                <th>Log</th>
+            </tr>
+        </thead>
+        <tbody>
+                {% if attempts %}
+                {% for attempt in attempts %}
+                <tr>
+                    <td>{{ attempt.time }}</td>
+                    <td>{{ attempt.result }}</td>
+                    <td>Unknown</td>
+                    <td>Un</td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
