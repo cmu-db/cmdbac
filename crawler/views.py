@@ -27,19 +27,20 @@ def statistics(request):
     return render(request, 'crawler/statistics.html', context)
 
 def repositories(request):
-    repository_pks = Attempt.objects.values_list('repo_id', flat=True);
-    repositories = Repository.objects.filter(pk__in=repository_pks).order_by('full_name')
-    paginator = Paginator(repositories, 100) # Show 100 contacts per page
+    #repository_pks = Attempt.objects.values_list('repo_id', flat=True);
+    #repositories = Repository.objects.filter(pk__in=repository_pks).order_by('full_name')
+    attempts = Attempt.objects.all()
+    paginator = Paginator(attempts, 100) # Show 100 contacts per page
     page = request.GET.get('page')
     try:
-        repositories = paginator.page(page)
+        attempts = paginator.page(page)
     except PageNotAnInteger:
 # If page is not an integer, deliver first page.
-        repositories = paginator.page(1)
+        attempts = paginator.page(1)
     except EmptyPage:
 # If page is out of range (e.g. 9999), deliver last page of results.
-        repositories = paginator.page(paginator.num_pages)
-    context = {"repositories": repositories}
+        attempts = paginator.page(paginator.num_pages)
+    context = {"attempts": attempts}
     return render(request, 'crawler/repositories.html', context)
 
 def repository(request, full_name):

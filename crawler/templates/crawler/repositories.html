@@ -16,14 +16,14 @@
             </tr>
         </thead>
         <tbody>
-                {% if repositories %}
-                {% for repository in repositories %}
+                {% if attempts %}
+                {% for attempt in attempts %}
                 <tr>
-                    <td><a href="{% url 'repository' repository.full_name %}">{{ repository.full_name }}</a></td>
-                    <td>{{ repository.repo_type.repo_type }}</td>
-                    <td>{{ repository.result.result }}</td>
-                    <td><a href="https://github.com/{{ repository.full_name }}">github</a></td>
-                    <td><a href="https://api.github.com/repos/{{ repository.full_name }}/tarball">download</a></td>
+                    <td><a href="{% url 'repository' attempt.repo.full_name %}">{{ attempt.repo.full_name }}</a></td>
+                    <td>{{ attempt.repo.repo_type.repo_type }}</td>
+                    <td>{{ attempt.result.result }}</td>
+                    <td><a href="https://github.com/{{ attempt.repo.full_name }}">github</a></td>
+                    <td><a href="https://api.github.com/repos/{{ attempt.repo.full_name }}/tarball">download</a></td>
                 </tr>
                 {% endfor %}
                 {% endif %}
@@ -33,16 +33,16 @@
 
 <div class="pagination">
     <span class="step-links">
-        {% if repositories.has_previous %}
-            <a href="?page={{ repositories.previous_page_number }}">previous</a>
+        {% if attempts.has_previous %}
+            <a href="?page={{ attempts.previous_page_number }}">previous</a>
         {% endif %}
 
         <span class="current">
-            Page {{ repositories.number }} of {{ repositories.paginator.num_pages }}.
+            Page {{ attempts.number }} of {{ attempts.paginator.num_pages }}.
         </span>
 
-        {% if repositories.has_next %}
-            <a href="?page={{ repositories.next_page_number }}">next</a>
+        {% if attempts.has_next %}
+            <a href="?page={{ attempts.next_page_number }}">next</a>
         {% endif %}
     </span>
 </div>
