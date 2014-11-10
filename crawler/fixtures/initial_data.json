@@ -56,6 +56,12 @@
     {
         "model": "crawler.result",
         "fields": {
+            "result": "Missing Dependencies"
+        }
+    },
+    {
+        "model": "crawler.result",
+        "fields": {
             "result": "Running Error"
         }
     },

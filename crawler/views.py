@@ -27,7 +27,8 @@ def statistics(request):
     return render(request, 'crawler/statistics.html', context)
 
 def repositories(request):
-    repositories = Repository.objects.all().order_by('full_name')
+    repository_pks = Attempt.objects.values_list('repo_id', flat=True);
+    repositories = Repository.objects.filter(pk__in=repository_pks).order_by('full_name')
     paginator = Paginator(repositories, 100) # Show 100 contacts per page
     page = request.GET.get('page')
     try:
@@ -42,11 +43,11 @@ def repositories(request):
     return render(request, 'crawler/repositories.html', context)
 
 def repository(request, full_name):
-    repository = Repository.objects.all().get(full_name=full_name)
-    attemps = Attempt.objects.all().filter(repo=repository)
+    repository = Repository.objects.get(full_name=full_name)
+    attempts = Attempt.objects.filter(repo=repository)
     context = {}
     context['repository'] = repository
-    context['attemps'] = attemps
+    context['attempts'] = attempts
     return render(request, 'crawler/repository.html', context)
 
 def packages(request):
@@ -71,3 +72,15 @@ def package(request, id):
     context['package'] = package
     context['modules'] = modules
     return render(request, 'crawler/package.html', context)
+
+def dependency(request, id):
+    dependencies = Dependency.objects.filter(attempt__id=id)
+    context = {}
+    context['dependencies'] = dependencies
+    return render(request, 'crawler/dependency.html', context)
+
+def log(request, id):
+    log = Attempt.objects.get(id=id).log
+    context = {}
+    context['log'] = log
+    return render(request, 'crawler/log.html', context)

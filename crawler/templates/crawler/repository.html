@@ -20,9 +20,9 @@
                 {% for attempt in attempts %}
                 <tr>
                     <td>{{ attempt.time }}</td>
-                    <td>{{ attempt.result }}</td>
-                    <td>Unknown</td>
-                    <td>Un</td>
+                    <td>{{ attempt.result.result }}</td>
+                    <td><a href="{% url 'dependency' attempt.id %}">list</a></td>
+                    <td><a href="{% url 'log' attempt.id %}">log</a></td>
                 </tr>
                 {% endfor %}
                 {% endif %}

@@ -12,7 +12,6 @@ import time
 import re
 from django.db import IntegrityError
 import traceback
-import subprocess
 import pkgutil
 from os.path import join
 from pip.index import PackageFinder, Link

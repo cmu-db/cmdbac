@@ -19,9 +19,9 @@
                 {% if repositories %}
                 {% for repository in repositories %}
                 <tr>
-                    <td>{{ repository.full_name }}</td>
+                    <td><a href="{% url 'repository' repository.full_name %}">{{ repository.full_name }}</a></td>
                     <td>{{ repository.repo_type.repo_type }}</td>
-                    <td>Unknown</td>
+                    <td>{{ repository.result.result }}</td>
                     <td><a href="https://github.com/{{ repository.full_name }}">github</a></td>
                     <td><a href="https://api.github.com/repos/{{ repository.full_name }}/tarball">download</a></td>
                 </tr>
