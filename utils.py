@@ -1,5 +1,6 @@
 import urllib2
 import subprocess
+import traceback
 import logging
 logging.basicConfig(format='%(asctime)s %(message)s', filename='utils.log', level=logging.DEBUG)
 
@@ -15,7 +16,7 @@ def query(url):
             logging.debug('response info from: ' + url)
             logging.debug(header)
 
-        except urllib2.HTTPError as e:
+        except:
             logging.debug(traceback.print_exc())
             time.sleep(5)
             continue

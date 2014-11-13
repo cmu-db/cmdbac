@@ -2,12 +2,12 @@
 import os
 from utils import query
 import traceback
-from string import Template
 from bs4 import BeautifulSoup
 import time
 import logging
 import json
 from datetime import datetime
+from meta import metas
 logging.basicConfig(filename='repo_crawler.log',level=logging.DEBUG)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
@@ -33,7 +33,7 @@ def change_if_none(text):
     else:
         return ""
 
-def crawl_repo(url):
+def crawl_repo(url, meta):
     while True:
         response = query(url)
         soup = BeautifulSoup(response.read())
@@ -50,7 +50,7 @@ def crawl_repo(url):
                 if Language.objects.filter(name=language).exists():
                     repo = Repository()
                     repo.full_name = full_name
-                    repo.repo_type = Type(name="Django")
+                    repo.repo_type = Type(name=meta.name)
                     repo.language = Language(name=language)
                     repo.last_attempt = None
                     repo.private = data['private']
@@ -79,20 +79,18 @@ def crawl_repo(url):
         if not next_page or not next_page.has_attr('href'):
             break;
         url = github_host + next_page['href']
-        
+
+
 if __name__ == '__main__':
-    template = Template('https://github.com/search?utf8=%E2%9C%93&q=models.py+in%3Apath+filename%3Amodels.py+size%3A${size}&type=Code&ref=searchresults')
-# model file less than min_size don't use database
-    min_size = 60
-# less then 1000 files larger than threshold_size
-    threshold_size = 55000
     while True:
-        for size in range(min_size, threshold_size):
-            logging.debug('crawl size = ' +  str(size))
-            url = template.substitute(size=size)
-            logging.debug('url: ' + url)
-            crawl_repo(url)
-        logging.debug('crawl size > ' +  str(threshold_size))
-        url = template.substitute(size='>' + str(threshold_size))
-        logging.debug('url: ' + url)
-        crawl_repo(url)
+        for meta in metas:
+            logging.debug('crawler meta: ')
+            logging.debug(meta.__dict__)
+            if meta.cur_size == meta.threshold_size:
+                url = meta.template.substitue(size='>'+str(meta.cur_size))
+                crawl_repo(url, meta)
+                meta.cur_size = meta.min_size
+            else:
+                url = meta.template.substitute(size=meta.cur_size)
+                crawl_repo(url, meta)
+                meta.cur_size = meta.cur_size + 1

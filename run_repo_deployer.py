@@ -9,6 +9,9 @@ import traceback
 from string import Template
 import urllib2
 import shutil
+import logging
+
+logging.basicConfig(filename='repo_deployer.log',level=logging.DEBUG)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 
