@@ -2,73 +2,85 @@
     {
         "model": "crawler.type",
         "fields": {
-            "repo_type": "Django"
+            "name": "Django"
         }
     },
     {
         "model": "crawler.type",
         "fields": {
-            "repo_type": "Ruby on Rails"
+            "name": "Ruby on Rails"
         }
     },
     {
         "model": "crawler.source",
         "fields": {
-            "source": "File"
+            "name": "File"
         }
     },
     {
         "model": "crawler.source",
         "fields": {
-            "source": "Database"
+            "name": "Database"
         }
     },
     {
         "model": "crawler.result",
         "fields": {
-            "result": "Success"
+            "name": "Success"
         }
     },
     {
         "model": "crawler.result",
         "fields": {
-            "result": "Not an Application"
+            "name": "Not an Application"
         }
     },
     {
         "model": "crawler.result",
         "fields": {
-            "result": "Download Error"
+            "name": "Download Error"
         }
     },
     {
         "model": "crawler.result",
         "fields": {
-            "result": "Missing Required Files"
+            "name": "Missing Required Files"
         }
     },
     {
         "model": "crawler.result",
         "fields": {
-            "result": "Duplicate Required Files"
+            "name": "Duplicate Required Files"
         }
     },
     {
         "model": "crawler.result",
         "fields": {
-            "result": "Missing Dependencies"
+            "name": "Missing Dependencies"
+        }
+    },
+    {
+        "model": "crawler.language",
+        "fields": {
+            "name": "Python"
+        }
+    },
+    {
+        "model": "crawler.language",
+        "fields": {
+            "name": "Ruby"
         }
     },
     {
         "model": "crawler.result",
         "fields": {
-            "result": "Running Error"
+            "name": "Running Error"
         }
     },
     {
         "model": "crawler.result",
         "fields": {
-            "result": "Deploying"
+            "name": "Deploying"
         }
     }
 ]
