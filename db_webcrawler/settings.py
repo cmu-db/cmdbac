@@ -60,8 +60,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'db_webcrawler',
-        'USER': 'root',
-        'PASSWORD': '',
+        'USER': 'fangyug',
+        'PASSWORD': '1234',
         'HOST': 'localhost',
         'PORT': '3306',
     }

@@ -5,6 +5,9 @@ from utils import run_command
 import time
 import pkgutil
 import traceback
+import socket
+import logging
+logging.basicConfig(filename='package_deployer.log',level=logging.DEBUG)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 
@@ -29,23 +32,25 @@ def iter_modules_recur(package, modules, base):
     for module in modules:
         newBase = join(base, module[1])
         module_name = newBase.replace('/', '.')
-        print """+++++++++++++++++++++++++++++
-        found module: """ + module_name
+        logging.debug('found module: ' + module_name)
         obj, created = Module.objects.get_or_create(name=module_name, package=package)
         if created:
-            print 'found new module: ' + obj.name
+            logging.debug('found new module: ' + obj.name)
         else:
-            print 'module already exist: ' + obj.name
+            logging.debug('module already exists: ' + obj.name)
 
         if module[2]:
             iter_modules_recur(package, pkgutil.iter_modules([join(sys_path, newBase)]), newBase)
 
 if __name__ == '__main__':
     pip_clear()
+    num_hosts = 3
     while True:
+        host_id = int(socket.gethostname()[3]) - 1
         packages = Package.objects.exclude(pk__in=Module.objects.values_list('package', flat=True))
+        packages = [package for package in packages if package.id % num_hosts == host_id]
         for package in packages:
-            print 'try to install: ' + package.name + '==' + package.version + 'locally'
+            logging.debug('try to install: ' + package.name + '==' + package.version + 'locally')
             try:
                 pip_install(package)
                 modules = iter_modules('')
@@ -54,9 +59,11 @@ if __name__ == '__main__':
                 else:
                     module, created = Module.objects.get_or_create(name='package_install_failed', package=package)
                     if created:
-                        print 'found new module: ' + module.name
+                        logging.debug('found new module: ' + module.name)
+                    else:
+                        logging.debug('module already exists: ' + module.name)
             except:
-                traceback.print_exc()
+                logging.debug(traceback.print_exc())
             pip_clear()
         time.sleep(1)
 
