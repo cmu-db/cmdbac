@@ -62,7 +62,7 @@ DATABASES = {
         'NAME': 'db_webcrawler',
         'USER': 'fangyug',
         'PASSWORD': '1234',
-        'HOST': 'localhost',
+        'HOST': 'dev1.db.pdl.cmu.local',
         'PORT': '3306',
     }
 }
