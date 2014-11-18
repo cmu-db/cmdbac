@@ -3,27 +3,41 @@
 {% block main %}
 <h1 class="page-header">Repositories</h1>
 
+<form action="{% url 'repositories' %}" method="get">
+    Filter by result:
+    {{ result_form }}
+
+    Filter by type:
+    {{ type_form }}
+
+    Filter by name:
+    <input type="Search" placeholder='Search by full name' value='{{ search }}' class="form-control" name='search'/>
+    <input type="submit" value="Filter"/>
+</form>
+
 
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Full Name</th>
-                <th>Type</th>
-                <th>Result</th>
+                <th><a href="?order_by={% if order_by == "full_name" %}-{% endif %}full_name&amp;{{ queries_no_page_order.urlencode }}">Full Name</th>
+                <th><a href="?order_by={% if order_by != "-commits_count" %}-{% endif %}commits_count&amp;{{ queries_no_page_order.urlencode }}">Number of Commits</th>
+                    <th><a href="?order_by={% if order_by == "repo_type__name" %}-{% endif %}repo_type__name&amp;{{ queries_no_page_order.urlencode }}">Type</th>
+                    <th><a href="?order_by={% if order_by == "last_attempt__result__name" %}-{% endif %}last_attempt__result__name&amp;{{ queries_no_page_order.urlencode }}">Result</th>
                 <th>GitHub</th>
                 <th>Download</th>
             </tr>
         </thead>
         <tbody>
-                {% if attempts %}
-                {% for attempt in attempts %}
+                {% if repositories %}
+                {% for repository in repositories %}
                 <tr>
-                    <td><a href="{% url 'repository' attempt.repo.full_name %}">{{ attempt.repo.full_name }}</a></td>
-                    <td>{{ attempt.repo.repo_type.repo_type }}</td>
-                    <td>{{ attempt.result.result }}</td>
-                    <td><a href="https://github.com/{{ attempt.repo.full_name }}">github</a></td>
-                    <td><a href="https://api.github.com/repos/{{ attempt.repo.full_name }}/tarball">download</a></td>
+                    <td><a id="{{ repository.full_name}}" href="{% url 'repository' repository.get_user_name repository.get_repo_name %}?{{ queries.urlencode }}">{{ repository.full_name }}</a></td>
+                    <td>{{ repository.commits_count }}</td>
+                    <td>{{ repository.repo_type.name }}</td>
+                    <td>{{ repository.last_attempt.result.name }}</td>
+                    <td><a href="https://github.com/{{ repository.full_name }}">github</a></td>
+                    <td><a href="https://api.github.com/repos/{{ repository.full_name }}/tarball">download</a></td>
                 </tr>
                 {% endfor %}
                 {% endif %}
@@ -33,16 +47,16 @@
 
 <div class="pagination">
     <span class="step-links">
-        {% if attempts.has_previous %}
-            <a href="?page={{ attempts.previous_page_number }}">previous</a>
+        {% if repositories.has_previous %}
+            <a href="?page={{ repositories.previous_page_number }}&amp;{{ queries_no_page.urlencode }}">previous</a>
         {% endif %}
 
         <span class="current">
-            Page {{ attempts.number }} of {{ attempts.paginator.num_pages }}.
+            Page {{ repositories.number }} of {{ repositories.paginator.num_pages }}.
         </span>
 
-        {% if attempts.has_next %}
-            <a href="?page={{ attempts.next_page_number }}">next</a>
+        {% if repositories.has_next %}
+            <a href="?page={{ repositories.next_page_number }}&amp;{{ queries_no_page.urlencode }}">next</a>
         {% endif %}
     </span>
 </div>

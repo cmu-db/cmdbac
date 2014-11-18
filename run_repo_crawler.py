@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 import os
 from utils import query
 import traceback
@@ -8,12 +9,14 @@ import logging
 import json
 from datetime import datetime
 from meta import metas
+import re
 logging.basicConfig(filename='repo_crawler.log',level=logging.DEBUG)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 
 import django
 django.setup()
+
 
 from crawler.models import *
 
@@ -32,6 +35,30 @@ def change_if_none(text):
         return text
     else:
         return ""
+
+def crawl_webpage(repo):
+    url = github_host + '/' + repo.full_name
+    response = query(url)
+    soup = BeautifulSoup(response.read())
+    numbers = soup.find_all(class_='num text-emphasized')
+    print repo.full_name
+    print numbers
+    try:
+        repo.commits_count = int(re.sub("\D", "", numbers[0].string))
+    except:
+        repo.commits_count = 0
+    try:
+        repo.branches_count = int(re.sub("\D", "", numbers[1].string))
+    except:
+        repo.branches_count = 0
+    try:
+        repo.releases_count = int(re.sub("\D", "", numbers[2].string))
+    except:
+        repo.releases_count = 0
+    try:
+        repo.contributors_count = int(re.sub("\D", "", numbers[3].string))
+    except:
+        repo.contributors_count = 0
 
 def crawl_repo(url, meta):
     while True:
@@ -61,6 +88,7 @@ def crawl_repo(url, meta):
                     repo.pushed_at = datetime.strptime(data['pushed_at'], "%Y-%m-%dT%H:%M:%SZ")
                     repo.homepage = change_if_none(data['homepage'])
                     repo.size = data['size']
+                    repo.stargazers_count = data['stargazers_count']
                     repo.watchers_count = data['watchers_count']
                     repo.has_issues = data['has_issues']
                     repo.has_downloads = data['has_downloads']
@@ -71,6 +99,7 @@ def crawl_repo(url, meta):
                     repo.default_branch = data['default_branch']
                     repo.network_count = data['network_count']
                     repo.subscribers_count = data['subscribers_count']
+                    crawl_webpage(repo)
                     repo.save()
                 else:
                     logging.debug('unknown language: ' + str(language))

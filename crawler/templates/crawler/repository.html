@@ -1,18 +1,50 @@
 {% extends "crawler/base.html" %}
 
 {% block main %}
-<h1 class="page-header">Repository {{ repository.full_name }}</h1>
+<h1 class="page-header">Repository {{ repository.full_name }} <a href="https://github.com/{{ repository.full_name }}">github</a> <a href="https://api.github.com/repos/{{ repository.full_name }}/tarball">download</a></h1>
+
+>><a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{repository.full_name}}">Repositories</a>
+
+<h2 class="sub-header">Repository Detail</h2>
+        <div>
+        <ul>
+            <li>full_name={{repository.full_name}}</li>
+            <li>repo_type={{repository.repo_type.name}}</li>
+            <li>private={{repository.private}}</li>
+            <li>description={{repository.description}}</li>
+            <li>fork={{repository.fork}}</li>
+            <li>created_at={{repository.created_at}}</li>
+            <li>updated_at={{repository.updated_at}}</li>
+            <li>pushed_at={{repository.pushed_at}}</li>
+            <li>homepage={{repository.homepage}}</li>
+            <li>size={{repository.size}}</li>
+            <li>stargazers_count={{repository.stargazers_count}}</li>
+            <li>watchers_count={{repository.watchers_count}}</li>
+            <li>language={{repository.language.name}}</li>
+            <li>has_issues={{repository.has_issues}}</li>
+            <li>has_downloads={{repository.has_downloads}}</li>
+            <li>has_wiki={{repository.has_wiki}}</li>
+            <li>has_pages= {{repository.has_pages}}</li>
+            <li>forks_count={{repository.forks_count}}</li>
+            <li>open_issues_count={{repository.open_issues_count}}</li>
+            <li>default_branch={{repository.deault_branch}}</li>
+            <li>network_count={{repository.network_count}}</li>
+            <li>subscribers_count={{repository.subscribers_count}}</li>
+            <li>commits_count={{repository.commits_count}}</li>
+            <li>branches_count={{repository.branches_count}}</li>
+            <li>releases_count={{repository.releases_count}}</li>
+            <li>contributors_count={{repository.contributors_count}}</li>
+       </ul>
+   </div>
 
 <h2 class="sub-header">Attemps</h2>
-
+Number of Attempts: {{attempts.count}}
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>
                 <th>Time</th>
                 <th>Result</th>
-                <th>Dependencies</th>
-                <th>Log</th>
             </tr>
         </thead>
         <tbody>
@@ -20,9 +52,7 @@
                 {% for attempt in attempts %}
                 <tr>
                     <td>{{ attempt.time }}</td>
-                    <td>{{ attempt.result.result }}</td>
-                    <td><a href="{% url 'dependency' attempt.id %}">list</a></td>
-                    <td><a href="{% url 'log' attempt.id %}">log</a></td>
+                    <td><a id="{{attempt.id}}" href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}">{{ attempt.result.name }}</a></td>
                 </tr>
                 {% endfor %}
                 {% endif %}

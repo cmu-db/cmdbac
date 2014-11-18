@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 
-echo 'export http_proxy="http://proxy.pdl.cmu.edu:8080"' >> /home/vagrant/.bashrc
-echo 'export https_proxy="http://proxy.pdl.cmu.edu:8080"' >> /home/vagrant/.bashrc
+#echo 'export http_proxy="http://proxy.pdl.cmu.edu:8080"' >> /home/vagrant/.bashrc
+#echo 'export https_proxy="http://proxy.pdl.cmu.edu:8080"' >> /home/vagrant/.bashrc
 echo 'export PYTHONUSERBASE="/home/vagrant/pip"' >> /home/vagrant/.bashrc
 
-export http_proxy="http://proxy.pdl.cmu.edu:8080"
-export https_proxy="http://proxy.pdl.cmu.edu:8080"
+#export http_proxy="http://proxy.pdl.cmu.edu:8080"
+#export https_proxy="http://proxy.pdl.cmu.edu:8080"
 
 #echo 'Acquire::http::Proxy "http://proxy.pdl.cmu.edu:8080";' > /etc/apt/apt.conf
 
@@ -27,4 +27,4 @@ apt-get -y install python-dev
 apt-get -y install postgresql postgresql-contrib
 apt-get -y install libpq-dev
 
-apt-get -y install python-pip
+#apt-get -y install python-pip

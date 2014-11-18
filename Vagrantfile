@@ -10,7 +10,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-    config.vm.box = "hashicorp/precise64"
+    config.vm.box = "hashicorp/precise32"
     config.vm.provision :shell, path: "bootstrap.sh"
     config.vm.network :forwarded_port, host: 8000, guest: 8000
 
@@ -59,8 +59,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # information on available options.
 
     config.vm.provider "virtualbox" do |vb|
-        vb.memory = 8192
-        vb.cpus = 3
+        vb.memory = 1024
+        vb.cpus = 1
     end
 
   # Enable provisioning with CFEngine. CFEngine Community packages are

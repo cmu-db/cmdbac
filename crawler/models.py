@@ -14,6 +14,7 @@ class Repository(models.Model):
    pushed_at = models.DateTimeField()
    homepage = models.TextField()
    size = models.IntegerField()
+   stargazers_count = models.IntegerField()
    watchers_count = models.IntegerField()
    language = models.ForeignKey('Language', null=True)
    has_issues = models.BooleanField()
@@ -25,6 +26,14 @@ class Repository(models.Model):
    default_branch = models.CharField(max_length=200)
    network_count = models.IntegerField()
    subscribers_count = models.IntegerField()
+   commits_count = models.IntegerField()
+   branches_count = models.IntegerField()
+   releases_count = models.IntegerField()
+   contributors_count = models.IntegerField()
+   def get_user_name(self):
+       return self.full_name.split('/')[0]
+   def get_repo_name(self):
+       return self.full_name.split('/')[1]
 
 
 class Language(models.Model):
