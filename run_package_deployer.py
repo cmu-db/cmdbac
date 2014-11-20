@@ -60,9 +60,9 @@ if __name__ == '__main__':
     pip_clear()
     num_hosts = 3
     while True:
-        host_id = int(socket.gethostname()[3]) - 1
+        #host_id = int(socket.gethostname()[3]) - 1
         packages = Package.objects.exclude(pk__in=Module.objects.values_list('package', flat=True))
-        packages = [package for package in packages if package.id % num_hosts == host_id]
+        #packages = [package for package in packages if package.id % num_hosts == host_id]
         for package in packages:
             logging.getLogger('package_deployer').debug('try to install: ' + package.name + '==' + package.version + 'locally')
             try:

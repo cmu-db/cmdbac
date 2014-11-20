@@ -7,7 +7,6 @@ class Meta:
     def __init__(self, name, file_name, min_size, threshold_size):
         self.name = name
         self.template = Template("https://github.com/search?utf8=%E2%9C%93&q=" + file_name + "+in%3Apath+filename%3A" + file_name + "+size%3A${size}&type=Code&ref=searchresults")
-        self.template = template
 # model file less than min_size don't use database
         self.min_size = min_size
 # less then 1000 files larger than threshold_size

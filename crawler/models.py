@@ -42,12 +42,6 @@ class Language(models.Model):
 class Result(models.Model):
    name = models.CharField(max_length=200, primary_key=True)
 
-class Attempt(models.Model):
-   time = models.DateTimeField()
-   repo = models.ForeignKey('Repository')
-   result = models.ForeignKey('Result')
-   log = models.TextField()
-
 class Status(models.Model):
    name = models.CharField(max_length = 200, primary_key=True)
 
@@ -58,7 +52,7 @@ class Package(models.Model):
    package_type = models.ForeignKey('Type')
    name = models.CharField(max_length = 200)
    version = models.CharField(max_length = 200)
-   #count = models.IntegerField()
+   count = models.IntegerField(default=0)
    class Meta:
        unique_together = ('package_type', 'name', 'version')
 
@@ -68,6 +62,16 @@ class Dependency(models.Model):
    source = models.ForeignKey('Source')
    class Meta:
        unique_together = ('attempt', 'package')
+
+class Attempt(models.Model):
+   time = models.DateTimeField()
+   repo = models.ForeignKey('Repository')
+   result = models.ForeignKey('Result')
+   log = models.TextField()
+   dependencies = models.ManyToManyField(Package, through='Dependency')
+   local_id = models.IntegerField()
+   class Meta:
+       unique_together = ('repo', 'local_id')
 
 class Source(models.Model):
    name = models.CharField(max_length=200, primary_key=True)
