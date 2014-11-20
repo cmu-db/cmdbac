@@ -84,14 +84,16 @@ def vagrant_pip_freeze():
     return set(out)
 
 def vagrant_pip_clear():
-    run_command("vagrant ssh -c 'sudo rm -rf /home/vagrant/pip/build/ /home/vagrant/.local/'")
+    out = run_command("vagrant ssh -c 'sudo rm -rf /home/vagrant/pip/build/ /home/vagrant/.local/'")
+    return out
 
 def to_vm_file(file_name):
     return join('/vagrant', file_name)
 
 
 def vagrant_pip_rm_build():
-    run_command("vagrant ssh -c 'sudo rm -rf /home/vagrant/pip/build/ '")
+    out = run_command("vagrant ssh -c 'sudo rm -rf /home/vagrant/pip/build/ '")
+    return out
 
 def vagrant_pip_install(name, is_file):
     command_t = Template("vagrant ssh -c 'pip ${proxy} install --user --build /home/vagrant/pip/build ")
@@ -106,17 +108,24 @@ def vagrant_pip_install(name, is_file):
     else:
         command = command + name.name + "==" + name.version
     command = command + "'"
-    run_command(command)
+    out = run_command(command)
     vagrant_pip_rm_build()
+    return out
 
 def install_requirements(requirement_files, repo, attempt):
     if requirement_files:
         vagrant_pip_clear()
         if repo.repo_type.name == 'Django':
             old_packages = vagrant_pip_freeze()
+            logging.getLogger('repo_deployer').debug('pip freeze output: ' + str(old_packages))
+            logging.getLogger('basic_logger').debug('pip freeze output: ' + str(old_packages))
             for requirement_file in requirement_files:
-                vagrant_pip_install(requirement_file, True)
+                out = vagrant_pip_install(requirement_file, True)
+                logging.getLogger('repo_deployer').debug('installed requirements output: ' + out)
+                logging.getLogger('basic_logger').debug('installed requirements output: ' + out)
             new_packages = vagrant_pip_freeze()
+            logging.getLogger('repo_deployer').debug('pip freeze output: ' + str(new_packages))
+            logging.getLogger('basic_logger').debug('pip freeze output: ' + str(new_packages))
             diff_packages = new_packages - old_packages
             logging.getLogger('repo_deployer').debug('installed packages: ' + str(diff_packages))
             logging.getLogger('basic_logger').debug('installed packages: ' + str(diff_packages))
@@ -132,8 +141,11 @@ def install_requirements(requirement_files, repo, attempt):
                     logging.getLogger('repo_deployer').debug('a old package: ' + package)
                     logging.getLogger('basic_logger').debug('a old package: ' + package)
 
-                attempt.dependencies.add(obj)
-                attempt.save()
+                dep = Dependency()
+                dep.attempt = attempt
+                dep.package = obj
+                dep.source = Source(name='File')
+                dep.save()
                 obj.count = obj.count + 1
                 obj.save()
         elif repo.repo_type.name == "Ruby on Rails":
@@ -172,7 +184,7 @@ def deploy(manage_file, setting_file, requirement_files, repo, attempt, log_capt
     threshold = 100
     last_missing_module_name = ''
     index = 0
-    candidate_packages = []
+    #candidate_packages = []
     packages_from_database = []
     for time in range(threshold):
         logging.getLogger('repo_deployer').debug('deploying try #' + str(time))
@@ -196,35 +208,64 @@ def deploy(manage_file, setting_file, requirement_files, repo, attempt, log_capt
                     index = index + 1
                     if index == len(candidate_packages):
                         save_attempt(attempt, "Missing Dependencies", log_capture_string)
+                        for pkg in packages_from_database:
+                            dep = Dependency()
+                            dep.attempt = attempt
+                            dep.package = pkg
+                            dep.source = Source(name='Database')
+                            dep.save()
                         return
-                    vagrant_pip_install(candidate_packages[index], False)
+                    out = vagrant_pip_install(candidate_packages[index], False)
+                    logging.getLogger('repo_deployer').debug('install requirements output: ' + str(out))
+                    logging.getLogger('basic_logger').debug('install requirements output: ' + str(out))
                 else:
                     if last_missing_module_name != '':
                         packages_from_database.append(candidate_packages[index])
-                    candidate_package_ids = Module.objects.filter(name__endswith=missing_module_name).extra(select={'length':'Length(name)'}).order_by('length', '-package__count', 'package__name', '-package__version').values_list('package_id', flat=True)
+#                    candidate_package_ids = Module.objects.filter(name__endswith=missing_module_name).extra(select={'length':'Length(name)'}).order_by('length', '-package__count', 'package__name', '-package__version').values_list('package_id', flat=True)
+                    candidate_package_ids = Module.objects.filter(name=missing_module_name).values_list('package_id', flat=True)
                     if not candidate_package_ids:
                         save_attempt(attempt, "Missing Dependencies", log_capture_string)
+                        for pkg in packages_from_database:
+                            dep = Dependency()
+                            dep.attempt = attempt
+                            dep.package = pkg
+                            dep.source = Source(name='Database')
+                            dep.save()
                         return
                     last_missing_module_name = missing_module_name
                     #packages_from_file = [pkg for pkg in packages_from_file if pkg.id not in pckage_ids]
-                    #candidate_packages = Package.objects.filter(id__in=candidate_package_ids).order_by('name', '-version')
+                    candidate_packages = Package.objects.filter(id__in=candidate_package_ids).order_by('-count', 'name', '-version')
                     
-                    candidate_packages = []
-                    for candidate_package_id in candidate_package_ids:
-                        pkg = Package.objects.get(id=candidate_package_id)
-                        candidate_packages.append(pkg)
+                    #candidate_packages = []
+                    #for candidate_package_id in candidate_package_ids:
+                    #    pkg = Package.objects.get(id=candidate_package_id)
+                    #    candidate_packages.append(pkg)
+                    for pkg in candidate_packages:
                         logging.getLogger('repo_deployer').debug('candidate package: ' + pkg.name + '==' + pkg.version)
                         logging.getLogger('basic_logger').debug('candidate package: ' + pkg.name + '==' + pkg.version)
                     index = 0
                     vagrant_pip_install(candidate_packages[0], False)
+                    logging.getLogger('repo_deployer').debug('install requirements output: ' + str(out))
+                    logging.getLogger('basic_logger').debug('install requirements output: ' + str(out))
             else:
                 save_attempt(attempt, "Missing Dependencies", log_capture_string)
+                for pkg in packages_from_database:
+                    dep = Dependency()
+                    dep.attempt = attempt
+                    dep.package = pkg
+                    dep.source = Source(name='Database')
+                    dep.save()
                 return
         else:
             if last_missing_module_name != '':
                 packages_from_database.append(candidate_packages[index])
             break
-
+    for pkg in packages_from_database:
+        dep = Dependency()
+        dep.attempt = attempt
+        dep.package = pkg
+        dep.source = Source(name='Database')
+        dep.save()
     out = vagrant_runserver(manage_file)
     logging.getLogger('repo_deployer').debug('runserver output: ' + out)
     logging.getLogger('basic_logger').debug('runserver output: ' + out)
@@ -254,7 +295,7 @@ if __name__ == '__main__':
     while True:
         repos = Repository.objects.exclude(pk__in=Attempt.objects.values_list('repo', flat=True))
         for repo in repos:
-            log_capture_string = io.StringIO()
+            log_capture_string = io.BytesIO()
             ch = logging.StreamHandler(log_capture_string)
             ch.setLevel(logging.DEBUG)
             ch.setFormatter(formatter)

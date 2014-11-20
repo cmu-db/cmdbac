@@ -5,22 +5,26 @@
 >><a href="{% url 'repository' attempt.repo.get_user_name attempt.repo.get_repo_name %}?{{ queries.urlencode }}#{{ attempt.id }}">{{attempt.repo.full_name}}</a>
 
 <h2 class="sub-header">Dependencies</h2>
-    <thead>
-        <tr>
-            <th>Package ID</th>
-            <th>Source</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% if dependencies %}
-    {% for dependency in dependencies %}
-    <tr>
-        <td>{{ dependency.package.name }}=={{ dependency.package.version }}</td>
-        <td>{{ dependency.source.source }}</td>
-    </tr>
-    {% endfor %}
-    {% endif %}
-    </tbody>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Package</th>
+                <th>Source</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if dependencies %}
+            {% for dependency in dependencies %}
+            <tr>
+                <td>{{ dependency.package.name }}=={{ dependency.package.version }}</td>
+                <td>{{ dependency.source.name }}</td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+</div>
 
 <h2 class="sub-header">Log</h2>
 {{ attempt.log }}

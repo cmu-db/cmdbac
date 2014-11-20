@@ -14,19 +14,19 @@ fi
 #update apt-get
 apt-get update
 
-##install sqlite3
-#apt-get -y install sqlite3
-#
-##install mysql
-#debconf-set-selections <<<'mysql-server mysql-server/root_password password your_password'
-#debconf-set-selections <<<'mysql-server mysql-server/root_password_again password your_password'
-#apt-get -y install mysql-server
-#apt-get -y install libmysqlclient-dev
-#apt-get -y install python-dev
-#
-##install postgresql
-#apt-get -y install postgresql postgresql-contrib
-#apt-get -y install libpq-dev
+#install sqlite3
+apt-get -y install sqlite3
+
+#install mysql
+debconf-set-selections <<<'mysql-server mysql-server/root_password password your_password'
+debconf-set-selections <<<'mysql-server mysql-server/root_password_again password your_password'
+apt-get -y install mysql-server
+apt-get -y install libmysqlclient-dev
+apt-get -y install python-dev
+
+#install postgresql
+apt-get -y install postgresql postgresql-contrib
+apt-get -y install libpq-dev
 
 
 #apt-get -y install python-pip
