@@ -6,41 +6,28 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # Create your views here.
 
 class Statistic:
-    def __init__(self, repo_type, num_repo, num_pkg, num_suc):
+    def __init__(self, repo_type, num_repo, num_pkg, num_suc, num_deploy):
         self.repo_type = repo_type
         self.num_repo = num_repo
         self.num_pkg = num_pkg
         self.num_suc = num_suc
+        self.num_deploy = num_deploy
 
 def home(request):
     context = {}
-    types = Type.objects.all()
     stats = []
-    for t in types:
+    for t in Type.objects.all():
         repo_type = t.name
         repos = Repository.objects.filter(repo_type=t)
         num_repo = repos.count()
         num_suc = repos.filter(last_attempt__result__name="Success").count()
         num_pkg = Package.objects.filter(package_type=t).count()
-        stat = Statistic(repo_type, num_repo, num_pkg, num_suc)
+        num_deploy = repos.exclude(last_attempt=None).count
+        stat = Statistic(repo_type, num_repo, num_pkg, num_suc, num_deploy)
         stats.append(stat)
     context['stats'] = stats
     context['attempts'] = Attempt.objects.order_by('-time')[:5]
     return render(request, 'crawler/index.html', context)
-
-
-def statistics(request):
-    context = {}
-    types = Type.objects.all()
-    stats = []
-    for t in types:
-        repo_type = t.name
-        num_repo = Repository.objects.filter(repo_type=t).count()
-        num_pkg = Package.objects.filter(package_type=t).count()
-        stat = Statistic(repo_type, num_repo, num_pkg)
-        stats.append(stat)
-    context['stats'] = stats
-    return render(request, 'crawler/statistics.html', context)
 
 def repositories(request):
     print request.GET
@@ -70,21 +57,7 @@ def repositories(request):
         repositories = repositories.filter(repo_type__name__in=type_list)
     order_by = request.GET.get('order_by', 'full_name')
     repositories = repositories.order_by(order_by)
-#
-#    result_form = ResultForm()
-#    type_form = TypeForm()
-#
-#        if result_form.is_valid():
-#            results = result_form.cleaned_data['result']
-#            repositories = Repository.objects.filter(last_attempt__result__name__in=results)
-#        else:
-#            repositories = Repository.objects.all().order_by('full_name')
-#    else:
-#        result_form = ResultForm()
-#        order_by = request.GET.get('order_by', 'full_name')
-#        print 'order_by: ' + str(order_by)
-#        repositories = Repository.objects.all().order_by(order_by)
-#
+
     paginator = Paginator(repositories, 100) # Show 100 contacts per page
     page = request.GET.get('page')
     try:
@@ -153,22 +126,3 @@ def attempt(request, id):
     context['dependencies'] = dependencies
     context['queries'] = request.GET.copy()
     return render(request, 'crawler/attempt.html', context)
-
-#def search(request):
-#    q = request.GET['q']
-#    repositories = Repository.objects.filter(full_name__contains=q)
-#    context = {}
-#    paginator = Paginator(repositories, 100) # Show 100 contacts per page
-#    page = request.GET.get('page')
-#    try:
-#        repositories = paginator.page(page)
-#    except PageNotAnInteger:
-## If page is not an integer, deliver first page.
-#        repositories = paginator.page(1)
-#    except EmptyPage:
-## If page is out of range (e.g. 9999), deliver last page of results.
-#        repositories = paginator.page(paginator.num_pages)
-#    context = {}
-#    context["result_form"] = ResultForm()
-#    context["repositories"] = repositories
-#    return render(request, 'crawler/repositories.html', context)

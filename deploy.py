@@ -21,7 +21,25 @@ django.setup()
 
 from crawler.models import *
 
+def download(repo):
+    url = 'https://github.com/django/django/archive/06726965c3e53e9a6b87e1532951a93d5f94f426.zip'
+    #url = 'https://api.github.com/repos/' + repo.full_name + '/tarball'
+#    request = urllib2.Request(url)
+#    request.add_header('Authorization', 'token %s' % token)
+    response = query(url)
+    tar_file = 'tmp.zip'
+    tarFile = open(tar_file, 'wb')
+    shutil.copyfileobj(response.fp, tarFile)
+    tarFile.close()
+
 if __name__ == '__main__':
+    if $2 == None:
+        repo = Ropository.objects.filter(repo__full_name=$1).order_by('-local_id')[0]
+    else:
+
+        repo = Repository.objects.get(repo__full_name=$1, local_id=$2)
+    
+   repo = models.ForeignKey('Repository')
     result_list = list(Result.objects.all())
     while True:
         repos = Repository.objects.exclude(pk__in=Attempt.objects.values_list('repo', flat=True))

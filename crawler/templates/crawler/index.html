@@ -13,6 +13,7 @@ This is a website showing result of crawling and deploying database applications
             <tr>
                 <th>Type Name</th>
                 <th># of Repo</th>
+                <th># of Deploy</th>
                 <th># of Success</th>
             </tr>
         </thead>
@@ -22,6 +23,7 @@ This is a website showing result of crawling and deploying database applications
                 <tr>
                     <td>{{ stat.repo_type }}</td>
                     <td>{{ stat.num_repo }}</td>
+                    <td>{{ stat.num_deploy }}
                     <td>{{ stat.num_suc }}</td>
                 </tr>
                 {% endfor %}
