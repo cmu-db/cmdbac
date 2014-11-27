@@ -80,7 +80,43 @@
     {
         "model": "crawler.result",
         "fields": {
+            "name": "Unknown"
+        }
+    },
+    {
+        "model": "crawler.database",
+        "fields": {
+            "name": "PostgreSQL"
+        }
+    },
+    {
+        "model": "crawler.database",
+        "fields": {
+            "name": "MySQL"
+        }
+    },
+    {
+        "model": "crawler.result",
+        "fields": {
             "name": "Deploying"
+        }
+    },
+    {
+        "model": "crawler.database",
+        "fields": {
+            "name": "SQLite3"
+        }
+    },
+    {
+        "model": "crawler.database",
+        "fields": {
+            "name": "Oracle"
+        }
+    },
+    {
+        "model": "crawler.database",
+        "fields": {
+            "name": "Other"
         }
     }
 ]

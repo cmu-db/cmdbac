@@ -12,7 +12,7 @@ import shutil
 import logging
 import random
 
-logging.basicConfig(filename='repo_deployer.log',level=logging.DEBUG)
+logging.basicConfig(filename='deploy.log',level=logging.DEBUG)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 
@@ -21,38 +21,54 @@ django.setup()
 
 from crawler.models import *
 
-def download(repo):
-    url = 'https://github.com/django/django/archive/06726965c3e53e9a6b87e1532951a93d5f94f426.zip'
-    #url = 'https://api.github.com/repos/' + repo.full_name + '/tarball'
-#    request = urllib2.Request(url)
-#    request.add_header('Authorization', 'token %s' % token)
-    response = query(url)
-    tar_file = 'tmp.zip'
-    tarFile = open(tar_file, 'wb')
-    shutil.copyfileobj(response.fp, tarFile)
-    tarFile.close()
+def install_dependencies(dependencies):
+    for dependency in dependencies:
+        vagrant_pip_install(dependency.package)
 
 if __name__ == '__main__':
-    if $2 == None:
-        repo = Ropository.objects.filter(repo__full_name=$1).order_by('-local_id')[0]
+    if argv[1]:
+        try:
+            attempt = Attempt.objects.get(id=int(argv[1]))
+        except:
+            print 'can not find the attempt ' + argv[1]
+
     else:
+        print 'please specify the attempt to deploy'
+        return
 
-        repo = Repository.objects.get(repo__full_name=$1, local_id=$2)
+    download(attempt.commit)
+    directory = unzip()
+
+    setup_files = search_file(directory_name, 'setup.py')
+    if len(setup_files):
+    print "Not an Application: found " str(setup_files)log_capture_string)
+        rm_dir(directory_name)
+        return
+    manage_files = search_file(directory_name, 'manage.py')
+    if not len(manage_files):
+        print "Missing Required Files: manage.py"
+        rm_dir(directory_name)
+        return
+        
+    elif len(manage_files) != 1:
+        print "Duplicate Required Files: ", str(manage_files)
+        rm_dir(directory_name)
+        return
     
-   repo = models.ForeignKey('Repository')
-    result_list = list(Result.objects.all())
-    while True:
-        repos = Repository.objects.exclude(pk__in=Attempt.objects.values_list('repo', flat=True))
-        for repo in repos:
-            log = ''
-            print 'deploying repo: ' + repo.full_name
-            log = log + 'deploying repo: ' + repo.full_name + '\n'
-            attempt = Attempt()
-            attempt.repo = repo
-            attempt.time = datetime.now()
-            attempt.result = random.choice(result_list)
-            attempt.log = attempt.result.name
-            attempt.save()
-            repo.last_attempt = attempt
-            repo.save()
+    setting_files = search_file(directory_name, 'settings.py')
+    if not len(setting_files):
+        print "Missing Required Files: settings.py"
+        rm_dir(directory_name)
+        return
+    elif len(setting_files) != 1:
+        print "Duplicate Required Files: settings.py " + str(setting_files)
+        rm_dir(directory_name)
+        return
 
+    dependencies = Dependency.objects.filter(attempt=attempt).order_by('id')
+    requirement_file = generate_requirement
+    vagrant_pip_install(requirement_file)
+
+    append_settings(setting_file[0])
+    vagrant_syncdb(manage_file[0])
+    vagrant_runserver(manage_file[0])
