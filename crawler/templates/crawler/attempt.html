@@ -1,9 +1,12 @@
 {% extends "crawler/base.html" %}
 {% block main %}
 <h1 class="page-header">Attempt of {{attempt.repo.full_name}} <a href="https://github.com/{{ attempt.repo.full_name }}">github</a> <a href="https://api.github.com/repos/{{ attempt.repo.full_name }}/tarball">download</a></h1>
->><a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{attempt.repo.full_name}}">Repositories</a>
->><a href="{% url 'repository' attempt.repo.get_user_name attempt.repo.get_repo_name %}?{{ queries.urlencode }}#{{ attempt.id }}">{{attempt.repo.full_name}}</a>
+>> <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{attempt.repo.full_name}}">Repositories</a>
+>> <a href="{% url 'repository' attempt.repo.get_user_name attempt.repo.get_repo_name %}?{{ queries.urlencode }}#{{ attempt.id }}">{{attempt.repo.full_name}}</a>
+>> This Attempt
 
+<h2 class="sub-header">Result</h2>
+{{attempt.result.name}}
 <h2 class="sub-header">Dependencies</h2>
 <div class="table-responsive">
     <table class="table table-striped">

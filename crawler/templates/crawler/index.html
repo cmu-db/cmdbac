@@ -4,7 +4,23 @@
 <h1 class="page-header">Database Web Crawler<h1>
 
 <h2 class="sub-header">Introduction</h2>
+<div>
 This is a website showing result of crawling and deploying database applications that are hosted on GitHub.
+</div>
+<div>
+    <p>The meaning of deployment result:</p>
+
+    <p><span class="label label-success">Missing Dependencies</span> : Deployment success</p>
+    <p><span class="label label-danger">Missing Dependencies</span> : Some dependency files are missing while deploying</p>
+    <p><span class="label label-danger">Running Error</span> : Some thing goes run when trying to run the application</p>
+    <p><span class="label label-warning">Not an Application</span> : This repostory doesn't contains a runnable application</p>
+    <p><span class="label label-warning">Download Error</span> : Failed to download the repository</p>
+    <p><span class="label label-warning">Missing Required Files</span> : Couldn't find some files that are required to run the deployment. Didn't try to deploy.</p>
+    <p><span class="label label-warning">Missing Required Files</span> : Found multiple files with same name that are required to run the deployment. Didn't know which one to use. Didn't try to deploy.</p>
+    <p><span class="label label-info">Deploying</span> : Being deployed</p>
+    <p><span class="label label-info">No Attempt</span> : Haven't tried to deploy</p>
+
+</div>
 <h2 class="sub-header">Statistics</h2>
 
 <div class="table-responsive">
@@ -37,7 +53,8 @@ This is a website showing result of crawling and deploying database applications
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Time</th>
+                <th>Start Time</th>
+                <th>Duration</th>
                 <th>Repository</th>
                 <th>Result</th>
             </tr>
@@ -47,8 +64,17 @@ This is a website showing result of crawling and deploying database applications
                 {% for attempt in attempts %}
                 <tr>
                     <td>{{ attempt.time }}</td>
+                    <th>Unimplemented</td>
                     <td><a href="{% url 'repository' attempt.repo.get_user_name attempt.repo.get_repo_name %}">{{ attempt.repo.full_name }}</a></td>
-                    <td><a href="{% url 'attempt' attempt.id %}">{{ attempt.result.name }}</a></td>
+                    {% if attempt.result.name == "Success" %}
+                        <td><a href="{% url 'attempt' attempt.id %}" class="label label-success">{{attempt.result.name}}</a></td>
+                    {% elif attempt.result.name == "Running Error" or attempt.result.name == "Missing Dependencies" %}
+                        <td><a href="{% url 'attempt' attempt.id %}" class="label label-danger">{{attempt.result.name}}</a></td>
+                    {% elif attempt.result.name == "Deploying" %}
+                        <td><a href="{% url 'attempt' attempt.id %}" class="label label-info">{{attempt.result.name}}</a></td>
+                    {% else %}
+                        <td><a href="{% url 'attempt' attempt.id %}" class="label label-warning">{{attempt.result.name}}</a></td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
                 {% endif %}

@@ -15,41 +15,53 @@ django.setup()
 
 from crawler.models import *
 
-def get_versions(package):
-    host = "https://pypi.python.org/simple/"
-    url = urlparse.urljoin(host, package)
-    url = url + '/'
-    session = PipSession()
-    session.timeout = 15
-    session.auth.prmpting = True
-    pf = PackageFinder(find_links=[], index_urls=host, use_wheel=True, allow_external=[], allow_unverified=[], allow_all_external=False, allow_all_prereleases=False, process_dependency_links=False, session=session,)
+from db_webcrawler import urls
 
-    location = [Link(url, trusted=True)]
-    req = InstallRequirement.from_line(package, None)
-    versions = []
-    for page in pf._get_pages(location, req):
-        versions = versions + [version for _, _, version in pf._package_versions(page.links, package)]
-    return versions
+def show_urls(urllist, depth=0):
+    print urllist
+    for entry in urllist:
+        print "  " * depth, entry.regex.pattern
+        if hasattr(entry, 'url_patterns'):
+            show_urls(entry.url_patterns, depth + 1)
 
-if __name__ == '__main__':
-# e.g. add a new location
-    url = "https://pypi.python.org/simple/"
-    print url
-    while True:
-        #response = urllib2.urlopen(url)
-        response = query(url)
-        soup = BeautifulSoup(response.read())
-        for link in soup.find_all("a"):
-            package = link.get('href')
-            try:
-                versions = get_versions(package)
-            except:
-                traceback.print_exc()
-                continue
-            for version in versions:
-                #package_type = Type.objects.get(app_type = 'Django: Library')
-                pkg, created = Package.objects.get_or_create(package_type=Type(repo_type='Django'), name=package, version=version)
-                if created:
-                    print "found new package: " + package + "==" + version
-                else:
-                    print "package already exist: " + package + "==" + version
+
+show_urls(urls.urlpatterns)
+
+#def get_versions(package):
+#    host = "https://pypi.python.org/simple/"
+#    url = urlparse.urljoin(host, package)
+#    url = url + '/'
+#    session = PipSession()
+#    session.timeout = 15
+#    session.auth.prmpting = True
+#    pf = PackageFinder(find_links=[], index_urls=host, use_wheel=True, allow_external=[], allow_unverified=[], allow_all_external=False, allow_all_prereleases=False, process_dependency_links=False, session=session,)
+#
+#    location = [Link(url, trusted=True)]
+#    req = InstallRequirement.from_line(package, None)
+#    versions = []
+#    for page in pf._get_pages(location, req):
+#        versions = versions + [version for _, _, version in pf._package_versions(page.links, package)]
+#    return versions
+#
+#if __name__ == '__main__':
+## e.g. add a new location
+#    url = "https://pypi.python.org/simple/"
+#    print url
+#    while True:
+#        #response = urllib2.urlopen(url)
+#        response = query(url)
+#        soup = BeautifulSoup(response.read())
+#        for link in soup.find_all("a"):
+#            package = link.get('href')
+#            try:
+#                versions = get_versions(package)
+#            except:
+#                traceback.print_exc()
+#                continue
+#            for version in versions:
+#                #package_type = Type.objects.get(app_type = 'Django: Library')
+#                pkg, created = Package.objects.get_or_create(package_type=Type(repo_type='Django'), name=package, version=version)
+#                if created:
+#                    print "found new package: " + package + "==" + version
+#                else:
+#                    print "package already exist: " + package + "==" + version

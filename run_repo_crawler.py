@@ -68,11 +68,11 @@ def crawl_repo(url, meta):
         for title in titles:
             full_name = title.contents[1].string
             if Repository.objects.filter(full_name=full_name).exists():
-                logging.debug("repository already exist: " + full_name)
+                print("repository already exist: " + full_name)
             else:
-                logging.debug("found new repository " + full_name + ". call github api")
+                print("found new repository " + full_name + ". call github api")
                 data = api_get_repo(full_name)
-                logging.debug(data)
+                print(data)
                 language = data['language']
                 if Language.objects.filter(name=language).exists():
                     repo = Repository()
@@ -102,7 +102,7 @@ def crawl_repo(url, meta):
                     crawl_webpage(repo)
                     repo.save()
                 else:
-                    logging.debug('unknown language: ' + str(language))
+                    print('unknown language: ' + str(language))
             time.sleep(1)
         next_page = soup.find(class_='next_page')
         if not next_page or not next_page.has_attr('href'):
@@ -113,8 +113,8 @@ def crawl_repo(url, meta):
 if __name__ == '__main__':
     while True:
         for meta in metas:
-            logging.debug('crawler meta: ')
-            logging.debug(meta.__dict__)
+            print('crawler meta: ')
+            print(meta.__dict__)
             if meta.cur_size == meta.threshold_size:
                 url = meta.template.substitue(size='>'+str(meta.cur_size))
                 crawl_repo(url, meta)

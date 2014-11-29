@@ -74,12 +74,12 @@ class Dependency(models.Model):
 
 class Attempt(models.Model):
     start_time = models.DateTimeField()
-    end_time = models.DateTimeField(null=True)
+    duration = models.FloatField(null=True)
     commit = models.ForeignKey('Commit')
     result = models.ForeignKey('Result')
     log = models.TextField(default='')
     dependencies = models.ManyToManyField(Package, through='Dependency')
-    hostname = models.CharField(max_length = 200)
+    hostname = models.CharField(max_length=200)
 
 class Source(models.Model):
     name = models.CharField(max_length=200, primary_key=True)
@@ -90,8 +90,8 @@ class Module(models.Model):
     class Meta:
         unique_together = ('name', 'package')
 
-class Name(models.Model):
-    name = models.CharField(max_length=200)
-    module = models.ForeignKey('Module', related_name='+')
-    class Meta:
-        unique_together = ('name', 'module')
+#class Name(models.Model):
+#    name = models.CharField(max_length=200)
+#    module = models.ForeignKey('Module', related_name='+')
+#    class Meta:
+#        unique_together = ('name', 'module')

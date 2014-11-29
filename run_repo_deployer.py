@@ -48,8 +48,8 @@ def save_attempt(attempt, result, log_str, pkgs_from_f=[], pkgs_from_db=[]):
     for pkg in pkgs_from_db:
         Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=Source(name='Database'))
 
-def try_deploy(manage_file, setting_file, requirement_files, repo, attempt, log_str):
-    append_settings(setting_file)
+def try_deploy(manage_file, setting_file, requirement_files, attempt, log_str):
+    rewrite_settings(setting_file, 'Django')
     log_str = log(log_str, 'settings appended')
 
     installed_requirements = install_requirements(requirement_files)
@@ -61,7 +61,7 @@ def try_deploy(manage_file, setting_file, requirement_files, repo, attempt, log_
     #candidate_packages = []
     packages_from_database = []
     for time in range(threshold):
-        out = vagrant_syncdb(manage_file, repo)
+        out = vagrant_syncdb(manage_file)
         log_str = log(log_str, 'syncdb output: ' + out) 
         out = out.strip()
         out = out.splitlines()
@@ -140,23 +140,50 @@ def rm(file_name):
 
 def get_database(settings_file):
     with open(settings_file, 'r') as infile:
-        for line in infile:
-            p = re.match('django.db.backends.(.*)', line);
-            if p:
-                db = p.group(1)
-                if db.startswith('postgresql_psycopg2'):
-                    return Database(name='PostgreSQL')
-                elif db.startswith('mysql'):
-                    return Database(name='MySQL')
-                elif db.starswith(sqlite3):
-                    return database(name='SQLite3')
-                elif db.startswith(oracle):
-                    return database(name='Oracle')
-    return database(name='Other')
+        if settings_file.endswith('settings.py'):
+            for line in infile:
+                p = re.match('django.db.backends.(.*)', line);
+                if p:
+                    db = p.group(1)
+                    if db.startswith('postgresql_psycopg2'):
+                        return Database(name='PostgreSQL')
+                    elif db.startswith('mysql'):
+                        return Database(name='MySQL')
+                    elif db.starswith(sqlite3):
+                        return Database(name='SQLite3')
+                    elif db.startswith(oracle):
+                        return Database(name='Oracle')
+        elif settings_file.endswith('database.yml'):
+            for line in infile:
+                p = re.match("adapter(\s*):(\s*)(.*)", line);
+                if p:
+                    db = p.group(3)
+                    if 'sqlite' in db:
+                        return Database(name='SQLite3')
+                    elif 'mysql' in db:
+                        return Database(name='MySQL')
+                    elif 'postgresql' in db:
+                        return Database(name='PostgreSQL')
+                    elif 'oracle' in db:
+                        return Database(name='Orable')
+    return Database(name='Other')
 
 def log(string, log):
     return string + log + '\n'
 
+def try_deploy_ror(path, attempt, log_str):
+    print 'try deploy ror'
+    out = vagrant_bundle_install(path)
+    print out
+    log_str = log(log_str, out)
+    out = vagrant_rake_db_create(path)
+    print out
+    log_str = log(log_str, out)
+    out = vagrant_rails_server(path)
+    print out
+    log_str = log(log_str, out)
+    save_attempt(attempt, "Success", log_str)
+    
 if __name__ == '__main__':
     mk_tmp_dir()
     logger = logging.getLogger('basic_logger')
@@ -165,13 +192,6 @@ if __name__ == '__main__':
         repos = Repository.objects.exclude(pk__in=Commit.objects.values_list('repo', flat=True))
         for repo in repos:
             log_str = ''
-            vagrant_pip_clear()
-            rm_in_tmp_dir()
-            #log_str = io.BytesIO()
-            #ch = logging.StreamHandler(log_str)
-            #ch.setLevel(logging.DEBUG)
-            #ch.setFormatter(formatter)
-            #logger.addHandler(ch)
             log_str = log(log_str, 'deploying repo: ' + repo.full_name)
             commit, created = Commit.objects.get_or_create(repo=repo, sha=get_latest_sha(repo))
             attempt = Attempt()
@@ -184,42 +204,97 @@ if __name__ == '__main__':
             try:
                  download(commit)
             except:
+                print traceback.print_exc()
                 save_attempt(attempt, "Download Error", log_str)
                 continue
+            remake_tmp_dir()
             directory_name = unzip()
+            print directory_name
             log_str = log(log_str, 'directory_name = ' + directory_name)
+            print 'type'
+            print repo.repo_type.name
+            if repo.repo_type.name == "Django":
+                vagrant_pip_clear()
+                #log_str = io.BytesIO()
+                #ch = logging.StreamHandler(log_str)
+                #ch.setLevel(logging.DEBUG)
+                #ch.setFormatter(formatter)
+                #logger.addHandler(ch)
 
-            setup_files = search_file(directory_name, 'setup.py')
-            log_str = log(log_str, 'setup.py: ' + str(setup_files))
-            if len(setup_files):
-                save_attempt(attempt, "Not an Application", log_str)
-                continue
+                setup_files = search_file(directory_name, 'setup.py')
+                log_str = log(log_str, 'setup.py: ' + str(setup_files))
+                if len(setup_files):
+                    save_attempt(attempt, "Not an Application", log_str)
+                    continue
 
-            setting_files = search_file(directory_name, 'settings.py')
-            log_str = log(log_str, 'settings.py: ' + str(setting_files))
-            if not len(setting_files):
-                save_attempt(attempt, "Missing Required Files", log_str)
-                continue
-            elif len(setting_files) != 1:
-                save_attempt(attempt, "Duplicate Required Files", log_str)
-                continue
-            
-            commit.database = get_database(setting_files[0])
-            commit.save()
-            log_str = log(log_str, 'database: ' + commit.database.name)
-                    
-            manage_files = search_file(directory_name, 'manage.py')
-            log_str = log(log_str, 'manage.py: ' + str(manage_files))
-            if not len(manage_files):
-                save_attempt(attempt, "Missing Required Files", log_str)
-                continue
-            elif len(manage_files) != 1:
-                save_attempt(attempt, "Duplicate Required Files", log_str)
-                continue
+                setting_files = search_file(directory_name, 'settings.py')
+                log_str = log(log_str, 'settings.py: ' + str(setting_files))
+                if not len(setting_files):
+                    save_attempt(attempt, "Missing Required Files", log_str)
+                    continue
+                elif len(setting_files) != 1:
+                    save_attempt(attempt, "Duplicate Required Files", log_str)
+                    continue
+                
+                commit.database = get_database(setting_files[0])
+                commit.save()
+                log_str = log(log_str, 'database: ' + commit.database.name)
+                        
+                manage_files = search_file(directory_name, 'manage.py')
+                log_str = log(log_str, 'manage.py: ' + str(manage_files))
+                if not len(manage_files):
+                    save_attempt(attempt, "Missing Required Files", log_str)
+                    continue
+                elif len(manage_files) != 1:
+                    save_attempt(attempt, "Duplicate Required Files", log_str)
+                    continue
 
-            requirement_files = search_file(directory_name, 'requirements.txt')
-            log_str = log(log_str, 'requirements.txt' + str(requirement_files))
+                requirement_files = search_file(directory_name, 'requirements.txt')
+                log_str = log(log_str, 'requirements.txt' + str(requirement_files))
 
-            try_deploy(manage_files[0], setting_files[0], requirement_files, repo, attempt, log_str)
-    vagrant_pip_clear()
-    rm_in_tmp_dir()
+                try_deploy(manage_files[0], setting_files[0], requirement_file, attempt, log_str)
+            elif repo.repo_type.name == "Ruby on Rails":
+                print 'directory: ' + directory_name
+
+                rakefiles = search_file(directory_name, 'Rakefile')
+                if not rakefiles:
+                    print 'no rakefile found'
+                    save_attempt(attempt, "Missing Required Files", log_str)
+                    continue
+                rakefile_paths = [os.path.dirname(rakefile) for rakefile in rakefiles]
+                #print 'rakefile_paths: ' + str(rakefile_paths)
+                #elif len(rakefiles) != 1:
+                #    print 'multiple rakefiles found'
+                #    save_attempt(attempt, "Duplicate Required Files", log_str)
+                #    continue
+                print 'Finding database'
+                gemfiles = search_file(directory_name, 'Gemfile')
+                if not gemfiles:
+                    print 'no gemfile'
+                    save_attempt(attempt, "Missing Required Files", log_str)
+                    continue
+                gemfile_paths = [os.path.dirname(gemfile) for gemfile in gemfiles]
+                #print 'gemfile_paths: ' + str(gemfile_paths)
+                db_files = search_file(directory_name, 'database.yml')
+                if not db_files:
+                    print 'not use database'
+                    save_attempt(attempt, "Missing Required Files", log_str)
+                    continue
+
+                print 'using database'
+                db_file_paths = [os.path.dirname(os.path.dirname(db_file)) for db_file in db_files]
+                #print 'db_file_paths: ' + str(db_file_paths)
+                base_dirs = set.intersection(set(rakefile_paths), set(gemfile_paths), set(db_file_paths))
+                if not base_dirs:
+                    print 'can not find base directory'
+                    save_attempt(attempt, "Missing Required Files", log_str)
+                    continue
+                base_dir = next(iter(base_dirs))
+                print 'base_dir: ' + base_dir
+
+                commit.database = get_database(os.path.join(base_dir, 'config/database.yml'))
+                log_str = log(log_str, 'database: ' + commit.database.name)
+                commit.save()
+                rewrite_settings(base_dir, 'Ruby on Rails')
+
+                try_deploy_ror(base_dir, attempt, log_str)

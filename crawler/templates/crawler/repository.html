@@ -3,28 +3,54 @@
 {% block main %}
 <h1 class="page-header">Repository {{ repository.full_name }} <a href="https://github.com/{{ repository.full_name }}">github</a> <a href="https://api.github.com/repos/{{ repository.full_name }}/tarball">download</a></h1>
 
->><a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{repository.full_name}}">Repositories</a>
+>> <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{repository.full_name}}">Repositories</a> >> {{repository.full_name}}
 
+<h2 class="sub-header">Attemps</h2>
+Number of Attempts: {{attempts.count}}
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Start Time</th>
+                <th>Duration</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+                {% if attempts %}
+                {% for attempt in attempts %}
+                <tr>
+                    <td>{{ attempt.time }}</td>
+                    <td>Unimplemented</td>
+                    <td><a id="{{attempt.id}}" href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}">{{ attempt.result.name }}</a></td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+        </tbody>
+    </table>
+</div>
 <h2 class="sub-header">Repository Detail</h2>
-        <div>
-        <ul>
-            <li>full_name={{repository.full_name}}</li>
-            <li>repo_type={{repository.repo_type.name}}</li>
-            <li>private={{repository.private}}</li>
-            <li>description={{repository.description}}</li>
-            <li>fork={{repository.fork}}</li>
-            <li>created_at={{repository.created_at}}</li>
-            <li>updated_at={{repository.updated_at}}</li>
-            <li>pushed_at={{repository.pushed_at}}</li>
-            <li>homepage={{repository.homepage}}</li>
-            <li>size={{repository.size}}</li>
-            <li>stargazers_count={{repository.stargazers_count}}</li>
-            <li>watchers_count={{repository.watchers_count}}</li>
-            <li>language={{repository.language.name}}</li>
-            <li>has_issues={{repository.has_issues}}</li>
-            <li>has_downloads={{repository.has_downloads}}</li>
-            <li>has_wiki={{repository.has_wiki}}</li>
-            <li>has_pages= {{repository.has_pages}}</li>
+        <div class="bs-example">
+            <dl class="dl-horizontal">
+                <dt>full_name</dt><dd>{{repository.full_name}}</dd>
+                <dt>repo_type</dt><dd>{{repository.repo_type.name}}</li>
+                <dt>private</dt><dd>{{repository.private}}</dd>
+                <dt>description</dt><dd>{{repository.description}}</dd>
+                <dt>fork</dt><dd>{{repository.fork}}</dd>
+                <dt>created_at</dt><dd>{{repository.created_at}}</dd>
+                <dt>updated_at</dt><dd>{{repository.updated_at}}</dd>
+                <dt>pushed_at</dt><dd>{{repository.pushed_at}}</dd>
+                <dt>homepage</dt><dd>{{repository.homepage}}</dd>
+                <dt>size</dt><dd>{{repository.size}}</dd>
+                <dt>stargazers_count</dt><dd>{{repository.stargazers_count}}</dd>
+                .......
+                <!--
+                <li>watchers_count</dt><dd>{{repository.watchers_count}}</li>
+                <li>language</dt><dd>repository.language.name}}</li>
+                <li>has_issues</dt><dd>repository.has_issues}}</li>
+                <li>has_downloads</dt><dd>repository.has_downloads}}</li>
+                <li>has_wiki</dt><dd>repository.has_wiki}}</li>
+                <li>has_pages</dt><dd>{{repository.has_pages}}</li>
             <li>forks_count={{repository.forks_count}}</li>
             <li>open_issues_count={{repository.open_issues_count}}</li>
             <li>default_branch={{repository.deault_branch}}</li>
@@ -34,29 +60,8 @@
             <li>branches_count={{repository.branches_count}}</li>
             <li>releases_count={{repository.releases_count}}</li>
             <li>contributors_count={{repository.contributors_count}}</li>
-       </ul>
+            -->
+        </dl>
    </div>
 
-<h2 class="sub-header">Attemps</h2>
-Number of Attempts: {{attempts.count}}
-<div class="table-responsive">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Time</th>
-                <th>Result</th>
-            </tr>
-        </thead>
-        <tbody>
-                {% if attempts %}
-                {% for attempt in attempts %}
-                <tr>
-                    <td>{{ attempt.time }}</td>
-                    <td><a id="{{attempt.id}}" href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}">{{ attempt.result.name }}</a></td>
-                </tr>
-                {% endfor %}
-                {% endif %}
-        </tbody>
-    </table>
-</div>
 {% endblock %}

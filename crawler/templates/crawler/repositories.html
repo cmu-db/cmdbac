@@ -1,5 +1,5 @@
 {% extends "crawler/base.html" %}
-
+{% load staticfiles %}
 {% block main %}
 <h1 class="page-header">Repositories</h1>
 
@@ -12,7 +12,7 @@
 
     Filter by name:
     <input type="Search" placeholder='Search by full name' value='{{ search }}' class="form-control" name='search'/>
-    <input type="submit" value="Filter"/>
+    <input class="btn btn-primary btn-lg" type="submit" value="Filter"/>
 </form>
 
 
@@ -21,6 +21,7 @@
         <thead>
             <tr>
                 <th><a href="?order_by={% if order_by == "full_name" %}-{% endif %}full_name&amp;{{ queries_no_page_order.urlencode }}">Full Name</th>
+                <th>Host</th>
                 <th><a href="?order_by={% if order_by != "-commits_count" %}-{% endif %}commits_count&amp;{{ queries_no_page_order.urlencode }}">Number of Commits</th>
                     <th><a href="?order_by={% if order_by == "repo_type__name" %}-{% endif %}repo_type__name&amp;{{ queries_no_page_order.urlencode }}">Type</th>
                     <th><a href="?order_by={% if order_by == "last_attempt__result__name" %}-{% endif %}last_attempt__result__name&amp;{{ queries_no_page_order.urlencode }}">Result</th>
@@ -33,11 +34,27 @@
                 {% for repository in repositories %}
                 <tr>
                     <td><a id="{{ repository.full_name}}" href="{% url 'repository' repository.get_user_name repository.get_repo_name %}?{{ queries.urlencode }}">{{ repository.full_name }}</a></td>
+                    <td>Unimplemented</td>
                     <td>{{ repository.commits_count }}</td>
-                    <td>{{ repository.repo_type.name }}</td>
-                    <td>{{ repository.last_attempt.result.name }}</td>
+                    {% if repository.repo_type.name == "Django" %}
+                        <td><img src="{% static "crawler/django.jpg" %}" alt="Django" width="24" height="24"/></td>
+                    {% elif repository.repo_type.name == "Ruby on Rails" %}
+                        <td><img src="{% static "crawler/ruby_on_rails.jpg" %}" alt="Ruby on Rails" width="24" height="24"/></td>
+                    {% endif %}
+
+                    {% if not repository.last_attempt %}
+                        <td><span class="label label-info">No Attempt</span></td>
+                    {% elif repository.last_attempt.result.name == "Success" %}
+                        <td><a href="{% url 'attempt' repository.last_attempt.id %}" class="label label-success">{{repository.last_attempt.result.name}}</a></td>
+                    {% elif repository.last_attempt.result.name == "Running Error" or repository.last_attempt.result.name == "Missing Dependencies" %}
+                        <td><a href="{% url 'attempt' repository.last_attempt.id %}" class="label label-danger">{{repository.last_attempt.result.name}}</a></td>
+                    {% elif repository.last_attempt.result.name == "Deploying" %}
+                        <td><a href="{% url 'attempt' repository.last_attempt.id %}" class="label label-info">{{repository.last_attempt.result.name}}</a></td>
+                    {% else %}
+                        <td><a href="{% url 'attempt' repository.last_attempt.id %}" class="label label-warning">{{repository.last_attempt.result.name}}</a></td>
+                    {% endif %}
                     <td><a href="https://github.com/{{ repository.full_name }}">github</a></td>
-                    <td><a href="https://api.github.com/repos/{{ repository.full_name }}/tarball">download</a></td>
+                    <td><a href="https://api.github.com/repos/{{ repository.full_name }}/tarball"><img src="{% static "crawler/download.jpg" %}" alt="Download" width="24" height="24"/></a></td>
                 </tr>
                 {% endfor %}
                 {% endif %}
