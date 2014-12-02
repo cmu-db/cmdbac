@@ -9,6 +9,7 @@ import os.path
 from bs4 import BeautifulSoup
 import json
 import shutil
+import urlparse
 
 logging.basicConfig(format='%(asctime)s %(message)s', filename='utils.log', level=logging.DEBUG)
 
@@ -204,14 +205,26 @@ def unzip():
     out = run_command(command)
     return TMP_DIR
 
-def vagrant_syncdb(manage_file):
-    vm_manage_file = to_vm_file(manage_file)
-    command = "python " + vm_manage_file + " syncdb --noinput"
-    return vagrant_run_command(command) 
-def vagrant_runserver(manage_file):
-    vm_manage_file = to_vm_file(manage_file)
-    command = "python " + vm_manage_file + " runserver > /vagrant/log 2>&1 & sleep 10"
-    return vagrant_run_command(command)
+def vagrant_syncdb(path, type_name):
+    if type_name == "Django":
+        vm_manage_file = to_vm_file(path)
+        command = "python " + vm_manage_file + " syncdb --noinput"
+        return vagrant_run_command(command) 
+    elif type_name == "Ruby on Rails":
+        command = vagrant_cd(path) + " && bundle exec rake db:migrate"
+        return vagrant_run_command(command)
+
+
+def vagrant_runserver(path, type_name):
+    if type_name == "Django":
+        vm_manage_file = to_vm_file(path)
+        command = "python " + vm_manage_file + " runserver 8000> /vagrant/log 2>&1 & sleep 10"
+        return vagrant_run_command(command)
+    elif type_name == "Ruby on Rails":
+        #command = vagrant_cd(path) + " && bundle exec rails server -p 3000 > /vagrant/log 2>&1 & sleep 10"
+        command = vagrant_cd(path) + " && nohup bundle exec rails server -p 3000 -d"
+        return vagrant_run_command(command)
+
 
 def get_latest_sha(repo):
     url = API_COMMITS_URL.substitute(full_name=repo.full_name)
@@ -252,10 +265,30 @@ def vagrant_bundle_install(path):
     command = vagrant_cd(path) + " && bundle install"
     return vagrant_run_command(command)
 
-def vagrant_rake_db_create(path):
-    command = vagrant_cd(path) + " && bundle exec rake db:migrate"
+
+def get_url(path):
+    url = ''
+    print "  " * depth, entry.regex.pattern
+    if hasattr(entry, 'url_patterns'):
+        show_urls(entry.url_patterns, depth + 1)
+    return url
+
+def get_urls(path, type_name):
+    if type_name == "Ruby on Rails":
+        command = vagrant_cd(path) + " && bundle exec rake routes"
+        output = vagrant_run_command(command).split()
+        urls = [word for word in output if word.startswith('/')]
+    return urls
+
+def check_server(url, type_name):
+    if type_name == "Ruby on Rails":
+        command = "wget --spider " + urlparse.urljoin("http://localhost:3000/", url)
+    elif type_name == "Django":
+        command = "wget " + urlparse.urljoin("http://localhost:8000/", url)
+        output = output + vagrant_run_command(command)
     return vagrant_run_command(command)
 
-def vagrant_rails_server(path):
-    command = vagrant_cd(path) + " && bundle exec rails server > /vagrant/log 2>&1 & sleep 10"
-    return vagrant_run_command(command)
+def kill_server(type_name):
+    if type_name == "Ruby on Rails":
+        command = "fuser -k 3000/tcp"
+        return vagrant_run_command(command)

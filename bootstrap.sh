@@ -11,8 +11,16 @@ then
     echo "Acquire::http::Proxy \"$http_proxy\";" > /etc/apt/apt.conf
 fi
 
+
 #update apt-get
 apt-get update
+
+# install and configure git
+apt-get -y install git
+
+# install make
+
+apt-get -y install make
 
 #install sqlite3
 apt-get -y install sqlite3
@@ -50,6 +58,7 @@ apt-get -y install nodejs
 # Can't find Magick-config
 apt-get -y install libmagickwand-dev
 
+# update ruby
 apt-get -y install make
 cd /vagrant/ruby-2.1.5
 ./configure
@@ -64,8 +73,8 @@ gem install bundle
 
 apt-get -y install vim
 
-# install and configure git
-apt-get -y install git
+#apt-get -y install curl
 #git config --global user.name "Fangyu Gao"
 #git config --global user.email "fangyugao1219@gmail.com"
-
+#apt-get -y install ruby-rvm
+#rvm get head

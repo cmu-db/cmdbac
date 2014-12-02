@@ -1,12 +1,31 @@
 {% extends "crawler/base.html" %}
+{% load staticfiles %}
 {% block main %}
-<h1 class="page-header">Attempt of {{attempt.repo.full_name}} <a href="https://github.com/{{ attempt.repo.full_name }}">github</a> <a href="https://api.github.com/repos/{{ attempt.repo.full_name }}/tarball">download</a></h1>
->> <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{attempt.repo.full_name}}">Repositories</a>
->> <a href="{% url 'repository' attempt.repo.get_user_name attempt.repo.get_repo_name %}?{{ queries.urlencode }}#{{ attempt.id }}">{{attempt.repo.full_name}}</a>
+<h1 class="page-header">Attempt of {{attempt.commit.repo.full_name}}
+</h1>
+<div>
+    Github<a href="https://github.com/{{ attempt.commit.repo.full_name }}"><img src="{% static "crawler/github.png" %}" alt="Github" width="24" height="24"/></a> 
+Download<a href="https://api.github.com/repos/{{ attempt.commit.repo.full_name }}/tarball"><img src="{% static "crawler/download.jpg" %}" alt="Download" width="24" height="24"/></a>
+</div>
+<br>
+<div style="background-color:black; color:white">
+>> <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{attempt.commit.repo.full_name}}">Repositories</a>
+>> <a href="{% url 'repository' attempt.commit.repo.get_user_name attempt.commit.repo.get_repo_name %}?{{ queries.urlencode }}#{{ attempt.id }}">{{attempt.commit.repo.full_name}}</a>
 >> This Attempt
+</div>
 
 <h2 class="sub-header">Result</h2>
-{{attempt.result.name}}
+<h2>
+    {% if attempt.result.name == "Success" %}
+    <div class="label label-success">{{attempt.result.name}}</div>
+    {% elif attempt.result.name == "Running Error" or attempt.result.name == "Missing Dependencies" %}
+        <div class="label label-danger">{{attempt.result.name}}</div>
+    {% elif attempt.result.name == "Deploying" %}
+        <div class="label label-info">{{attempt.result.name}}</div>
+    {% else %}
+        <div class="label label-warning">{{attempt.result.name}}</div>
+    {% endif %}
+</h2>
 <h2 class="sub-header">Dependencies</h2>
 <div class="table-responsive">
     <table class="table table-striped">

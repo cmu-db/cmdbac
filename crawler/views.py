@@ -20,17 +20,16 @@ def home(request):
         repo_type = t.name
         repos = Repository.objects.filter(repo_type=t)
         num_repo = repos.count()
-        num_suc = repos.filter(last_attempt__result__name="Success").count()
+        num_suc = repos.filter(latest_attempt__result__name="Success").count()
         num_pkg = Package.objects.filter(package_type=t).count()
-        num_deploy = repos.exclude(last_attempt=None).count
+        num_deploy = repos.exclude(latest_attempt=None).count
         stat = Statistic(repo_type, num_repo, num_pkg, num_suc, num_deploy)
         stats.append(stat)
     context['stats'] = stats
-    context['attempts'] = Attempt.objects.order_by('-time')[:5]
+    context['attempts'] = Attempt.objects.order_by('-start_time')[:5]
     return render(request, 'crawler/index.html', context)
 
 def repositories(request):
-    print request.GET
     print request.GET
     context = {}
     context['queries'] = request.GET.copy()
@@ -47,13 +46,11 @@ def repositories(request):
     repositories = Repository.objects.all()
     if request.GET.__contains__('search'):
         repositories = repositories.filter(full_name__contains=request.GET['search'])
-        context
     result_list = request.GET.getlist('results')
     if result_list:
-        repositories = repositories.filter(last_attempt__result__name__in=result_list)
+        repositories = repositories.filter(latest_attempt__result__name__in=result_list)
     type_list = request.GET.getlist('types')
     if type_list:
-        print type(request.GET['types'])
         repositories = repositories.filter(repo_type__name__in=type_list)
     order_by = request.GET.get('order_by', 'full_name')
     repositories = repositories.order_by(order_by)
@@ -84,7 +81,7 @@ def repository(request, user_name, repo_name):
     print request.GET.copy()
     
     repository = Repository.objects.get(full_name=user_name + '/' + repo_name)
-    attempts = Attempt.objects.filter(repo=repository)
+    attempts = Attempt.objects.filter(commit__repo=repository)
     context['repository'] = repository
     context['attempts'] = attempts
     return render(request, 'crawler/repository.html', context)

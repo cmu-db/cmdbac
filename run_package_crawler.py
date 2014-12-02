@@ -7,6 +7,7 @@ from pip.req import InstallRequirement
 from bs4 import BeautifulSoup
 import urlparse
 import traceback
+import re
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 
@@ -17,15 +18,20 @@ from crawler.models import *
 
 from db_webcrawler import urls
 
-def show_urls(urllist, depth=0):
-    print urllist
+def show_urls(urllist, url):
+    #print urllist
     for entry in urllist:
-        print "  " * depth, entry.regex.pattern
+        #print "  " * depth, entry.regex.pattern
+        new_entry = re.sub('[\^\$]', '', entry.regex.pattern)
+        new_url = os.path.join(url, new_entry)
         if hasattr(entry, 'url_patterns'):
-            show_urls(entry.url_patterns, depth + 1)
+            show_urls(entry.url_patterns, new_url)
+        else:
+            print new_url
+            if not re.search('(\?P\*)', new_url):
+                print 'found: ' + new_url
 
-
-show_urls(urls.urlpatterns)
+show_urls(urls.urlpatterns, '')
 
 #def get_versions(package):
 #    host = "https://pypi.python.org/simple/"

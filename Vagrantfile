@@ -12,7 +12,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Every Vagrant virtual environment requires a box to build off of.
     config.vm.box = "hashicorp/precise32"
     config.vm.provision :shell, path: "bootstrap.sh"
-#    config.vm.network :forwarded_port, host: 8000, guest: 8000
+    config.vm.network :forwarded_port, host: 8000, guest: 8000
+    config.vm.network :forwarded_port, host: 3000, guest: 3000
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -59,8 +60,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # information on available options.
 
     config.vm.provider "virtualbox" do |vb|
-        vb.memory = 1024
-        vb.cpus = 1
+        vb.memory = 2048
+        vb.cpus = 2
     end
 
   # Enable provisioning with CFEngine. CFEngine Community packages are

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 from os.path import join
-from datetime import datetime
+import datetime
 import time
 import pkgutil
 import traceback
@@ -41,6 +41,7 @@ def save_attempt(attempt, result, log_str, pkgs_from_f=[], pkgs_from_db=[]):
     #attempt.log = log_str.getvalue()
     attempt.log = log_str
     
+    attempt.duration = (datetime.datetime.now() - attempt.start_time).total_seconds()
     attempt.save()
     #log_str.close()
     for pkg in pkgs_from_f:
@@ -101,7 +102,7 @@ def try_deploy(manage_file, setting_file, requirement_files, attempt, log_str):
             if last_missing_module_name != '':
                 packages_from_database.append(candidate_packages[index])
             break
-    out = vagrant_runserver(manage_file)
+    out = vagrant_runserver(manage_file, 'Django')
     log_str = log(log_str, 'runserver output: ' + out)
     out = out.strip().splitlines()
     if out:
@@ -176,13 +177,36 @@ def try_deploy_ror(path, attempt, log_str):
     out = vagrant_bundle_install(path)
     print out
     log_str = log(log_str, out)
-    out = vagrant_rake_db_create(path)
+    if not "Your bundle is complete!" in out:
+        save_attempt(attempt, "Missing Dependencies", log_str)
+        return
+
+    out = vagrant_syncdb(path, "Ruby on Rails")
     print out
     log_str = log(log_str, out)
-    out = vagrant_rails_server(path)
+    if "rake aborted!" in out:
+        save_attempt(attempt, "Running Error", log_str)
+        return
+    out = vagrant_runserver(path, 'Ruby on Rails')
     print out
     log_str = log(log_str, out)
-    save_attempt(attempt, "Success", log_str)
+    time.sleep(10)
+    urls = get_urls(path, 'Ruby on Rails')
+    print urls
+    urls = [re.sub(r'\([^)]*\)', '', url) for url in urls]
+    urls = list(set([url for url in urls if ':' not in url]))
+    urls = sorted(urls, key=len)
+    print urls
+    for url in urls:
+        out = check_server(url, 'Ruby on Rails')
+        print out
+        log_str = log(log_str, out)
+        if "200 OK" in out:
+            save_attempt(attempt, "Success", log_str)
+            kill_server('Ruby on Rails')
+            return
+    save_attempt(attempt, "Running Error", log_str)
+    kill_server('Ruby on Rails')
     
 if __name__ == '__main__':
     mk_tmp_dir()
@@ -197,9 +221,11 @@ if __name__ == '__main__':
             attempt = Attempt()
             attempt.commit = commit
             attempt.result = Result(name="Deploying")
-            attempt.start_time = datetime.now()
+            attempt.start_time = datetime.datetime.now()
             attempt.hostname = socket.gethostname()
             attempt.save()
+            repo.latest_attempt = attempt
+            repo.save()
             log_str = log(log_str, 'Downloading repo: ' + repo.full_name + commit.sha)
             try:
                  download(commit)
@@ -282,7 +308,7 @@ if __name__ == '__main__':
                     continue
 
                 print 'using database'
-                db_file_paths = [os.path.dirname(os.path.dirname(db_file)) for db_file in db_files]
+                db_file_paths = [os.path.dirname(os.path.dirname(db_file)) for db_file in db_files if os.path.basename(os.path.normpath(os.path.dirname(db_file))) == "config"]
                 #print 'db_file_paths: ' + str(db_file_paths)
                 base_dirs = set.intersection(set(rakefile_paths), set(gemfile_paths), set(db_file_paths))
                 if not base_dirs:
