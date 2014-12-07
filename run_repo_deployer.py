@@ -45,15 +45,23 @@ def save_attempt(attempt, result, log_str, pkgs_from_f=[], pkgs_from_db=[]):
     attempt.save()
     #log_str.close()
     for pkg in pkgs_from_f:
-        Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=Source(name='File'))
+        dep = Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=Source(name='File'))
+        pkg.count = pkg.count + 1
+        pkg.save()
     for pkg in pkgs_from_db:
         Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=Source(name='Database'))
 
-def try_deploy(manage_file, setting_file, requirement_files, attempt, log_str):
+def try_deploy_django(manage_file, setting_file, requirement_files, attempt, log_str):
     rewrite_settings(setting_file, 'Django')
     log_str = log(log_str, 'settings appended')
 
-    installed_requirements = install_requirements(requirement_files)
+    packages = install_requirements(requirement_files, "Django")
+    installed_requirements = []
+    for package in packages:
+        name, version = package.split('==')
+        pkg, created = Package.objects.get_or_create(name=name, version=version, package_type=Type(name='Django'))
+        installed_requirements.append(pkg)
+    
     log_str = log(log_str, 'installed_requirements: ' + str(installed_requirements))
 
     threshold = 100
@@ -61,8 +69,8 @@ def try_deploy(manage_file, setting_file, requirement_files, attempt, log_str):
     index = 0
     #candidate_packages = []
     packages_from_database = []
-    for time in range(threshold):
-        out = vagrant_syncdb(manage_file)
+    for tmp in range(threshold):
+        out = vagrant_syncdb(manage_file, "Django")
         log_str = log(log_str, 'syncdb output: ' + out) 
         out = out.strip()
         out = out.splitlines()
@@ -102,20 +110,44 @@ def try_deploy(manage_file, setting_file, requirement_files, attempt, log_str):
             if last_missing_module_name != '':
                 packages_from_database.append(candidate_packages[index])
             break
+
     out = vagrant_runserver(manage_file, 'Django')
-    log_str = log(log_str, 'runserver output: ' + out)
-    out = out.strip().splitlines()
-    if out:
-        line = out[-1].strip()
-        if line.startswith('ImportError'):
-            log_str = log(log_str, 'import error')
-            save_attempt(attempt, "Missing Dependencies", log_str, installed_requirements, packages_from_database)
-        else:
-            log_str = log(log_str, 'running error')
-            save_attempt(attempt, "Running Error", log_str, installed_requirements, packages_from_database)
-    else:
-        log_str = log(log_str, 'success')
-        save_attempt(attempt, "Success", log_str, installed_requirements, packages_from_database)
+    
+    print out
+    log_str = log(log_str, out)
+    time.sleep(10)
+    urls = get_urls(os.path.dirname(setting_file), 'Django')
+    print urls
+    urls = list(set([re.sub(r'[\^\$]', '', url) for url in urls if '?' not in url]))
+    #urls = list(set([re.sub(r'\([^)]*\)', '', url) for url in urls if '?' not in url]))
+    urls = sorted(urls, key=len)
+    print urls
+    for url in urls:
+        out = check_server(url, 'Django')
+        print out
+        log_str = log(log_str, out)
+        if "200 OK" in out:
+            save_attempt(attempt, "Success", log_str, installed_requirements, packages_from_database)
+            kill_server('Django')
+            return
+    save_attempt(attempt, "Running Error", log_str, installed_requirements, packages_from_database)
+    kill_server('Django')
+    
+#    log_str = log(log_str, 'runserver output: ' + out)
+#    out = out.strip().splitlines()
+#    if out:
+#        line = out[-1].strip()
+#        if line.startswith('ImportError'):
+#            log_str = log(log_str, 'import error')
+#            save_attempt(attempt, "Missing Dependencies", log_str, installed_requirements, packages_from_database)
+#        else:
+#            log_str = log(log_str, 'running error')
+#            save_attempt(attempt, "Running Error", log_str, installed_requirements, packages_from_database)
+#    else:
+#        log_str = log(log_str, 'success')
+#        save_attempt(attempt, "Success", log_str, installed_requirements, packages_from_database)
+
+
 #    vagrant_runserver(manage_file)
 #    p_id = vagrant_netstat()
 #    if p_id:
@@ -139,26 +171,25 @@ def rm(file_name):
     #command = 'rm ' + file_name
     #run_command(command)
 
-def get_database(settings_file):
+def get_database(settings_file, type_name):
     with open(settings_file, 'r') as infile:
-        if settings_file.endswith('settings.py'):
+        if type_name == "Django":
             for line in infile:
-                p = re.match('django.db.backends.(.*)', line);
+                p = re.search('django.db.backends.(.*)', line);
                 if p:
                     db = p.group(1)
                     if db.startswith('postgresql_psycopg2'):
                         return Database(name='PostgreSQL')
                     elif db.startswith('mysql'):
                         return Database(name='MySQL')
-                    elif db.starswith(sqlite3):
+                    elif db.startswith('sqlite3'):
                         return Database(name='SQLite3')
-                    elif db.startswith(oracle):
+                    elif db.startswith('oracle'):
                         return Database(name='Oracle')
-        elif settings_file.endswith('database.yml'):
             for line in infile:
-                p = re.match("adapter(\s*):(\s*)(.*)", line);
+                p = re.search("adapter\s*:\s*(.*)", line);
                 if p:
-                    db = p.group(3)
+                    db = p.group(1)
                     if 'sqlite' in db:
                         return Database(name='SQLite3')
                     elif 'mysql' in db:
@@ -166,15 +197,16 @@ def get_database(settings_file):
                     elif 'postgresql' in db:
                         return Database(name='PostgreSQL')
                     elif 'oracle' in db:
-                        return Database(name='Orable')
+                        return Database(name='Oracle')
     return Database(name='Other')
 
 def log(string, log):
-    return string + log + '\n'
+    return string + log.decode('utf-8') + '\n'
 
 def try_deploy_ror(path, attempt, log_str):
+    rewrite_settings(base_dir, 'Ruby on Rails')
     print 'try deploy ror'
-    out = vagrant_bundle_install(path)
+    out = install_requirements(path, 'Ruby on Rails')
     print out
     log_str = log(log_str, out)
     if not "Your bundle is complete!" in out:
@@ -214,10 +246,16 @@ if __name__ == '__main__':
     logger.setLevel(logging.DEBUG)
     while True:
         repos = Repository.objects.exclude(pk__in=Commit.objects.values_list('repo', flat=True))
+# add the line if we what to get a specific type of repositories
+        repos = repos.filter(repo_type__name='Django')
         for repo in repos:
             log_str = ''
             log_str = log(log_str, 'deploying repo: ' + repo.full_name)
-            commit, created = Commit.objects.get_or_create(repo=repo, sha=get_latest_sha(repo))
+            try:
+                sha = get_latest_sha(repo)
+            except:
+                sha = ''
+            commit, created = Commit.objects.get_or_create(repo=repo, sha=sha)
             attempt = Attempt()
             attempt.commit = commit
             attempt.result = Result(name="Deploying")
@@ -226,6 +264,10 @@ if __name__ == '__main__':
             attempt.save()
             repo.latest_attempt = attempt
             repo.save()
+            if sha == '':
+                save_attempt(attempt, "Download Error", log_str)
+                continue
+
             log_str = log(log_str, 'Downloading repo: ' + repo.full_name + commit.sha)
             try:
                  download(commit)
@@ -258,12 +300,13 @@ if __name__ == '__main__':
                 if not len(setting_files):
                     save_attempt(attempt, "Missing Required Files", log_str)
                     continue
-                elif len(setting_files) != 1:
-                    save_attempt(attempt, "Duplicate Required Files", log_str)
-                    continue
+#                elif len(setting_files) != 1:
+#                    save_attempt(attempt, "Duplicate Required Files", log_str)
+#                    continue
                 
-                commit.database = get_database(setting_files[0])
+                commit.database = get_database(setting_files[0], "Django")
                 commit.save()
+                print 'Database: ' + commit.database.name
                 log_str = log(log_str, 'database: ' + commit.database.name)
                         
                 manage_files = search_file(directory_name, 'manage.py')
@@ -271,14 +314,28 @@ if __name__ == '__main__':
                 if not len(manage_files):
                     save_attempt(attempt, "Missing Required Files", log_str)
                     continue
-                elif len(manage_files) != 1:
-                    save_attempt(attempt, "Duplicate Required Files", log_str)
-                    continue
+#                elif len(manage_files) != 1:
+#                    save_attempt(attempt, "Duplicate Required Files", log_str)
+#                    continue
 
                 requirement_files = search_file(directory_name, 'requirements.txt')
                 log_str = log(log_str, 'requirements.txt' + str(requirement_files))
 
-                try_deploy(manage_files[0], setting_files[0], requirement_file, attempt, log_str)
+                
+                manage_paths = [os.path.dirname(manage_file) for manage_file in manage_files]
+                print manage_paths
+                setting_paths = [os.path.dirname(os.path.dirname(setting_file)) for setting_file in setting_files]
+                print setting_paths
+                base_dirs = set.intersection(set(manage_paths), set(setting_paths))
+                if not base_dirs:
+                    print 'can not find base directory'
+                    save_attempt(attempt, "Missing Required Files", log_str)
+                    continue
+                base_dir = next(iter(base_dirs))
+                print 'base_dir: ' + base_dir
+                manage_file = next(name for name in manage_files if name.startswith(base_dir))
+                setting_file = next(name for name in setting_files if name.startswith(base_dir))
+                try_deploy_django(manage_file, setting_file, requirement_files, attempt, log_str)
             elif repo.repo_type.name == "Ruby on Rails":
                 print 'directory: ' + directory_name
 
@@ -318,9 +375,8 @@ if __name__ == '__main__':
                 base_dir = next(iter(base_dirs))
                 print 'base_dir: ' + base_dir
 
-                commit.database = get_database(os.path.join(base_dir, 'config/database.yml'))
+                commit.database = get_database(os.path.join(base_dir, 'config/database.yml'), "Ruby on Rails")
+                print commit.database.name
                 log_str = log(log_str, 'database: ' + commit.database.name)
                 commit.save()
-                rewrite_settings(base_dir, 'Ruby on Rails')
-
                 try_deploy_ror(base_dir, attempt, log_str)

@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 import json
 import shutil
 import urlparse
+import importlib
 
 logging.basicConfig(format='%(asctime)s %(message)s', filename='utils.log', level=logging.DEBUG)
 
@@ -41,18 +42,18 @@ def query(url):
     logging.debug('query url: ' + url)
     request = urllib2.Request(url)
     request.add_header('Authorization', 'token %s' % TOKEN)
-    while True:
-        try:
-            response = urllib2.urlopen(request)
-            header = response.info().dict;
-            #logging.getLogger('utils').debug('response info from: ' + url)
-            #logging.getLogger('utils').debug(header)
+    #while True:
+    #try:
+    response = urllib2.urlopen(request)
+    header = response.info().dict;
+    logging.getLogger('utils').debug('response info from: ' + url)
+    logging.getLogger('utils').debug(header)
 
-        except:
-            logging.getLogger('utils').debug(traceback.print_exc())
-            time.sleep(5)
-            continue
-        return response
+#    except:
+#        logging.getLogger('utils').debug(traceback.print_exc())
+#        time.sleep(5)
+#        continue
+    return response
 
 def run_command(command):
     logging.getLogger('utils').debug('run command: ' + command)
@@ -75,7 +76,7 @@ def vagrant_run_command(command):
     out = run_command(vagrant_command)
     return out
 
-def to_vm_file(file_name):
+def to_vm_path(file_name):
     return os.path.join(SHARE_DIR, file_name)
 
 def vagrant_pip_clear():
@@ -89,6 +90,7 @@ def vagrant_pip_freeze():
     return out
 
 def pip_rm_build():
+    # pip will save meta data in build directory if install failed
     command = "sudo rm -rf " + os.path.join(HOME_DIR, "pip/build")
     return vagrant_run_command(command)
 
@@ -99,11 +101,12 @@ def vagrant_pip_install(name, is_file):
     proxy = os.environ.get('http_proxy')
     if proxy:
         command = command + "--proxy " + proxy + ' '
+    command = command + "install --user --build /home/vagrant/pip/build "
    #     command = command_t.substitute(proxy="--proxy " + proxy)
     #else:
     #    command = command_t.substitute(proxy='')
     if is_file:
-        vm_name = to_vm_file(name)
+        vm_name = to_vm_path(name)
         command = command + "-r " + vm_name
     else:
         command = command + name.name + "==" + name.version
@@ -156,22 +159,18 @@ gem 'sqlite3'
         with open(os.path.join(path, 'Gemfile'), "a") as my_file:
             my_file.write(settings)
 
-
-
-def install_requirements(requirement_files, repo_type):
-    installed_requirements = []
-    if requirement_files:
-        vagrant_pip_clear()
-        if repo_type.name == 'Django':
+def install_requirements(requirement_files, type_name):
+    if type_name == 'Django':
+        if requirement_files:
+            vagrant_pip_clear()
             old_packages = vagrant_pip_freeze()
             for requirement_file in requirement_files:
                 out = vagrant_pip_install(requirement_file, True)
             new_packages = vagrant_pip_freeze()
-            diff_packages = set(new_packages) - set(old_packages)
-            for package in diff_packages:
-                name, version = package.split('==')
-                pkg, created = Package.objects.get_or_create(name=name, version=version, package_type=Type(name='Django'))
-                installed_requirements.append(pkg)
+            diff_packages = list(set(new_packages) - set(old_packages))
+            return diff_packages
+        else:
+            return []
 
 
 #TODO: add these to main function
@@ -182,10 +181,9 @@ def install_requirements(requirement_files, repo_type):
                 #dep.save()
                 #obj.count = obj.count + 1
                 #obj.save()
-        elif repo_type.name == "Ruby on Rails":
-#TODO: implement ruby on rails
-            pass
-    return installed_requirements
+    elif type_name == "Ruby on Rails":
+        command = vagrant_cd(requirement_files) + " && bundle install"
+        return vagrant_run_command(command)
 
 def search_file(directory_name, file_name):
     result = []
@@ -207,7 +205,7 @@ def unzip():
 
 def vagrant_syncdb(path, type_name):
     if type_name == "Django":
-        vm_manage_file = to_vm_file(path)
+        vm_manage_file = to_vm_path(path)
         command = "python " + vm_manage_file + " syncdb --noinput"
         return vagrant_run_command(command) 
     elif type_name == "Ruby on Rails":
@@ -217,8 +215,8 @@ def vagrant_syncdb(path, type_name):
 
 def vagrant_runserver(path, type_name):
     if type_name == "Django":
-        vm_manage_file = to_vm_file(path)
-        command = "python " + vm_manage_file + " runserver 8000> /vagrant/log 2>&1 & sleep 10"
+        vm_manage_file = to_vm_path(path)
+        command = "nohup python " + vm_manage_file + " runserver 0.0.0.0:8000 & sleep 1"
         return vagrant_run_command(command)
     elif type_name == "Ruby on Rails":
         #command = vagrant_cd(path) + " && bundle exec rails server -p 3000 > /vagrant/log 2>&1 & sleep 10"
@@ -259,25 +257,24 @@ def cd(path):
     return "cd "+ path
 
 def vagrant_cd(path):
-    return cd(to_vm_file(path))
-
-def vagrant_bundle_install(path):
-    command = vagrant_cd(path) + " && bundle install"
-    return vagrant_run_command(command)
-
-
-def get_url(path):
-    url = ''
-    print "  " * depth, entry.regex.pattern
-    if hasattr(entry, 'url_patterns'):
-        show_urls(entry.url_patterns, depth + 1)
-    return url
+    return cd(to_vm_path(path))
 
 def get_urls(path, type_name):
     if type_name == "Ruby on Rails":
         command = vagrant_cd(path) + " && bundle exec rake routes"
         output = vagrant_run_command(command).split()
         urls = [word for word in output if word.startswith('/')]
+    elif type_name == "Django":
+        import sys
+        dirname = os.path.dirname(path)
+        sys.path.append(dirname)
+        proj_name = os.path.basename(path)
+        command = "python " + to_vm_path('get_urls.py') + ' ' + to_vm_path(dirname) + ' ' + proj_name
+        out = vagrant_run_command(command)
+        if ' ' in out:
+            urls = []
+        else:
+            urls = out.splitlines()
     return urls
 
 def check_server(url, type_name):
@@ -285,10 +282,11 @@ def check_server(url, type_name):
         command = "wget --spider " + urlparse.urljoin("http://localhost:3000/", url)
     elif type_name == "Django":
         command = "wget " + urlparse.urljoin("http://localhost:8000/", url)
-        output = output + vagrant_run_command(command)
     return vagrant_run_command(command)
 
 def kill_server(type_name):
     if type_name == "Ruby on Rails":
         command = "fuser -k 3000/tcp"
-        return vagrant_run_command(command)
+    elif type_name == "Django":
+        command = "fuser -k 8000/tcp"
+    return vagrant_run_command(command)

@@ -1,38 +1,58 @@
 #!/usr/bin/env python
 import os
-from utils import query
-from pip.index import PackageFinder, Link
-from pip.download import PipSession
-from pip.req import InstallRequirement
-from bs4 import BeautifulSoup
-import urlparse
-import traceback
+#from utils import query
+#from pip.index import PackageFinder, Link
+#from pip.download import PipSession
+#from pip.req import InstallRequirement
+#from bs4 import BeautifulSoup
+#import urlparse
+#import traceback
 import re
-
+import importlib
+#
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
-
+#
 import django
 django.setup()
-
-from crawler.models import *
-
+#
+#from crawler.models import *
+#
 from db_webcrawler import urls
 
-def show_urls(urllist, url):
+def get_urls_rec(urllist, url):
     #print urllist
     for entry in urllist:
         #print "  " * depth, entry.regex.pattern
-        new_entry = re.sub('[\^\$]', '', entry.regex.pattern)
+        #new_entry = re.sub('[\^\$]', '', entry.regex.pattern)
+        new_entry = entry.regex.pattern
         new_url = os.path.join(url, new_entry)
         if hasattr(entry, 'url_patterns'):
-            show_urls(entry.url_patterns, new_url)
+            get_urls_rec(entry.url_patterns, new_url)
         else:
             print new_url
             if not re.search('(\?P\*)', new_url):
                 print 'found: ' + new_url
 
-show_urls(urls.urlpatterns, '')
+def get_urls(homepath, proj):
+    import sys
+    sys.path.append(homepath)
+    env_var = os.environ.get("DJANGO_SETTINGS_MODULE")
+    print env_var
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", proj + '.settings')
+    urls_module = importlib.import_module(proj + '.urls')
+    get_urls_rec(urls_module.urlpatterns, '')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", env_var)
+    del sys.path[-1]
+    print sys.path
 
+#get_urls(urls.urlpatterns, '')
+
+
+
+if __name__ == "__main__":
+    get_urls('./test_dir/team8/', 'homework4')
+
+    
 #def get_versions(package):
 #    host = "https://pypi.python.org/simple/"
 #    url = urlparse.urljoin(host, package)

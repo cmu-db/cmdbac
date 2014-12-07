@@ -73,36 +73,32 @@ def crawl_repo(url, meta):
                 print("found new repository " + full_name + ". call github api")
                 data = api_get_repo(full_name)
                 print(data)
-                language = data['language']
-                if Language.objects.filter(name=language).exists():
-                    repo = Repository()
-                    repo.full_name = full_name
-                    repo.repo_type = Type(name=meta.name)
-                    repo.language = Language(name=language)
-                    repo.last_attempt = None
-                    repo.private = data['private']
-                    repo.description = change_if_none(data['description'])
-                    repo.fork = data['fork']
-                    repo.created_at = datetime.strptime(data['created_at'], "%Y-%m-%dT%H:%M:%SZ")
-                    repo.updated_at = datetime.strptime(data['updated_at'], "%Y-%m-%dT%H:%M:%SZ")
-                    repo.pushed_at = datetime.strptime(data['pushed_at'], "%Y-%m-%dT%H:%M:%SZ")
-                    repo.homepage = change_if_none(data['homepage'])
-                    repo.size = data['size']
-                    repo.stargazers_count = data['stargazers_count']
-                    repo.watchers_count = data['watchers_count']
-                    repo.has_issues = data['has_issues']
-                    repo.has_downloads = data['has_downloads']
-                    repo.has_wiki = data['has_wiki']
-                    repo.has_pages= data['has_pages']
-                    repo.forks_count = data['forks_count']
-                    repo.open_issues_count = data['open_issues_count']
-                    repo.default_branch = data['default_branch']
-                    repo.network_count = data['network_count']
-                    repo.subscribers_count = data['subscribers_count']
-                    crawl_webpage(repo)
-                    repo.save()
-                else:
-                    print('unknown language: ' + str(language))
+                repo = Repository()
+                repo.full_name = full_name
+                repo.repo_type = Type(name=meta.name)
+                repo.last_attempt = None
+                repo.private = data['private']
+                repo.description = change_if_none(data['description'])
+                repo.fork = data['fork']
+                repo.created_at = datetime.strptime(data['created_at'], "%Y-%m-%dT%H:%M:%SZ")
+                repo.updated_at = datetime.strptime(data['updated_at'], "%Y-%m-%dT%H:%M:%SZ")
+                repo.pushed_at = datetime.strptime(data['pushed_at'], "%Y-%m-%dT%H:%M:%SZ")
+                repo.homepage = change_if_none(data['homepage'])
+                repo.size = data['size']
+                repo.stargazers_count = data['stargazers_count']
+                repo.watchers_count = data['watchers_count']
+                repo.language = change_if_none(data['language'])
+                repo.has_issues = data['has_issues']
+                repo.has_downloads = data['has_downloads']
+                repo.has_wiki = data['has_wiki']
+                repo.has_pages= data['has_pages']
+                repo.forks_count = data['forks_count']
+                repo.open_issues_count = data['open_issues_count']
+                repo.default_branch = data['default_branch']
+                repo.network_count = data['network_count']
+                repo.subscribers_count = data['subscribers_count']
+                crawl_webpage(repo)
+                repo.save()
             time.sleep(1)
         next_page = soup.find(class_='next_page')
         if not next_page or not next_page.has_attr('href'):

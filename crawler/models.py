@@ -16,7 +16,7 @@ class Repository(models.Model):
     size = models.IntegerField()
     stargazers_count = models.IntegerField()
     watchers_count = models.IntegerField()
-    language = models.ForeignKey('Language', null=True)
+    language = models.CharField(max_length=200)
     has_issues = models.BooleanField(default=False)
     has_downloads = models.BooleanField(default=False)
     has_wiki = models.BooleanField(default=False)
@@ -45,14 +45,11 @@ class Commit(models.Model):
 class Database(models.Model):
     name = models.CharField(max_length=200, primary_key=True)
 
-class Language(models.Model):
-    name = models.CharField(max_length=200, primary_key=True)
-
 class Result(models.Model):
     name = models.CharField(max_length=200, primary_key=True)
 
 class Status(models.Model):
-    name = models.CharField(max_length = 200, primary_key=True)
+    name = models.CharField(max_length=200, primary_key=True)
 
 class Type(models.Model):
     name = models.CharField(max_length = 200, primary_key=True)
