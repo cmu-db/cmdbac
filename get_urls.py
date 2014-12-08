@@ -19,8 +19,13 @@ def main():
     sys.path.append(dirname)
     proj_name = sys.argv[2]
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", proj_name + '.settings')
-    import django
-    django.setup()
+    try:
+# only required in Django 1.7
+        import django
+        django.setup()
+    except:
+        pass
+
     urls_module = importlib.import_module(proj_name + '.urls')
     get_urls_rec(urls_module.urlpatterns, '')
 

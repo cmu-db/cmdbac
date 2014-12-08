@@ -18,6 +18,7 @@ class Migration(migrations.Migration):
                 ('duration', models.FloatField(null=True)),
                 ('log', models.TextField(default=b'')),
                 ('hostname', models.CharField(max_length=200)),
+                ('sha', models.CharField(max_length=200, null=True)),
             ],
             options={
             },
@@ -47,15 +48,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('attempt', models.ForeignKey(to='crawler.Attempt')),
-            ],
-            options={
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
-            name='Language',
-            fields=[
-                ('name', models.CharField(max_length=200, serialize=False, primary_key=True)),
             ],
             options={
             },
@@ -97,6 +89,7 @@ class Migration(migrations.Migration):
                 ('size', models.IntegerField()),
                 ('stargazers_count', models.IntegerField()),
                 ('watchers_count', models.IntegerField()),
+                ('language', models.CharField(max_length=200)),
                 ('has_issues', models.BooleanField(default=False)),
                 ('has_downloads', models.BooleanField(default=False)),
                 ('has_wiki', models.BooleanField(default=False)),
@@ -110,7 +103,6 @@ class Migration(migrations.Migration):
                 ('branches_count', models.IntegerField()),
                 ('releases_count', models.IntegerField()),
                 ('contributors_count', models.IntegerField()),
-                ('language', models.ForeignKey(to='crawler.Language', null=True)),
                 ('latest_attempt', models.ForeignKey(to='crawler.Attempt', null=True)),
             ],
             options={
@@ -215,6 +207,12 @@ class Migration(migrations.Migration):
             model_name='attempt',
             name='commit',
             field=models.ForeignKey(to='crawler.Commit'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='attempt',
+            name='database',
+            field=models.ForeignKey(to='crawler.Database', null=True),
             preserve_default=True,
         ),
         migrations.AddField(

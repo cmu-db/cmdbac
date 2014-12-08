@@ -71,7 +71,7 @@ This is a website showing result of crawling and deploying database applications
                         <td></td>
                     {% endif %}
                     <td> {{ attempt.hostname }}
-                    <td><a href="{% url 'repository' attempt.commit.repo.get_user_name attempt.commit.repo.get_repo_name %}">{{ attempt.commit.repo.full_name }}</a></td>
+                    <td><a href="{% url 'repository' attempt.repo.get_user_name attempt.repo.get_repo_name %}">{{ attempt.repo.full_name }}</a></td>
                     {% if attempt.result.name == "Success" %}
                         <td><a href="{% url 'attempt' attempt.id %}" class="label label-success">{{attempt.result.name}}</a></td>
                     {% elif attempt.result.name == "Running Error" or attempt.result.name == "Missing Dependencies" %}

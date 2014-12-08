@@ -35,12 +35,12 @@ class Repository(models.Model):
     def get_repo_name(self):
         return self.full_name.split('/')[1]
 
-class Commit(models.Model):
-    repo = models.ForeignKey('Repository')
-    sha = models.CharField(max_length=200)
-    database = models.ForeignKey('Database', null=True)
-    class Meta:
-        unique_together = ('repo', 'sha')
+#class Commit(models.Model):
+#    repo = models.ForeignKey('Repository')
+#    sha = models.CharField(max_length=200)
+#    database = models.ForeignKey('Database', null=True)
+#    class Meta:
+#        unique_together = ('repo', 'sha')
 
 class Database(models.Model):
     name = models.CharField(max_length=200, primary_key=True)
@@ -72,11 +72,16 @@ class Dependency(models.Model):
 class Attempt(models.Model):
     start_time = models.DateTimeField()
     duration = models.FloatField(null=True)
-    commit = models.ForeignKey('Commit')
+    #commit = models.ForeignKey('Commit')
     result = models.ForeignKey('Result')
     log = models.TextField(default='')
     dependencies = models.ManyToManyField(Package, through='Dependency')
     hostname = models.CharField(max_length=200)
+    sha = models.CharField(max_length=200, null=True)
+    database = models.ForeignKey('Database', null=True)
+    repo = models.ForeignKey('Repository', null=True)
+    base_dir = models.CharField(max_length=200, null=True)
+    setting_dir = models.CharField(max_length=200, null=True)
 
 class Source(models.Model):
     name = models.CharField(max_length=200, primary_key=True)

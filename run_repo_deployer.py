@@ -64,7 +64,7 @@ def try_deploy_django(manage_file, setting_file, requirement_files, attempt, log
     
     log_str = log(log_str, 'installed_requirements: ' + str(installed_requirements))
 
-    threshold = 100
+    threshold = 10
     last_missing_module_name = ''
     index = 0
     #candidate_packages = []
@@ -86,7 +86,7 @@ def try_deploy_django(manage_file, setting_file, requirement_files, attempt, log
                         log_str = log(log_str, 'no more possible package')
                         save_attempt(attempt, "Missing Dependencies", log_str, installed_requirements, packages_from_database)
                         return
-                    out = vagrant_pip_install(candidate_packages[index], False)
+                    out = vagrant_pip_install([candidate_packages[index]], False)
                     log_str = log(log_str, 'pip install output: ' + out)
                 else:
                     if last_missing_module_name != '':
@@ -101,7 +101,7 @@ def try_deploy_django(manage_file, setting_file, requirement_files, attempt, log
                     candidate_packages = Package.objects.filter(id__in=candidate_package_ids).order_by('-count', 'name', '-version')
                     log_str = log(log_str, 'candidate packages: ' + str(candidate_packages))
                     index = 0
-                    out = vagrant_pip_install(candidate_packages[0], False)
+                    out = vagrant_pip_install([candidate_packages[0]], False)
                     log_str = log(log_str, 'pip install output: ' + out)
             else:
                 save_attempt(attempt, "Missing Dependencies", log_str, installed_requirements, packages_from_database)
@@ -239,46 +239,46 @@ def try_deploy_ror(path, attempt, log_str):
             return
     save_attempt(attempt, "Running Error", log_str)
     kill_server('Ruby on Rails')
-    
+
+ZIP = "tmp.zip"
+DIR = "tmp_dir"
 if __name__ == '__main__':
-    mk_tmp_dir()
+    mk_dir(DIR)
     logger = logging.getLogger('basic_logger')
     logger.setLevel(logging.DEBUG)
     while True:
-        repos = Repository.objects.exclude(pk__in=Commit.objects.values_list('repo', flat=True))
+        repos = Repository.objects.exclude(pk__in=Attempt.objects.values_list('repo', flat=True))
 # add the line if we what to get a specific type of repositories
         repos = repos.filter(repo_type__name='Django')
         for repo in repos:
             log_str = ''
             log_str = log(log_str, 'deploying repo: ' + repo.full_name)
-            try:
-                sha = get_latest_sha(repo)
-            except:
-                sha = ''
-            commit, created = Commit.objects.get_or_create(repo=repo, sha=sha)
             attempt = Attempt()
-            attempt.commit = commit
+            attempt.repo = repo
             attempt.result = Result(name="Deploying")
             attempt.start_time = datetime.datetime.now()
             attempt.hostname = socket.gethostname()
             attempt.save()
             repo.latest_attempt = attempt
             repo.save()
-            if sha == '':
+            try:
+                sha = get_latest_sha(repo)
+            except:
                 save_attempt(attempt, "Download Error", log_str)
                 continue
+            attempt.sha = sha
 
-            log_str = log(log_str, 'Downloading repo: ' + repo.full_name + commit.sha)
+            log_str = log(log_str, 'Downloading repo: ' + repo.full_name + attempt.sha)
             try:
-                 download(commit)
+                 download(attempt, ZIP)
             except:
                 print traceback.print_exc()
                 save_attempt(attempt, "Download Error", log_str)
                 continue
-            remake_tmp_dir()
-            directory_name = unzip()
-            print directory_name
-            log_str = log(log_str, 'directory_name = ' + directory_name)
+            remake_dir(DIR)
+            unzip(ZIP, DIR)
+            print DIR
+            log_str = log(log_str, 'DIR = ' + DIR)
             print 'type'
             print repo.repo_type.name
             if repo.repo_type.name == "Django":
@@ -289,13 +289,13 @@ if __name__ == '__main__':
                 #ch.setFormatter(formatter)
                 #logger.addHandler(ch)
 
-                setup_files = search_file(directory_name, 'setup.py')
+                setup_files = search_file(DIR, 'setup.py')
                 log_str = log(log_str, 'setup.py: ' + str(setup_files))
                 if len(setup_files):
                     save_attempt(attempt, "Not an Application", log_str)
                     continue
 
-                setting_files = search_file(directory_name, 'settings.py')
+                setting_files = search_file(DIR, 'settings.py')
                 log_str = log(log_str, 'settings.py: ' + str(setting_files))
                 if not len(setting_files):
                     save_attempt(attempt, "Missing Required Files", log_str)
@@ -304,12 +304,11 @@ if __name__ == '__main__':
 #                    save_attempt(attempt, "Duplicate Required Files", log_str)
 #                    continue
                 
-                commit.database = get_database(setting_files[0], "Django")
-                commit.save()
-                print 'Database: ' + commit.database.name
-                log_str = log(log_str, 'database: ' + commit.database.name)
+                attempt.database = get_database(setting_files[0], "Django")
+                print 'Database: ' + attempt.database.name
+                log_str = log(log_str, 'database: ' + attempt.database.name)
                         
-                manage_files = search_file(directory_name, 'manage.py')
+                manage_files = search_file(DIR, 'manage.py')
                 log_str = log(log_str, 'manage.py: ' + str(manage_files))
                 if not len(manage_files):
                     save_attempt(attempt, "Missing Required Files", log_str)
@@ -318,7 +317,7 @@ if __name__ == '__main__':
 #                    save_attempt(attempt, "Duplicate Required Files", log_str)
 #                    continue
 
-                requirement_files = search_file(directory_name, 'requirements.txt')
+                requirement_files = search_file(DIR, 'requirements.txt')
                 log_str = log(log_str, 'requirements.txt' + str(requirement_files))
 
                 
@@ -335,11 +334,13 @@ if __name__ == '__main__':
                 print 'base_dir: ' + base_dir
                 manage_file = next(name for name in manage_files if name.startswith(base_dir))
                 setting_file = next(name for name in setting_files if name.startswith(base_dir))
+                attempt.base_dir = base_dir.split('/', 1)[1]
+                attempt.setting_dir = os.path.basename(os.path.dirname(setting_file))
                 try_deploy_django(manage_file, setting_file, requirement_files, attempt, log_str)
             elif repo.repo_type.name == "Ruby on Rails":
-                print 'directory: ' + directory_name
+                print 'directory: ' + DIR
 
-                rakefiles = search_file(directory_name, 'Rakefile')
+                rakefiles = search_file(DIR, 'Rakefile')
                 if not rakefiles:
                     print 'no rakefile found'
                     save_attempt(attempt, "Missing Required Files", log_str)
@@ -351,14 +352,14 @@ if __name__ == '__main__':
                 #    save_attempt(attempt, "Duplicate Required Files", log_str)
                 #    continue
                 print 'Finding database'
-                gemfiles = search_file(directory_name, 'Gemfile')
+                gemfiles = search_file(DIR, 'Gemfile')
                 if not gemfiles:
                     print 'no gemfile'
                     save_attempt(attempt, "Missing Required Files", log_str)
                     continue
                 gemfile_paths = [os.path.dirname(gemfile) for gemfile in gemfiles]
                 #print 'gemfile_paths: ' + str(gemfile_paths)
-                db_files = search_file(directory_name, 'database.yml')
+                db_files = search_file(DIR, 'database.yml')
                 if not db_files:
                     print 'not use database'
                     save_attempt(attempt, "Missing Required Files", log_str)
@@ -373,10 +374,12 @@ if __name__ == '__main__':
                     save_attempt(attempt, "Missing Required Files", log_str)
                     continue
                 base_dir = next(iter(base_dirs))
+                attempt.base_dir = base_dir.split('/', 1)[1]
+
                 print 'base_dir: ' + base_dir
 
-                commit.database = get_database(os.path.join(base_dir, 'config/database.yml'), "Ruby on Rails")
-                print commit.database.name
-                log_str = log(log_str, 'database: ' + commit.database.name)
-                commit.save()
+                attempt.database = get_database(os.path.join(base_dir, 'config/database.yml'), "Ruby on Rails")
+                print attempt.database.name
+                log_str = log(log_str, 'database: ' + attempt.database.name)
+                attempt.save()
                 try_deploy_ror(base_dir, attempt, log_str)

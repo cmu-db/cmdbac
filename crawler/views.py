@@ -81,7 +81,7 @@ def repository(request, user_name, repo_name):
     print request.GET.copy()
     
     repository = Repository.objects.get(full_name=user_name + '/' + repo_name)
-    attempts = Attempt.objects.filter(commit__repo=repository)
+    attempts = Attempt.objects.filter(repo=repository)
     context['repository'] = repository
     context['attempts'] = attempts
     return render(request, 'crawler/repository.html', context)

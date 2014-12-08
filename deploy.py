@@ -1,18 +1,6 @@
 #!/usr/bin/env python
 import os
-from os.path import join
-from utils import run_command, query
-from datetime import datetime
-import time
-import pkgutil
-import traceback
-from string import Template
-import urllib2
-import shutil
-import logging
-import random
-
-logging.basicConfig(filename='deploy.log',level=logging.DEBUG)
+from utils import *
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 
@@ -21,11 +9,10 @@ django.setup()
 
 from crawler.models import *
 
-def install_dependencies(dependencies):
-    for dependency in dependencies:
-        vagrant_pip_install(dependency.package)
+ZIP = "prod.zip"
+DIR = "prod_dir"
 
-if __name__ == '__main__':
+def main():
     if argv[1]:
         try:
             attempt = Attempt.objects.get(id=int(argv[1]))
@@ -36,39 +23,36 @@ if __name__ == '__main__':
         print 'please specify the attempt to deploy'
         return
 
-    download(attempt.commit)
-    directory = unzip()
+    try:
+        download(attempt, ZIP)
+    except:
+        print 'can not download'
+    unzip(ZIP, DIR)
 
-    setup_files = search_file(directory_name, 'setup.py')
-    if len(setup_files):
-    print "Not an Application: found " str(setup_files)log_capture_string)
-        rm_dir(directory_name)
+    base_dir = attempt.base_dir
+    if base_dir = '':
+        print 'the repository do not have base_dir'
         return
-    manage_files = search_file(directory_name, 'manage.py')
-    if not len(manage_files):
-        print "Missing Required Files: manage.py"
-        rm_dir(directory_name)
-        return
+    if attempt.repo.repo_type.name == 'Django':
+        manage_file = os.path.join(DIR, base_dir, 'manage.py')
+        setting_path = attempt.setting_path
+        if setting_path = '':
+            print 'the repository do not have setting file'
+            return
+        setting_file = os.path.join(DIR, attempt.setting_path, 'settings.py')
+        rewrite_settings(setting_file, 'Django')
+        dependencies = Dependency.objects.filter(attempt=attempt).values_list('package', flat=True)
+        vagrant_pip_install(requirement_file)
+
+        vagrant_syncdb(manage_file, "Django")
+        vagrant_runserver(manage_file, "Django")
+    elif attempt.repo.repo_type.name == 'Ruby on Rails':
+        base_dir = attempt.base_dir
+        rewrite_settings(base_dir, 'Ruby on Rails')
+        install_requirements(base_dir, "Ruby on Rails")
+        vagrant_syncdb(base_dir, "Ruby on Rails")
+        vagrant_runserver(manage_file, "Ruby on Rails")
         
-    elif len(manage_files) != 1:
-        print "Duplicate Required Files: ", str(manage_files)
-        rm_dir(directory_name)
-        return
-    
-    setting_files = search_file(directory_name, 'settings.py')
-    if not len(setting_files):
-        print "Missing Required Files: settings.py"
-        rm_dir(directory_name)
-        return
-    elif len(setting_files) != 1:
-        print "Duplicate Required Files: settings.py " + str(setting_files)
-        rm_dir(directory_name)
-        return
+if __name__ == '__main__':
+    main()
 
-    dependencies = Dependency.objects.filter(attempt=attempt).order_by('id')
-    requirement_file = generate_requirement
-    vagrant_pip_install(requirement_file)
-
-    append_settings(setting_file[0])
-    vagrant_syncdb(manage_file[0])
-    vagrant_runserver(manage_file[0])

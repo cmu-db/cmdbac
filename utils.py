@@ -27,8 +27,8 @@ utils_logger.addHandler(fh)
 utils_logger.addHandler(ch)
 
 #class Constant():
-ZIP_FILE = 'tmp.zip'
-TMP_DIR = 'tmp_dir'
+#ZIP_FILE = 'tmp.zip'
+#TMP_DIR = 'tmp_dir'
 DOWNLOAD_URL_TEMPLATE = Template('https://github.com/${full_name}/archive/${sha}.zip')
 HOMEPAGE_URL_TEMPLATE = Template('https://github.com/${full_name}')
 API_COMMITS_URL = Template('https://api.github.com/repos/${full_name}/commits')
@@ -64,10 +64,10 @@ def run_command(command):
     return out
 
 
-def download(commit):
-    url = DOWNLOAD_URL_TEMPLATE.substitute(full_name=commit.repo.full_name, sha=commit.sha)
+def download(attempt, zip_name):
+    url = DOWNLOAD_URL_TEMPLATE.substitute(full_name=attempt.repo.full_name, sha=attempt.sha)
     response = query(url)
-    zip_file = open(ZIP_FILE, 'wb')
+    zip_file = open(zip_name, 'wb')
     shutil.copyfileobj(response.fp, zip_file)
     zip_file.close()
 
@@ -94,7 +94,7 @@ def pip_rm_build():
     command = "sudo rm -rf " + os.path.join(HOME_DIR, "pip/build")
     return vagrant_run_command(command)
 
-def vagrant_pip_install(name, is_file):
+def vagrant_pip_install(names, is_file):
     command = "pip "
     
    # command_t = Template("pip ${proxy} install --user --build /home/vagrant/pip/build")
@@ -106,10 +106,11 @@ def vagrant_pip_install(name, is_file):
     #else:
     #    command = command_t.substitute(proxy='')
     if is_file:
-        vm_name = to_vm_path(name)
+        vm_name = to_vm_path(names)
         command = command + "-r " + vm_name
     else:
-        command = command + name.name + "==" + name.version
+        for name in names:
+            command = command + name.name + "==" + name.version + ' '
     out = vagrant_run_command(command)
 
     pip_rm_build()
@@ -198,10 +199,9 @@ def search_file(directory_name, file_name):
 #    out = out.strip().splitlines()
 #    return out
 
-def unzip():
-    command = 'unzip -qq ' + ZIP_FILE + ' -d ' + TMP_DIR
+def unzip(zip_name, dir_name):
+    command = 'unzip -qq ' + zip_name + ' -d ' + dir_name
     out = run_command(command)
-    return TMP_DIR
 
 def vagrant_syncdb(path, type_name):
     if type_name == "Django":
@@ -239,9 +239,6 @@ def get_latest_sha(repo):
     #print sha
     #return sha
 
-def mk_tmp_dir():
-    mk_dir(TMP_DIR)
-
 def rm_dir(path):
     shutil.rmtree(path)
 
@@ -249,9 +246,9 @@ def mk_dir(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
-def remake_tmp_dir():
-    rm_dir(TMP_DIR)
-    mk_dir(TMP_DIR)
+def remake_dir(path):
+    rm_dir(path)
+    mk_dir(path)
 
 def cd(path):
     return "cd "+ path
