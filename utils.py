@@ -26,9 +26,6 @@ ch.setFormatter(formatter)
 utils_logger.addHandler(fh)
 utils_logger.addHandler(ch)
 
-#class Constant():
-#ZIP_FILE = 'tmp.zip'
-#TMP_DIR = 'tmp_dir'
 DOWNLOAD_URL_TEMPLATE = Template('https://github.com/${full_name}/archive/${sha}.zip')
 HOMEPAGE_URL_TEMPLATE = Template('https://github.com/${full_name}')
 API_COMMITS_URL = Template('https://api.github.com/repos/${full_name}/commits')
@@ -123,10 +120,10 @@ def rewrite_settings(path, type_name):
 SECRET_KEY = 'abcdefghijklmnopqrstuvwxyz'
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 DATABASES = {
-'default': {
-    'ENGINE': 'django.db.backends.sqlite3',
-    'NAME': 'db_webcrawler',
-}
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'db_webcrawler',
+    }
 }
 """
         with open(path, "a") as my_file:
@@ -200,13 +197,13 @@ def search_file(directory_name, file_name):
 #    return out
 
 def unzip(zip_name, dir_name):
-    command = 'unzip -qq ' + zip_name + ' -d ' + dir_name
+    command = 'unzip -o -qq ' + zip_name + ' -d ' + dir_name
     out = run_command(command)
 
 def vagrant_syncdb(path, type_name):
     if type_name == "Django":
         vm_manage_file = to_vm_path(path)
-        command = "python " + vm_manage_file + " syncdb --noinput"
+        command = "python " + vm_manage_file + " syncdb --noinput && python " + vm_manage_file + " migrate --noinput"
         return vagrant_run_command(command) 
     elif type_name == "Ruby on Rails":
         command = vagrant_cd(path) + " && bundle exec rake db:migrate"
@@ -240,7 +237,8 @@ def get_latest_sha(repo):
     #return sha
 
 def rm_dir(path):
-    shutil.rmtree(path)
+    if os.path.exists(path):
+        shutil.rmtree(path)
 
 def mk_dir(path):
     if not os.path.exists(path):

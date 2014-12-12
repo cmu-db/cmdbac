@@ -15,8 +15,8 @@ class Meta:
 
 metas = []
 
-django_meta = Meta(name='Django', file_name='models.py', min_size=60, threshold_size=55000)
-metas.append(django_meta)
+#django_meta = Meta(name='Django', file_name='models.py', min_size=60, threshold_size=55000)
+#metas.append(django_meta)
 
-#ror_meta = Meta(name='Ruby on Rails', file_name='database.yml', min_size=0, threshold_size=2500)
-#metas.append(ror_meta)
+ror_meta = Meta(name='Ruby on Rails', file_name='database.yml', min_size=0, threshold_size=2500)
+metas.append(ror_meta)

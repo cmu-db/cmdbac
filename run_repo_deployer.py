@@ -122,6 +122,7 @@ def try_deploy_django(manage_file, setting_file, requirement_files, attempt, log
     #urls = list(set([re.sub(r'\([^)]*\)', '', url) for url in urls if '?' not in url]))
     urls = sorted(urls, key=len)
     print urls
+    log_str = log(log_str, out)
     for url in urls:
         out = check_server(url, 'Django')
         print out
@@ -229,6 +230,8 @@ def try_deploy_ror(path, attempt, log_str):
     urls = list(set([url for url in urls if ':' not in url]))
     urls = sorted(urls, key=len)
     print urls
+    log_str = log(log_str, str(urls))
+    log_str = log(log_str, str(urls))
     for url in urls:
         out = check_server(url, 'Ruby on Rails')
         print out
@@ -243,13 +246,12 @@ def try_deploy_ror(path, attempt, log_str):
 ZIP = "tmp.zip"
 DIR = "tmp_dir"
 if __name__ == '__main__':
-    mk_dir(DIR)
     logger = logging.getLogger('basic_logger')
     logger.setLevel(logging.DEBUG)
     while True:
         repos = Repository.objects.exclude(pk__in=Attempt.objects.values_list('repo', flat=True))
 # add the line if we what to get a specific type of repositories
-        repos = repos.filter(repo_type__name='Django')
+        repos = repos.filter(repo_type__name='Ruby on Rails')
         for repo in repos:
             log_str = ''
             log_str = log(log_str, 'deploying repo: ' + repo.full_name)
@@ -304,9 +306,6 @@ if __name__ == '__main__':
 #                    save_attempt(attempt, "Duplicate Required Files", log_str)
 #                    continue
                 
-                attempt.database = get_database(setting_files[0], "Django")
-                print 'Database: ' + attempt.database.name
-                log_str = log(log_str, 'database: ' + attempt.database.name)
                         
                 manage_files = search_file(DIR, 'manage.py')
                 log_str = log(log_str, 'manage.py: ' + str(manage_files))
@@ -334,8 +333,13 @@ if __name__ == '__main__':
                 print 'base_dir: ' + base_dir
                 manage_file = next(name for name in manage_files if name.startswith(base_dir))
                 setting_file = next(name for name in setting_files if name.startswith(base_dir))
+                attempt.database = get_database(setting_file, "Django")
+                print 'Database: ' + attempt.database.name
+                log_str = log(log_str, 'database: ' + attempt.database.name)
                 attempt.base_dir = base_dir.split('/', 1)[1]
+                print 'base_dir: ' + attempt.base_dir
                 attempt.setting_dir = os.path.basename(os.path.dirname(setting_file))
+                print 'setting_dir: ' + attempt.setting_dir
                 try_deploy_django(manage_file, setting_file, requirement_files, attempt, log_str)
             elif repo.repo_type.name == "Ruby on Rails":
                 print 'directory: ' + DIR
