@@ -12,26 +12,27 @@
     {{ type_form }}
     </div>
 
-    <div style="float:left">
+    <div style="float:right">
+    <input class="btn btn-primary btn-lg" type="submit" value="Filter"/>
+    </div>
+    <div style="float:right">
         <b>Name:</b>
     <input type="Search" placeholder='Search by full name' value='{{ search }}' class="form-control" name='search'/>
-    </div>
-    <div style="float:left">
-    <input class="btn btn-primary btn-lg" type="submit" value="Filter"/>
     </div>
 </form>
 
 
-<div class="table-responsive">
+<div class="table-responsive" style="clear:both;">
     <table class="table table-striped">
         <thead>
             <tr>
                 <th><a href="?order_by={% if order_by == "full_name" %}-{% endif %}full_name&amp;{{ queries_no_page_order.urlencode }}">Full Name</th>
-                <th><a href="?order_by={% if order_by != "-commits_count" %}-{% endif %}commits_count&amp;{{ queries_no_page_order.urlencode }}">Number of Commits</th>
+                    <th><a href="?order_by={% if order_by != "-attempts_count" %}-{% endif %}attempts_count&;{{queries_no_page_order.urlencode }}"> # of Attemts</th>
+                    <th><a href="?order_by={% if order_by != "-latest_attempt__start_time" %}-{% endif %}latest_attempt__start_time&;{{queries_no_page_order.urlencode }}">Latest Attempt Date</th>
+                <th><a href="?order_by={% if order_by != "-commits_count" %}-{% endif %}commits_count&amp;{{ queries_no_page_order.urlencode }}"># of Commits</th>
                     <th><a href="?order_by={% if order_by == "repo_type__name" %}-{% endif %}repo_type__name&amp;{{ queries_no_page_order.urlencode }}">Type</th>
                     <th><a href="?order_by={% if order_by == "latest_attempt__result__name" %}-{% endif %}latest_attempt__result__name&amp;{{ queries_no_page_order.urlencode }}">Result</th>
                 <th>GitHub</th>
-                <th>Download</th>
             </tr>
         </thead>
         <tbody>
@@ -39,6 +40,12 @@
                 {% for repository in repositories %}
                 <tr>
                     <td><a id="{{ repository.full_name}}" href="{% url 'repository' repository.get_user_name repository.get_repo_name %}?{{ queries.urlencode }}">{{ repository.full_name }}</a></td>
+                    <td>{{repository.attempts_count}}</td>
+                    {% if repository.latest_attempt %}
+                        <td>{{repository.latest_attempt.start_time|date:'Y-m-d' }}</td>
+                    {% else %}
+                        <td>-
+                    {% endif %}
                     <td>{{ repository.commits_count }}</td>
                     {% if repository.repo_type.name == "Django" %}
                         <td><img src="{% static "crawler/django.jpg" %}" alt="Django" width="24" height="24"/></td>
@@ -58,7 +65,6 @@
                         <td><a href="{% url 'attempt' repository.latest_attempt.id %}" class="label label-warning">{{repository.latest_attempt.result.name}}</a></td>
                     {% endif %}
                     <td><a href="https://github.com/{{ repository.full_name }}"><img src="{% static "crawler/github.png" %}" alt="Github" width="24" height="24"/></a></td>
-                    <td><a href="https://api.github.com/repos/{{ repository.full_name }}/tarball"><img src="{% static "crawler/download.jpg" %}" alt="Download" width="24" height="24"/></a></td>
                 </tr>
                 {% endfor %}
                 {% endif %}

@@ -6,8 +6,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="">
         <meta name="author" content="">
-
-        <title>Database Web Crawler</title>
+        <title>
+        {% block title %}
+        {% endblock %}
+        </title>
 
         <link href="{{STATIC_URL}}crawler/css/bootstrap.min.css" type="text/css" rel="stylesheet">
         <link href="{{STATIC_URL}}crawler/css/dashboard.css" type="text/css" rel="stylesheet">

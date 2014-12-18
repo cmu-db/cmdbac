@@ -2,13 +2,22 @@
     {
         "model": "crawler.type",
         "fields": {
-            "name": "Django"
+            "name": "Django",
+            "filename": "models.py",
+            "min_size": 60,
+            "max_size": 55000,
+            "cur_size": 60
+
         }
     },
     {
         "model": "crawler.type",
         "fields": {
-            "name": "Ruby on Rails"
+            "name": "Ruby on Rails",
+            "filename": "database.yml",
+            "min_size": 0,
+            "max_size": 2500,
+            "cur_size": 0
         }
     },
     {
@@ -57,18 +66,6 @@
         "model": "crawler.result",
         "fields": {
             "name": "Missing Dependencies"
-        }
-    },
-    {
-        "model": "crawler.language",
-        "fields": {
-            "name": "Python"
-        }
-    },
-    {
-        "model": "crawler.language",
-        "fields": {
-            "name": "Ruby"
         }
     },
     {

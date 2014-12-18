@@ -1,58 +1,132 @@
 {% extends "crawler/base.html" %}
 {% load staticfiles %}
 
+{% block title %}
+{{repository.full_name}}
+{% endblock %}
+
 {% block main %}
-<h1 class="page-header">Repository {{ repository.full_name }}</h1>
-<div>
-    Github<a href="https://github.com/{{ repository.full_name }}"><img src="{% static "crawler/github.png" %}" alt="Github" width="24" height="24"/></a> 
-Download<a href="https://api.github.com/repos/{{ repository.full_name }}/tarball"><img src="{% static "crawler/download.jpg" %}" alt="Download" width="24" height="24"/></a>
-</div>
-<br>
 <div style="background-color:black; color:white">
->> <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{repository.full_name}}">Repositories</a> >> {{repository.full_name}}
+    <h1>
+<a href="{% url 'home' %}">Database Web Crawler</a> >> <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{repository.full_name}}">Repositories</a> >> {{repository.full_name}}
+</h1>
+</br>
+<h3>{{repository.description}}</h3>
 </div>
+
+
+
 
 <h2 class="sub-header">Repository Detail</h2>
-    <div class="bs-example">
-        <dl class="dl-horizontal">
-            <dt>full_name</dt><dd>{{repository.full_name}}</dd>
-            <dt>repo_type</dt><dd>{{repository.repo_type.name}}</li>
-            <dt>private</dt><dd>{{repository.private}}</dd>
-            <dt>description</dt><dd>{{repository.description}}</dd>
-            <dt>fork</dt><dd>{{repository.fork}}</dd>
-            <dt>created_at</dt><dd>{{repository.created_at}}</dd>
-            <dt>updated_at</dt><dd>{{repository.updated_at}}</dd>
-            <dt>pushed_at</dt><dd>{{repository.pushed_at}}</dd>
-            <dt>homepage</dt><dd>{{repository.homepage}}</dd>
-            <dt>size</dt><dd>{{repository.size}}</dd>
-            <dt>stargazers_count</dt><dd>{{repository.stargazers_count}}
-            <dt>watchers_count</dt><dd>{{repository.watchers_count}}
-            <dt>language</dt><dd>{{repository.language.name}}
-            <dt>has_issues</dt><dd>{{repository.has_issues}}
-            <dt>has_downloads</dt><dd>{{repository.has_downloads}}
-            <dt>has_wiki</dt><dd>{{repository.has_wiki}}
-            <dt>has_pages</dt><dd>{{repository.has_pages}}
-            <dt>forks_count</dt><dd>{{repository.forks_count}}</dd>
-            <dt>open_issues_count</dt><dd>{{repository.open_issues_count}}</dd>
-            <dt>default_branch</dt><dd>{{repository.deault_branch}}</dd>
-            <dt>network_count</dt><dd>{{repository.network_count}}</dd>
-            <dt>subscribers_count</dt><dd>{{repository.subscribers_count}}</dd>
-            <dt>commits_count</dt><dd>{{repository.commits_count}}</dd>
-            <dt>branches_count</dt><dd>{{repository.branches_count}}</dd>
-            <dt>releases_count</dt><dd>{{repository.releases_count}}</dd>
-            <dt>contributors_count</dt><dd>{{repository.contributors_count}}</dd>
-        </dl>
-   </div>
+<div class="col-xs-6">
+<div class="table-responsive">
+<table class="table table-bordered table-striped">
+<colgroup>
+<col class="col-xs-1">
+<col class="col-xs-7">
+</colgroup>
+<tbody>
+<tr>
+<td>
+<code>Full Name</code>
+</td>
+<td>{{repository.full_name}}</td>
+</tr>
+<tr>
+<td>
+<code>Repository Type</code>
+</td>
+<td>{{repository.repo_type.name}}</td>
+</tr>
+<tr>
+<td>
+<code>Language</code>
+</td>
+<td>{{repository.language.name}}</td>
+</tr>
+<tr>
+<td>
+<code>Create Time</code>
+</td>
+<td>{{ repository.created_at|date:'Y-m-d H:i:s' }}</td>
+</tr>
+<tr>
+<td>
+<code>Update Time</code>
+</td>
+<td>{{ repository.updated_at|date:'Y-m-d H:i:s' }}</td>
+</tr>
+<tr>
+<td>
+<code>Push Time</code>
+</td>
+<td>{{ repository.pushed_at|date:'Y-m-d H:i:s' }}</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 
-<h2 class="sub-header">Attemps</h2>
-Number of Attempts: {{attempts.count}}
+
+
+<div class="col-xs-6">
+<div class="table-responsive">
+<table class="table table-bordered table-striped">
+<colgroup>
+<col class="col-xs-1">
+<col class="col-xs-7">
+</colgroup>
+<tbody>
+<tr>
+<td>
+<code>Default Branch</code>
+</td>
+<td>{{repository.default_branch}}</td>
+</tr>
+<tr>
+<td>
+<code>Size</code>
+</td>
+<td>{{repository.size}}</td>
+</tr>
+<tr>
+<td>
+<code>Forks Count</code>
+</td>
+<td>{{repository.forks_count}}</td>
+</tr>
+<tr>
+<td>
+<code>Commits Count</code>
+</td>
+<td>{{repository.commits_count}}</td>
+</tr>
+<tr>
+<td>
+<code>Branches Count</code>
+</td>
+<td>{{repository.branches_count}}</td>
+</tr>
+<tr>
+<td>
+<code>Contributors Count</code>
+</td>
+<td>{{repository.contributors_count}}</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<h2 class="sub-header">Attempts</h2>
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>
+                <th>Attempt #</th>
                 <th>Start Time</th>
                 <th>Duration</th>
-                <th>Host</th>
+                <th>Deployment Host</th>
                 <th>Result</th>
             </tr>
         </thead>
@@ -60,11 +134,17 @@ Number of Attempts: {{attempts.count}}
                 {% if attempts %}
                 {% for attempt in attempts %}
                 <tr>
-                    <td>{{ attempt.start_time }}</td>
+                    <td><a href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}">{{ attempt.id }}</a></td>
+                    {% if attempt.start_time %}
+                        <td>{{ attempt.start_time|date:'Y-m-d H:i:s' }}</td>
+                    {% else %}
+                    <td>-</td>
+                    {% endif %}
+
                     {% if attempt.duration %}
                     <td>{{ attempt.duration }}s</td>
                     {% else %}
-                    <td></td>
+                    <td>-</td>
                     {% endif %}
                     <td>{{ attempt.hostname }}</td>
     {% if attempt.result.name == "Success" %}

@@ -80,15 +80,24 @@ do
     where crawler_repository.repo_type_id = '$repo_type'
     group by crawler_attempt.result_id;"
 
-    echo 'number of commits'
+    filename="/tmp/$repo_type"
+    #sudo rm ${filename}
+    echo 'number of commits of deployed (not an application excluded)'
     $execute "select crawler_repository.commits_count
-    into outfile '/tmp/$repo_type'
+    into outfile '$filename'
     from crawler_repository
-    where crawler_repository.repo_type_id = '$repo_type';"
+    inner join crawler_attempt
+    on crawler_repository.latest_attempt_id = crawler_attempt.id
+    where crawler_repository.repo_type_id = '$repo_type'
+    and (crawler_attempt.result_id = 'Success'
+    or crawler_attempt.result_id = 'Missing Dependencies'
+    or crawler_attempt.result_id = 'Running Error');"
 
+    filename="/tmp/${repo_type}_success"
+    #sudo rm ${filename}
     echo 'number of commits of success'
     $execute "select crawler_repository.commits_count
-    into outfile '/tmp/${repo_type}_success'
+    into outfile '$filename'
     from crawler_repository
     inner join crawler_attempt
     on crawler_repository.latest_attempt_id = crawler_attempt.id

@@ -1,25 +1,22 @@
 {% extends "crawler/base.html" %}
 
+{% block title %}
+Database Web Crawler
+{% endblock %}
+
+<title>Database Web Crawler</title>
 {% block main %}
 <h1 class="page-header">Database Web Crawler<h1>
 
 <h2 class="sub-header">Introduction</h2>
 <div>
-This is a website showing result of crawling and deploying database applications that are hosted on GitHub.
-</div>
-<div>
-    <p>The meaning of deployment result:</p>
+    This is a website showing result of crawling and deploying database applications that are hosted on GitHub.<br><br>
 
-    <p><span class="label label-success">Success</span> : Deployment success</p>
-    <p><span class="label label-danger">Missing Dependencies</span> : Some dependency files are missing while deploying</p>
-    <p><span class="label label-danger">Running Error</span> : Some thing goes run when trying to run the application</p>
-    <p><span class="label label-warning">Not an Application</span> : This repostory doesn't contains a runnable application</p>
-    <p><span class="label label-warning">Download Error</span> : Failed to download the repository</p>
-    <p><span class="label label-warning">Missing Required Files</span> : Couldn't find some files that are required to run the deployment. Didn't try to deploy.</p>
-    <p><span class="label label-warning">Duplicate Required Files</span> : Found multiple files with same name that are required to run the deployment. Didn't know which one to use. Didn't try to deploy.</p>
-    <p><span class="label label-info">Deploying</span> : Being deployed</p>
-    <p><span class="label label-info">No Attempt</span> : Haven't tried to deploy</p>
+    The project is a part of the research project "Automatic Database Management System Tuning" from CMU database group. The goal of this subproject is to find a large amount of database applications as the test for the tuning methods. We created a tool that searches the Internet for web-based database applications and run them locally in order to learn how they use a DBMS.<br><br>
 
+    We wrote a web crawler that searches for and downloads database applications hosted on open-source repositories (i.e. GitHub). The crawler uses heuristics that allows it to identify whether a project uses a database for storage. We target web-based applications that use well-known web frameworks (i.e. Django, Ruby on Rails). Thus, we can identify whether a project is relevant if its source code references libraries from one of these frameworks.<br><br>
+ 
+    We then developed a tool for automatically deploying an application in a VM sandbox. Targeting applications that use the common web frameworks listed above makes this step easier because they provide an object-relational mapping library that does not depend on a particular DBMS. Their configurations are also likely to be the same (e.g. setting the DBMS credentials in a common configuration file).<br><br>
 </div>
 <h2 class="sub-header">Statistics</h2>
 
@@ -48,30 +45,49 @@ This is a website showing result of crawling and deploying database applications
     </table>
 </div>
 
+<h2 class="sub-header">Interpretation</h2>
+<div>
+    <p>The meaning of deployment result:</p>
+
+    <p><span class="label label-success">Success</span> : Deployment success</p>
+    <p><span class="label label-danger">Missing Dependencies</span> : Some dependency files are missing while deploying</p>
+    <p><span class="label label-danger">Running Error</span> : Some thing goes run when trying to run the application</p>
+    <p><span class="label label-warning">Not an Application</span> : This repostory doesn't contains a runnable application</p>
+    <p><span class="label label-warning">Download Error</span> : Failed to download the repository</p>
+    <p><span class="label label-warning">Missing Required Files</span> : Couldn't find some files that are required to run the deployment. Didn't try to deploy.</p>
+    <p><span class="label label-warning">Duplicate Required Files</span> : Found multiple files with same name that are required to run the deployment. Didn't know which one to use. Didn't try to deploy.</p>
+    <p><span class="label label-info">Deploying</span> : Being deployed</p>
+    <p><span class="label label-info">No Attempt</span> : Haven't tried to deploy</p>
+
+</div>
 <h2 class="sub-header">Recent Deployment</h2>
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>
+                <th>Repository</th>
                 <th>Start Time</th>
                 <th>Duration</th>
-                <th>Host</th>
-                <th>Repository</th>
+                <th>Deployment Host</th>
                 <th>Result</th>
             </tr>
         </thead>
         <tbody>
                 {% if attempts %}
                 {% for attempt in attempts %}
-                <tr>
-                    <td>{{ attempt.start_time }}</td>
+            <tr>
+                    <td><a href="{% url 'repository' attempt.repo.get_user_name attempt.repo.get_repo_name %}">{{ attempt.repo.full_name }}</a></td>
+                    {% if attempt.start_time %}
+                        <td>{{ attempt.start_time|date:'Y-m-d H:i:s' }}</td>
+                    {% else %}
+                    <td>-</td>
+                    {% endif %}
                     {% if attempt.duration %}
                         <td>{{ attempt.duration }}s</td>
                     {% else %}
-                        <td></td>
+                        <td>-</td>
                     {% endif %}
                     <td> {{ attempt.hostname }}
-                    <td><a href="{% url 'repository' attempt.repo.get_user_name attempt.repo.get_repo_name %}">{{ attempt.repo.full_name }}</a></td>
                     {% if attempt.result.name == "Success" %}
                         <td><a href="{% url 'attempt' attempt.id %}" class="label label-success">{{attempt.result.name}}</a></td>
                     {% elif attempt.result.name == "Running Error" or attempt.result.name == "Missing Dependencies" %}

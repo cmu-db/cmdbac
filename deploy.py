@@ -16,7 +16,7 @@ from crawler.models import *
 
 def main():
     #remake_dir(DIR)
-    if sys.argv[1]:
+    if len(sys.argv) > 1:
         try:
             attempt = Attempt.objects.get(id=int(sys.argv[1]))
         except:
@@ -35,6 +35,7 @@ def main():
         download(attempt, zip_file)
     except:
         print 'can not download'
+        return
     unzip(zip_file, dir_name)
 
     base_dir = attempt.base_dir
@@ -54,10 +55,10 @@ def main():
         setting_file = os.path.join(base_dir, attempt.setting_dir, 'settings.py')
         rewrite_settings(setting_file, 'Django')
         packages = Package.objects.filter(attempt=attempt)
+        out = kill_server("Django")
         out = vagrant_pip_install(packages, False)
         print out
         out = vagrant_syncdb(manage_file, "Django")
-        out = kill_server("Django")
         out = vagrant_runserver(manage_file, "Django")
         urls = get_urls(os.path.dirname(setting_file), 'Django')
         print urls
@@ -67,9 +68,9 @@ def main():
         print urls
     elif attempt.repo.repo_type.name == 'Ruby on Rails':
         rewrite_settings(base_dir, 'Ruby on Rails')
+        out = kill_server("Ruby on Rails")
         out = install_requirements(base_dir, "Ruby on Rails")
         out = vagrant_syncdb(base_dir, "Ruby on Rails")
-        out = kill_server("Ruby on Rails")
         out = vagrant_runserver(base_dir, "Ruby on Rails")
         urls = get_urls(base_dir, 'Ruby on Rails')
         print urls

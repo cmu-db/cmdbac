@@ -11,6 +11,7 @@ import json
 import shutil
 import urlparse
 import importlib
+from run import run
 
 logging.basicConfig(format='%(asctime)s %(message)s', filename='utils.log', level=logging.DEBUG)
 
@@ -34,6 +35,14 @@ SHARE_DIR = "/vagrant/"
 # the github token
 TOKEN = '5b3563b9b8c4b044530eeb363b633ac1c9535356'
 
+class Utils:
+    @staticmethod
+    def none2empty(string):
+        if string:
+            return string
+        else:
+            return ""
+
 def query(url):
     print url
     logging.debug('query url: ' + url)
@@ -53,12 +62,13 @@ def query(url):
     return response
 
 def run_command(command):
-    logging.getLogger('utils').debug('run command: ' + command)
-    p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    out, err = p.communicate()
-    logging.getLogger('utils').debug('output: ' + out)
-    logging.getLogger('utils').debug('stderr: ' +err)
-    return out
+    return run(command, timeout=1000)[1]
+    #logging.getLogger('utils').debug('run command: ' + command)
+    #p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    #out, err = p.communicate()
+    #logging.getLogger('utils').debug('output: ' + out)
+    #logging.getLogger('utils').debug('stderr: ' +err)
+    #return out
 
 
 def download(attempt, zip_name):
@@ -188,7 +198,9 @@ def search_file(directory_name, file_name):
     for root, dirs, files in os.walk(directory_name):
         for file in files:
             if file == file_name:
-                result.append(os.path.join(root, file))
+                path = os.path.join(root, file)
+                if not os.path.islink(path):
+                    result.append(path)
     print result
     return result
 #    command = "find " + directory_name + " -type f -wholename '*/" + file_name + "'"
@@ -202,18 +214,22 @@ def unzip(zip_name, dir_name):
 
 def vagrant_syncdb(path, type_name):
     if type_name == "Django":
-        vm_manage_file = to_vm_path(path)
-        command = "python " + vm_manage_file + " syncdb --noinput && python " + vm_manage_file + " migrate --noinput"
+        #vm_manage_file = to_vm_path(path)
+        command = vagrant_cd(os.path.dirname(path)) + " && python manage.py syncdb --noinput && python manage.py migrate --noinput"
         return vagrant_run_command(command) 
     elif type_name == "Ruby on Rails":
         command = vagrant_cd(path) + " && bundle exec rake db:migrate"
         return vagrant_run_command(command)
 
 
+def block_ports():
+    pass
+
 def vagrant_runserver(path, type_name):
+    block_ports()
     if type_name == "Django":
         vm_manage_file = to_vm_path(path)
-        command = "nohup python " + vm_manage_file + " runserver 0.0.0.0:8000 & sleep 1"
+        command = vagrant_cd(os.path.dirname(path)) + " && nohup python manage.py runserver 0.0.0.0:8000 & sleep 1"
         return vagrant_run_command(command)
     elif type_name == "Ruby on Rails":
         #command = vagrant_cd(path) + " && bundle exec rails server -p 3000 > /vagrant/log 2>&1 & sleep 10"
@@ -279,9 +295,14 @@ def check_server(url, type_name):
         command = "wget " + urlparse.urljoin("http://localhost:8000/", url)
     return vagrant_run_command(command)
 
+def unblock_ports():
+    pass
+
 def kill_server(type_name):
     if type_name == "Ruby on Rails":
         command = "fuser -k 3000/tcp"
     elif type_name == "Django":
         command = "fuser -k 8000/tcp"
-    return vagrant_run_command(command)
+    out = vagrant_run_command(command)
+    unblock_ports()
+    return out

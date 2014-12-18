@@ -30,6 +30,7 @@ class Repository(models.Model):
     branches_count = models.IntegerField()
     releases_count = models.IntegerField()
     contributors_count = models.IntegerField()
+    attempts_count = models.IntegerField()
     def get_user_name(self):
         return self.full_name.split('/')[0]
     def get_repo_name(self):
@@ -52,7 +53,11 @@ class Status(models.Model):
     name = models.CharField(max_length=200, primary_key=True)
 
 class Type(models.Model):
-    name = models.CharField(max_length = 200, primary_key=True)
+    name = models.CharField(max_length=200, primary_key=True)
+    filename = models.CharField(max_length=200)
+    min_size = models.IntegerField()
+    max_size = models.IntegerField()
+    cur_size = models.IntegerField()
 
 class Package(models.Model):
     package_type = models.ForeignKey('Type')
