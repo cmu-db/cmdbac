@@ -32,7 +32,7 @@ globals()['ATTEMPT_STATUS_CODES'] = ATTEMPT_STATUS_CODES
 # ----------------------------------------------------------------------------
 
 class Repository(models.Model):
-    full_name = models.CharField(max_length=200, primary_key=True)
+    full_name = models.CharField(max_length=200, null=False, unique=True)
     repo_type = models.ForeignKey('Type')
     latest_attempt = models.ForeignKey('Attempt', null=True)
     private = models.BooleanField(default=False)
@@ -65,10 +65,10 @@ class Repository(models.Model):
         return self.full_name.split('/')[0]
     def get_repo_name(self):
         return self.full_name.split('/')[1]
-
+# CLASS
 
 class Database(models.Model):
-    name = models.CharField(max_length=200, primary_key=True)
+    name = models.CharField(max_length=200)
 
 class Type(models.Model):
     name = models.CharField(max_length=200, primary_key=True)
@@ -107,16 +107,11 @@ class Attempt(models.Model):
     dependencies = models.ManyToManyField(Package, through='Dependency')
     hostname = models.CharField(max_length=200)
     sha = models.CharField(max_length=200, null=True)
-    database = models.ForeignKey('Database', null=True)
+    database = models.ForeignKey('Database', null=False)
     repo = models.ForeignKey('Repository', null=True)
     base_dir = models.CharField(max_length=200, null=True)
     setting_dir = models.CharField(max_length=200, null=True)
-    
-    
 # CLASS
-
-class Source(models.Model):
-    name = models.CharField(max_length=200, primary_key=True)
 
 class Module(models.Model):
     name = models.CharField(max_length = 200)

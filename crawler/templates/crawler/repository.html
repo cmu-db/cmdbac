@@ -6,10 +6,16 @@
 {% endblock %}
 
 {% block main %}
+<ul class="breadcrumb">
+    <li>
+        <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{repository.full_name}}">Repositories</a>
+        <span class="divider"></span>
+    <li>{{repository.full_name}}
+</ul>
+
 <div style="breadcrumb">
     <h1>
-        <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{repository.full_name}}">Repositories</a> &raquo;
-        {{repository.full_name}}
+
     </h1>
 </div>
 
@@ -111,7 +117,7 @@
                     {% if attempt.start_time %}
                         {{ attempt.start_time|date:'Y-m-d H:i:s' }}
                     {% else %}
-                        &mdash;
+                        -
                     {% endif %}
                     </td>
 
@@ -119,7 +125,7 @@
                     {% if attempt.duration %}
                         {{ attempt.duration|floatformat }}s
                     {% else %}
-                        &mdash;
+                        -
                     {% endif %}
                     </td>
                     

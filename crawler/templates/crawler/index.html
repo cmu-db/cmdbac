@@ -73,7 +73,7 @@ Database Web Crawler
             </tr>
         </thead>
         <tbody>
-                {% if attempts %}
+            {% if attempts %}
                 {% for attempt in attempts %}
             <tr>
                     <td><a href="{% url 'repository' attempt.repo.get_user_name attempt.repo.get_repo_name %}">{{ attempt.repo.full_name }}</a></td>
@@ -89,19 +89,13 @@ Database Web Crawler
                         &mdash;
                     {% endif %}
                     </td>
-                    <td> {{ attempt.hostname }}
-                    {% if attempt.result == ATTEMPT_STATUS_SUCCESS %}
-                        <td><a href="{% url 'attempt' attempt.id %}" class="label label-success">{{attempt.result}}</a></td>
-                    {% elif attempt.result.name == ATTEMPT_STATUS_RUNNING_ERROR or attempt.result.name == ATTEMPT_STATUS_MISSING_DEPENDENCIES %}
-                        <td><a href="{% url 'attempt' attempt.id %}" class="label label-danger">{{attempt.result}}</a></td>
-                    {% elif attempt.result.name == ATTEMPT_STATUS_DEPLOYING %}
-                        <td><a href="{% url 'attempt' attempt.id %}" class="label label-info">{{attempt.result}}</a></td>
-                    {% else %}
-                        <td><a href="{% url 'attempt' attempt.id %}" class="label label-warning">{{attempt.result}}</a></td>
-                    {% endif %}
+                    <td>{{ attempt.hostname }}</td>
+                    <td>
+                        <a id="{{attempt.id}}" href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}" class="label label-{{ attempt.result_label }}">{{attempt.result_name}}</a>
+                    </td>
                 </tr>
                 {% endfor %}
-                {% endif %}
+            {% endif %}
         </tbody>
     </table>
 </div>
