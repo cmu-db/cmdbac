@@ -27,7 +27,7 @@
         <thead>
             <tr>
                 <th><a href="?order_by={% if order_by == "full_name" %}-{% endif %}full_name&amp;{{ queries_no_page_order.urlencode }}">Full Name</th>
-                    <th><a href="?order_by={% if order_by != "-attempts_count" %}-{% endif %}attempts_count&;{{queries_no_page_order.urlencode }}"> # of Attemts</th>
+                    <th><a href="?order_by={% if order_by != "-attempts_count" %}-{% endif %}attempts_count&;{{queries_no_page_order.urlencode }}"> # of Attempts</th>
                     <th><a href="?order_by={% if order_by != "-latest_attempt__start_time" %}-{% endif %}latest_attempt__start_time&;{{queries_no_page_order.urlencode }}">Latest Attempt Date</th>
                 <th><a href="?order_by={% if order_by != "-commits_count" %}-{% endif %}commits_count&amp;{{ queries_no_page_order.urlencode }}"># of Commits</th>
                     <th><a href="?order_by={% if order_by == "repo_type__name" %}-{% endif %}repo_type__name&amp;{{ queries_no_page_order.urlencode }}">Type</th>
