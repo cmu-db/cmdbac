@@ -42,7 +42,7 @@
                     <td><a id="{{ repository.full_name}}" href="{% url 'repository' repository.get_user_name repository.get_repo_name %}?{{ queries.urlencode }}">{{ repository.full_name }}</a></td>
                     <td>{{repository.attempts_count}}</td>
                     {% if repository.latest_attempt %}
-                        <td>{{repository.latest_attempt.start_time|date:'Y-m-d' }}</td>
+                        <td>{{repository.latest_attempt.start_time|date:'Y-m-d H:i:s' }}</td>
                     {% else %}
                         <td>-
                     {% endif %}
