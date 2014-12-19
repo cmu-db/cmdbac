@@ -55,14 +55,10 @@
 
                     {% if not repository.latest_attempt %}
                         <td><span class="label label-info">No Attempt</span></td>
-                    {% elif repository.latest_attempt.result.name == "Success" %}
-                        <td><a href="{% url 'attempt' repository.latest_attempt.id %}" class="label label-success">{{repository.latest_attempt.result.name}}</a></td>
-                    {% elif repository.latest_attempt.result.name == "Running Error" or repository.latest_attempt.result.name == "Missing Dependencies" %}
-                        <td><a href="{% url 'attempt' repository.latest_attempt.id %}" class="label label-danger">{{repository.latest_attempt.result.name}}</a></td>
-                    {% elif repository.latest_attempt.result.name == "Deploying" %}
-                        <td><a href="{% url 'attempt' repository.latest_attempt.id %}" class="label label-info">{{repository.latest_attempt.result.name}}</a></td>
                     {% else %}
-                        <td><a href="{% url 'attempt' repository.latest_attempt.id %}" class="label label-warning">{{repository.latest_attempt.result.name}}</a></td>
+                    <td>
+                        <a id="{{repository.latest_attempt.id}}" href="{% url 'attempt' repository.latest_attempt.id %}?{{ queries.urlencode }}" class="label label-{{ repository.latest_attempt.result_label }}">{{repository.latest_attempt.result_name}}</a>
+                    </td>
                     {% endif %}
                     <td><a href="https://github.com/{{ repository.full_name }}"><img src="{% static "crawler/github.png" %}" alt="Github" width="24" height="24"/></a></td>
                 </tr>
