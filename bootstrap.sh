@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
 
+
+# install the package that sometime needed for deploying django or ruby on rails apps
+# continue adding packages to this file if missing some packages may cause common errors
+
+# use this line if the host is using proxy, and change the proxy
+http_proxy=http://proxy.pdl.cmu.edu:8080
+
 if [ -n "$http_proxy" ]
 then
+    echo "use proxy: "$http_proxy
     echo "export http_proxy=\"$http_proxy\"" >> /home/vagrant/.bashrc
     echo "export https_proxy=\"$http_proxy\"" >> /home/vagrant/.bashrc
 
@@ -9,6 +17,8 @@ then
     export https_proxy="$http_proxy"
 
     echo "Acquire::http::Proxy \"$http_proxy\";" > /etc/apt/apt.conf
+else
+    echo "not use proxy"
 fi
 
 
@@ -47,7 +57,6 @@ echo 'export PYTHONUSERBASE="/home/vagrant/pip"' >> /home/vagrant/.bashrc
 
 # can not find sqlite3.h
 apt-get -y install libsqlite3-dev
-
 
 apt-get -y install ruby-dev
 
