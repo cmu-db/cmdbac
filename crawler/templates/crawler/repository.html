@@ -6,116 +6,88 @@
 {% endblock %}
 
 {% block main %}
-<div style="background-color:black; color:white">
+<div style="breadcrumb">
     <h1>
-<a href="{% url 'home' %}">Database Web Crawler</a> >> <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{repository.full_name}}">Repositories</a> >> {{repository.full_name}}
-</h1>
-</br>
-<h3>{{repository.description}}</h3>
+        <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{repository.full_name}}">Repositories</a> >>
+        {{repository.full_name}}
+    </h1>
 </div>
-
-
-
 
 <h2 class="sub-header">Repository Detail</h2>
 <div class="col-xs-6">
-<div class="table-responsive">
-<table class="table table-bordered table-striped">
-<colgroup>
-<col class="col-xs-1">
-<col class="col-xs-7">
-</colgroup>
-<tbody>
-<tr>
-<td>
-<code>Full Name</code>
-</td>
-<td>{{repository.full_name}}</td>
-</tr>
-<tr>
-<td>
-<code>Repository Type</code>
-</td>
-<td>{{repository.repo_type.name}}</td>
-</tr>
-<tr>
-<td>
-<code>Language</code>
-</td>
-<td>{{repository.language.name}}</td>
-</tr>
-<tr>
-<td>
-<code>Create Time</code>
-</td>
-<td>{{ repository.created_at|date:'Y-m-d H:i:s' }}</td>
-</tr>
-<tr>
-<td>
-<code>Update Time</code>
-</td>
-<td>{{ repository.updated_at|date:'Y-m-d H:i:s' }}</td>
-</tr>
-<tr>
-<td>
-<code>Push Time</code>
-</td>
-<td>{{ repository.pushed_at|date:'Y-m-d H:i:s' }}</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+    {{repository.description}}
 
-
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <colgroup>
+                <col class="col-xs-1">
+                <col class="col-xs-7">
+            </colgroup>
+            <tbody>
+            <tr>
+                <td>Full Name</td>
+                <td>{{repository.full_name}}</td>
+            </tr>
+            <tr>
+                <td>Repository Type</td>
+                <td>{{repository.repo_type.name}}</td>
+            </tr>
+            <tr>
+                <td>Language</td>
+                <td>{{repository.language.name}}</td>
+            </tr>
+            <tr>
+                <td>Create Time</td>
+                <td>{{ repository.created_at|date:'Y-m-d H:i:s' }}</td>
+            </tr>
+            <tr>
+                <td>Update Time</td>
+                <td>{{ repository.updated_at|date:'Y-m-d H:i:s' }}</td>
+            </tr>
+            <tr>
+                <td>Push Time</td>
+                <td>{{ repository.pushed_at|date:'Y-m-d H:i:s' }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <div class="col-xs-6">
-<div class="table-responsive">
-<table class="table table-bordered table-striped">
-<colgroup>
-<col class="col-xs-1">
-<col class="col-xs-7">
-</colgroup>
-<tbody>
-<tr>
-<td>
-<code>Default Branch</code>
-</td>
-<td>{{repository.default_branch}}</td>
-</tr>
-<tr>
-<td>
-<code>Size</code>
-</td>
-<td>{{repository.size}}</td>
-</tr>
-<tr>
-<td>
-<code>Forks Count</code>
-</td>
-<td>{{repository.forks_count}}</td>
-</tr>
-<tr>
-<td>
-<code>Commits Count</code>
-</td>
-<td>{{repository.commits_count}}</td>
-</tr>
-<tr>
-<td>
-<code>Branches Count</code>
-</td>
-<td>{{repository.branches_count}}</td>
-</tr>
-<tr>
-<td>
-<code>Contributors Count</code>
-</td>
-<td>{{repository.contributors_count}}</td>
-</tr>
-</tbody>
-</table>
-</div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <colgroup>
+                <col class="col-xs-1">
+                <col class="col-xs-7">
+            </colgroup>
+            <tbody>
+                <tr>
+                    <td>Default Branch</td>
+                    <td>{{repository.default_branch}}</td>
+                </tr>
+                <tr>
+                    <td>Size</td>
+                    <td>{{repository.size}}</td>
+                </tr>
+                <tr>
+                    <td>Forks Count</td>
+                    <td>{{repository.forks_count}}</td>
+                </tr>
+                <tr>
+                    <td>Commits Count</td>
+                    <td>{{repository.commits_count}}</td>
+                </tr>
+                <tr>
+                    <td>Branches Count</td>
+                    <td>{{repository.branches_count}}</td>
+                </tr>
+                <tr>
+                    <td>Contributors Count</td>
+                    <td>{{repository.contributors_count}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <h2 class="sub-header">Attempts</h2>
@@ -135,27 +107,36 @@
                 {% for attempt in attempts %}
                 <tr>
                     <td><a href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}">{{ attempt.id }}</a></td>
+                    
+                    <td>
                     {% if attempt.start_time %}
-                        <td>{{ attempt.start_time|date:'Y-m-d H:i:s' }}</td>
+                        {{ attempt.start_time|date:'Y-m-d H:i:s' }}
                     {% else %}
-                    <td>-</td>
+                        &mdash;
                     {% endif %}
+                    </td>
 
+                    <td>
                     {% if attempt.duration %}
-                    <td>{{ attempt.duration }}s</td>
+                        {{ attempt.duration }}s
                     {% else %}
-                    <td>-</td>
+                        &mdash;
                     {% endif %}
+                    </td>
+                    
                     <td>{{ attempt.hostname }}</td>
-    {% if attempt.result.name == "Success" %}
-    <td><a id="{{attempt.id}}" href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}" class="label label-success">{{attempt.result.name}}</a></td>
-    {% elif attempt.result.name == "Running Error" or attempt.result.name == "Missing Dependencies" %}
-    <td><a id="{{attempt.id}}" href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}" class="label label-danger">{{attempt.result.name}}</a></td>
-    {% elif attempt.result.name == "Deploying" %}
-    <td><a id="{{attempt.id}}" href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}" class="label label-info">{{attempt.result.name}}</a></td>
-    {% else %}
-    <td><a id="{{attempt.id}}" href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}" class="label label-warning">{{attempt.result.name}}</a></td>
-    {% endif %}
+                    
+                    <td>
+                        {% if attempt.result.name == "Success" %}
+                        <a id="{{attempt.id}}" href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}" class="label label-success">{{attempt.result.name}}</a>
+                        {% elif attempt.result.name == "Running Error" or attempt.result.name == "Missing Dependencies" %}
+                        <a id="{{attempt.id}}" href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}" class="label label-danger">{{attempt.result.name}}</a>
+                        {% elif attempt.result.name == "Deploying" %}
+                        <a id="{{attempt.id}}" href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}" class="label label-info">{{attempt.result.name}}</a>
+                        {% else %}
+                        <a id="{{attempt.id}}" href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}" class="label label-warning">{{attempt.result.name}}</a>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
                 {% endif %}
