@@ -1,6 +1,35 @@
 from django.db import models
 
-#Create your models here.
+PACKAGE_SOURCE = (
+    ('D', 'Database'),
+    ('F', 'File'),
+)
+for x,y in PACKAGE_SOURCE:
+    globals()['PACKAGE_SOURCE_' + y.upper()] = x
+
+ATTEMPT_STATUS = (
+    ('DP', 'Deploying', 'info'),
+    ('DE', 'Download Error', 'danger'),
+    ('DR', 'Duplicate Required Files', 'warning'),
+    ('MD', 'Missing Dependencies', 'danger'),
+    ('MR', 'Missing Required Files', 'danger'),
+    ('NA', 'Not an Application', 'warning'),
+    ('RE', 'Running Error', 'danger'),
+    ('OK', 'Success', 'success'),
+    ('UN', 'Unknown', 'warning'),
+)
+ATTEMPT_STATUS_CODES = { }
+ATTEMPT_STATUS_NAMES = { }
+temp = [ ]
+for x,y,z in ATTEMPT_STATUS:
+    globals()['ATTEMPT_STATUS_' + y.replace(" ", "_").upper()] = x
+    ATTEMPT_STATUS_CODES[x] = z
+    ATTEMPT_STATUS_NAMES[x] = y
+    temp.append( (x,y) )
+ATTEMPT_STATUS = temp
+globals()['ATTEMPT_STATUS_CODES'] = ATTEMPT_STATUS_CODES
+
+# ----------------------------------------------------------------------------
 
 class Repository(models.Model):
     full_name = models.CharField(max_length=200, primary_key=True)
@@ -31,25 +60,14 @@ class Repository(models.Model):
     releases_count = models.IntegerField()
     contributors_count = models.IntegerField()
     attempts_count = models.IntegerField()
+    
     def get_user_name(self):
         return self.full_name.split('/')[0]
     def get_repo_name(self):
         return self.full_name.split('/')[1]
 
-#class Commit(models.Model):
-#    repo = models.ForeignKey('Repository')
-#    sha = models.CharField(max_length=200)
-#    database = models.ForeignKey('Database', null=True)
-#    class Meta:
-#        unique_together = ('repo', 'sha')
 
 class Database(models.Model):
-    name = models.CharField(max_length=200, primary_key=True)
-
-class Result(models.Model):
-    name = models.CharField(max_length=200, primary_key=True)
-
-class Status(models.Model):
     name = models.CharField(max_length=200, primary_key=True)
 
 class Type(models.Model):
@@ -70,15 +88,21 @@ class Package(models.Model):
 class Dependency(models.Model):
     attempt = models.ForeignKey('Attempt')
     package = models.ForeignKey('Package')
-    source = models.ForeignKey('Source')
+    source = models.CharField(max_length=2, choices=PACKAGE_SOURCE, default=None, null=True)
     class Meta:
         unique_together = ('attempt', 'package')
 
 class Attempt(models.Model):
+    def resultLabel(self):
+        return ATTEMPT_STATUS_CODES[self.result]
+    def resultName(self):
+        return ATTEMPT_STATUS_NAMES[self.result]
+    
     start_time = models.DateTimeField()
     duration = models.FloatField(null=True)
-    #commit = models.ForeignKey('Commit')
-    result = models.ForeignKey('Result')
+    result = models.CharField(max_length=2, choices=ATTEMPT_STATUS, default=None, null=True)
+    result_label = property(resultLabel)
+    result_name = property(resultName)
     log = models.TextField(default='')
     dependencies = models.ManyToManyField(Package, through='Dependency')
     hostname = models.CharField(max_length=200)
@@ -87,6 +111,9 @@ class Attempt(models.Model):
     repo = models.ForeignKey('Repository', null=True)
     base_dir = models.CharField(max_length=200, null=True)
     setting_dir = models.CharField(max_length=200, null=True)
+    
+    
+# CLASS
 
 class Source(models.Model):
     name = models.CharField(max_length=200, primary_key=True)

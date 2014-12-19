@@ -2,3 +2,4 @@
 *.sqlite3
 log.txt
 .vagrant/*
+*.kate-swp

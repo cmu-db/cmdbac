@@ -82,20 +82,22 @@ Database Web Crawler
                     {% else %}
                     <td>-</td>
                     {% endif %}
+                    <td>
                     {% if attempt.duration %}
-                        <td>{{ attempt.duration }}s</td>
+                        {{ attempt.duration }}s
                     {% else %}
-                        <td>-</td>
+                        &mdash;
                     {% endif %}
+                    </td>
                     <td> {{ attempt.hostname }}
-                    {% if attempt.result.name == "Success" %}
-                        <td><a href="{% url 'attempt' attempt.id %}" class="label label-success">{{attempt.result.name}}</a></td>
-                    {% elif attempt.result.name == "Running Error" or attempt.result.name == "Missing Dependencies" %}
-                        <td><a href="{% url 'attempt' attempt.id %}" class="label label-danger">{{attempt.result.name}}</a></td>
-                    {% elif attempt.result.name == "Deploying" %}
-                        <td><a href="{% url 'attempt' attempt.id %}" class="label label-info">{{attempt.result.name}}</a></td>
+                    {% if attempt.result == ATTEMPT_STATUS_SUCCESS %}
+                        <td><a href="{% url 'attempt' attempt.id %}" class="label label-success">{{attempt.result}}</a></td>
+                    {% elif attempt.result.name == ATTEMPT_STATUS_RUNNING_ERROR or attempt.result.name == ATTEMPT_STATUS_MISSING_DEPENDENCIES %}
+                        <td><a href="{% url 'attempt' attempt.id %}" class="label label-danger">{{attempt.result}}</a></td>
+                    {% elif attempt.result.name == ATTEMPT_STATUS_DEPLOYING %}
+                        <td><a href="{% url 'attempt' attempt.id %}" class="label label-info">{{attempt.result}}</a></td>
                     {% else %}
-                        <td><a href="{% url 'attempt' attempt.id %}" class="label label-warning">{{attempt.result.name}}</a></td>
+                        <td><a href="{% url 'attempt' attempt.id %}" class="label label-warning">{{attempt.result}}</a></td>
                     {% endif %}
                 </tr>
                 {% endfor %}

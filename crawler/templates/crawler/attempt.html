@@ -8,8 +8,8 @@ Attempt {{attempt.id}}
 {% block main %}
 <div style="breadcrumb">
     <h1>
-        <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{attempt.repo.full_name}}">Repositories</a> >>
-        <a href="{% url 'repository' attempt.repo.get_user_name attempt.repo.get_repo_name %}?{{ queries.urlencode }}#{{ attempt.id }}">{{attempt.repo.full_name}}</a> >>
+        <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{attempt.repo.full_name}}">Repositories</a> &raquo;
+        <a href="{% url 'repository' attempt.repo.get_user_name attempt.repo.get_repo_name %}?{{ queries.urlencode }}#{{ attempt.id }}">{{attempt.repo.full_name}}</a> &raquo;
         Attempt {{attempt.id}}
     </h1>
 </div>
@@ -19,56 +19,14 @@ Attempt {{attempt.id}}
     <div class="table-responsive">
         <table class="table table-bordered table-striped">
             <colgroup>
-                <col class="col-xs-1">
-                <col class="col-xs-7">
+                <col class="col-xs-2">
+                <col class="col-xs-6">
             </colgroup>
             <tbody>
                 <tr>
                     <td>Attempt ID</td>
                     <td>{{attempt.id}}</td>
                 </tr>
-                <tr>
-                    <td>Repository</td>
-                    <td>{{attempt.repo.full_name}}</td>
-                </tr>
-                <tr>
-                    <td>Checksum</td>
-                    <td>{{attempt.sha}}</td>
-                </tr>
-                <tr>
-                    <td>Repository Type</td>
-                    <td>{{attempt.repo.repo_type.name}}</td>
-                </tr>
-                <tr>
-                    <td>Result</td>
-                    <td>
-                    {% if not attempt %}
-                        <span class="label label-info">No Attempt</span>
-                    {% elif attempt.result.name == "Success" %}
-                        <a href="{% url 'attempt' attempt.id %}" class="label label-success">{{attempt.result.name}}</a>
-                    {% elif attempt.result.name == "Running Error" or attempt.result.name == "Missing Dependencies" %}
-                        <a href="{% url 'attempt' attempt.id %}" class="label label-danger">{{attempt.result.name}}</a>
-                    {% elif attempt.result.name == "Deploying" %}
-                        <a href="{% url 'attempt' attempt.id %}" class="label label-info">{{attempt.result.name}}</a>
-                    {% else %}
-                        <a href="{% url 'attempt' attempt.id %}" class="label label-warning">{{attempt.result.name}}</a>
-                    {% endif %}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-
-<div class="col-xs-6">
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-            <colgroup>
-                <col class="col-xs-1">
-                <col class="col-xs-7">
-            </colgroup>
-            <tbody>
                 <tr>
                     <td>Deployment Host</td>
                     <td>{{attempt.hostname}}</td>
@@ -94,7 +52,29 @@ Attempt {{attempt.id}}
                     </td>
                 </tr>
                 <tr>
-                    <td>Database</td>
+                    <td>Result</td>
+                    <td><span class="label label-{{ attempt.result_label }}">{{attempt.result_name}}</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<div class="col-xs-6">
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <colgroup>
+                <col class="col-xs-2">
+                <col class="col-xs-6">
+            </colgroup>
+            <tbody>
+                <tr>
+                    <td>Checksum</td>
+                    <td>{{attempt.sha}}</td>
+                </tr>
+                <tr>
+                    <td>Tested Database</td>
                     <td>{{attempt.database.name}}</td>
                 </tr>
                 <tr>

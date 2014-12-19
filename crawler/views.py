@@ -20,7 +20,7 @@ def home(request):
         repo_type = t.name
         repos = Repository.objects.filter(repo_type=t)
         num_repo = repos.count()
-        num_suc = repos.filter(latest_attempt__result__name="Success").count()
+        num_suc = repos.filter(latest_attempt__result=ATTEMPT_STATUS_SUCCESS).count()
         num_pkg = Package.objects.filter(package_type=t).count()
         num_deploy = repos.exclude(latest_attempt=None).count
         stat = Statistic(repo_type, num_repo, num_pkg, num_suc, num_deploy)
@@ -48,7 +48,7 @@ def repositories(request):
         repositories = repositories.filter(full_name__contains=request.GET['search'])
     result_list = request.GET.getlist('results')
     if result_list:
-        repositories = repositories.filter(latest_attempt__result__name__in=result_list)
+        repositories = repositories.filter(latest_attempt__result__in=result_list)
     type_list = request.GET.getlist('types')
     if type_list:
         repositories = repositories.filter(repo_type__name__in=type_list)
@@ -60,11 +60,12 @@ def repositories(request):
     try:
         repositories = paginator.page(page)
     except PageNotAnInteger:
-# If page is not an integer, deliver first page.
+        # If page is not an integer, deliver first page.
         repositories = paginator.page(1)
     except EmptyPage:
-# If page is out of range (e.g. 9999), deliver last page of results.
+        # If page is out of range (e.g. 9999), deliver last page of results.
         repositories = paginator.page(paginator.num_pages)
+        
     search = request.GET.get('search', '')
     context["result_form"] = ResultForm(request.GET)
     context['type_form'] = TypeForm(request.GET)
