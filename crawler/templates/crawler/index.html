@@ -84,7 +84,7 @@ Database Web Crawler
                     {% endif %}
                     <td>
                     {% if attempt.duration %}
-                        {{ attempt.duration }}s
+                        {{ attempt.duration|floatformat }}s
                     {% else %}
                         &mdash;
                     {% endif %}
