@@ -1,5 +1,10 @@
 {% extends "crawler/base.html" %}
 {% load staticfiles %}
+
+{% block title %}
+Repositories &raquo; {{SITE_TITLE}}
+{% endblock %}
+
 {% block main %}
 <h1 class="page-header">Repositories</h1>
 
@@ -36,7 +41,7 @@
             </tr>
         </thead>
         <tbody>
-                {% if repositories %}
+            {% if repositories %}
                 {% for repository in repositories %}
                 <tr>
                     <td><a id="{{ repository.full_name}}" href="{% url 'repository' repository.get_user_name repository.get_repo_name %}?{{ queries.urlencode }}">{{ repository.full_name }}</a></td>
@@ -53,17 +58,18 @@
                         <td><img src="{% static "crawler/ruby_on_rails.jpg" %}" alt="Ruby on Rails" width="24" height="24"/></td>
                     {% endif %}
 
-                    {% if not repository.latest_attempt %}
-                        <td><span class="label label-info">No Attempt</span></td>
-                    {% else %}
                     <td>
+                    {% if not repository.latest_attempt %}
+                        <span class="label label-info">No Attempt</span>
+                    {% else %}
                         <a id="{{repository.latest_attempt.id}}" href="{% url 'attempt' repository.latest_attempt.id %}?{{ queries.urlencode }}" class="label label-{{ repository.latest_attempt.result_label }}">{{repository.latest_attempt.result_name}}</a>
-                    </td>
                     {% endif %}
+                    </td>
+
                     <td><a href="https://github.com/{{ repository.full_name }}"><img src="{% static "crawler/github.png" %}" alt="Github" width="24" height="24"/></a></td>
                 </tr>
                 {% endfor %}
-                {% endif %}
+            {% endif %}
         </tbody>
     </table>
 </div>
@@ -83,4 +89,7 @@
         {% endif %}
     </span>
 </div>
+
+
+
 {% endblock %}

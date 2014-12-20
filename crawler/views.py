@@ -53,7 +53,7 @@ def repositories(request):
     order_by = request.GET.get('order_by', 'full_name')
     repositories = repositories.order_by(order_by)
 
-    paginator = Paginator(repositories, 100) # Show 100 contacts per page
+    paginator = Paginator(repositories, 50) # Show 100 contacts per page
     page = request.GET.get('page')
     try:
         repositories = paginator.page(page)

@@ -6,13 +6,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="">
         <meta name="author" content="">
-        <title>
-        {% block title %}
-        {% endblock %}
-        </title>
+        <title>{% block title %}{% endblock %}</title>
 
         <link href="{{STATIC_URL}}crawler/css/bootstrap.min.css" type="text/css" rel="stylesheet">
         <link href="{{STATIC_URL}}crawler/css/dashboard.css" type="text/css" rel="stylesheet">
+
+        <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<!--         <script src="//raw.github.com/botmonster/jquery-bootpag/master/lib/jquery.bootpag.min.js"></script> -->
     </head>
 
     <body>
@@ -65,7 +66,7 @@
         <!-- Bootstrap core JavaScript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <script src="{{STATIC_URL}}crawler/js/bootstrap.min.js"></script>
+<!--         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
+<!--         <script src="{{STATIC_URL}}crawler/js/bootstrap.min.js"></script> -->
     </body>
 </html>
