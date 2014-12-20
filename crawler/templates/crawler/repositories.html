@@ -53,9 +53,9 @@ Repositories &raquo; {{SITE_TITLE}}
                     {% endif %}
                     <td>{{ repository.commits_count }}</td>
                     {% if repository.repo_type.name == "Django" %}
-                        <td><img src="{% static "crawler/img/django.jpg" %}" alt="Django" width="24" height="24"/></td>
+                        <td><img src="{% static "img/django.jpg" %}" alt="Django" width="24" height="24"/></td>
                     {% elif repository.repo_type.name == "Ruby on Rails" %}
-                        <td><img src="{% static "crawler/img/ruby_on_rails.jpg" %}" alt="Ruby on Rails" width="24" height="24"/></td>
+                        <td><img src="{% static "img/ruby_on_rails.jpg" %}" alt="Ruby on Rails" width="24" height="24"/></td>
                     {% endif %}
 
                     <td>
@@ -66,7 +66,7 @@ Repositories &raquo; {{SITE_TITLE}}
                     {% endif %}
                     </td>
 
-                    <td><a href="https://github.com/{{ repository.full_name }}"><img src="{% static "crawler/img/github.png" %}" alt="Github" width="24" height="24"/></a></td>
+                    <td><a href="https://github.com/{{ repository.full_name }}"><img src="{% static "img/github.png" %}" alt="Github" width="24" height="24"/></a></td>
                 </tr>
                 {% endfor %}
             {% endif %}
