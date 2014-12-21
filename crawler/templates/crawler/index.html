@@ -4,9 +4,9 @@
 Database Web Crawler
 {% endblock %}
 
-<title>Database Web Crawler</title>
 {% block main %}
-<h1 class="page-header">Database Web Crawler<h1>
+{% include "crawler/status_codes.html" %}
+<h1 class="page-header">Database Web Crawler</h1>
 
 <h2 class="sub-header">Introduction</h2>
 <div>
@@ -45,22 +45,7 @@ Database Web Crawler
     </table>
 </div>
 
-<h2 class="sub-header">Interpretation</h2>
-<div>
-    <p>The meaning of deployment result:</p>
-
-    <p><span class="label label-success">Success</span> : Deployment success</p>
-    <p><span class="label label-danger">Missing Dependencies</span> : Some dependency files are missing while deploying</p>
-    <p><span class="label label-danger">Running Error</span> : Some thing goes run when trying to run the application</p>
-    <p><span class="label label-warning">Not an Application</span> : This repostory doesn't contains a runnable application</p>
-    <p><span class="label label-warning">Download Error</span> : Failed to download the repository</p>
-    <p><span class="label label-warning">Missing Required Files</span> : Couldn't find some files that are required to run the deployment. Didn't try to deploy.</p>
-    <p><span class="label label-warning">Duplicate Required Files</span> : Found multiple files with same name that are required to run the deployment. Didn't know which one to use. Didn't try to deploy.</p>
-    <p><span class="label label-info">Deploying</span> : Being deployed</p>
-    <p><span class="label label-info">No Attempt</span> : Haven't tried to deploy</p>
-
-</div>
-<h2 class="sub-header">Recent Deployment</h2>
+<h2 class="sub-header">Recent Deployment Attempts</h2>
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
@@ -92,6 +77,9 @@ Database Web Crawler
                     <td>{{ attempt.hostname }}</td>
                     <td>
                         <a id="{{attempt.id}}" href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}" class="label label-{{ attempt.result_label }}">{{attempt.result_name}}</a>
+                        
+                        <a href="#" data-toggle="modal" data-target="#statusModal">?</a>
+                        
                     </td>
                 </tr>
                 {% endfor %}
