@@ -6,7 +6,8 @@ Repositories &raquo; {{SITE_TITLE}}
 {% endblock %}
 
 {% block main %}
-<h1 class="page-header">Repositories</h1>
+{% include "crawler/status_codes.html" %}
+<h2 class="page-header">Repositories</h2>
 
 <form action="{% url 'repositories' %}" method="get">
     <div style="float:left">
@@ -63,6 +64,7 @@ Repositories &raquo; {{SITE_TITLE}}
                         <span class="label label-info">No Attempt</span>
                     {% else %}
                         <a id="{{repository.latest_attempt.id}}" href="{% url 'attempt' repository.latest_attempt.id %}?{{ queries.urlencode }}" class="label label-{{ repository.latest_attempt.result_label }}">{{repository.latest_attempt.result_name}}</a>
+                        <a href="#" data-toggle="modal" data-target="#statusModal">?</a>
                     {% endif %}
                     </td>
 

@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="">
         <meta name="author" content="">
-        <title>{% block title %}{% endblock %}</title>
+        <title>{% block title %}Database Application Crawler{% endblock %}</title>
 
         <link href="{{STATIC_URL}}css/bootstrap.min.css" type="text/css" rel="stylesheet">
         <link href="{{STATIC_URL}}css/dashboard.css" type="text/css" rel="stylesheet">
@@ -14,7 +14,6 @@
         <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
         <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
         <script src="{{STATIC_URL}}js/jquery.twbsPagination.min.js"></script>
-<!--         <script src="//raw.github.com/botmonster/jquery-bootpag/master/lib/jquery.bootpag.min.js"></script> -->
     </head>
 
     <body>
@@ -29,39 +28,25 @@
                     <span class="icon-bar"></span>
                 </button>
                 -->
-                <a class="navbar-brand" href="{% url 'home' %}">{{ title }}</a>
+                <a class="navbar-brand" href="{% url 'home' %}">Database Application Crawler</a>
             </div>
-            <!--
+            
             <div id="navbar" class="navbar-collapse collapse">
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#">Dashboard</a></li>
-                    <li><a href="#">Settings</a></li>
-                    <li><a href="#">Profile</a></li>
-                    <li><a href="#">Help</a></li>
+                <ul class="nav navbar-nav navbar-left">
+                    <li><a href="{% url 'repositories' %}">Respositories</a></li>
+                    <li><a href="#">About</a></li>
                 </ul>
-                <form class="navbar-form navbar-right">
-                    <input type="text" class="form-control" placeholder="Search...">
-                </form>
+<!--                 <form class="navbar-form navbar-right"> -->
+<!--                     <input type="text" class="form-control" placeholder="Search..."> -->
+<!--                 </form> -->
             </div>
             -->
         </div>
     </nav>
 
 
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-sm-3 col-md-2 sidebar">
-                    <ul class="nav nav-sidebar">
-                        <li><a href="{% url 'home' %}">Home</a></li>
-                        <li><a href="{% url 'repositories' %}">Repositories</a></li>
-                    </ul>
-                </div>
-                <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-                    {% block main %}
-
-                    {% endblock%}
-                </div>
-            </div>
+        <div class="container">
+            {% block main %}{% endblock%}
         </div>
 
         <!-- Bootstrap core JavaScript

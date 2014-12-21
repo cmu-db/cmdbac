@@ -1,12 +1,7 @@
 {% extends "crawler/base.html" %}
 
-{% block title %}
-Database Web Crawler
-{% endblock %}
-
 {% block main %}
 {% include "crawler/status_codes.html" %}
-<h1 class="page-header">Database Web Crawler</h1>
 
 <h2 class="sub-header">Introduction</h2>
 <div>
@@ -77,9 +72,7 @@ Database Web Crawler
                     <td>{{ attempt.hostname }}</td>
                     <td>
                         <a id="{{attempt.id}}" href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}" class="label label-{{ attempt.result_label }}">{{attempt.result_name}}</a>
-                        
                         <a href="#" data-toggle="modal" data-target="#statusModal">?</a>
-                        
                     </td>
                 </tr>
                 {% endfor %}
