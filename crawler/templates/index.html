@@ -29,7 +29,7 @@
                 {% if stats %}
                 {% for stat in stats %}
                 <tr>
-                    <td>{{ stat.repo_type }}</td>
+                    <td><a href="{% url 'repositories' %}?types={{ stat.repo_type }}">{{ stat.repo_type }}</a></td>
                     <td>{{ stat.num_repo }}</td>
                     <td>{{ stat.num_deploy }}
                     <td>{{ stat.num_suc }}</td>

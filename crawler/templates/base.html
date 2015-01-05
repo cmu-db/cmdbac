@@ -11,9 +11,6 @@
         <link href="{{STATIC_URL}}css/bootstrap.min.css" type="text/css" rel="stylesheet">
         <link href="{{STATIC_URL}}css/dashboard.css" type="text/css" rel="stylesheet">
 
-        <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
-        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-        <script src="{{STATIC_URL}}js/jquery.twbsPagination.min.js"></script>
     </head>
 
     <body>
@@ -51,14 +48,21 @@
     </nav>
 
 
-        <div class="container">
-            {% block main %}{% endblock%}
+    <div class="container">
+        {% block main %}{% endblock%}
+    </div>
+
+    <footer>
+       <div class="panel-footer text-center">
+            &copy; {%now "Y"%} <a href="http://db.cs.cmu.edu">Carnegie Mellon University Database Group</a>
         </div>
+    </footer>
 
         <!-- Bootstrap core JavaScript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
-<!--         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
-<!--         <script src="{{STATIC_URL}}crawler/js/bootstrap.min.js"></script> -->
+        <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+        <script src="{{STATIC_URL}}js/jquery.twbsPagination.min.js"></script>
     </body>
 </html>

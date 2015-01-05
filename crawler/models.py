@@ -60,7 +60,10 @@ class Repository(models.Model):
     releases_count = models.IntegerField()
     contributors_count = models.IntegerField()
     attempts_count = models.IntegerField()
+    crawler_date = models.DateTimeField(auto_now_add=True)
     
+    def __unicode__(self):
+        return self.full_name
     def get_user_name(self):
         return self.full_name.split('/')[0]
     def get_repo_name(self):
@@ -70,12 +73,20 @@ class Repository(models.Model):
 class Database(models.Model):
     name = models.CharField(max_length=200)
 
+    def __unicode__(self):
+        return self.name
+# CLASS
+
 class Type(models.Model):
     name = models.CharField(max_length=200, primary_key=True)
     filename = models.CharField(max_length=200)
     min_size = models.IntegerField()
     max_size = models.IntegerField()
     cur_size = models.IntegerField()
+    
+    def __unicode__(self):
+        return self.name
+# CLASS
 
 class Package(models.Model):
     package_type = models.ForeignKey('Type')
@@ -84,6 +95,7 @@ class Package(models.Model):
     count = models.IntegerField(default=0)
     class Meta:
         unique_together = ('package_type', 'name', 'version')
+# CLASS
 
 class Dependency(models.Model):
     attempt = models.ForeignKey('Attempt')
@@ -91,6 +103,7 @@ class Dependency(models.Model):
     source = models.CharField(max_length=2, choices=PACKAGE_SOURCE, default=None, null=True)
     class Meta:
         unique_together = ('attempt', 'package')
+# CLASS
 
 class Attempt(models.Model):
     def resultLabel(self):
@@ -118,9 +131,5 @@ class Module(models.Model):
     package = models.ForeignKey('Package')
     class Meta:
         unique_together = ('name', 'package')
+# CLASS
 
-#class Name(models.Model):
-#    name = models.CharField(max_length=200)
-#    module = models.ForeignKey('Module', related_name='+')
-#    class Meta:
-#        unique_together = ('name', 'module')
