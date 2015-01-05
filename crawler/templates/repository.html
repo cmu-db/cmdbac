@@ -1,4 +1,4 @@
-{% extends "crawler/base.html" %}
+{% extends "base.html" %}
 {% load staticfiles %}
 
 {% block title %}
@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block main %}
-{% include "crawler/status_codes.html" %}
+{% include "status_codes.html" %}
 <ul class="breadcrumb">
     <li>
         <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{repository.full_name}}">Repositories</a>

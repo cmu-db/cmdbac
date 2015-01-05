@@ -1,12 +1,12 @@
-{% extends "crawler/base.html" %}
+{% extends "base.html" %}
 {% load staticfiles %}
 
 {% block title %}
-Repositories &raquo; {{SITE_TITLE}}
+Repositories &raquo; Database Application Crawler
 {% endblock %}
 
 {% block main %}
-{% include "crawler/status_codes.html" %}
+{% include "status_codes.html" %}
 <h2 class="page-header">Repositories</h2>
 
 <form action="{% url 'repositories' %}" method="get">

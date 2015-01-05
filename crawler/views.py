@@ -25,7 +25,7 @@ def home(request):
         stats.append(stat)
     context['stats'] = stats
     context['attempts'] = Attempt.objects.order_by('-start_time')[:5]
-    return render(request, 'crawler/index.html', context)
+    return render(request, 'index.html', context)
 
 def repositories(request):
     print request.GET
@@ -71,7 +71,7 @@ def repositories(request):
     context['search'] = search
     print 'search: ' + str(search)
     print queries_no_page
-    return render(request, 'crawler/repositories.html', context)
+    return render(request, 'repositories.html', context)
 
 def repository(request, user_name, repo_name):
     context = {}
@@ -83,7 +83,7 @@ def repository(request, user_name, repo_name):
     attempts = Attempt.objects.filter(repo=repository)
     context['repository'] = repository
     context['attempts'] = attempts
-    return render(request, 'crawler/repository.html', context)
+    return render(request, 'repository.html', context)
 
 def packages(request):
     packages = Package.objects.all().order_by('name', 'version')
@@ -98,7 +98,7 @@ def packages(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         packages = paginator.page(paginator.num_pages)
     context = {'packages': packages}
-    return render(request, 'crawler/packages.html', context)
+    return render(request, 'packages.html', context)
      
 def package(request, id):
     package = Package.objects.get(id=id)
@@ -106,13 +106,13 @@ def package(request, id):
     context = {}
     context['package'] = package
     context['modules'] = modules
-    return render(request, 'crawler/package.html', context)
+    return render(request, 'package.html', context)
 
 def dependency(request, id):
     dependencies = Dependency.objects.filter(attempt__id=id)
     context = {}
     context['dependencies'] = dependencies
-    return render(request, 'crawler/dependency.html', context)
+    return render(request, 'dependency.html', context)
 
 def attempt(request, id):
     attempt = Attempt.objects.get(id=id)
@@ -121,4 +121,4 @@ def attempt(request, id):
     context['attempt'] = attempt
     context['dependencies'] = dependencies
     context['queries'] = request.GET.copy()
-    return render(request, 'crawler/attempt.html', context)
+    return render(request, 'attempt.html', context)

@@ -1,7 +1,7 @@
-{% extends "crawler/base.html" %}
+{% extends "base.html" %}
 
 {% block main %}
-{% include "crawler/status_codes.html" %}
+{% include "status_codes.html" %}
 
 <h2 class="sub-header">Introduction</h2>
 <div>
@@ -66,7 +66,7 @@
                     {% if attempt.duration %}
                         {{ attempt.duration|floatformat }}s
                     {% else %}
-                        &mdash;
+                        -
                     {% endif %}
                     </td>
                     <td>{{ attempt.hostname }}</td>
