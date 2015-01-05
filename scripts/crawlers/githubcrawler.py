@@ -103,7 +103,7 @@ class GitHubCrawler(BaseCrawler):
                 # Create the new repository
                 repo = Repository()
                 repo.full_name = full_name
-                repo.repo_type = Type(name=self.name)
+                repo.repo_type = self.project_type
                 repo.last_attempt = None
                 repo.private = api_data['private']
                 repo.description = Utils.none2empty(api_data['description'])
@@ -143,7 +143,7 @@ class GitHubCrawler(BaseCrawler):
         if not next_page or not next_page.has_attr('href'):
             LOG.info("No next page link found!")
         else:
-            next_url = URL(GITHUB_HOST + next_page['href'])
+            next_url = GITHUB_HOST + next_page['href']
             
         return next_url
     ## DEF
@@ -174,7 +174,7 @@ class GitHubCrawler(BaseCrawler):
     ## DEF
 
     def get_api_data(self, full_name):
-        reponse = self.loadQuery(os.path.join(API_GITHUB_REPO, full_name))
+        reponse = self.loadURL(os.path.join(API_GITHUB_REPO, full_name))
         data = json.load(reponse)
         return data
     ## DEF
