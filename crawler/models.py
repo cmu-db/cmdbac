@@ -1,5 +1,15 @@
 from django.db import models
 
+# Crawler Repository Source
+REPOSITORY_SOURCE = (
+    ('GH', 'GitHub'),
+    ('BB', 'BitBucket'),
+    ('GC', 'Google Code'),
+)
+for x,y in REPOSITORY_SOURCE:
+    globals()['REPOSITORY_SOURCE_' + y.upper()] = x
+
+# Dependency Package Source
 PACKAGE_SOURCE = (
     ('D', 'Database'),
     ('F', 'File'),
@@ -7,6 +17,7 @@ PACKAGE_SOURCE = (
 for x,y in PACKAGE_SOURCE:
     globals()['PACKAGE_SOURCE_' + y.upper()] = x
 
+# Deployment Attempt Status
 ATTEMPT_STATUS = (
     ('DP', 'Deploying', 'info'),
     ('DE', 'Download Error', 'danger'),
@@ -31,9 +42,28 @@ globals()['ATTEMPT_STATUS_CODES'] = ATTEMPT_STATUS_CODES
 
 # ----------------------------------------------------------------------------
 
+class ProjectType(models.Model):
+    name = models.CharField(max_length=16, primary_key=True)
+    filename = models.CharField(max_length=200)
+    min_size = models.IntegerField()
+    max_size = models.IntegerField()
+    cur_size = models.IntegerField()
+    
+    def __unicode__(self):
+        return self.name
+# CLASS
+
+class Database(models.Model):
+    name = models.CharField(max_length=16)
+
+    def __unicode__(self):
+        return self.name
+## CLASS
+
 class Repository(models.Model):
     full_name = models.CharField(max_length=200, null=False, unique=True)
-    repo_type = models.ForeignKey('Type')
+    repo_type = models.ForeignKey('ProjectType')
+    source = models.CharField(max_length=2, choices=REPOSITORY_SOURCE, null=False)
     latest_attempt = models.ForeignKey('Attempt', null=True)
     private = models.BooleanField(default=False)
     description = models.TextField()
@@ -68,28 +98,10 @@ class Repository(models.Model):
         return self.full_name.split('/')[0]
     def get_repo_name(self):
         return self.full_name.split('/')[1]
-# CLASS
-
-class Database(models.Model):
-    name = models.CharField(max_length=200)
-
-    def __unicode__(self):
-        return self.name
-# CLASS
-
-class Type(models.Model):
-    name = models.CharField(max_length=200, primary_key=True)
-    filename = models.CharField(max_length=200)
-    min_size = models.IntegerField()
-    max_size = models.IntegerField()
-    cur_size = models.IntegerField()
-    
-    def __unicode__(self):
-        return self.name
-# CLASS
+## CLASS
 
 class Package(models.Model):
-    package_type = models.ForeignKey('Type')
+    package_type = models.ForeignKey('ProjectType')
     name = models.CharField(max_length = 200)
     version = models.CharField(max_length = 200)
     count = models.IntegerField(default=0)
@@ -115,10 +127,12 @@ class Attempt(models.Model):
         return ATTEMPT_STATUS_CODES[self.result]
     def resultName(self):
         return ATTEMPT_STATUS_NAMES[self.result]
+    def duration(self):
+        return (self.stop_time - self.start_time).total_seconds()
     
     start_time = models.DateTimeField()
     stop_time = models.DateTimeField(default=None, null=True)
-    duration = models.FloatField(null=True)
+    duration = property(duration)
     result = models.CharField(max_length=2, choices=ATTEMPT_STATUS, default=None, null=True)
     result_label = property(resultLabel)
     result_name = property(resultName)

@@ -35,7 +35,7 @@
                 <td>{{repository.full_name}}</td>
             </tr>
             <tr>
-                <td>Repository Type</td>
+                <td>Project Type</td>
                 <td>{{repository.repo_type.name}}</td>
             </tr>
             <tr>
@@ -124,7 +124,7 @@
 
                     <td>
                     {% if attempt.duration %}
-                        {{ attempt.duration|floatformat }}s
+                        {{ attempt.duration|floatformat }} sec
                     {% else %}
                         -
                     {% endif %}

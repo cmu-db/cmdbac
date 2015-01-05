@@ -18,56 +18,27 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 #import django
 #django.setup()
 
-class GitHubCrawler:
-    def __init__(self, repo_type):
-        self.name = repo_type.name
-        self.template = Template("https://github.com/search?utf8=%E2%9C%93&q=" + repo_type.filename + "+in%3Apath+filename%3A" + repo_type.filename + "+size%3A${size}&type=Code&ref=searchresults")
-# model file less than min_size don't use database
-        self.min_size = repo_type.min_size
-# less then 1000 files larger than threshold_size
-        self.max_size = repo_type.max_size
-        self.cur_size = repo_type.cur_size
-
-    def get_webpage_data(self, full_name):
-        data = {}
-        url = URL(os.path.join(Constants.GITHUB_HOST, full_name))
-        response = url.query()
-        soup = BeautifulSoup(response.read())
-        numbers = soup.find_all(class_='num text-emphasized')
-        try:
-            data['commits_count'] = int(re.sub("\D", "", numbers[0].string))
-        except:
-            data['commits_count'] = 0
-        try:
-            data['branches_count'] = int(re.sub("\D", "", numbers[1].string))
-        except:
-            data['branches_count'] = 0
-        try:
-            data['releases_count'] = int(re.sub("\D", "", numbers[2].string))
-        except:
-            data['releases_count'] = 0
-        try:
-            data['contributors_count'] = int(re.sub("\D", "", numbers[3].string))
-        except:
-            data['contributors_count'] = 0
-        return data
-
-
-    def get_api_data(self, full_name):
-        url = URL(os.path.join(Constants.API_GITHUB_REPO, full_name))
-        reponse = url.query()
-        data = json.load(reponse)
-        return data
+class BaseCrawler(object):
+    def __init__(self, repo_source):
+        self.repo_source = repo_source
+    # DEF
+        
+    def search(self, seed):
+        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
+    # DEF
+    
+    def parseResults(self, data)
+        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
+    # DEF
 
     def crawl(self):
-        if self.cur_size == self.max_size:
-            url = URL(self.template.substitue(size='>'+str(self.cur_size)))
-            self.cur_size = slef.min_size
-        else:
-            url = URL(self.template.substitute(size=self.cur_size))
-            self.cur_size = self.cur_size + 1
-
+        # For now let's do it once...
+        nextResults = self.search(seed=None)
+    ## DEF
+        
         while True:
+            response = self.search(seed=None)
+            
             response = url.query()
             soup = BeautifulSoup(response.read())
             titles = soup.find_all(class_='title')
@@ -81,7 +52,7 @@ class GitHubCrawler:
                     webpage_data = self.get_webpage_data(full_name)
                     repo = Repository()
                     repo.full_name = full_name
-                    repo.repo_type = Type(name=self.name)
+                    repo.repo_type = self
                     repo.last_attempt = None
                     repo.private = api_data['private']
                     repo.description = Utils.none2empty(api_data['description'])
@@ -121,14 +92,4 @@ class GitHubCrawler:
         repo_type.cur_size = self.cur_size
         repo_type.save()
 
-#def main():
-#    while True:
-#        repo_types = Type.objects.all()
-#        for repo_type in repo_types:
-#            crawler = GithubCrawler(repo_type)
-#            crawler.crawl()
-#            crawler.save()
-#    #        if crawler.repo_type.cur_size == crawler.repo_type.max_size:
-#                
-#if __name__ == '__main__':
-#    main()
+## CLASS

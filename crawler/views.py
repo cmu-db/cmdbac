@@ -14,7 +14,7 @@ class Statistic:
 def home(request):
     context = {}
     stats = []
-    for t in Type.objects.all():
+    for t in ProjectType.objects.all():
         repo_type = t.name
         repos = Repository.objects.filter(repo_type=t)
         num_repo = repos.count()
@@ -66,7 +66,7 @@ def repositories(request):
         
     search = request.GET.get('search', '')
     context["result_form"] = ResultForm(request.GET)
-    context['type_form'] = TypeForm(request.GET)
+    context['type_form'] = ProjectTypeForm(request.GET)
     context["repositories"] = repositories
     context['search'] = search
     print 'search: ' + str(search)

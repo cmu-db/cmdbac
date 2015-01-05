@@ -24,7 +24,7 @@ class PackageAdmin(admin.ModelAdmin):
 # Register your models here.
 admin.site.register(Repository, RepositoryAdmin)
 admin.site.register(Database)
-admin.site.register(Type)
+admin.site.register(ProjectType)
 admin.site.register(Package, PackageAdmin)
 admin.site.register(Dependency)
 admin.site.register(Attempt, AttemptAdmin)
