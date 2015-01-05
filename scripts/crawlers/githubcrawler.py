@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 
 from utils import Utils
+from basecrawler import BaseCrawler
 from crawler.models import *
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
@@ -34,9 +35,9 @@ LOG.setLevel(logging.INFO)
 ## GITHUB CONFIGURATION
 ## =====================================================================
 
-BASE_URL = "https://github.com/search?utf8=%E2%9C%93&q=${query}+" +
-           "in%3Apath+filename%3A${filename}+" + 
-           "size%3A${size}&" +
+BASE_URL = "https://github.com/search?utf8=%E2%9C%93&q=${query}+" + \
+           "in%3Apath+filename%3A${filename}+" +  \
+           "size%3A${size}&" + \
            "type=Code&ref=searchresults"
            
 TOKEN = '5b3563b9b8c4b044530eeb363b633ac1c9535356'
@@ -48,22 +49,22 @@ API_GITHUB_SLEEP = 1 # seconds
 ## GITHUB CRAWLER
 ## =====================================================================
 class GitHubCrawler(BaseCrawler):
-    def __init__(self):
-        super(BaseCrawler, self).__init__(REPOSITORY_SOURCE_GITHUB)
+    def __init__(self, project_type):
+        BaseCrawler.__init__(self, project_type, REPOSITORY_SOURCE_GITHUB)
 
         # Basic Search String
         self.template = Template(BASE_URL)
 
         # model file less than min_size don't use database
-        self.min_size = repo_type.min_size
+        self.min_size = self.project_type.min_size
         
         # less then 1000 files larger than threshold_size
-        self.max_size = repo_type.max_size
-        self.cur_size = repo_type.cur_size
+        self.max_size = self.project_type.max_size
+        self.cur_size = self.project_type.cur_size
     ## DEF
     
     def loadURL(self, url):
-        LOG.info("Retrieving results from %s" % url)
+        LOG.info("Retrieving data from %s" % url)
         request = urllib2.Request(url)
         request.add_header('Authorization', 'token %s' % TOKEN)
         response = urllib2.urlopen(request)
@@ -71,12 +72,17 @@ class GitHubCrawler(BaseCrawler):
     ## DEF
     
     def search(self, seed):
+        args = {
+            "query": self.project_type.filename,
+            "filename": self.project_type.filename,
+        }
         if self.cur_size == self.max_size:
-            url = self.template.substitue(size='>'+str(self.cur_size))
-            self.cur_size = slef.min_size
+            args["size"] = '>'+str(self.cur_size)
+            self.cur_size = self.min_size
         else:
-            url = self.template.substitute(size=self.cur_size)
+            args["size"] = self.cur_size
             self.cur_size = self.cur_size + 1
+        url = self.template.substitute(args)
 
         # Load and parse!
         response = self.loadURL(url)
@@ -145,7 +151,7 @@ class GitHubCrawler(BaseCrawler):
 
     def get_webpage_data(self, full_name):
         data = {}
-        response = self.loadURL(os.path.join(GITHUB_HOST, full_name)))
+        response = self.loadURL(os.path.join(GITHUB_HOST, full_name))
         soup = BeautifulSoup(response.read())
         numbers = soup.find_all(class_='num text-emphasized')
         
@@ -173,8 +179,7 @@ class GitHubCrawler(BaseCrawler):
         return data
     ## DEF
 
-
-    def save(self):
-        repo_type = Type.objects.get(name=self.name)
-        repo_type.cur_size = self.cur_size
-        repo_type.save()
+    #def save(self):
+        #repo_type = ProjectType.objects.get(name=self.name)
+        #repo_type.cur_size = self.cur_size
+        #repo_type.save()
