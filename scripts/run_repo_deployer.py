@@ -42,7 +42,7 @@ def save_attempt(attempt, result, log_str, pkgs_from_f=[], pkgs_from_db=[]):
     #attempt.log = log_str.getvalue()
     attempt.log = log_str
     
-    attempt.duration = (datetime.datetime.now() - attempt.start_time).total_seconds()
+    attempt.duration = datetime.datetime.now()
     attempt.save()
     #log_str.close()
     for pkg in pkgs_from_f:

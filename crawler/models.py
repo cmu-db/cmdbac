@@ -93,8 +93,13 @@ class Package(models.Model):
     name = models.CharField(max_length = 200)
     version = models.CharField(max_length = 200)
     count = models.IntegerField(default=0)
+    
+    def __unicode__(self):
+        return self.name
+    
     class Meta:
         unique_together = ('package_type', 'name', 'version')
+        
 # CLASS
 
 class Dependency(models.Model):
@@ -112,6 +117,7 @@ class Attempt(models.Model):
         return ATTEMPT_STATUS_NAMES[self.result]
     
     start_time = models.DateTimeField()
+    stop_time = models.DateTimeField(default=None, null=True)
     duration = models.FloatField(null=True)
     result = models.CharField(max_length=2, choices=ATTEMPT_STATUS, default=None, null=True)
     result_label = property(resultLabel)
