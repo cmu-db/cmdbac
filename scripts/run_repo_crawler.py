@@ -1,16 +1,15 @@
 #!/usr/bin/env python
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-import os
 import logging
-from crawler_class import Crawler
 logging.basicConfig(filename='repo_crawler.log',level=logging.DEBUG)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
+#import django
+#django.setup()
 
-import django
-django.setup()
-
-
+from repo_crawlers import GitHubCrawler
 from crawler.models import *
 
 if __name__ == '__main__':
@@ -18,6 +17,6 @@ if __name__ == '__main__':
         repo_types = Type.objects.all()
 
         for repo_type in repo_types:
-            crawler = Crawler(repo_type)
+            crawler = GitHubCrawler(repo_type)
             crawler.crawl()
             crawler.save()

@@ -5,13 +5,13 @@ Database Application Web Crawler. All command should be run in the project root 
 ## Install Requirements for Host Machine                                        
 install virtualbox (4.3) (download .deb and use dpkg -i command or follow https://help.ubuntu.com/community/VirtualBox/Installation)
 
-install vagrant (1.6.5) (download .deb and use dpkg -i command)                 
+* python
+* python-bs4
+* vagrant
+* unzip
+* pip
 
 install pip requirement packages (sudo pip install -r requirements.txt)         
-
-install unzip (sudo apt-get install unzip)                                      
-
-install python 2.7                                                              
 
 ## Environments                                                                 
 

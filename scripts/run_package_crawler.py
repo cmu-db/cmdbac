@@ -1,22 +1,22 @@
 #!/usr/bin/env python
-import os
-from utils import query
-from pip.index import PackageFinder, Link
-from pip.download import PipSession
-from pip.req import InstallRequirement
-from bs4 import BeautifulSoup
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 import urlparse
 import traceback
 import re
 import importlib
+from pip.index import PackageFinder, Link
+from pip.download import PipSession
+from pip.req import InstallRequirement
+from bs4 import BeautifulSoup
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
-
 import django
 django.setup()
 
+from utils import query
 from crawler.models import *
-
 from db_webcrawler import urls
 
 def get_versions(package):

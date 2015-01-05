@@ -1,21 +1,24 @@
-import os
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 import time
+import json
+import re
+
 from url import URL
 from utils import Utils
 from string import Template
 from bs4 import BeautifulSoup
-from constants import Constants
-import json
 from datetime import datetime
-import re
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 
-import django
-django.setup()
-
-
+from constants import Constants
 from crawler.models import *
-class Crawler:
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
+#import django
+#django.setup()
+
+class GitHubCrawler:
     def __init__(self, repo_type):
         self.name = repo_type.name
         self.template = Template("https://github.com/search?utf8=%E2%9C%93&q=" + repo_type.filename + "+in%3Apath+filename%3A" + repo_type.filename + "+size%3A${size}&type=Code&ref=searchresults")
@@ -122,7 +125,7 @@ class Crawler:
 #    while True:
 #        repo_types = Type.objects.all()
 #        for repo_type in repo_types:
-#            crawler = Crawler(repo_type)
+#            crawler = GithubCrawler(repo_type)
 #            crawler.crawl()
 #            crawler.save()
 #    #        if crawler.repo_type.cur_size == crawler.repo_type.max_size:

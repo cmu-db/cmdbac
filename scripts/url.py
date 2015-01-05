@@ -1,5 +1,6 @@
 from constants import Constants
 import urllib2
+
 class URL:
     def __init__(self, string):
         print string

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-import os
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 from os.path import join
 from utils import run_command
 import time
@@ -21,7 +23,6 @@ package_deployer_logger.addHandler(fh)
 package_deployer_logger.addHandler(ch)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
-
 import django
 django.setup()
 
