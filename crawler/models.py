@@ -63,7 +63,7 @@ class Database(models.Model):
 ## CLASS
 
 class Repository(models.Model):
-    full_name = models.CharField(max_length=200, null=False, unique=True)
+    name = models.CharField(max_length=128, null=False, unique=True)
     project_type = models.ForeignKey('ProjectType')
     source = models.ForeignKey('RepositorySource')
     latest_attempt = models.ForeignKey('Attempt', null=True)
@@ -95,11 +95,11 @@ class Repository(models.Model):
     crawler_date = models.DateTimeField(auto_now_add=True)
     
     def __unicode__(self):
-        return self.full_name
+        return self.name
     def get_user_name(self):
-        return self.full_name.split('/')[0]
+        return self.name.split('/')[0]
     def get_repo_name(self):
-        return self.full_name.split('/')[1]
+        return self.name.split('/')[1]
 ## CLASS
 
 class Package(models.Model):

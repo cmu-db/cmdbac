@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block main %}
 <h1 class="page-header">Attempt</h1>
->><a href="{% url 'repositories' %}{{ queries }}#{{repository.full_name}}">Repositories</a>
+>><a href="{% url 'repositories' %}{{ queries }}#{{repository.name}}">Repositories</a>
 >><a href="{% url 'repository' attempt.repo.user_name attempt.repo.repo_name %}{{ queries }}#{{ attempt.id }}
 
 {{ log }}

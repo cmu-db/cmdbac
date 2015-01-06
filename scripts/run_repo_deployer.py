@@ -250,7 +250,7 @@ DIR = "tmp_dir"
 
 def deploy_repo(repo):
     log_str = ''
-    log_str = log(log_str, 'deploying repo: ' + repo.full_name)
+    log_str = log(log_str, 'deploying repo: ' + repo.name)
     attempt = Attempt()
     attempt.repo = repo
     attempt.result = Result(name="Deploying")
@@ -267,7 +267,7 @@ def deploy_repo(repo):
         return
     attempt.sha = sha
 
-    log_str = log(log_str, 'Downloading repo: ' + repo.full_name + attempt.sha)
+    log_str = log(log_str, 'Downloading repo: ' + repo.name + attempt.sha)
     try:
          download(attempt, ZIP)
     except:
@@ -398,7 +398,7 @@ def main():
             string = 'Ruby on Rails'
         else:
             try:
-                repo = Repository.objects.get(full_name=sys.argv[1])
+                repo = Repository.objects.get(name=sys.argv[1])
             except:
                 print 'can not find the repository ' + sys.argv[1]
             deploy_repo(repo)

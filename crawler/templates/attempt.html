@@ -2,16 +2,16 @@
 {% load staticfiles %}
 
 {% block title %}
-Attempt #{{attempt.id}} &raquo; {{attempt.repo.full_name}} &raquo; {{SITE_TITLE}}
+Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
 {% endblock %}
 
 {% block main %}
 <ul class="breadcrumb">
     <li>
-        <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{attempt.repo.full_name}}">Repositories</a>
+        <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{attempt.repo.name}}">Repositories</a>
         <span class="divider"></span>
     <li>
-        <a href="{% url 'repository' attempt.repo.get_user_name attempt.repo.get_repo_name %}?{{ queries.urlencode }}#{{ attempt.id }}">{{attempt.repo.full_name}}</a>
+        <a href="{% url 'repository' attempt.repo.get_user_name attempt.repo.get_repo_name %}?{{ queries.urlencode }}#{{ attempt.id }}">{{attempt.repo.name}}</a>
         <span class="divider"></span>
     <li>Attempt #{{attempt.id}}
 </ul>

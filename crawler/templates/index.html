@@ -56,7 +56,7 @@
             {% if attempts %}
                 {% for attempt in attempts %}
             <tr>
-                    <td><a href="{% url 'repository' attempt.repo.get_user_name attempt.repo.get_repo_name %}">{{ attempt.repo.full_name }}</a></td>
+                    <td><a href="{% url 'repository' attempt.repo.get_user_name attempt.repo.get_repo_name %}">{{ attempt.repo.name }}</a></td>
                     {% if attempt.start_time %}
                         <td>{{ attempt.start_time|date:'Y-m-d H:i:s' }}</td>
                     {% else %}

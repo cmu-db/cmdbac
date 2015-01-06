@@ -2,16 +2,16 @@
 {% load staticfiles %}
 
 {% block title %}
-{{repository.full_name}}
+{{repository.name}}
 {% endblock %}
 
 {% block main %}
 {% include "status_codes.html" %}
 <ul class="breadcrumb">
     <li>
-        <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{repository.full_name}}">Repositories</a>
+        <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{repository.name}}">Repositories</a>
         <span class="divider"></span>
-    <li>{{repository.full_name}}
+    <li>{{repository.name}}
 </ul>
 
 <div style="breadcrumb">
@@ -32,7 +32,7 @@
             <tbody>
             <tr>
                 <td>Full Name</td>
-                <td>{{repository.full_name}}</td>
+                <td>{{repository.name}}</td>
             </tr>
             <tr>
                 <td>Project Type</td>

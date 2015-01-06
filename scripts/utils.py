@@ -27,9 +27,9 @@ ch.setFormatter(formatter)
 utils_logger.addHandler(fh)
 utils_logger.addHandler(ch)
 
-DOWNLOAD_URL_TEMPLATE = Template('https://github.com/${full_name}/archive/${sha}.zip')
-HOMEPAGE_URL_TEMPLATE = Template('https://github.com/${full_name}')
-API_COMMITS_URL = Template('https://api.github.com/repos/${full_name}/commits')
+DOWNLOAD_URL_TEMPLATE = Template('https://github.com/${name}/archive/${sha}.zip')
+HOMEPAGE_URL_TEMPLATE = Template('https://github.com/${name}')
+API_COMMITS_URL = Template('https://api.github.com/repos/${name}/commits')
 HOME_DIR = "/home/vagrant/"
 SHARE_DIR = "/vagrant/"
 # the github token
@@ -72,7 +72,7 @@ def run_command(command):
 
 
 def download(attempt, zip_name):
-    url = DOWNLOAD_URL_TEMPLATE.substitute(full_name=attempt.repo.full_name, sha=attempt.sha)
+    url = DOWNLOAD_URL_TEMPLATE.substitute(name=attempt.repo.name, sha=attempt.sha)
     response = query(url)
     zip_file = open(zip_name, 'wb')
     shutil.copyfileobj(response.fp, zip_file)
@@ -238,8 +238,8 @@ def vagrant_runserver(path, type_name):
 
 
 def get_latest_sha(repo):
-    url = API_COMMITS_URL.substitute(full_name=repo.full_name)
-    #url = HOMEPAGE_URL_TEMPLATE.substitute(full_name=repo.full_name)
+    url = API_COMMITS_URL.substitute(name=repo.name)
+    #url = HOMEPAGE_URL_TEMPLATE.substitute(name=repo.name)
     print url
     response = query(url)
     data = json.load(response)

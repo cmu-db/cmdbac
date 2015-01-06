@@ -92,17 +92,17 @@ class GitHubCrawler(BaseCrawler):
         
         # Pick through the results and find repos
         for title in titles:
-            full_name = title.contents[1].string
-            if Repository.objects.filter(full_name=full_name).exists():
-                LOG.info("Repository '%s' already exists" % full_name)
+            name = title.contents[1].string
+            if Repository.objects.filter(name=name).exists():
+                LOG.info("Repository '%s' already exists" % name)
             else:
-                LOG.info("Found new repository '%s'" % full_name)
-                api_data = self.get_api_data(full_name)
-                webpage_data = self.get_webpage_data(full_name)
+                LOG.info("Found new repository '%s'" % name)
+                api_data = self.get_api_data(name)
+                webpage_data = self.get_webpage_data(name)
                 
                 # Create the new repository
                 repo = Repository()
-                repo.full_name = full_name
+                repo.name = name
                 repo.repo_type = self.project_type
                 repo.last_attempt = None
                 repo.private = api_data['private']
@@ -149,9 +149,9 @@ class GitHubCrawler(BaseCrawler):
     ## DEF
 
 
-    def get_webpage_data(self, full_name):
+    def get_webpage_data(self, name):
         data = {}
-        response = self.loadURL(os.path.join(GITHUB_HOST, full_name))
+        response = self.loadURL(os.path.join(GITHUB_HOST, name))
         soup = BeautifulSoup(response.read())
         numbers = soup.find_all(class_='num text-emphasized')
         
@@ -173,8 +173,8 @@ class GitHubCrawler(BaseCrawler):
         return data
     ## DEF
 
-    def get_api_data(self, full_name):
-        reponse = self.loadURL(os.path.join(API_GITHUB_REPO, full_name))
+    def get_api_data(self, name):
+        reponse = self.loadURL(os.path.join(API_GITHUB_REPO, name))
         data = json.load(reponse)
         return data
     ## DEF

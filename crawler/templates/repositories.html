@@ -32,7 +32,7 @@ Repositories &raquo; Database Application Crawler
     <table class="table table-striped">
         <thead>
             <tr>
-                <th><a href="?order_by={% if order_by == "full_name" %}-{% endif %}full_name&amp;{{ queries_no_page_order.urlencode }}">Full Name</th>
+                <th><a href="?order_by={% if order_by == "name" %}-{% endif %}name&amp;{{ queries_no_page_order.urlencode }}">Full Name</th>
                 <th><a href="?order_by={% if order_by != "-attempts_count" %}-{% endif %}attempts_count&;{{queries_no_page_order.urlencode }}"> # of Attempts</th>
                 <th><a href="?order_by={% if order_by != "-latest_attempt__start_time" %}-{% endif %}latest_attempt__start_time&;{{queries_no_page_order.urlencode }}">Latest Attempt Date</th>
                 <th><a href="?order_by={% if order_by != "-commits_count" %}-{% endif %}commits_count&amp;{{ queries_no_page_order.urlencode }}"># of Commits</th>
@@ -45,7 +45,7 @@ Repositories &raquo; Database Application Crawler
             {% if repositories %}
                 {% for repository in repositories %}
                 <tr>
-                    <td><a id="{{ repository.full_name}}" href="{% url 'repository' repository.get_user_name repository.get_repo_name %}?{{ queries.urlencode }}">{{ repository.full_name }}</a></td>
+                    <td><a id="{{ repository.name}}" href="{% url 'repository' repository.get_user_name repository.get_repo_name %}?{{ queries.urlencode }}">{{ repository.name }}</a></td>
                     <td>{{repository.attempts_count}}</td>
                     {% if repository.latest_attempt %}
                         <td>{{repository.latest_attempt.start_time|date:'Y-m-d H:i:s' }}</td>
@@ -68,7 +68,7 @@ Repositories &raquo; Database Application Crawler
                     {% endif %}
                     </td>
 
-                    <td><a href="https://github.com/{{ repository.full_name }}"><img src="{% static "img/github.png" %}" alt="Github" width="24" height="24"/></a></td>
+                    <td><a href="https://github.com/{{ repository.name }}"><img src="{% static "img/github.png" %}" alt="Github" width="24" height="24"/></a></td>
                 </tr>
                 {% endfor %}
             {% endif %}

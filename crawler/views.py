@@ -43,14 +43,14 @@ def repositories(request):
 
     repositories = Repository.objects.all()
     if request.GET.__contains__('search'):
-        repositories = repositories.filter(full_name__contains=request.GET['search'])
+        repositories = repositories.filter(name__contains=request.GET['search'])
     result_list = request.GET.getlist('results')
     if result_list:
         repositories = repositories.filter(latest_attempt__result__in=result_list)
     type_list = request.GET.getlist('types')
     if type_list:
         repositories = repositories.filter(repo_type__name__in=type_list)
-    order_by = request.GET.get('order_by', 'full_name')
+    order_by = request.GET.get('order_by', 'name')
     repositories = repositories.order_by(order_by)
 
     paginator = Paginator(repositories, 50) # Show 100 contacts per page
@@ -79,7 +79,7 @@ def repository(request, user_name, repo_name):
     print 'queries: '
     print request.GET.copy()
     
-    repository = Repository.objects.get(full_name=user_name + '/' + repo_name)
+    repository = Repository.objects.get(name=user_name + '/' + repo_name)
     attempts = Attempt.objects.filter(repo=repository)
     context['repository'] = repository
     context['attempts'] = attempts
