@@ -10,7 +10,7 @@ class RepositorySourceAdmin(admin.ModelAdmin):
 ## CLASS
 
 class RepositoryAdmin(admin.ModelAdmin):
-    list_display = [ 'id', 'full_name', 'commits_count', 'description', 'crawler_date' ]
+    list_display = [ 'id', 'full_name', 'commits_count', 'description', 'crawler_date', 'project_type' ]
     list_filter = ['project_type', 'crawler_date']
 # CLASS
 
@@ -21,8 +21,8 @@ class AttemptAdmin(admin.ModelAdmin):
 # CLASS
 
 class PackageAdmin(admin.ModelAdmin):
-    list_display = [ 'name', 'package_type', 'version', 'count' ]
-    list_filter = ['package_type']
+    list_display = [ 'name', 'project_type', 'version', 'count' ]
+    list_filter = ['project_type']
 # CLASS
 
 # Register your models here.

@@ -103,7 +103,7 @@ class Repository(models.Model):
 ## CLASS
 
 class Package(models.Model):
-    package_type = models.ForeignKey('ProjectType')
+    project_type = models.ForeignKey('ProjectType')
     name = models.CharField(max_length = 200)
     version = models.CharField(max_length = 200)
     count = models.IntegerField(default=0)
@@ -112,7 +112,7 @@ class Package(models.Model):
         return self.name
     
     class Meta:
-        unique_together = ('package_type', 'name', 'version')
+        unique_together = ('project_type', 'name', 'version')
         
 # CLASS
 
