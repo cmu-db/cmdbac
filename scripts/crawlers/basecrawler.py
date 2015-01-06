@@ -11,12 +11,7 @@ from string import Template
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-from constants import Constants
 from crawler.models import *
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
-#import django
-#django.setup()
 
 class BaseCrawler(object):
     def __init__(self, crawlerStatus):

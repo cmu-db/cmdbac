@@ -1,3 +1,4 @@
+import sys
 import urllib2
 import subprocess
 import traceback
@@ -125,20 +126,8 @@ def vagrant_pip_install(names, is_file):
 
 
 def rewrite_settings(path, type_name):
-    if type_name == "Django":
-        settings = """
-SECRET_KEY = 'abcdefghijklmnopqrstuvwxyz'
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db_webcrawler',
-    }
-}
-"""
-        with open(path, "a") as my_file:
-            my_file.write(settings)
-    elif type_name == "Ruby on Rails":
+
+    if type_name == "Ruby on Rails":
         settings = """
 development:
   adapter: sqlite3
@@ -168,19 +157,6 @@ gem 'sqlite3'
             my_file.write(settings)
 
 def install_requirements(requirement_files, type_name):
-    if type_name == 'Django':
-        if requirement_files:
-            vagrant_pip_clear()
-            old_packages = vagrant_pip_freeze()
-            for requirement_file in requirement_files:
-                out = vagrant_pip_install(requirement_file, True)
-            new_packages = vagrant_pip_freeze()
-            diff_packages = list(set(new_packages) - set(old_packages))
-            return diff_packages
-        else:
-            return []
-
-
 #TODO: add these to main function
                 #dep = Dependency()
                 #dep.attempt = attempt
@@ -189,7 +165,7 @@ def install_requirements(requirement_files, type_name):
                 #dep.save()
                 #obj.count = obj.count + 1
                 #obj.save()
-    elif type_name == "Ruby on Rails":
+    if type_name == "Ruby on Rails":
         command = vagrant_cd(requirement_files) + " && bundle install"
         return vagrant_run_command(command)
 
@@ -213,11 +189,7 @@ def unzip(zip_name, dir_name):
     out = run_command(command)
 
 def vagrant_syncdb(path, type_name):
-    if type_name == "Django":
-        #vm_manage_file = to_vm_path(path)
-        command = vagrant_cd(os.path.dirname(path)) + " && python manage.py syncdb --noinput && python manage.py migrate --noinput"
-        return vagrant_run_command(command) 
-    elif type_name == "Ruby on Rails":
+    if type_name == "Ruby on Rails":
         command = vagrant_cd(path) + " && bundle exec rake db:migrate"
         return vagrant_run_command(command)
 
@@ -227,11 +199,7 @@ def block_ports():
 
 def vagrant_runserver(path, type_name):
     block_ports()
-    if type_name == "Django":
-        vm_manage_file = to_vm_path(path)
-        command = vagrant_cd(os.path.dirname(path)) + " && nohup python manage.py runserver 0.0.0.0:8000 & sleep 1"
-        return vagrant_run_command(command)
-    elif type_name == "Ruby on Rails":
+    if type_name == "Ruby on Rails":
         #command = vagrant_cd(path) + " && bundle exec rails server -p 3000 > /vagrant/log 2>&1 & sleep 10"
         command = vagrant_cd(path) + " && nohup bundle exec rails server -p 3000 -d"
         return vagrant_run_command(command)
@@ -276,7 +244,6 @@ def get_urls(path, type_name):
         output = vagrant_run_command(command).split()
         urls = [word for word in output if word.startswith('/')]
     elif type_name == "Django":
-        import sys
         dirname = os.path.dirname(path)
         sys.path.append(dirname)
         proj_name = os.path.basename(path)
@@ -291,8 +258,6 @@ def get_urls(path, type_name):
 def check_server(url, type_name):
     if type_name == "Ruby on Rails":
         command = "wget --spider " + urlparse.urljoin("http://localhost:3000/", url)
-    elif type_name == "Django":
-        command = "wget " + urlparse.urljoin("http://localhost:8000/", url)
     return vagrant_run_command(command)
 
 def unblock_ports():
