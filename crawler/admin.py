@@ -6,7 +6,7 @@ class DependencyInline(admin.StackedInline):
     extra = 3
     
 class RepositorySourceAdmin(admin.ModelAdmin):
-    list_display = [ 'name', 'baseurl', 'crawler_class', 'search_token', ]
+    list_display = [ 'name', 'crawler_class', 'base_url', 'commit_url', 'search_token', ]
 ## CLASS
 
 class CrawlerStatusAdmin(admin.ModelAdmin):
@@ -14,8 +14,8 @@ class CrawlerStatusAdmin(admin.ModelAdmin):
 ## CLASS
 
 class RepositoryAdmin(admin.ModelAdmin):
-    list_display = [ 'id', 'name', 'get_project_type', 'source', 'commits_count', 'description', 'crawler_date' ]
-    list_filter = ['project_type', 'crawler_date']
+    list_display = [ 'id', 'name', 'get_project_type', 'source', 'commits_count', 'description', 'crawler_date', 'updated_date' ]
+    list_filter = ['project_type', 'crawler_date', 'updated_date']
     fieldsets = [
         (None,               {'fields': ['name', 'project_type', 'source', 'description']}),
         ('Date information', {'fields': ['created_at', 'updated_at', 'pushed_at']}),

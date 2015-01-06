@@ -45,17 +45,26 @@ class ProjectType(models.Model):
 
 class RepositorySource(models.Model):
     name = models.CharField(max_length=16)
-    baseurl = models.CharField(max_length=200)
-    commiturl = models.CharField(max_length=200)
+    base_url = models.CharField(max_length=200)
+    commit_url = models.CharField(max_length=200)
     crawler_class = models.CharField(max_length=16)
     search_token = models.CharField(max_length=128, null=True)
     logo = models.CharField(max_length=100)
     
+    def get_url(self, repo_name):
+        from string import Template
+        t = Template(self.base_url)
+        args = {
+            "repo_name": repo_name,
+        }
+        return t.substitute(args)
+    ## DEF
+    
     def get_commit_url(self, repo_name, commit):
         from string import Template
-        t = Template(self.commiturl)
+        t = Template(self.commit_url)
         args = {
-            "baseurl": self.baseurl,
+            "base_url": self.base_url,
             "repo_name": repo_name,
             "commit": commit,
         }
@@ -129,6 +138,8 @@ class Repository(models.Model):
         return self.name.split('/')[0]
     def get_repo_name(self):
         return self.name.split('/')[1]
+    def get_url(self):
+        return self.source.get_url(self.name)
     
     class Meta:
         verbose_name_plural = "repositories"
