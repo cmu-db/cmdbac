@@ -1,14 +1,5 @@
 from django.db import models
 
-# Crawler Repository Source
-REPOSITORY_SOURCE = (
-    ('GH', 'GitHub'),
-    ('BB', 'BitBucket'),
-    ('GC', 'Google Code'),
-)
-for x,y in REPOSITORY_SOURCE:
-    globals()['REPOSITORY_SOURCE_' + y.upper()] = x
-
 # Dependency Package Source
 PACKAGE_SOURCE = (
     ('D', 'Database'),
@@ -43,11 +34,22 @@ globals()['ATTEMPT_STATUS_CODES'] = ATTEMPT_STATUS_CODES
 # ----------------------------------------------------------------------------
 
 class ProjectType(models.Model):
-    name = models.CharField(max_length=16, primary_key=True)
+    name = models.CharField(max_length=16)
     filename = models.CharField(max_length=200)
     min_size = models.IntegerField()
     max_size = models.IntegerField()
     cur_size = models.IntegerField()
+    
+    def __unicode__(self):
+        return self.name
+# CLASS
+
+class RepositorySource(models.Model):
+    name = models.CharField(max_length=16)
+    baseurl = models.CharField(max_length=200)
+    crawler_class = models.CharField(max_length=16)
+    search_token = models.CharField(max_length=128, null=True)
+    last_crawler_time = models.DateTimeField()
     
     def __unicode__(self):
         return self.name
@@ -62,8 +64,8 @@ class Database(models.Model):
 
 class Repository(models.Model):
     full_name = models.CharField(max_length=200, null=False, unique=True)
-    repo_type = models.ForeignKey('ProjectType')
-    source = models.CharField(max_length=2, choices=REPOSITORY_SOURCE, null=False)
+    project_type = models.ForeignKey('ProjectType')
+    source = models.ForeignKey('RepositorySource')
     latest_attempt = models.ForeignKey('Attempt', null=True)
     private = models.BooleanField(default=False)
     description = models.TextField()

@@ -5,9 +5,13 @@ class DependencyInline(admin.StackedInline):
     model = Dependency
     extra = 3
 
+class RepositorySourceAdmin(admin.ModelAdmin):
+    list_display = [ 'name', 'baseurl', 'crawler_class', 'search_token', 'last_crawler_time' ]
+## CLASS
+
 class RepositoryAdmin(admin.ModelAdmin):
-    list_display = [ 'id', 'full_name', 'repo_type', 'commits_count', 'description', 'crawler_date' ]
-    list_filter = ['repo_type', 'crawler_date']
+    list_display = [ 'id', 'full_name', 'commits_count', 'description', 'crawler_date' ]
+    list_filter = ['project_type', 'crawler_date']
 # CLASS
 
 class AttemptAdmin(admin.ModelAdmin):
@@ -22,6 +26,7 @@ class PackageAdmin(admin.ModelAdmin):
 # CLASS
 
 # Register your models here.
+admin.site.register(RepositorySource, RepositorySourceAdmin)
 admin.site.register(Repository, RepositoryAdmin)
 admin.site.register(Database)
 admin.site.register(ProjectType)

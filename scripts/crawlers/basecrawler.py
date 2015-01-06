@@ -24,17 +24,13 @@ class BaseCrawler(object):
         self.project_type = project_type
     # DEF
         
-    def search(self, seed):
+    def search(self):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     # DEF
     
-    def parseResults(self, data):
-        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
-    # DEF
-
     def crawl(self):
         # For now let's do it once...
-        nextResults = self.search(seed=None)
+        nextResults = self.search()
     ## DEF
         
     #def save(self):
