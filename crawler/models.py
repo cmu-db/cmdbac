@@ -1,3 +1,4 @@
+import os
 from django.db import models
 
 # Dependency Package Source
@@ -36,24 +37,45 @@ globals()['ATTEMPT_STATUS_CODES'] = ATTEMPT_STATUS_CODES
 class ProjectType(models.Model):
     name = models.CharField(max_length=16)
     filename = models.CharField(max_length=200)
-    min_size = models.IntegerField()
-    max_size = models.IntegerField()
-    cur_size = models.IntegerField()
     
     def __unicode__(self):
         return self.name
-# CLASS
+## CLASS
 
 class RepositorySource(models.Model):
     name = models.CharField(max_length=16)
     baseurl = models.CharField(max_length=200)
+    commiturl = models.CharField(max_length=200)
     crawler_class = models.CharField(max_length=16)
     search_token = models.CharField(max_length=128, null=True)
-    last_crawler_time = models.DateTimeField()
+    
+    def get_commit_url(self, repo_name, commit):
+        from string import Template
+        t = Template(self.commiturl)
+        args = {
+            "baseurl": self.baseurl,
+            "repo_name": repo_name,
+            "commit": commit,
+        }
+        return t.substitute(args)
+    ## DEF
     
     def __unicode__(self):
         return self.name
-# CLASS
+## CLASS
+
+class CrawlerStatus(models.Model):
+    source = models.ForeignKey('RepositorySource')
+    project_type = models.ForeignKey('ProjectType')
+    min_size = models.IntegerField()
+    max_size = models.IntegerField()
+    cur_size = models.IntegerField()
+    next_url = models.URLField(null=True)
+    last_crawler_time = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        unique_together = ('source', 'project_type')
+## CLASS
 
 class Database(models.Model):
     name = models.CharField(max_length=16)
@@ -100,6 +122,9 @@ class Repository(models.Model):
         return self.name.split('/')[0]
     def get_repo_name(self):
         return self.name.split('/')[1]
+    
+    class Meta:
+        verbose_name_plural = "repositories"
 ## CLASS
 
 class Package(models.Model):
@@ -114,15 +139,17 @@ class Package(models.Model):
     class Meta:
         unique_together = ('project_type', 'name', 'version')
         
-# CLASS
+## CLASS
 
 class Dependency(models.Model):
     attempt = models.ForeignKey('Attempt')
     package = models.ForeignKey('Package')
     source = models.CharField(max_length=2, choices=PACKAGE_SOURCE, default=None, null=True)
+
     class Meta:
         unique_together = ('attempt', 'package')
-# CLASS
+        verbose_name_plural = "dependencies"
+## CLASS
 
 class Attempt(models.Model):
     def resultLabel(self):
@@ -131,7 +158,9 @@ class Attempt(models.Model):
         return ATTEMPT_STATUS_NAMES[self.result]
     def duration(self):
         return (self.stop_time - self.start_time).total_seconds()
-    
+    def commit_url(self):
+        return self.repo.source.get_commit_url(self.repo.name, self.sha)
+
     start_time = models.DateTimeField()
     stop_time = models.DateTimeField(default=None, null=True)
     duration = property(duration)
@@ -146,12 +175,16 @@ class Attempt(models.Model):
     repo = models.ForeignKey('Repository', null=True)
     base_dir = models.CharField(max_length=200, null=True)
     setting_dir = models.CharField(max_length=200, null=True)
-# CLASS
+
+    def __unicode__(self):
+        return unicode(self.id)
+
+## CLASS
 
 class Module(models.Model):
     name = models.CharField(max_length = 200)
     package = models.ForeignKey('Package')
     class Meta:
         unique_together = ('name', 'package')
-# CLASS
+## CLASS
 

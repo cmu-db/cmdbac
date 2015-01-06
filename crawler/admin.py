@@ -4,9 +4,9 @@ from crawler.models import *
 class DependencyInline(admin.StackedInline):
     model = Dependency
     extra = 3
-
+    
 class RepositorySourceAdmin(admin.ModelAdmin):
-    list_display = [ 'name', 'baseurl', 'crawler_class', 'search_token', 'last_crawler_time' ]
+    list_display = [ 'name', 'baseurl', 'crawler_class', 'search_token', ]
 ## CLASS
 
 class RepositoryAdmin(admin.ModelAdmin):
@@ -28,6 +28,7 @@ class RepositoryAdmin(admin.ModelAdmin):
 class AttemptAdmin(admin.ModelAdmin):
     list_display = [ 'id', 'repo', 'result_name', 'start_time', 'stop_time' ]
     list_filter = ['result', 'start_time']
+    raw_id_fields = [ 'repo' ]
     #inlines = [DependencyInline]
 # CLASS
 
@@ -37,10 +38,12 @@ class PackageAdmin(admin.ModelAdmin):
 # CLASS
 
 # Register your models here.
+admin.site.register(ProjectType)
 admin.site.register(RepositorySource, RepositorySourceAdmin)
+admin.site.register(CrawlerStatus)
 admin.site.register(Repository, RepositoryAdmin)
 admin.site.register(Database)
-admin.site.register(ProjectType)
+
 admin.site.register(Package, PackageAdmin)
 admin.site.register(Dependency)
 admin.site.register(Attempt, AttemptAdmin)

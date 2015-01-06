@@ -9,12 +9,21 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 #import django
 #django.setup()
 
-from crawlers import *
+import crawlers
 from crawler.models import *
 
 if __name__ == '__main__':
-    while True:
-        for project_type in ProjectType.objects.all():
-            crawler = GitHubCrawler(project_type)
-            crawler.crawl()
-            #crawler.save()
+    
+    for cs in CrawlerStatus.objects.all():
+        repo_source = cs.repo_source
+        project_type = cs.project_type
+
+        moduleName = "crawlers.%s" % (repo_source.crawler_class.lower())
+        moduleHandle = __import__(moduleName, globals(), locals(), [repo_source.crawler_class])
+        klass = getattr(moduleHandle, repo_source.crawler_class)
+
+        crawler = klass(repo_source, project_type)
+        crawler.crawl()
+        #crawler.save()
+    ## FOR
+## IF

@@ -68,8 +68,8 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
             </colgroup>
             <tbody>
                 <tr>
-                    <td>Checksum</td>
-                    <td>{{attempt.sha}}</td>
+                    <td>Commit</td>
+                    <td><a href="{{ attempt.commit_url}}">{{attempt.sha}}</a></td>
                 </tr>
                 <tr>
                     <td>Tested Database</td>

@@ -40,7 +40,6 @@ BASE_URL = "https://github.com/search?utf8=%E2%9C%93&q=${query}+" + \
            "size%3A${size}&" + \
            "type=Code&ref=searchresults"
            
-TOKEN = '5b3563b9b8c4b044530eeb363b633ac1c9535356'
 GITHUB_HOST = 'https://github.com/'
 API_GITHUB_REPO = 'https://api.github.com/repos/'
 API_GITHUB_SLEEP = 1 # seconds
@@ -49,18 +48,18 @@ API_GITHUB_SLEEP = 1 # seconds
 ## GITHUB CRAWLER
 ## =====================================================================
 class GitHubCrawler(BaseCrawler):
-    def __init__(self, project_type):
-        BaseCrawler.__init__(self, project_type, REPOSITORY_SOURCE_GITHUB)
+    def __init__(self, crawlerStatus):
+        BaseCrawler.__init__(self, crawlerStatus)
 
         # Basic Search String
         self.template = Template(BASE_URL)
 
         # model file less than min_size don't use database
-        self.min_size = self.project_type.min_size
+        #self.min_size = self.project_type.min_size
         
         # less then 1000 files larger than threshold_size
-        self.max_size = self.project_type.max_size
-        self.cur_size = self.project_type.cur_size
+        #self.max_size = self.project_type.max_size
+        #self.cur_size = self.project_type.cur_size
     ## DEF
     
     def loadURL(self, url):
@@ -71,21 +70,29 @@ class GitHubCrawler(BaseCrawler):
         return response
     ## DEF
     
-    def search(self, seed):
+    def nextURL(self):
+        # Check whether there is a next url that we need to load
+        # from where we left off from our last run
+        if not self.crawlerStatus.next_url is None:
+            return self.crawlerStatus.next_url
+        
+        # Otherwise, compute what the next page we want to load
         args = {
-            "query": self.project_type.filename,
-            "filename": self.project_type.filename,
+            "query": self.crawlerStatus.project_type.filename,
+            "filename": self.crawlerStatus.project_type.filename,
         }
-        if self.cur_size == self.max_size:
-            args["size"] = '>'+str(self.cur_size)
-            self.cur_size = self.min_size
+        if self.crawlerStatus.cur_size == self.crawlerStatus.max_size:
+            args["size"] = '>'+str(self.crawlerStatus.cur_size)
+            self.crawlerStatus.cur_size = self.min_size
         else:
-            args["size"] = self.cur_size
-            self.cur_size = self.cur_size + 1
-        url = self.template.substitute(args)
-
+            args["size"] = self.crawlerStatus.cur_size
+            self.crawlerStatus.cur_size = self.crawlerStatus.cur_size + 1
+        return self.template.substitute(args)
+    ## DEF
+    
+    def search(self):
         # Load and parse!
-        response = self.loadURL(url)
+        response = self.loadURL(self.nextURL())
         soup = BeautifulSoup(response.read())
         titles = soup.find_all(class_='title')
         LOG.info("Found %d repositories" % len(titles))
@@ -142,12 +149,15 @@ class GitHubCrawler(BaseCrawler):
         next_url = None
         if not next_page or not next_page.has_attr('href'):
             LOG.info("No next page link found!")
+            self.crawlerStatus.next_url = None
         else:
-            next_url = GITHUB_HOST + next_page['href']
+            self.crawlerStatus.next_url = GITHUB_HOST + next_page['href']
             
-        return next_url
+        # Make sure we update our crawler status
+        self.crawlerStatus.save()
+            
+        return
     ## DEF
-
 
     def get_webpage_data(self, name):
         data = {}

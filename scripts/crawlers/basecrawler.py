@@ -19,9 +19,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 #django.setup()
 
 class BaseCrawler(object):
-    def __init__(self, project_type, repo_source):
-        self.repo_source = repo_source
-        self.project_type = project_type
+    def __init__(self, crawlerStatus):
+        self.crawlerStatus = crawlerStatus
     # DEF
         
     def search(self):
