@@ -28,7 +28,7 @@ def home(request):
     return render(request, 'index.html', context)
 
 def repositories(request):
-    print request.GET
+    #print request.GET
     context = {}
     context['queries'] = request.GET.copy()
     queries_no_page = request.GET.copy()
@@ -50,7 +50,7 @@ def repositories(request):
     type_list = request.GET.getlist('types')
     if type_list:
         repositories = repositories.filter(repo_type__name__in=type_list)
-    order_by = request.GET.get('order_by', 'name')
+    order_by = request.GET.get('order_by', 'crawler_date')
     repositories = repositories.order_by(order_by)
 
     paginator = Paginator(repositories, 50) # Show 100 contacts per page

@@ -33,12 +33,12 @@ Repositories &raquo; Database Application Crawler
         <thead>
             <tr>
                 <th><a href="?order_by={% if order_by == "name" %}-{% endif %}name&amp;{{ queries_no_page_order.urlencode }}">Full Name</th>
-                <th><a href="?order_by={% if order_by != "-attempts_count" %}-{% endif %}attempts_count&;{{queries_no_page_order.urlencode }}"> # of Attempts</th>
-                <th><a href="?order_by={% if order_by != "-latest_attempt__start_time" %}-{% endif %}latest_attempt__start_time&;{{queries_no_page_order.urlencode }}">Latest Attempt Date</th>
-                <th><a href="?order_by={% if order_by != "-commits_count" %}-{% endif %}commits_count&amp;{{ queries_no_page_order.urlencode }}"># of Commits</th>
+                <th>Source</th>
                 <th><a href="?order_by={% if order_by == "repo_type__name" %}-{% endif %}repo_type__name&amp;{{ queries_no_page_order.urlencode }}">Type</th>
-                <th><a href="?order_by={% if order_by == "latest_attempt__result__name" %}-{% endif %}latest_attempt__result__name&amp;{{ queries_no_page_order.urlencode }}">Result</th>
-                <th>GitHub</th>
+                <th><a href="?order_by={% if order_by != "-commits_count" %}-{% endif %}commits_count&amp;{{ queries_no_page_order.urlencode }}"># of Commits</th>
+                <th><a href="?order_by={% if order_by != "-attempts_count" %}-{% endif %}attempts_count&;{{queries_no_page_order.urlencode }}"> # of Attempts</th>
+                <th><a href="?order_by={% if order_by == "latest_attempt__result__name" %}-{% endif %}latest_attempt__result__name&amp;{{ queries_no_page_order.urlencode }}">Last Result</th>
+                <th><a href="?order_by={% if order_by != "-updated_date" %}-{% endif %}updated_date&;{{queries_no_page_order.urlencode }}">Updated</th>
             </tr>
         </thead>
         <tbody>
@@ -46,29 +46,33 @@ Repositories &raquo; Database Application Crawler
                 {% for repository in repositories %}
                 <tr>
                     <td><a id="{{ repository.name}}" href="{% url 'repository' repository.get_user_name repository.get_repo_name %}?{{ queries.urlencode }}">{{ repository.name }}</a></td>
-                    <td>{{repository.attempts_count}}</td>
-                    {% if repository.latest_attempt %}
-                        <td>{{repository.latest_attempt.start_time|date:'Y-m-d H:i:s' }}</td>
-                    {% else %}
-                        <td>-
-                    {% endif %}
+                    
+                    <td><a href="{{ repository.source.get_url }}"><img src="{% static repository.source.logo %}" alt="{{ repository.source.name }}" title="View on {{ repository.source.name }}" class="source-logo" /></a></td>
+                    
+                    <td><img src="{% static repository.project_type.logo %}" alt="{{ repository.project_type.name }}" title="{{ repository.project_type.name }}" class="projecttype-logo" /></td>
+
                     <td>{{ repository.commits_count }}</td>
-                    {% if repository.repo_type.name == "Django" %}
-                        <td><img src="{% static "img/django.jpg" %}" alt="Django" width="24" height="24"/></td>
-                    {% elif repository.repo_type.name == "Ruby on Rails" %}
-                        <td><img src="{% static "img/ruby_on_rails.jpg" %}" alt="Ruby on Rails" width="24" height="24"/></td>
-                    {% endif %}
+
+                    <td>{{repository.attempts_count}}</td>
 
                     <td>
+                    {% if repository.latest_attempt %}
+                        {{repository.latest_attempt.start_time|date:'Y-m-d H:i:s' }}
+                    {% else %}
+                        -
+                    {% endif %}
+                    </td>
+                    
+                    <td>
                     {% if not repository.latest_attempt %}
-                        <span class="label label-info">No Attempt</span>
+                        <!-- <span class="label label-info">No Attempt</span> -->
+                        -
                     {% else %}
                         <a id="{{repository.latest_attempt.id}}" href="{% url 'attempt' repository.latest_attempt.id %}?{{ queries.urlencode }}" class="label label-{{ repository.latest_attempt.result_label }}">{{repository.latest_attempt.result_name}}</a>
                         <a href="#" data-toggle="modal" data-target="#statusModal">?</a>
                     {% endif %}
                     </td>
-
-                    <td><a href="https://github.com/{{ repository.name }}"><img src="{% static "img/github.png" %}" alt="Github" width="24" height="24"/></a></td>
+                    
                 </tr>
                 {% endfor %}
             {% endif %}

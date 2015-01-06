@@ -37,6 +37,7 @@ globals()['ATTEMPT_STATUS_CODES'] = ATTEMPT_STATUS_CODES
 class ProjectType(models.Model):
     name = models.CharField(max_length=16)
     filename = models.CharField(max_length=200)
+    logo = models.CharField(max_length=100)
     
     def __unicode__(self):
         return self.name
@@ -48,6 +49,7 @@ class RepositorySource(models.Model):
     commiturl = models.CharField(max_length=200)
     crawler_class = models.CharField(max_length=16)
     search_token = models.CharField(max_length=128, null=True)
+    logo = models.CharField(max_length=100)
     
     def get_commit_url(self, repo_name, commit):
         from string import Template
@@ -119,6 +121,7 @@ class Repository(models.Model):
     contributors_count = models.IntegerField()
     attempts_count = models.IntegerField()
     crawler_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now_add=True, auto_now=True)
     
     def __unicode__(self):
         return self.name
