@@ -15,15 +15,17 @@ from crawler.models import *
 if __name__ == '__main__':
     
     for cs in CrawlerStatus.objects.all():
-        repo_source = cs.repo_source
+        repo_source = cs.source
         project_type = cs.project_type
 
         moduleName = "crawlers.%s" % (repo_source.crawler_class.lower())
         moduleHandle = __import__(moduleName, globals(), locals(), [repo_source.crawler_class])
         klass = getattr(moduleHandle, repo_source.crawler_class)
 
-        crawler = klass(repo_source, project_type)
+        crawler = klass(cs)
         crawler.crawl()
+        
+        break
         #crawler.save()
     ## FOR
 ## IF

@@ -75,6 +75,10 @@ class CrawlerStatus(models.Model):
     
     class Meta:
         unique_together = ('source', 'project_type')
+        verbose_name_plural = "crawlers"
+        
+    def __unicode__(self):
+        return "Crawler::%s::%s" % (self.source.name, self.project_type.name)
 ## CLASS
 
 class Database(models.Model):
@@ -90,7 +94,7 @@ class Repository(models.Model):
     source = models.ForeignKey('RepositorySource')
     latest_attempt = models.ForeignKey('Attempt', null=True)
     private = models.BooleanField(default=False)
-    description = models.TextField()
+    description = models.TextField(null=True)
     fork = models.BooleanField(default=False)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()

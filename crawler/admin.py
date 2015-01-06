@@ -9,6 +9,10 @@ class RepositorySourceAdmin(admin.ModelAdmin):
     list_display = [ 'name', 'baseurl', 'crawler_class', 'search_token', ]
 ## CLASS
 
+class CrawlerStatusAdmin(admin.ModelAdmin):
+    list_display = [ 'id', 'source', 'project_type', 'next_url', 'last_crawler_time', ]
+## CLASS
+
 class RepositoryAdmin(admin.ModelAdmin):
     list_display = [ 'id', 'name', 'get_project_type', 'source', 'commits_count', 'description', 'crawler_date' ]
     list_filter = ['project_type', 'crawler_date']
@@ -40,10 +44,10 @@ class PackageAdmin(admin.ModelAdmin):
 # Register your models here.
 admin.site.register(ProjectType)
 admin.site.register(RepositorySource, RepositorySourceAdmin)
-admin.site.register(CrawlerStatus)
-admin.site.register(Repository, RepositoryAdmin)
+admin.site.register(CrawlerStatus, CrawlerStatusAdmin)
 admin.site.register(Database)
 
+admin.site.register(Repository, RepositoryAdmin)
 admin.site.register(Package, PackageAdmin)
 admin.site.register(Dependency)
 admin.site.register(Attempt, AttemptAdmin)

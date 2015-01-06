@@ -65,7 +65,7 @@ class GitHubCrawler(BaseCrawler):
     def loadURL(self, url):
         LOG.info("Retrieving data from %s" % url)
         request = urllib2.Request(url)
-        request.add_header('Authorization', 'token %s' % TOKEN)
+        request.add_header('Authorization', 'token %s' % self.crawlerStatus.source.search_token)
         response = urllib2.urlopen(request)
         return response
     ## DEF
@@ -110,7 +110,8 @@ class GitHubCrawler(BaseCrawler):
                 # Create the new repository
                 repo = Repository()
                 repo.name = name
-                repo.repo_type = self.project_type
+                repo.source = self.crawlerStatus.source
+                repo.project_type = self.crawlerStatus.project_type
                 repo.last_attempt = None
                 repo.private = api_data['private']
                 repo.description = Utils.none2empty(api_data['description'])
@@ -138,6 +139,7 @@ class GitHubCrawler(BaseCrawler):
                 repo.contributors_count = webpage_data['contributors_count']
                 repo.attempts_count = 0
                 repo.save()
+                LOG.info("Successfully created new repository '%s' [%d]" % (repo, repo.id))
                 
                 # Sleep for a little bit to prevent us from getting blocked
                 time.sleep(API_GITHUB_SLEEP)
@@ -154,6 +156,7 @@ class GitHubCrawler(BaseCrawler):
             self.crawlerStatus.next_url = GITHUB_HOST + next_page['href']
             
         # Make sure we update our crawler status
+        LOG.info("Updating status for %s" % self.crawlerStatus)
         self.crawlerStatus.save()
             
         return
