@@ -16,10 +16,10 @@ def home(request):
     stats = []
     for t in ProjectType.objects.all():
         repo_type = t.name
-        repos = Repository.objects.filter(repo_type=t)
+        repos = Repository.objects.filter(project_type=t)
         num_repo = repos.count()
         num_suc = repos.filter(latest_attempt__result=ATTEMPT_STATUS_SUCCESS).count()
-        num_pkg = Package.objects.filter(package_type=t).count()
+        num_pkg = Package.objects.filter(project_type=t).count()
         num_deploy = repos.exclude(latest_attempt=None).count
         stat = Statistic(repo_type, num_repo, num_pkg, num_suc, num_deploy)
         stats.append(stat)
