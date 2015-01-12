@@ -63,10 +63,12 @@ class RoRDeployer(BaseDeployer):
         ## WITH
     ## DEF
     
-    def install_requirements(self, requirement_files):
-        if requirement_files:
-            command = vagrant_cd(requirement_files) + " && bundle install"
-            return vagrant_run_command(command)
+    def install_requirements(self):
+        if self.requirement_files:
+            command = vagrant_cd(self.requirement_files) + " && bundle install"
+            out = vagrant_run_command(command)
+            LOG.info(out)
+            return out # ???
         return []
     ## DEF
     
@@ -85,11 +87,92 @@ class RoRDeployer(BaseDeployer):
     ## DEF
     
     def deployRepoAttempt(self, attempt, deployPath):
-        pass
+        rakefiles = utils.search_file(deployPath, 'Rakefile')
+        if not rakefiles:
+            LOG.error('no rakefile found')
+            self.save_attempt(attempt, ATTEMPT_STATUS_MISSING_REQUIRED_FILES)
+            return
+        rakefile_paths = [os.path.dirname(rakefile) for rakefile in rakefiles]
+        #print 'rakefile_paths: ' + str(rakefile_paths)
+        #elif len(rakefiles) != 1:
+        #    print 'multiple rakefiles found'
+        #    save_attempt(attempt, "Duplicate Required Files", log_str)
+        #    continue
+        
+        # Finding database
+        gemfiles = self.search_file(deployPath, 'Gemfile')
+        if not gemfiles:
+            LOG.error("No gemfile was found")
+            self.save_attempt(attempt, ATTEMPT_STATUS_MISSING_REQUIRED_FILES)
+            return
+        gemfile_paths = [os.path.dirname(gemfile) for gemfile in gemfiles]
+        #print 'gemfile_paths: ' + str(gemfile_paths)
+        db_files = search_file(DIR, 'database.yml')
+        if not db_files:
+            LOG.error("Unable to discover target database")
+            self.save_attempt(attempt, ATTEMPT_STATUS_MISSING_REQUIRED_FILES)
+            return
+
+        print 'using database'
+        db_file_paths = [os.path.dirname(os.path.dirname(db_file)) for db_file in db_files if os.path.basename(os.path.normpath(os.path.dirname(db_file))) == "config"]
+        #print 'db_file_paths: ' + str(db_file_paths)
+        base_dirs = set.intersection(set(rakefile_paths), set(gemfile_paths), set(db_file_paths))
+        if not base_dirs:
+            print 'can not find base directory'
+            save_attempt(attempt, "Missing Required Files", log_str)
+            return
+        base_dir = next(iter(base_dirs))
+        attempt.base_dir = base_dir.split('/', 1)[1]
+
+        print 'base_dir: ' + base_dir
+
+        attempt.database = get_database(os.path.join(base_dir, 'config/database.yml'), "Ruby on Rails")
+        print attempt.database.name
+        log_str = log(log_str, 'database: ' + attempt.database.name)
+        attempt.save()
+        self.tryDeploy(attempt, base_dir)
     ## DEF
     
-    def tryDeploy(self, attempt, manage_file, setting_file):
-        pass
+    def tryDeploy(self, attempt, path):
+        self.rewrite_settings(path)
+        LOG.info('try deploy ror')
+        self.killServer('Ruby on Rails')
+        
+        out = self.install_requirements(path)
+        print out
+        log_str = log(log_str, out)
+        if not "Your bundle is complete!" in out:
+            save_attempt(attempt, "Missing Dependencies", log_str)
+            return
+
+        out = vagrant_syncdb(path, "Ruby on Rails")
+        print out
+        log_str = log(log_str, out)
+        if "rake aborted!" in out:
+            save_attempt(attempt, "Running Error", log_str)
+            return
+        out = vagrant_runserver(path, 'Ruby on Rails')
+        print out
+        log_str = log(log_str, out)
+        time.sleep(10)
+        urls = get_urls(path, 'Ruby on Rails')
+        print urls
+        urls = [re.sub(r'\([^)]*\)', '', url) for url in urls]
+        urls = list(set([url for url in urls if ':' not in url]))
+        urls = sorted(urls, key=len)
+        print urls
+        log_str = log(log_str, str(urls))
+        log_str = log(log_str, str(urls))
+        for url in urls:
+            out = check_server(url, 'Ruby on Rails')
+            print out
+            log_str = log(log_str, out)
+            if "200 OK" in out:
+                save_attempt(attempt, "Success", log_str)
+                self.killServer('Ruby on Rails')
+                return
+        save_attempt(attempt, "Running Error", log_str)
+        self.killServer('Ruby on Rails')
         
     ## DEF
     

@@ -65,7 +65,7 @@ class BaseDeployer(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
     
-    def install_requirements(self, requirement_files):
+    def install_requirements(self):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
     
