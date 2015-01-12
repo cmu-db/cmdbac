@@ -15,10 +15,6 @@ from utils import Utils
 from basecrawler import BaseCrawler
 from crawler.models import *
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
-#import django
-#django.setup()
-
 ## =====================================================================
 ## LOGGING CONFIGURATION
 ## =====================================================================
@@ -42,7 +38,7 @@ BASE_URL = "https://github.com/search?utf8=%E2%9C%93&q=${query}+" + \
            
 GITHUB_HOST = 'https://github.com/'
 API_GITHUB_REPO = 'https://api.github.com/repos/'
-API_GITHUB_SLEEP = 1 # seconds
+API_GITHUB_SLEEP = 4 # seconds
 
 ## =====================================================================
 ## GITHUB CRAWLER

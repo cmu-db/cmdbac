@@ -45,7 +45,7 @@ class Utils:
             return ""
 
 def query(url):
-    print url
+    #print url
     logging.debug('query url: ' + url)
     request = urllib2.Request(url)
     request.add_header('Authorization', 'token %s' % TOKEN)
@@ -177,7 +177,7 @@ def search_file(directory_name, file_name):
                 path = os.path.join(root, file)
                 if not os.path.islink(path):
                     result.append(path)
-    print result
+    #print result
     return result
 #    command = "find " + directory_name + " -type f -wholename '*/" + file_name + "'"
 #    out = run_command(command)

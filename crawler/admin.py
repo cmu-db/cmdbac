@@ -4,18 +4,22 @@ from crawler.models import *
 class DependencyInline(admin.StackedInline):
     model = Dependency
     extra = 3
-    
+
+class ProjectTypeAdmin(admin.ModelAdmin):
+    list_display = [ 'name', 'filename', 'deployer_class' ]
+## CLASS
+
 class RepositorySourceAdmin(admin.ModelAdmin):
     list_display = [ 'name', 'crawler_class', 'base_url', 'commit_url', 'search_token', ]
 ## CLASS
 
 class CrawlerStatusAdmin(admin.ModelAdmin):
-    list_display = [ 'id', 'source', 'project_type', 'next_url', 'last_crawler_time', ]
+    list_display = [ 'id', 'source', 'project_type', 'cur_size', 'min_size', 'max_size', 'next_url', 'last_crawler_time', ]
 ## CLASS
 
 class RepositoryAdmin(admin.ModelAdmin):
-    list_display = [ 'id', 'name', 'get_project_type', 'source', 'commits_count', 'description', 'crawler_date', 'updated_date' ]
-    list_filter = ['project_type', 'crawler_date', 'updated_date']
+    list_display = [ 'id', 'name', 'valid_project', 'get_project_type', 'source', 'commits_count', 'description', 'crawler_date', 'updated_date' ]
+    list_filter = ['project_type', 'valid_project', 'crawler_date', 'updated_date']
     fieldsets = [
         (None,               {'fields': ['name', 'project_type', 'source', 'description']}),
         ('Date information', {'fields': ['created_at', 'updated_at', 'pushed_at']}),
@@ -42,7 +46,7 @@ class PackageAdmin(admin.ModelAdmin):
 # CLASS
 
 # Register your models here.
-admin.site.register(ProjectType)
+admin.site.register(ProjectType, ProjectTypeAdmin)
 admin.site.register(RepositorySource, RepositorySourceAdmin)
 admin.site.register(CrawlerStatus, CrawlerStatusAdmin)
 admin.site.register(Database)

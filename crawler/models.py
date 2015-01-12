@@ -37,6 +37,7 @@ globals()['ATTEMPT_STATUS_CODES'] = ATTEMPT_STATUS_CODES
 class ProjectType(models.Model):
     name = models.CharField(max_length=16)
     filename = models.CharField(max_length=200)
+    deployer_class = models.CharField(max_length=16)
     logo = models.CharField(max_length=100)
     
     def __unicode__(self):
@@ -104,6 +105,7 @@ class Repository(models.Model):
     project_type = models.ForeignKey('ProjectType')
     source = models.ForeignKey('RepositorySource')
     latest_attempt = models.ForeignKey('Attempt', null=True)
+    valid_project = models.NullBooleanField(default=None)
     private = models.BooleanField(default=False)
     description = models.TextField(null=True)
     fork = models.BooleanField(default=False)

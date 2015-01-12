@@ -39,55 +39,6 @@ repo_deployer_logger.addHandler(fh)
 repo_deployer_logger.addHandler(ch)
 
 
-def save_attempt(attempt, result, log_str, pkgs_from_f=[], pkgs_from_db=[]):
-    attempt.result = Result(name=result)
-    #attempt.log = log_str.getvalue()
-    attempt.log = log_str
-    
-    attempt.duration = datetime.datetime.now()
-    attempt.save()
-    #log_str.close()
-    for pkg in pkgs_from_f:
-        dep = Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=Source(name='File'))
-        pkg.count = pkg.count + 1
-        pkg.save()
-    for pkg in pkgs_from_db:
-        Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=Source(name='Database'))
-## DEF
-
-#    log_str = log(log_str, 'runserver output: ' + out)
-#    out = out.strip().splitlines()
-#    if out:
-#        line = out[-1].strip()
-#        if line.startswith('ImportError'):
-#            log_str = log(log_str, 'import error')
-#            save_attempt(attempt, "Missing Dependencies", log_str, installed_requirements, packages_from_database)
-#        else:
-#            log_str = log(log_str, 'running error')
-#            save_attempt(attempt, "Running Error", log_str, installed_requirements, packages_from_database)
-#    else:
-#        log_str = log(log_str, 'success')
-#        save_attempt(attempt, "Success", log_str, installed_requirements, packages_from_database)
-
-
-#    vagrant_runserver(manage_file)
-#    p_id = vagrant_netstat()
-#    if p_id:
-#        save_attempt(attempt, "Success", log_str, installed_requirements, packages_from_database)
-#        vagrant_kill(p_id)
-#    else:
-#        with open ("log", "r") as myfile:
-#            out = myfile.read()
-#        out = out.strip().splitlines()
-#        if out:
-#            line = out[-1].strip()
-#            if line.startswith('ImportError'):
-#                save_attempt(attempt, "Missing Dependencies", log_str, installed_requirements, packages_from_database)
-#            else:
-#                save_attempt(attempt, "Running Error", log_str, installed_requirements, packages_from_database)
-#        else:
-#            save_attempt(attempt, "Unknown", log_str, installed_requirements, packages_from_database)
-
 def rm(file_name):
     os.remove(file_name)
     #command = 'rm ' + file_name
@@ -189,29 +140,28 @@ def deploy_repo(repo):
 def main():
     logger = logging.getLogger('basic_logger')
     logger.setLevel(logging.DEBUG)
-    string = None
-    if len(sys.argv) > 1:
-        string = sys.argv[1]
-    if string:
-        if string == 'django':
-            string = 'Django'
-        elif string == 'ror':
-            string = 'Ruby on Rails'
-        else:
-            try:
-                repo = Repository.objects.get(name=sys.argv[1])
-            except:
-                print 'can not find the repository ' + sys.argv[1]
-            deploy_repo(repo)
-            return
-            
+        
     while True:
-        repos = Repository.objects.exclude(pk__in=Attempt.objects.values_list('repo', flat=True))
-# add the line if we what to get a specific type of repositories
-        if string:
-            repos = repos.filter(repo_type__name=string)
+        #repos = Repository.objects.exclude(pk__in=Attempt.objects.values_list('repo', flat=True))
+        
+        repos = Repository.objects.filter(name="alejo8591/backend-lab")
+        database = Database.objects.get(name='SQLite3')
+        
+        # if string:
+        #    repos = repos.filter(repo_type__name=string)
         for repo in repos:
-            deploy_repo(repo)
+             
+            moduleName = "deployers.%s" % (repo.project_type.deployer_class.lower())
+            moduleHandle = __import__(moduleName, globals(), locals(), [repo.project_type.deployer_class])
+            klass = getattr(moduleHandle, repo.project_type.deployer_class)
+            
+            print "Attempting to deploy", repo, "using", repo.project_type.deployer_class
+            deployer = klass(repo, database)
+            deployer.deploy()
+            break
+        ## FOR
+        break
+    ## WHILE
 
 if __name__ == '__main__':
     main()

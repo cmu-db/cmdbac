@@ -16,7 +16,7 @@ def home(request):
     stats = []
     for t in ProjectType.objects.all():
         repo_type = t.name
-        repos = Repository.objects.filter(project_type=t)
+        repos = Repository.objects.filter(project_type=t, valid_project=True)
         num_repo = repos.count()
         num_suc = repos.filter(latest_attempt__result=ATTEMPT_STATUS_SUCCESS).count()
         num_pkg = Package.objects.filter(project_type=t).count()
@@ -24,7 +24,7 @@ def home(request):
         stat = Statistic(repo_type, num_repo, num_pkg, num_suc, num_deploy)
         stats.append(stat)
     context['stats'] = stats
-    context['attempts'] = Attempt.objects.order_by('-start_time')[:5]
+    context['attempts'] = Attempt.objects.exclude(result=ATTEMPT_STATUS_NOT_AN_APPLICATION).order_by('-start_time')[:5]
     return render(request, 'index.html', context)
 
 def repositories(request):
@@ -41,7 +41,7 @@ def repositories(request):
         del queries_no_page_order['order_by']
     context['queries_no_page_order'] = queries_no_page_order
 
-    repositories = Repository.objects.all()
+    repositories = Repository.objects.filter(valid_project=True)
     if request.GET.__contains__('search'):
         repositories = repositories.filter(name__contains=request.GET['search'])
     result_list = request.GET.getlist('results')
@@ -49,7 +49,7 @@ def repositories(request):
         repositories = repositories.filter(latest_attempt__result__in=result_list)
     type_list = request.GET.getlist('types')
     if type_list:
-        repositories = repositories.filter(repo_type__name__in=type_list)
+        repositories = repositories.filter(project_type__name__in=type_list)
     order_by = request.GET.get('order_by', 'crawler_date')
     repositories = repositories.order_by(order_by)
 
@@ -80,7 +80,7 @@ def repository(request, user_name, repo_name):
     print request.GET.copy()
     
     repository = Repository.objects.get(name=user_name + '/' + repo_name)
-    attempts = Attempt.objects.filter(repo=repository)
+    attempts = Attempt.objects.filter(repo=repository).order_by("-id")
     context['repository'] = repository
     context['attempts'] = attempts
     return render(request, 'repository.html', context)
