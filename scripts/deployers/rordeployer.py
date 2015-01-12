@@ -119,7 +119,7 @@ class RoRDeployer(BaseDeployer):
         base_dirs = set.intersection(set(rakefile_paths), set(gemfile_paths), set(db_file_paths))
         if not base_dirs:
             print 'can not find base directory'
-            save_attempt(attempt, "Missing Required Files", log_str)
+            self.save_attempt(attempt, ATTEMPT_STATUS_MISSING_REQUIRED_FILES)
             return
         base_dir = next(iter(base_dirs))
         attempt.base_dir = base_dir.split('/', 1)[1]
@@ -129,7 +129,6 @@ class RoRDeployer(BaseDeployer):
         attempt.database = get_database(os.path.join(base_dir, 'config/database.yml'), "Ruby on Rails")
         print attempt.database.name
         log_str = log(log_str, 'database: ' + attempt.database.name)
-        attempt.save()
         self.tryDeploy(attempt, base_dir)
     ## DEF
     
@@ -142,38 +141,18 @@ class RoRDeployer(BaseDeployer):
         print out
         log_str = log(log_str, out)
         if not "Your bundle is complete!" in out:
-            save_attempt(attempt, "Missing Dependencies", log_str)
+            self.save_attempt(attempt, ATTEMPT_STATUS_MISSING_DEPENDENCIES)
             return
 
-        out = vagrant_syncdb(path, "Ruby on Rails")
+        out = self.syncServer(path)
         print out
         log_str = log(log_str, out)
         if "rake aborted!" in out:
-            save_attempt(attempt, "Running Error", log_str)
+            self.save_attempt(attempt, ATTEMPT_STATUS_RUNNING_ERROR)
             return
-        out = vagrant_runserver(path, 'Ruby on Rails')
-        print out
-        log_str = log(log_str, out)
-        time.sleep(10)
-        urls = get_urls(path, 'Ruby on Rails')
-        print urls
-        urls = [re.sub(r'\([^)]*\)', '', url) for url in urls]
-        urls = list(set([url for url in urls if ':' not in url]))
-        urls = sorted(urls, key=len)
-        print urls
-        log_str = log(log_str, str(urls))
-        log_str = log(log_str, str(urls))
-        for url in urls:
-            out = check_server(url, 'Ruby on Rails')
-            print out
-            log_str = log(log_str, out)
-            if "200 OK" in out:
-                save_attempt(attempt, "Success", log_str)
-                self.killServer('Ruby on Rails')
-                return
-        save_attempt(attempt, "Running Error", log_str)
-        self.killServer('Ruby on Rails')
         
+        out = self.runServer(path)
+        LOG.info(out)
     ## DEF
     
     def checkServer(self, url):
