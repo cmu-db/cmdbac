@@ -52,7 +52,7 @@ class BaseDeployer(object):
         self.log = logging.getLogger()
         self.buffer = StringIO()
         self.logHandler = logging.StreamHandler(self.buffer)
-        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        formatter = logging.Formatter("%(message)s")
         self.logHandler.setFormatter(formatter)
         self.log.addHandler(self.logHandler)    
     ## DEF
@@ -167,6 +167,7 @@ class BaseDeployer(object):
 
         # Make sure we update the repo to point to this 
         # latest attempt
+        self.repo.valid_project = (result == ATTEMPT_STATUS_SUCCESS)
         self.repo.latest_attempt = attempt
         self.repo.attempts_count = self.repo.attempts_count + 1
         self.repo.save()

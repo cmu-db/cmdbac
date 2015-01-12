@@ -115,10 +115,10 @@ class DjangoDeployer(BaseDeployer):
             return
 
         self.requirement_files = utils.search_file(deployPath, 'requirements.txt')
-        LOG.info('requirements.txt' + str(self.requirement_files))
+        LOG.info('REQUIREMENTS: ' + str(self.requirement_files))
         
         manage_paths = [os.path.dirname(manage_file) for manage_file in manage_files]
-        LOG.info("manage_paths: " + str(manage_paths))
+        LOG.info("MANAGE_PATHS: " + str(manage_paths))
         setting_paths = [os.path.dirname(os.path.dirname(setting_file)) for setting_file in setting_files]
         LOG.info("setting_paths: " + str(setting_paths))
         base_dirs = set.intersection(set(manage_paths), set(setting_paths))
@@ -127,21 +127,21 @@ class DjangoDeployer(BaseDeployer):
             self.save_attempt(attempt, ATTEMPT_STATUS_MISSING_REQUIRED_FILES)
             return
         base_dir = next(iter(base_dirs))
-        LOG.info('base_dir: ' + base_dir)
+        LOG.info('BASE_DIR: ' + base_dir)
         manage_file = next(name for name in manage_files if name.startswith(base_dir))
         setting_file = next(name for name in setting_files if name.startswith(base_dir))
 
         # Database
         attempt.database = self.getDatabase(setting_file)
-        LOG.info('Database: ' + attempt.database.name)
+        LOG.info('DATABASE: ' + attempt.database.name)
         
         # Base Dir
         attempt.base_dir = base_dir.split('/', 1)[1]
-        LOG.info('base_dir: ' + attempt.base_dir)
+        LOG.info('BASE_DIR: ' + attempt.base_dir)
         
         # Settings Dir
         attempt.setting_dir = os.path.basename(os.path.dirname(setting_file))
-        LOG.info('setting_dir: ' + attempt.setting_dir)
+        LOG.info('SETTING_DIR: ' + attempt.setting_dir)
         
         # Try to deploy!
         self.tryDeploy(attempt, manage_file, setting_file)
@@ -149,7 +149,7 @@ class DjangoDeployer(BaseDeployer):
     
     def tryDeploy(self, attempt, manage_file, setting_file):
         self.rewrite_settings(setting_file)
-        LOG.info('settings appended')
+        LOG.info('Settings appended')
         self.killServer()
 
         self.installed_requirements = []
@@ -161,7 +161,7 @@ class DjangoDeployer(BaseDeployer):
             pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
             self.installed_requirements.append(pkg)
         ## FOR
-        LOG.info('installed_requirements: ' + str(self.installed_requirements))
+        LOG.info('INSTALLED_REQUIREMENTS: ' + str(self.installed_requirements))
 
         threshold = 10
         last_missing_module_name = ''
@@ -169,7 +169,7 @@ class DjangoDeployer(BaseDeployer):
         #candidate_packages = []
         for tmp in range(threshold):
             out = self.syncServer(manage_file)
-            LOG.info('syncdb output: ' + out) 
+            LOG.info('SYNCDB OUTPUT: ' + out) 
             out = out.strip()
             out = out.splitlines()
             if out and out[-1].strip().startswith('ImportError'):
@@ -216,16 +216,19 @@ class DjangoDeployer(BaseDeployer):
     ## DEF
     
     def checkServer(self):
+        LOG.info("Checking server...")
         command = "wget " + urlparse.urljoin("http://localhost:8000/", url)
         return utils.vagrant_run_command(command)
     ## DEF
     
     def killServer(self):
+        LOG.info("Killing server...")
         command = "fuser -k 8000/tcp"
         return utils.vagrant_run_command(command)
     ## DEF
     
     def runServer(self, path):
+        LOG.info("Run server...")
         vm_manage_file = utils.to_vm_path(path)
         command = utils.vagrant_cd(os.path.dirname(path)) + " && " + \
                   "nohup python manage.py runserver 0.0.0.0:8000 & sleep 1"
@@ -233,6 +236,7 @@ class DjangoDeployer(BaseDeployer):
     ## DEF
     
     def syncServer(self, path):
+        LOG.info("Sync server...")
         command = utils.vagrant_cd(os.path.dirname(path)) + " && " + \
                   "python manage.py syncdb --noinput && python manage.py migrate --noinput"
         return utils.vagrant_run_command(command)

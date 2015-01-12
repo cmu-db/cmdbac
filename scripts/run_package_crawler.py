@@ -19,6 +19,20 @@ from utils import query
 from crawler.models import *
 from db_webcrawler import urls
 
+def query(url):
+    #print url
+    logging.debug('query url: ' + url)
+    request = urllib2.Request(url)
+    #request.add_header('Authorization', 'token %s' % TOKEN)
+    #while True:
+    #try:
+    response = urllib2.urlopen(request)
+    header = response.info().dict;
+    logging.getLogger('utils').debug('response info from: ' + url)
+    logging.getLogger('utils').debug(header)
+    return response
+
+
 def get_versions(package):
     host = "https://pypi.python.org/simple/"
     url = urlparse.urljoin(host, package)

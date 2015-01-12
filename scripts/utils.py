@@ -33,8 +33,6 @@ HOMEPAGE_URL_TEMPLATE = Template('https://github.com/${name}')
 API_COMMITS_URL = Template('https://api.github.com/repos/${name}/commits')
 HOME_DIR = "/home/vagrant/"
 SHARE_DIR = "/vagrant/"
-# the github token
-TOKEN = '5b3563b9b8c4b044530eeb363b633ac1c9535356'
 
 class Utils:
     @staticmethod
@@ -43,24 +41,6 @@ class Utils:
             return string
         else:
             return ""
-
-def query(url):
-    #print url
-    logging.debug('query url: ' + url)
-    request = urllib2.Request(url)
-    request.add_header('Authorization', 'token %s' % TOKEN)
-    #while True:
-    #try:
-    response = urllib2.urlopen(request)
-    header = response.info().dict;
-    logging.getLogger('utils').debug('response info from: ' + url)
-    logging.getLogger('utils').debug(header)
-
-#    except:
-#        logging.getLogger('utils').debug(traceback.print_exc())
-#        time.sleep(5)
-#        continue
-    return response
 
 def run_command(command):
     return run(command, timeout=1000)[1]
@@ -124,51 +104,7 @@ def vagrant_pip_install(names, is_file):
     pip_rm_build()
     return out
 
-
-def rewrite_settings(path, type_name):
-
-    if type_name == "Ruby on Rails":
-        settings = """
-development:
-  adapter: sqlite3
-  database: db/development.sqlite3
-  pool: 5
-  timeout: 5000
-
-test:
-  adapter: sqlite3
-  database: db/test.sqlite3
-  pool: 5
-  timeout: 5000
-
-production:
-  adapter: sqlite3
-  database: db/production.sqlite3
-  pool: 5
-  timeout: 5000
-"""
-        with open(os.path.join(path, 'config/database.yml'), "w") as my_file:
-            my_file.write(settings)
-
-        settings = """
-gem 'sqlite3'
-"""
-        with open(os.path.join(path, 'Gemfile'), "a") as my_file:
-            my_file.write(settings)
-
-def install_requirements(requirement_files, type_name):
-#TODO: add these to main function
-                #dep = Dependency()
-                #dep.attempt = attempt
-                #dep.package = obj
-                #dep.source = Source(name='File')
-                #dep.save()
-                #obj.count = obj.count + 1
-                #obj.save()
-    if type_name == "Ruby on Rails":
-        command = vagrant_cd(requirement_files) + " && bundle install"
-        return vagrant_run_command(command)
-
+       
 def search_file(directory_name, file_name):
     result = []
     for root, dirs, files in os.walk(directory_name):
@@ -188,22 +124,8 @@ def unzip(zip_name, dir_name):
     command = 'unzip -o -qq ' + zip_name + ' -d ' + dir_name
     out = run_command(command)
 
-def vagrant_syncdb(path, type_name):
-    if type_name == "Ruby on Rails":
-        command = vagrant_cd(path) + " && bundle exec rake db:migrate"
-        return vagrant_run_command(command)
-
-
 def block_ports():
     pass
-
-def vagrant_runserver(path, type_name):
-    block_ports()
-    if type_name == "Ruby on Rails":
-        #command = vagrant_cd(path) + " && bundle exec rails server -p 3000 > /vagrant/log 2>&1 & sleep 10"
-        command = vagrant_cd(path) + " && nohup bundle exec rails server -p 3000 -d"
-        return vagrant_run_command(command)
-
 
 def get_latest_sha(repo):
     url = API_COMMITS_URL.substitute(name=repo.name)
@@ -255,19 +177,5 @@ def get_urls(path, type_name):
             urls = out.splitlines()
     return urls
 
-def check_server(url, type_name):
-    if type_name == "Ruby on Rails":
-        command = "wget --spider " + urlparse.urljoin("http://localhost:3000/", url)
-    return vagrant_run_command(command)
-
 def unblock_ports():
     pass
-
-def kill_server(type_name):
-    if type_name == "Ruby on Rails":
-        command = "fuser -k 3000/tcp"
-    elif type_name == "Django":
-        command = "fuser -k 8000/tcp"
-    out = vagrant_run_command(command)
-    unblock_ports()
-    return out
