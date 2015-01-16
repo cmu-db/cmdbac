@@ -77,14 +77,19 @@ class BaseDeployer(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
     
-    def checkServer(self):
-        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
+    def checkServer(self, url):
+        LOG.info("Checking server...")
+        url = urlparse.urljoin("http://localhost:%d/" % self.repo.project_type.default_port, url)
+        command = "wget --spider " + url
+        return utils.vagrant_run_command(command)
     ## DEF
     
     def killServer(self):
-        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
+        LOG.info("Killing server on port %d..." % self.repo.project_type.default_port)
+        command = "fuser -k %s/tcp" % self.repo.project_type.default_port
+        return utils.vagrant_run_command(command)
     ## DEF
-    
+        
     def runServer(self):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
@@ -121,18 +126,19 @@ class BaseDeployer(object):
         self.log.info('DIR = ' + BaseDeployer.TMP_DEPLOY_PATH)
         
         try:
-            self.deployRepoAttempt(attempt, BaseDeployer.TMP_DEPLOY_PATH)
+            attemptStatus = self.deployRepoAttempt(attempt, BaseDeployer.TMP_DEPLOY_PATH)
         except:
             print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_RUNNING_ERROR)
             return
+        if attemptStatus != ATTEMPT_STATUS_SUCCESS:
+            self.save_attempt(attempt, attemptStatus)
         
         # Check whether the web app is running
         urls = self.get_urls()
         self.log.info("urls = " + str(urls))
         urls = list(set([re.sub(r'[\^\$]', '', url) for url in urls if '?' not in url]))
         urls = sorted(urls, key=len)
-        attemptStatus = ATTEMPT_STATUS_SUCCESS
         for url in urls:
             out = self.check_server(url)
             self.log.info(out)

@@ -99,20 +99,17 @@ class DjangoDeployer(BaseDeployer):
         setup_files = utils.search_file(deployPath, 'setup.py')
         LOG.info('setup.py: ' + str(setup_files))
         if len(setup_files):
-            self.save_attempt(attempt, ATTEMPT_STATUS_NOT_AN_APPLICATION)
-            return
+            return ATTEMPT_STATUS_NOT_AN_APPLICATION
 
         setting_files = utils.search_file(deployPath, 'settings.py')
         LOG.info('settings.py: ' + str(setting_files))
         if not len(setting_files):
-            self.save_attempt(attempt, ATTEMPT_STATUS_MISSING_REQUIRED_FILES)
-            return
+            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
                 
         manage_files = utils.search_file(deployPath, 'manage.py')
         LOG.info('manage.py: ' + str(manage_files))
         if not len(manage_files):
-            self.save_attempt(attempt, ATTEMPT_STATUS_MISSING_REQUIRED_FILES)
-            return
+            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
 
         self.requirement_files = utils.search_file(deployPath, 'requirements.txt')
         LOG.info('REQUIREMENTS: ' + str(self.requirement_files))
@@ -124,8 +121,7 @@ class DjangoDeployer(BaseDeployer):
         base_dirs = set.intersection(set(manage_paths), set(setting_paths))
         if not base_dirs:
             LOG.error('can not find base directory')
-            self.save_attempt(attempt, ATTEMPT_STATUS_MISSING_REQUIRED_FILES)
-            return
+            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
         base_dir = next(iter(base_dirs))
         LOG.info('BASE_DIR: ' + base_dir)
         manage_file = next(name for name in manage_files if name.startswith(base_dir))
@@ -144,7 +140,7 @@ class DjangoDeployer(BaseDeployer):
         LOG.info('SETTING_DIR: ' + attempt.setting_dir)
         
         # Try to deploy!
-        self.tryDeploy(attempt, manage_file, setting_file)
+        return self.tryDeploy(attempt, manage_file, setting_file)
     ## DEF
     
     def tryDeploy(self, attempt, manage_file, setting_file):
@@ -182,8 +178,7 @@ class DjangoDeployer(BaseDeployer):
                         index = index + 1
                         if index == len(candidate_packages):
                             LOG.info('no more possible package')
-                            self.save_attempt(attempt, ATTEMPT_STATUS_MISSING_DEPENDENCIES, out)
-                            return
+                            return ATTEMPT_STATUS_MISSING_DEPENDENCIES
                         out = utils.vagrant_pip_install([candidate_packages[index]], False)
                         LOG.info('pip install output: ' + out)
                     else:
@@ -192,8 +187,7 @@ class DjangoDeployer(BaseDeployer):
                         candidate_package_ids = Module.objects.filter(name=missing_module_name).values_list('package_id', flat=True)
                         if not candidate_package_ids:
                             LOG.info('no possible package')
-                            self.save_attempt(attempt, ATTEMPT_STATUS_MISSING_DEPENDENCIES, out)
-                            return
+                            return ATTEMPT_STATUS_MISSING_DEPENDENCIES
                         last_missing_module_name = missing_module_name
                         #packages_from_file = [pkg for pkg in packages_from_file if pkg.id not in pckage_ids]
                         candidate_packages = Package.objects.filter(id__in=candidate_package_ids).order_by('-count', 'name', '-version')
@@ -202,8 +196,7 @@ class DjangoDeployer(BaseDeployer):
                         out = utils.vagrant_pip_install([candidate_packages[0]], False)
                         LOG.info('pip install output: ' + out)
                 else:
-                    self.save_attempt(attempt, ATTEMPT_STATUS_MISSING_DEPENDENCIES, out)
-                    return
+                    return ATTEMPT_STATUS_MISSING_DEPENDENCIES
             else:
                 if last_missing_module_name != '':
                     self.packages_from_database.append(candidate_packages[index])
@@ -213,18 +206,6 @@ class DjangoDeployer(BaseDeployer):
         out = self.runServer(manage_file)
         LOG.info(out)
         
-    ## DEF
-    
-    def checkServer(self):
-        LOG.info("Checking server...")
-        command = "wget " + urlparse.urljoin("http://localhost:8000/", url)
-        return utils.vagrant_run_command(command)
-    ## DEF
-    
-    def killServer(self):
-        LOG.info("Killing server...")
-        command = "fuser -k 8000/tcp"
-        return utils.vagrant_run_command(command)
     ## DEF
     
     def runServer(self, path):

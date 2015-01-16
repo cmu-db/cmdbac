@@ -38,6 +38,7 @@ class ProjectType(models.Model):
     name = models.CharField(max_length=16)
     filename = models.CharField(max_length=200)
     deployer_class = models.CharField(max_length=16)
+    default_port = models.PositiveSmallIntegerField(null=False)
     logo = models.CharField(max_length=100)
     
     def __unicode__(self):

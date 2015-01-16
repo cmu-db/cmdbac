@@ -5,7 +5,7 @@
 # continue adding packages to this file if missing some packages may cause common errors
 
 # use this line if the host is using proxy, and change the proxy
-http_proxy=http://proxy.pdl.cmu.edu:8080
+# http_proxy=http://proxy.pdl.cmu.edu:8080
 
 if [ -n "$http_proxy" ]
 then

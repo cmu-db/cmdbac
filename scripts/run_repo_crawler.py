@@ -3,6 +3,7 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 import time
+import traceback
 import logging
 logging.basicConfig(filename='repo_crawler.log',level=logging.DEBUG)
 
@@ -23,10 +24,13 @@ if __name__ == '__main__':
             moduleName = "crawlers.%s" % (repo_source.crawler_class.lower())
             moduleHandle = __import__(moduleName, globals(), locals(), [repo_source.crawler_class])
             klass = getattr(moduleHandle, repo_source.crawler_class)
-
             crawler = klass(cs)
-            crawler.crawl()
-            
+
+            try:
+                crawler.crawl()
+            except:
+                print traceback.print_exc()
+                pass
             time.sleep(60)
             #crawler.save()
         ## FOR

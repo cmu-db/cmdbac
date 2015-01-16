@@ -40,7 +40,6 @@ GEMFILE_SETTINGS = """
 gem 'sqlite3'
 """
 
-
 ## =====================================================================
 ## RUBY ON RAILS DEPLOYER
 ## =====================================================================
@@ -90,8 +89,7 @@ class RoRDeployer(BaseDeployer):
         rakefiles = utils.search_file(deployPath, 'Rakefile')
         if not rakefiles:
             LOG.error('no rakefile found')
-            self.save_attempt(attempt, ATTEMPT_STATUS_MISSING_REQUIRED_FILES)
-            return
+            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
         rakefile_paths = [os.path.dirname(rakefile) for rakefile in rakefiles]
         #print 'rakefile_paths: ' + str(rakefile_paths)
         #elif len(rakefiles) != 1:
@@ -103,8 +101,7 @@ class RoRDeployer(BaseDeployer):
         gemfiles = self.search_file(deployPath, 'Gemfile')
         if not gemfiles:
             LOG.error("No gemfile was found")
-            self.save_attempt(attempt, ATTEMPT_STATUS_MISSING_REQUIRED_FILES)
-            return
+            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
         gemfile_paths = [os.path.dirname(gemfile) for gemfile in gemfiles]
         #print 'gemfile_paths: ' + str(gemfile_paths)
         db_files = search_file(DIR, 'database.yml')
@@ -113,43 +110,36 @@ class RoRDeployer(BaseDeployer):
             self.save_attempt(attempt, ATTEMPT_STATUS_MISSING_REQUIRED_FILES)
             return
 
-        print 'using database'
+        LOG.info('using database')
         db_file_paths = [os.path.dirname(os.path.dirname(db_file)) for db_file in db_files if os.path.basename(os.path.normpath(os.path.dirname(db_file))) == "config"]
         #print 'db_file_paths: ' + str(db_file_paths)
         base_dirs = set.intersection(set(rakefile_paths), set(gemfile_paths), set(db_file_paths))
         if not base_dirs:
-            print 'can not find base directory'
-            self.save_attempt(attempt, ATTEMPT_STATUS_MISSING_REQUIRED_FILES)
-            return
+            LOG.error('can not find base directory')
+            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
         base_dir = next(iter(base_dirs))
         attempt.base_dir = base_dir.split('/', 1)[1]
+        LOG.info('base_dir: ' + base_dir)
 
-        print 'base_dir: ' + base_dir
-
-        attempt.database = get_database(os.path.join(base_dir, 'config/database.yml'), "Ruby on Rails")
-        print attempt.database.name
-        log_str = log(log_str, 'database: ' + attempt.database.name)
-        self.tryDeploy(attempt, base_dir)
+        attempt.database = self.get_database(os.path.join(base_dir, 'config/database.yml'))
+        LOG.info('database: ' + attempt.database.name)
+        return self.tryDeploy(attempt, base_dir)
     ## DEF
     
     def tryDeploy(self, attempt, path):
         self.rewrite_settings(path)
         LOG.info('try deploy ror')
-        self.killServer('Ruby on Rails')
+        self.killServer()
         
         out = self.install_requirements(path)
-        print out
-        log_str = log(log_str, out)
+        LOG.info(out)
         if not "Your bundle is complete!" in out:
-            self.save_attempt(attempt, ATTEMPT_STATUS_MISSING_DEPENDENCIES)
-            return
+            return ATTEMPT_STATUS_MISSING_DEPENDENCIES
 
         out = self.syncServer(path)
-        print out
-        log_str = log(log_str, out)
+        LOG.out(out)
         if "rake aborted!" in out:
-            self.save_attempt(attempt, ATTEMPT_STATUS_RUNNING_ERROR)
-            return
+            return ATTEMPT_STATUS_RUNNING_ERROR
         
         out = self.runServer(path)
         LOG.info(out)
