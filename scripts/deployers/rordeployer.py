@@ -145,18 +145,6 @@ class RoRDeployer(BaseDeployer):
         LOG.info(out)
     ## DEF
     
-    def checkServer(self, url):
-        LOG.info("Checking server...")
-        command = "wget --spider " + urlparse.urljoin("http://localhost:3000/", url)
-        return utils.vagrant_run_command(command)
-    ## DEF
-    
-    def killServer(self):
-        LOG.info("Killing server...")
-        command = "fuser -k 3000/tcp"
-        return utils.vagrant_run_command(command)
-    ## DEF
-    
     def runServer(self, path):
         LOG.info("Run server...")
         #command = vagrant_cd(path) + " && bundle exec rails server -p 3000 > /vagrant/log 2>&1 & sleep 10"

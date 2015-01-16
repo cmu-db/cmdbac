@@ -99,7 +99,7 @@ class BaseDeployer(object):
     ## DEF
     
     def deploy(self):
-        self.log.info('Deploying repo: ' + self.repo.name)
+        LOG.info('Deploying repo: ' + self.repo.name)
         
         attempt = Attempt()
         attempt.repo = self.repo
@@ -113,7 +113,7 @@ class BaseDeployer(object):
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return
 
-        self.log.info('Downloading repo: ' + self.repo.name + attempt.sha)
+        LOG.info('Downloading repo: ' + self.repo.name + attempt.sha)
         try:
             utils.download(attempt, BaseDeployer.TMP_ZIP)
         except:
@@ -123,7 +123,7 @@ class BaseDeployer(object):
         
         utils.remake_dir(BaseDeployer.TMP_DEPLOY_PATH)
         utils.unzip(BaseDeployer.TMP_ZIP, BaseDeployer.TMP_DEPLOY_PATH)
-        self.log.info('DIR = ' + BaseDeployer.TMP_DEPLOY_PATH)
+        LOG.info('DIR = ' + BaseDeployer.TMP_DEPLOY_PATH)
         
         try:
             attemptStatus = self.deployRepoAttempt(attempt, BaseDeployer.TMP_DEPLOY_PATH)
@@ -136,18 +136,23 @@ class BaseDeployer(object):
         
         # Check whether the web app is running
         urls = self.get_urls()
-        self.log.info("urls = " + str(urls))
+        LOG.info("urls = " + str(urls))
         urls = list(set([re.sub(r'[\^\$]', '', url) for url in urls if '?' not in url]))
         urls = sorted(urls, key=len)
         for url in urls:
             out = self.check_server(url)
-            self.log.info(out)
+            LOG.info(out)
             if not "200 OK" in out:
                 attemptStatus = ATTEMPT_STATUS_RUNNING_ERROR
-        self.save_attempt(attempt, attemptStatus)
         self.killServer()
         
+        # Okay we've seen everything that we wanted to see...
+        self.save_attempt(attempt, attemptStatus)
+        
+        return
     ## DEF
+    
+    def check
     
     def save_attempt(self, attempt, result):
         # Stop the log capture
@@ -159,7 +164,7 @@ class BaseDeployer(object):
         attempt.log = self.buffer.getvalue()
         attempt.stop_time = datetime.now()
         attempt.save()
-        self.log.info("Saved Attempt #%s for %s" % (attempt, attempt.repo))
+        LOG.info("Saved Attempt #%s for %s" % (attempt, attempt.repo))
         
         # Populate packages
         for pkg in self.packages_from_file:
