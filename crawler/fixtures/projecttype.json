@@ -1,0 +1,24 @@
+[
+{
+  "pk": 1, 
+  "model": "crawler.projecttype", 
+  "fields": {
+    "logo": "img/django.png", 
+    "deployer_class": "DjangoDeployer", 
+    "default_port": 8000, 
+    "name": "Django", 
+    "filename": "models.py"
+  }
+},
+{
+  "pk": 2, 
+  "model": "crawler.projecttype", 
+  "fields": {
+    "logo": "img/ruby_on_rails.png", 
+    "deployer_class": "RoRDeployer", 
+    "default_port": 3000, 
+    "name": "Ruby on Rails", 
+    "filename": "database.yml"
+  }
+}
+]

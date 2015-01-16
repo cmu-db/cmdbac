@@ -1,0 +1,44 @@
+[
+{
+  "pk": 1, 
+  "model": "crawler.database", 
+  "fields": {
+    "name": "Unknown"
+  }
+},
+{
+  "pk": 2, 
+  "model": "crawler.database", 
+  "fields": {
+    "name": "Oracle"
+  }
+},
+{
+  "pk": 3, 
+  "model": "crawler.database", 
+  "fields": {
+    "name": "Other"
+  }
+},
+{
+  "pk": 4, 
+  "model": "crawler.database", 
+  "fields": {
+    "name": "PostgreSQL"
+  }
+},
+{
+  "pk": 5, 
+  "model": "crawler.database", 
+  "fields": {
+    "name": "SQLite3"
+  }
+},
+{
+  "pk": 6, 
+  "model": "crawler.database", 
+  "fields": {
+    "name": "MySQL"
+  }
+}
+]
