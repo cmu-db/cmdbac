@@ -152,8 +152,6 @@ class BaseDeployer(object):
         return
     ## DEF
     
-    def check
-    
     def save_attempt(self, attempt, result):
         # Stop the log capture
         self.log.removeHandler(self.logHandler)

@@ -8,8 +8,8 @@ import logging
 logging.basicConfig(filename='repo_crawler.log',level=logging.DEBUG)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
-#import django
-#django.setup()
+import django
+django.setup()
 
 import crawlers
 from crawler.models import *

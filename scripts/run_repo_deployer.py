@@ -19,6 +19,9 @@ from bs4 import BeautifulSoup
 from string import Template
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
+import django
+django.setup()
+
 from crawler.models import *
 from deployers import *
 from utils import *
