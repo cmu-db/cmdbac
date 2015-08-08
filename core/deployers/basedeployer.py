@@ -131,6 +131,8 @@ class BaseDeployer(object):
             print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_RUNNING_ERROR)
             return
+        print attemptStatus
+        print attempt
         if attemptStatus != ATTEMPT_STATUS_SUCCESS:
             self.save_attempt(attempt, attemptStatus)
         

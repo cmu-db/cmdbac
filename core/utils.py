@@ -130,8 +130,10 @@ def block_ports():
 def get_latest_sha(repo):
     url = API_COMMITS_URL.substitute(name=repo.name)
     #url = HOMEPAGE_URL_TEMPLATE.substitute(name=repo.name)
-    print url
-    response = query(url)
+    try:
+        response = query(url)
+    except Exception, ex:
+        print Exception,":",ex
     data = json.load(response)
     print data[0]['sha']
     time.sleep(1) 
@@ -179,3 +181,16 @@ def get_urls(path, type_name):
 
 def unblock_ports():
     pass
+
+def query(url):
+    #print url
+    logging.debug('query url: ' + url)
+    request = urllib2.Request(url)
+    #request.add_header('Authorization', 'token %s' % TOKEN)
+    #while True:
+    #try:
+    response = urllib2.urlopen(request)
+    header = response.info().dict;
+    logging.getLogger('utils').debug('response info from: ' + url)
+    logging.getLogger('utils').debug(header)
+    return response
