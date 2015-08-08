@@ -203,6 +203,7 @@ class DjangoDeployer(BaseDeployer):
                 break
         
         # Fire away!
+        return ATTEMPT_STATUS_SUCCESS
         out = self.runServer(manage_file)
         LOG.info(out)
         
