@@ -50,7 +50,7 @@ def main():
     while True:
         #repos = Repository.objects.exclude(pk__in=Attempt.objects.values_list('repo', flat=True))
         
-        repos = Repository.objects.filter(name="alejo8591/backend-lab")
+        repos = Repository.objects.filter(name="0x55aa/django-image-upload")
         database = Database.objects.get(name='SQLite3')
         
         # if string:

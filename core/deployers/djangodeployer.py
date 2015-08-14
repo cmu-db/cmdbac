@@ -85,6 +85,7 @@ class DjangoDeployer(BaseDeployer):
         sys.path.append(dirname)
         proj_name = os.path.basename(setting_files)
         command = "python " + utils.to_vm_path('get_urls.py') + ' ' + utils.to_vm_path(dirname) + ' ' + proj_name
+        print command
         out = utils.vagrant_run_command(command).strip()
         if not out:
             urls = []
@@ -203,17 +204,16 @@ class DjangoDeployer(BaseDeployer):
                 break
         
         # Fire away!
-        return ATTEMPT_STATUS_SUCCESS
         out = self.runServer(manage_file)
         LOG.info(out)
-        
+        return ATTEMPT_STATUS_SUCCESS
     ## DEF
     
     def runServer(self, path):
         LOG.info("Run server...")
         vm_manage_file = utils.to_vm_path(path)
         command = utils.vagrant_cd(os.path.dirname(path)) + " && " + \
-                  "nohup python manage.py runserver 0.0.0.0:8000 & sleep 1"
+                  "nohup python manage.py runserver 0.0.0.0:8800 & sleep 1"
         return utils.vagrant_run_command(command)
     ## DEF
     
