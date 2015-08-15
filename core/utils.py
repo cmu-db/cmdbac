@@ -61,10 +61,12 @@ def download(attempt, zip_name):
 
 def vagrant_run_command(command):
     vagrant_command = "vagrant ssh -c '" + command + "'"
-    out = run_command(vagrant_command)
+    # out = run_command(vagrant_command)
+    out = run_command(command)
     return out
 
 def to_vm_path(file_name):
+    return file_name
     return os.path.join(SHARE_DIR, file_name)
 
 def vagrant_pip_clear():

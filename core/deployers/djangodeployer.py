@@ -212,8 +212,10 @@ class DjangoDeployer(BaseDeployer):
     def runServer(self, path):
         LOG.info("Run server...")
         vm_manage_file = utils.to_vm_path(path)
+        LOG.info("Path = " + path)
         command = utils.vagrant_cd(os.path.dirname(path)) + " && " + \
                   "nohup python manage.py runserver 0.0.0.0:8800 & sleep 1"
+        print command
         return utils.vagrant_run_command(command)
     ## DEF
     
