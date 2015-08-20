@@ -110,6 +110,7 @@ class BaseDeployer(object):
         try:
             attempt.sha = utils.get_latest_sha(self.repo)
         except:
+            print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return
 
@@ -125,7 +126,6 @@ class BaseDeployer(object):
         utils.unzip(BaseDeployer.TMP_ZIP, BaseDeployer.TMP_DEPLOY_PATH)
         LOG.info('DIR = ' + BaseDeployer.TMP_DEPLOY_PATH)
         
-        print attempt
         try:
             attemptStatus = self.deployRepoAttempt(attempt, BaseDeployer.TMP_DEPLOY_PATH)
         except:
