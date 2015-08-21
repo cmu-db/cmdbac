@@ -68,7 +68,7 @@ class BaseDeployer(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
     
-    def deployRepoAttempt(self, attempt, path):
+    def deploy_repo_attempt(self, attempt, path):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
     
@@ -126,7 +126,7 @@ class BaseDeployer(object):
         LOG.info('DIR = ' + BaseDeployer.TMP_DEPLOY_PATH)
         
         try:
-            attemptStatus = self.deployRepoAttempt(attempt, BaseDeployer.TMP_DEPLOY_PATH)
+            attemptStatus = self.deploy_repo_attempt(attempt, BaseDeployer.TMP_DEPLOY_PATH)
         except:
             print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_RUNNING_ERROR)

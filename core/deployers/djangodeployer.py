@@ -94,7 +94,7 @@ class DjangoDeployer(BaseDeployer):
         return urls
     ## DEF
     
-    def deployRepoAttempt(self, attempt, deployPath):
+    def deploy_repo_attempt(self, attempt, deployPath):
         utils.vagrant_pip_clear()
 
         setup_files = utils.search_file(deployPath, 'setup.py')
