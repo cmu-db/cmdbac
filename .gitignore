@@ -1,6 +1,6 @@
+.vagrant/
+log.txt
+*.log
 *.pyc
 *.sqlite3
-log.txt
-scripts/.vagrant/*
 *.kate-swp
-.log
