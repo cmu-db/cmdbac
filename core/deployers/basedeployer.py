@@ -23,10 +23,9 @@ import utils
 ## =====================================================================
 ## LOGGING CONFIGURATION
 ## =====================================================================
-
 LOG = logging.getLogger()
 LOG_handler = logging.StreamHandler()
-LOG_formatter = logging.Formatter(fmt='%(asctime)s [%(funcName)s:%(lineno)03d] %(levelname)-5s: %(message)s',
+LOG_formatter = logging.Formatter(fmt='%(asctime)s [%(filename)s:%(funcName)s:%(lineno)03d] %(levelname)-5s: %(message)s',
                                   datefmt='%m-%d-%Y %H:%M:%S')
 LOG_handler.setFormatter(LOG_formatter)
 LOG.addHandler(LOG_handler)
@@ -57,7 +56,7 @@ class BaseDeployer(object):
         self.log.addHandler(self.logHandler)    
     ## DEF
     
-    def getDatabase(self, settings_file):
+    def get_database(self, settings_file):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
     
@@ -77,24 +76,24 @@ class BaseDeployer(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
     
-    def checkServer(self, url):
+    def check_server(self, url):
         LOG.info("Checking server...")
         url = urlparse.urljoin("http://localhost:%d/" % self.repo.project_type.default_port, url)
         command = "wget --spider " + url
         return utils.vagrant_run_command(command)
     ## DEF
     
-    def killServer(self):
+    def kill_server(self):
         LOG.info("Killing server on port %d..." % self.repo.project_type.default_port)
         command = "fuser -k %s/tcp" % self.repo.project_type.default_port
         return utils.vagrant_run_command(command)
     ## DEF
         
-    def runServer(self):
+    def run_server(self):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
     
-    def syncServer(self):
+    def sync_server(self):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
     
@@ -145,7 +144,7 @@ class BaseDeployer(object):
             LOG.info(out)
             if not "200 OK" in out:
                 attemptStatus = ATTEMPT_STATUS_RUNNING_ERROR
-        self.killServer()
+        self.kill_server()
         
         # Okay we've seen everything that we wanted to see...
         self.save_attempt(attempt, attemptStatus)

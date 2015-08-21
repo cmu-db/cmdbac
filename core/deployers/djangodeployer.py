@@ -36,7 +36,7 @@ class DjangoDeployer(BaseDeployer):
         self.setting_file = None
     ## DEF
     
-    def getDatabase(self, settings_file):
+    def get_database(self, settings_file):
         regexes = [
             re.compile(r'django\.db\.backends\.([\w\d]+)'),
             re.compile('adapter\s*:\s*([\w\d]+)')
@@ -129,7 +129,7 @@ class DjangoDeployer(BaseDeployer):
         setting_file = next(name for name in setting_files if name.startswith(base_dir))
 
         # Database
-        attempt.database = self.getDatabase(setting_file)
+        attempt.database = self.get_database(setting_file)
         LOG.info('DATABASE: ' + attempt.database.name)
         
         # Base Dir
@@ -147,7 +147,7 @@ class DjangoDeployer(BaseDeployer):
     def tryDeploy(self, attempt, manage_file, setting_file):
         self.rewrite_settings(setting_file)
         LOG.info('Settings appended')
-        self.killServer()
+        self.kill_server()
 
         self.installed_requirements = []
         self.packages_from_database = []
@@ -165,7 +165,7 @@ class DjangoDeployer(BaseDeployer):
         index = 0
         #candidate_packages = []
         for tmp in range(threshold):
-            out = self.syncServer(manage_file)
+            out = self.sync_server(manage_file)
             LOG.info('SYNCDB OUTPUT: ' + out) 
             out = out.strip()
             out = out.splitlines()
@@ -204,12 +204,12 @@ class DjangoDeployer(BaseDeployer):
                 break
         
         # Fire away!
-        out = self.runServer(manage_file)
+        out = self.run_server(manage_file)
         LOG.info(out)
         return ATTEMPT_STATUS_SUCCESS
     ## DEF
     
-    def runServer(self, path):
+    def run_server(self, path):
         LOG.info("Run server...")
         vm_manage_file = utils.vagrant_share_path(path)
         command = utils.vagrant_cd(os.path.dirname(path)) + " && " + \
@@ -217,7 +217,7 @@ class DjangoDeployer(BaseDeployer):
         return utils.vagrant_run_command(command)
     ## DEF
     
-    def syncServer(self, path):
+    def sync_server(self, path):
         LOG.info("Sync server...")
         command = utils.vagrant_cd(os.path.dirname(path)) + " && " + \
                   "python manage.py syncdb --noinput && python manage.py migrate --noinput"
