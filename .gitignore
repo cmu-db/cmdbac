@@ -1,6 +1,6 @@
 *.pyc
 *.sqlite3
 log.txt
-.vagrant/*
+scripts/.vagrant/*
 *.kate-swp
 .log
