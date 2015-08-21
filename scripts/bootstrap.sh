@@ -67,23 +67,22 @@ apt-get -y install nodejs
 # Can't find Magick-config
 apt-get -y install libmagickwand-dev
 
-# update ruby
-apt-get -y install make
-cd /vagrant/ruby-2.1.5
-./configure
-make
-make install
+# install ruby
+cd
+git clone git://github.com/sstephenson/rbenv.git .rbenv
+echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+exec $SHELL
+git clone git://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.bashrc
+exec $SHELL
+git clone https://github.com/sstephenson/rbenv-gem-rehash.git ~/.rbenv/plugins/rbenv-gem-rehash
+rbenv install 2.2.0
+rbenv global 2.2.0
+ruby -v
 
 gem update --system
 
 gem install bundle
 
-#echo 'export DATABASE_URL="sqlite3:/db/db_webcrawler.sqlite3"' >> /home/vagrant/.bashrc
-
 apt-get -y install vim
-
-#apt-get -y install curl
-#git config --global user.name "Fangyu Gao"
-#git config --global user.email "fangyugao1219@gmail.com"
-#apt-get -y install ruby-rvm
-#rvm get head
