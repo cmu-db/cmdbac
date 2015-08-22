@@ -12,7 +12,7 @@ def query(url):
 
 GITHUB_DOWNLOAD_URL_TEMPLATE = Template('https://github.com/${name}/archive/${sha}.zip')
 
-def download(attempt, zip_name):
+def download_repo(attempt, zip_name):
     url = GITHUB_DOWNLOAD_URL_TEMPLATE.substitute(name=attempt.repo.name, sha=attempt.sha)
     response = query(url)
     zip_file = open(zip_name, 'wb')

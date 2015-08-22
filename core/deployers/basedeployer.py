@@ -80,13 +80,13 @@ class BaseDeployer(object):
         LOG.info("Checking server...")
         url = urlparse.urljoin("http://localhost:%d/" % self.repo.project_type.default_port, url)
         command = "wget --spider " + url
-        return utils.vagrant_run_command(command)
+        return utils.run_command(command)
     ## DEF
     
     def kill_server(self):
         LOG.info("Killing server on port %d..." % self.repo.project_type.default_port)
         command = "fuser -k %s/tcp" % self.repo.project_type.default_port
-        return utils.vagrant_run_command(command)
+        return utils.run_command(command)
     ## DEF
         
     def run_server(self):
@@ -98,7 +98,7 @@ class BaseDeployer(object):
     ## DEF
     
     def deploy(self):
-        LOG.info('Deploying repo: ' + self.repo.name)
+        LOG.info('Deploying repo: {} ...'.format(self.repo.name))
         
         attempt = Attempt()
         attempt.repo = self.repo
@@ -106,6 +106,7 @@ class BaseDeployer(object):
         attempt.result = ATTEMPT_STATUS_DEPLOYING
         attempt.start_time = datetime.now()
         attempt.hostname = socket.gethostname()
+        LOG.info('Validating ...')
         try:
             attempt.sha = utils.get_latest_sha(self.repo)
         except:
@@ -113,9 +114,9 @@ class BaseDeployer(object):
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return
 
-        LOG.info('Downloading repo: ' + self.repo.name + attempt.sha)
+        LOG.info('Downloading at {} ...'.format(attempt.sha))
         try:
-            utils.download(attempt, BaseDeployer.TMP_ZIP)
+            utils.download_repo(attempt, BaseDeployer.TMP_ZIP)
         except:
             print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
@@ -123,7 +124,7 @@ class BaseDeployer(object):
         
         utils.remake_dir(BaseDeployer.TMP_DEPLOY_PATH)
         utils.unzip(BaseDeployer.TMP_ZIP, BaseDeployer.TMP_DEPLOY_PATH)
-        LOG.info('DIR = ' + BaseDeployer.TMP_DEPLOY_PATH)
+        LOG.info('DIR = {}'.format(BaseDeployer.TMP_DEPLOY_PATH))
         
         try:
             attemptStatus = self.deploy_repo_attempt(attempt, BaseDeployer.TMP_DEPLOY_PATH)

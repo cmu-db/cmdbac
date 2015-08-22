@@ -84,8 +84,8 @@ class DjangoDeployer(BaseDeployer):
         dirname = os.path.dirname(setting_files)
         sys.path.append(dirname)
         proj_name = os.path.basename(setting_files)
-        command = "python " + utils.vagrant_share_path('get_urls.py') + ' ' + utils.vagrant_share_path(dirname) + ' ' + proj_name
-        out = utils.vagrant_run_command(command).strip()
+        command = 'python get_urls.py ' + dirname + ' ' + proj_name
+        out = utils.run_command(command).strip()
         print out
         if not out:
             urls = []
@@ -94,25 +94,25 @@ class DjangoDeployer(BaseDeployer):
         return urls
     ## DEF
     
-    def deploy_repo_attempt(self, attempt, deployPath):
-        utils.vagrant_pip_clear()
+    def deploy_repo_attempt(self, attempt, deploy_path):
+        utils.pip_clear()
 
-        setup_files = utils.search_file(deployPath, 'setup.py')
+        setup_files = utils.search_file(deploy_path, 'setup.py')
         LOG.info('setup.py: ' + str(setup_files))
         if len(setup_files):
             return ATTEMPT_STATUS_NOT_AN_APPLICATION
 
-        setting_files = utils.search_file(deployPath, 'settings.py')
+        setting_files = utils.search_file(deploy_path, 'settings.py')
         LOG.info('settings.py: ' + str(setting_files))
         if not len(setting_files):
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
                 
-        manage_files = utils.search_file(deployPath, 'manage.py')
+        manage_files = utils.search_file(deploy_path, 'manage.py')
         LOG.info('manage.py: ' + str(manage_files))
         if not len(manage_files):
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
 
-        self.requirement_files = utils.search_file(deployPath, 'requirements.txt')
+        self.requirement_files = utils.search_file(deploy_path, 'requirements.txt')
         LOG.info('REQUIREMENTS: ' + str(self.requirement_files))
         
         manage_paths = [os.path.dirname(manage_file) for manage_file in manage_files]
@@ -141,10 +141,10 @@ class DjangoDeployer(BaseDeployer):
         LOG.info('SETTING_DIR: ' + attempt.setting_dir)
         
         # Try to deploy!
-        return self.tryDeploy(attempt, manage_file, setting_file)
+        return self.try_deploy(attempt, manage_file, setting_file)
     ## DEF
     
-    def tryDeploy(self, attempt, manage_file, setting_file):
+    def try_deploy(self, attempt, manage_file, setting_file):
         self.rewrite_settings(setting_file)
         LOG.info('Settings appended')
         self.kill_server()
@@ -180,7 +180,7 @@ class DjangoDeployer(BaseDeployer):
                         if index == len(candidate_packages):
                             LOG.info('no more possible package')
                             return ATTEMPT_STATUS_MISSING_DEPENDENCIES
-                        out = utils.vagrant_pip_install([candidate_packages[index]], False)
+                        out = utils.pip_install([candidate_packages[index]], False)
                         LOG.info('pip install output: ' + out)
                     else:
                         if last_missing_module_name != '':
@@ -194,7 +194,7 @@ class DjangoDeployer(BaseDeployer):
                         candidate_packages = Package.objects.filter(id__in=candidate_package_ids).order_by('-count', 'name', '-version')
                         LOG.info('candidate packages: ' + str(candidate_packages))
                         index = 0
-                        out = utils.vagrant_pip_install([candidate_packages[0]], False)
+                        out = utils.pip_install([candidate_packages[0]], False)
                         LOG.info('pip install output: ' + out)
                 else:
                     return ATTEMPT_STATUS_MISSING_DEPENDENCIES
@@ -211,17 +211,18 @@ class DjangoDeployer(BaseDeployer):
     
     def run_server(self, path):
         LOG.info("Run server...")
-        vm_manage_file = utils.vagrant_share_path(path)
-        command = utils.vagrant_cd(os.path.dirname(path)) + " && " + \
+        #vm_manage_file = utils.vagrant_share_path(path)
+        print path
+        command = utils.cd(os.path.dirname(path)) + " && " + \
                   "nohup python manage.py runserver 0.0.0.0:8800 & sleep 1"
-        return utils.vagrant_run_command(command)
+        return utils.run_command(command)
     ## DEF
     
     def sync_server(self, path):
         LOG.info("Sync server...")
-        command = utils.vagrant_cd(os.path.dirname(path)) + " && " + \
+        command = utils.cd(os.path.dirname(path)) + " && " + \
                   "python manage.py syncdb --noinput && python manage.py migrate --noinput"
-        return utils.vagrant_run_command(command)
+        return utils.run_command(command)
     ## DEF
     
 ## CLASS
