@@ -1,6 +1,6 @@
 import os
 from os.path import expanduser
-from run_command import run_command
+from run import run_command
 from file import cd
 
 HOME_DIR = expanduser('~')

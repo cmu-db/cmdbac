@@ -1,6 +1,6 @@
 import os
 import shutil
-from run_command import run_command
+from run import run_command
 
 def search_file(directory_name, file_name):
     result = []
@@ -24,9 +24,14 @@ def mk_dir(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
+def chmod_dir(path):
+    if os.path.exists(path):
+        os.chmod(path, 0777)
+
 def remake_dir(path):
     rm_dir(path)
     mk_dir(path)
+    chmod_dir(path)
 
 def cd(path):
     return "cd "+ path

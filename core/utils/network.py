@@ -3,6 +3,7 @@ from string import Template
 import json
 import time
 import shutil
+from run import run_command
 
 def query(url):
     request = urllib2.Request(url)
@@ -31,3 +32,7 @@ def get_latest_sha(repo):
     data = json.load(response)
     time.sleep(1) 
     return data[0]['sha']
+
+def kill_port(port):
+    command = 'fuser -k {}/tcp'.format(port)
+    return run_command(command)

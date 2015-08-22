@@ -16,7 +16,6 @@ import json
 import socket
 
 from os.path import join
-from bs4 import BeautifulSoup
 from string import Template
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")

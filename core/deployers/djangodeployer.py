@@ -8,6 +8,8 @@ from basedeployer import BaseDeployer
 from crawler.models import *
 import utils
 
+from multiprocessing import Pool
+
 ## =====================================================================
 ## LOGGING CONFIGURATION
 ## =====================================================================
@@ -21,8 +23,12 @@ SECRET_KEY = 'abcdefghijklmnopqrstuvwxyz'
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db_webcrawler',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'crawler',
+        'HOST': 'localhost',
+        'PORT': '3306',
+        'USER': 'root',
+        'PASSWORD': '',
     }
 }
 """
@@ -60,7 +66,7 @@ class DjangoDeployer(BaseDeployer):
         return (db)
     ## DEF
     
-    def rewrite_settings(self, settings_file):
+    def configure_settings(self, settings_file):
         with open(settings_file, "a") as my_file:
             my_file.write(DJANGO_SETTINGS)
         ## WITH
@@ -68,11 +74,11 @@ class DjangoDeployer(BaseDeployer):
     
     def install_requirements(self, requirement_files):
         if requirement_files:
-            utils.vagrant_pip_clear()
-            old_packages = utils.vagrant_pip_freeze()
+            utils.pip_clear()
+            old_packages = utils.pip_freeze()
             for requirement_file in requirement_files:
-                out = utils.vagrant_pip_install(requirement_file, True)
-            new_packages = utils.vagrant_pip_freeze()
+                out = utils.pip_install(requirement_file, True)
+            new_packages = utils.pip_freeze()
             diff_packages = list(set(new_packages) - set(old_packages))
             return diff_packages
         else:
@@ -85,8 +91,9 @@ class DjangoDeployer(BaseDeployer):
         sys.path.append(dirname)
         proj_name = os.path.basename(setting_files)
         command = 'python get_urls.py ' + dirname + ' ' + proj_name
-        out = utils.run_command(command).strip()
-        print out
+        print command
+        print utils.run_command('curl 127.0.0.1:8001')
+        out = utils.run_command(command)[1].strip()
         if not out:
             urls = []
         else:
@@ -131,8 +138,7 @@ class DjangoDeployer(BaseDeployer):
         attempt.database = self.get_database(setting_file)
         LOG.info('Database: ' + attempt.database.name)
         
-        attempt.base_dir = base_dir
-        # attempt.base_dir = base_dir.split('/', 1)[1]
+        attempt.base_dir = base_dir.split('/', 1)[1]
         # LOG.info('BASE_DIR: ' + attempt.base_dir)
         
         attempt.setting_dir = os.path.basename(os.path.dirname(setting_file))
@@ -142,30 +148,34 @@ class DjangoDeployer(BaseDeployer):
     ## DEF
     
     def try_deploy(self, attempt, manage_file, setting_file):
-        self.rewrite_settings(setting_file)
-        LOG.info('Settings appended')
+        LOG.info('Configuring settings ...')
+        self.configure_settings(setting_file)
         self.kill_server()
 
         self.installed_requirements = []
         self.packages_from_database = []
 
+        LOG.info('Installing requirements ...')
         packages = self.install_requirements(self.requirement_files)
         for package in packages:
             name, version = package.split('==')
             pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
             self.installed_requirements.append(pkg)
         ## FOR
-        LOG.info('INSTALLED_REQUIREMENTS: ' + str(self.installed_requirements))
+        LOG.info('Installed requirements: {}'.format(self.installed_requirements))
 
         threshold = 10
         last_missing_module_name = ''
         index = 0
-        #candidate_packages = []
         for tmp in range(threshold):
+            LOG.info('syncdb ...')
             out = self.sync_server(manage_file)
-            LOG.info('SYNCDB OUTPUT: ' + out) 
-            out = out.strip()
-            out = out.splitlines()
+            # TODO: when sync error
+            if out[0] != 0:
+                LOG.info(out)
+                break
+            out = out[1].strip()
+            out = out[1].splitlines()
             if out and out[-1].strip().startswith('ImportError'):
                 line = out[-1].strip()
                 match = re.search('(?<=No module named )\S+', line)
@@ -199,26 +209,33 @@ class DjangoDeployer(BaseDeployer):
                 if last_missing_module_name != '':
                     self.packages_from_database.append(candidate_packages[index])
                 break
+        ## FOR
         
-        # Fire away!
-        out = self.run_server(manage_file)
-        LOG.info(out)
+        def run_server_function(manage_file):
+            return self.run_server(manage_file)
+        pool = Pool(processes=1)
+        pool.apply_async(run_server_function, [manage_file])
+
+        print self.check_server('')
+
         return ATTEMPT_STATUS_SUCCESS
     ## DEF
     
     def run_server(self, path):
-        LOG.info("Run server...")
-        #vm_manage_file = utils.vagrant_share_path(path)
-        print path
-        command = utils.cd(os.path.dirname(path)) + " && " + \
-                  "nohup python manage.py runserver 0.0.0.0:8800 & sleep 1"
+        LOG.info('Running server ...')
+        command = '{} && unset DJANGO_SETTINGS_MODULE && python manage.py runserver 0.0.0.0:{}'.format(
+            utils.cd(os.path.dirname(path)), 
+            self.repo.project_type.default_port + 1)
+        LOG.info('command: {}'.format(command))
         return utils.run_command(command)
     ## DEF
     
     def sync_server(self, path):
-        LOG.info("Sync server...")
-        command = utils.cd(os.path.dirname(path)) + " && " + \
-                  "python manage.py syncdb --noinput && python manage.py migrate --noinput"
+        LOG.info('Syncing server ...')
+        command = '{} && unset DJANGO_SETTINGS_MODULE && python manage.py syncdb --noinput'.format(
+            utils.cd(os.path.dirname(path)))
+            #command = '{} && python manage.py syncdb --noinput && python manage.py migrate --noinput'.format(
+        #    utils.cd(os.path.dirname(path)))
         return utils.run_command(command)
     ## DEF
     
