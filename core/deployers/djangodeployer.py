@@ -3,6 +3,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 import logging
 import re
+import time
 
 from basedeployer import BaseDeployer
 from crawler.models import *
@@ -211,12 +212,12 @@ class DjangoDeployer(BaseDeployer):
                 break
         ## FOR
         
-        def run_server_function(manage_file):
-            return self.run_server(manage_file)
-        pool = Pool(processes=1)
-        pool.apply_async(run_server_function, [manage_file])
+        result = self.run_server(manage_file)
 
+        time.sleep(1)
         print self.check_server('')
+
+        print result.get()
 
         return ATTEMPT_STATUS_SUCCESS
     ## DEF
@@ -227,7 +228,7 @@ class DjangoDeployer(BaseDeployer):
             utils.cd(os.path.dirname(path)), 
             self.repo.project_type.default_port + 1)
         LOG.info('command: {}'.format(command))
-        return utils.run_command(command)
+        return utils.run_command_async(command, 5)
     ## DEF
     
     def sync_server(self, path):

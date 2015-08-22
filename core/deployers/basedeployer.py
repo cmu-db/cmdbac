@@ -79,7 +79,7 @@ class BaseDeployer(object):
     
     def check_server(self, url):
         LOG.info("Checking server ...")
-        url = urlparse.urljoin('http://localhost:{}/'.format(self.repo.project_type.default_port + 1), url)
+        url = urlparse.urljoin('http://127.0.0.1:{}/'.format(self.repo.project_type.default_port + 1), url)
         command = 'wget --spider {}'.format(url)
         return utils.run_command(command)
     ## DEF
