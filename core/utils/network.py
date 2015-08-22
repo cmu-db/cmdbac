@@ -3,6 +3,8 @@ from string import Template
 import json
 import time
 import shutil
+import traceback
+
 from run import run_command
 
 def query(url):
@@ -34,5 +36,4 @@ def get_latest_sha(repo):
     return data[0]['sha']
 
 def kill_port(port):
-    command = 'fuser -k {}/tcp'.format(port)
-    return run_command(command)
+    pass

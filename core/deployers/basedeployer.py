@@ -77,16 +77,22 @@ class BaseDeployer(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
     
-    def check_server(self, url):
+    def check_server(self):
         LOG.info("Checking server ...")
-        url = urlparse.urljoin('http://127.0.0.1:{}/'.format(self.repo.project_type.default_port + 1), url)
+        url = 'http://127.0.0.1:{}/'.format(self.repo.project_type.default_port + 1)
         command = 'wget --spider {}'.format(url)
-        return utils.run_command(command)
+        out = utils.run_command(command)
+        print out
+        if "200 OK" in out[2]:
+            return ATTEMPT_STATUS_SUCCESS
+        else:
+            return ATTEMPT_STATUS_RUNNING_ERROR
     ## DEF
     
     def kill_server(self):
-        LOG.info('Killing server on port {} ...'.format(self.repo.project_type.default_port + 1))
-        return utils.kill_port(self.repo.project_type.default_port + 1)
+        if 0:
+            LOG.info('Killing server on port {} ...'.format(self.repo.project_type.default_port + 1))
+            return utils.kill_port(self.repo.project_type.default_port + 1)
     ## DEF
         
     def run_server(self):
@@ -134,19 +140,6 @@ class BaseDeployer(object):
             return
         if attemptStatus != ATTEMPT_STATUS_SUCCESS:
             self.save_attempt(attempt, attemptStatus)
-        
-        
-        if 0:
-            # Check whether the web app is running
-            urls = self.get_urls()
-            LOG.info("urls = " + str(urls))
-            urls = list(set([re.sub(r'[\^\$]', '', url) for url in urls if '?' not in url]))
-            urls = sorted(urls, key=len)
-            for url in urls:
-                out = self.check_server(url)
-                LOG.info(out)
-                if not "200 OK" in out:
-                    attemptStatus = ATTEMPT_STATUS_RUNNING_ERROR
         
         self.kill_server()
         # Okay we've seen everything that we wanted to see...

@@ -64,7 +64,7 @@ class DjangoDeployer(BaseDeployer):
                     break
             ## FOR
         ## WITH
-        return (db)
+        return db
     ## DEF
     
     def configure_settings(self, settings_file):
@@ -87,19 +87,7 @@ class DjangoDeployer(BaseDeployer):
     ## DEF
     
     def get_urls(self):
-        setting_files = utils.search_file(BaseDeployer.TMP_DEPLOY_PATH, 'settings.py')[0]
-        dirname = os.path.dirname(setting_files)
-        sys.path.append(dirname)
-        proj_name = os.path.basename(setting_files)
-        command = 'python get_urls.py ' + dirname + ' ' + proj_name
-        print command
-        print utils.run_command('curl 127.0.0.1:8001')
-        out = utils.run_command(command)[1].strip()
-        if not out:
-            urls = []
-        else:
-            urls = out.splitlines()
-        return urls
+        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
     
     def deploy_repo_attempt(self, attempt, deploy_path):
@@ -133,30 +121,29 @@ class DjangoDeployer(BaseDeployer):
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
         base_dir = next(iter(base_dirs))
         LOG.info('Base directory: ' + base_dir)
-        manage_file = next(name for name in manage_files if name.startswith(base_dir))
+        manage_path = next(name for name in manage_paths if name.startswith(base_dir))
         setting_file = next(name for name in setting_files if name.startswith(base_dir))
+        
+        attempt.base_dir = base_dir.split('/', 1)[1]
+        # LOG.info('BASE_DIR: ' + attempt.base_dir)
 
         attempt.database = self.get_database(setting_file)
         LOG.info('Database: ' + attempt.database.name)
         
-        attempt.base_dir = base_dir.split('/', 1)[1]
-        # LOG.info('BASE_DIR: ' + attempt.base_dir)
-        
         attempt.setting_dir = os.path.basename(os.path.dirname(setting_file))
         # LOG.info('SETTING_DIR: ' + attempt.setting_dir)
         
-        return self.try_deploy(attempt, manage_file, setting_file)
+        return self.try_deploy(attempt, manage_path, setting_file)
     ## DEF
     
-    def try_deploy(self, attempt, manage_file, setting_file):
+    def try_deploy(self, attempt, deploy_path, setting_path):
         LOG.info('Configuring settings ...')
-        self.configure_settings(setting_file)
+        self.configure_settings(setting_path)
         self.kill_server()
 
+        LOG.info('Installing requirements ...')
         self.installed_requirements = []
         self.packages_from_database = []
-
-        LOG.info('Installing requirements ...')
         packages = self.install_requirements(self.requirement_files)
         for package in packages:
             name, version = package.split('==')
@@ -170,7 +157,7 @@ class DjangoDeployer(BaseDeployer):
         index = 0
         for tmp in range(threshold):
             LOG.info('syncdb ...')
-            out = self.sync_server(manage_file)
+            out = self.sync_server(deploy_path)
             # TODO: when sync error
             if out[0] != 0:
                 LOG.info(out)
@@ -212,29 +199,28 @@ class DjangoDeployer(BaseDeployer):
                 break
         ## FOR
         
-        result = self.run_server(manage_file)
+        result = self.run_server(deploy_path)
 
         time.sleep(1)
-        print self.check_server('')
+        attemptStatus = self.check_server()
 
-        print result.get()
+        result.get()
 
-        return ATTEMPT_STATUS_SUCCESS
+        return attemptStatus
     ## DEF
     
     def run_server(self, path):
         LOG.info('Running server ...')
         command = '{} && unset DJANGO_SETTINGS_MODULE && python manage.py runserver 0.0.0.0:{}'.format(
-            utils.cd(os.path.dirname(path)), 
+            utils.cd(path), 
             self.repo.project_type.default_port + 1)
-        LOG.info('command: {}'.format(command))
         return utils.run_command_async(command, 5)
     ## DEF
     
     def sync_server(self, path):
         LOG.info('Syncing server ...')
         command = '{} && unset DJANGO_SETTINGS_MODULE && python manage.py syncdb --noinput'.format(
-            utils.cd(os.path.dirname(path)))
+            utils.cd(path))
             #command = '{} && python manage.py syncdb --noinput && python manage.py migrate --noinput'.format(
         #    utils.cd(os.path.dirname(path)))
         return utils.run_command(command)

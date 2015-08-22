@@ -31,14 +31,10 @@ from utils import *
 ## =====================================================================
 repo_deployer_logger = logging.getLogger('repo_deployer')
 repo_deployer_logger.setLevel(logging.DEBUG)
-#fh = logging.FileHandler('repo_deployer.log')
-#fh.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s %(message)s')
-#fh.setFormatter(formatter)
 ch.setFormatter(formatter)
-#repo_deployer_logger.addHandler(fh)
 repo_deployer_logger.addHandler(ch)
 
 
@@ -49,7 +45,7 @@ def main():
     while True:
         #repos = Repository.objects.exclude(pk__in=Attempt.objects.values_list('repo', flat=True))
         
-        repos = Repository.objects.filter(name="abzde/technetium")
+        repos = Repository.objects.filter(name="acecodes/acetools")
         database = Database.objects.get(name='SQLite3')
         
         # if string:
