@@ -98,49 +98,46 @@ class DjangoDeployer(BaseDeployer):
         utils.pip_clear()
 
         setup_files = utils.search_file(deploy_path, 'setup.py')
-        LOG.info('setup.py: ' + str(setup_files))
-        if len(setup_files):
+        # LOG.info('setup.py: {}'.format(setup_files))
+        if setup_files:
             return ATTEMPT_STATUS_NOT_AN_APPLICATION
 
         setting_files = utils.search_file(deploy_path, 'settings.py')
-        LOG.info('settings.py: ' + str(setting_files))
-        if not len(setting_files):
+        # LOG.info('settings.py: {}'.format(setting_files))
+        if not setting_files:
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
                 
         manage_files = utils.search_file(deploy_path, 'manage.py')
-        LOG.info('manage.py: ' + str(manage_files))
-        if not len(manage_files):
+        # LOG.info('manage.py: {}'.format(manage_files))
+        if not manage_files:
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
 
         self.requirement_files = utils.search_file(deploy_path, 'requirements.txt')
-        LOG.info('REQUIREMENTS: ' + str(self.requirement_files))
+        #LOG.info('requirements.txt: {}'.format(self.requirement_files))
         
         manage_paths = [os.path.dirname(manage_file) for manage_file in manage_files]
-        LOG.info("MANAGE_PATHS: " + str(manage_paths))
+        # LOG.info('Manage path: {}'.format(manage_paths))
         setting_paths = [os.path.dirname(os.path.dirname(setting_file)) for setting_file in setting_files]
-        LOG.info("setting_paths: " + str(setting_paths))
+        # LOG.info('Setting path: {}'.format(setting_paths))
         base_dirs = set.intersection(set(manage_paths), set(setting_paths))
         if not base_dirs:
-            LOG.error('can not find base directory')
+            LOG.error('Can not find base directory!')
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
         base_dir = next(iter(base_dirs))
-        LOG.info('BASE_DIR: ' + base_dir)
+        LOG.info('Base directory: ' + base_dir)
         manage_file = next(name for name in manage_files if name.startswith(base_dir))
         setting_file = next(name for name in setting_files if name.startswith(base_dir))
 
-        # Database
         attempt.database = self.get_database(setting_file)
-        LOG.info('DATABASE: ' + attempt.database.name)
+        LOG.info('Database: ' + attempt.database.name)
         
-        # Base Dir
-        attempt.base_dir = base_dir.split('/', 1)[1]
-        LOG.info('BASE_DIR: ' + attempt.base_dir)
+        attempt.base_dir = base_dir
+        # attempt.base_dir = base_dir.split('/', 1)[1]
+        # LOG.info('BASE_DIR: ' + attempt.base_dir)
         
-        # Settings Dir
         attempt.setting_dir = os.path.basename(os.path.dirname(setting_file))
-        LOG.info('SETTING_DIR: ' + attempt.setting_dir)
+        # LOG.info('SETTING_DIR: ' + attempt.setting_dir)
         
-        # Try to deploy!
         return self.try_deploy(attempt, manage_file, setting_file)
     ## DEF
     

@@ -6,7 +6,6 @@ from file import cd
 HOME_DIR = expanduser('~')
 
 def home_path(path):
-    print HOME_DIR
     return os.path.join(HOME_DIR, path)
 
 def pip_clear():
