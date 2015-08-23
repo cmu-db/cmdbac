@@ -3,6 +3,9 @@ import sys
 import os
 import importlib
 
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "core"))
+
 def get_urls_rec(urllist, url):
     for entry in urllist:
         new_entry = entry.regex.pattern
