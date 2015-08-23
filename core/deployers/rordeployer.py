@@ -118,13 +118,13 @@ class RoRDeployer(BaseDeployer):
         
         LOG.info('Installing requirements ...')
         out = self.install_requirements(deploy_path)
-        LOG.info(out)
+        # LOG.info(out)
         if not 'complete!' in out[1]:
             return ATTEMPT_STATUS_MISSING_DEPENDENCIES
 
         LOG.info('Syncing server ...')
         out = self.sync_server(deploy_path)
-        LOG.info(out)
+        # LOG.info(out)
         if "rake aborted!" in out[1]:
             return ATTEMPT_STATUS_RUNNING_ERROR
         

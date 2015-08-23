@@ -27,7 +27,7 @@ fi
 function install {
     echo Installing $1
     shift
-    apt-get -y install "$@"
+    apt-get -y install "$@" >/dev/null 2>&1
 }
 
 echo updating package information
@@ -82,7 +82,7 @@ install 'MySQL' mysql-server libmysqlclient-dev
 pip install MySQL-python
 install 'Nodejs' nodejs
 install 'Nokogiri dependencies' libxml2 libxml2-dev libxslt1-dev imagemagick libmagickwand-dev
-apt-get -f -y install
+apt-get -f -y install >/dev/null 2>&1
 
 # Needed for docs generation.
 update-locale LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8
