@@ -66,7 +66,8 @@ class RoRDeployer(BaseDeployer):
     def install_requirements(self, path):
         if path:
             print path
-            command = '{} && && bundle install'.format(utils.cd(path))
+            command = '{} && bundle install'.format(utils.cd(path))
+            print command
             out = utils.run_command(command)
             LOG.info(out)
             return out
@@ -110,14 +111,15 @@ class RoRDeployer(BaseDeployer):
         attempt.database = self.get_database(os.path.join(base_dir, 'config/database.yml'))
         # LOG.info('Database: ' + attempt.database.name)
 
-        return self.try_deploy(attempt, base_dir, setting_path)
+        return self.try_deploy(attempt, base_dir)
     ## DEF
     
-    def try_deploy(self, attempt, deploy_path, setting_path):
+    def try_deploy(self, attempt, deploy_path):
         LOG.info('Configuring settings ...')
-        self.configure_settings(setting_path)
+        self.configure_settings(deploy_path)
         self.kill_server()
         
+        LOG.info('Installing requirements ...')
         out = self.install_requirements(deploy_path)
         LOG.info(out)
         if not "Your bundle is complete!" in out:
@@ -132,14 +134,14 @@ class RoRDeployer(BaseDeployer):
         LOG.info(out)
     ## DEF
     
-    def runServer(self, path):
+    def run_server(self, path):
         LOG.info("Run server...")
         #command = vagrant_cd(path) + " && bundle exec rails server -p 3000 > /vagrant/log 2>&1 & sleep 10"
         command = vagrant_cd(path) + " && nohup bundle exec rails server -p 3000 -d"
         return vagrant_run_command(command)
     ## DEF
     
-    def syncServer(self, path):
+    def sync_server(self, path):
         LOG.info("Sync server...")
         command = vagrant_cd(path) + " && bundle exec rake db:migrate"
         return utils.vagrant_run_command(command)

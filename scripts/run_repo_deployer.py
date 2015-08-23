@@ -45,7 +45,7 @@ def main():
     while True:
         #repos = Repository.objects.exclude(pk__in=Attempt.objects.values_list('repo', flat=True))
         
-        repos = Repository.objects.filter(name="acecodes/acetools")
+        repos = Repository.objects.filter(name="aae4/btw")
         database = Database.objects.get(name='SQLite3')
         
         # if string:

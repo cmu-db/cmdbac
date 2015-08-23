@@ -140,6 +140,7 @@ class BaseDeployer(object):
             return
         if attemptStatus != ATTEMPT_STATUS_SUCCESS:
             self.save_attempt(attempt, attemptStatus)
+            return
         
         self.kill_server()
         # Okay we've seen everything that we wanted to see...
