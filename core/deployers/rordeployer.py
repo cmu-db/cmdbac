@@ -65,11 +65,8 @@ class RoRDeployer(BaseDeployer):
     
     def install_requirements(self, path):
         if path:
-            print path
             command = '{} && bundle install'.format(utils.cd(path))
-            print command
             out = utils.run_command(command)
-            LOG.info(out)
             return out
         return []
     ## DEF
@@ -121,30 +118,37 @@ class RoRDeployer(BaseDeployer):
         
         LOG.info('Installing requirements ...')
         out = self.install_requirements(deploy_path)
-        LOG.info(out)
-        if not "Your bundle is complete!" in out:
+        # LOG.info(out)
+        if not 'complete!' in out[1]:
             return ATTEMPT_STATUS_MISSING_DEPENDENCIES
 
-        out = self.sync_server(path)
-        LOG.out(out)
-        if "rake aborted!" in out:
+        LOG.info('Syncing server ...')
+        out = self.sync_server(deploy_path)
+        # LOG.info(out)
+        if "rake aborted!" in out[1]:
             return ATTEMPT_STATUS_RUNNING_ERROR
         
-        out = self.run_server(path)
-        LOG.info(out)
+        LOG.info('Running server ...')
+        out = self.run_server(deploy_path)
+        # LOG.info(out)
+
+        LOG.info('Checking server ...')
+        attemptStatus = self.check_server()
+
+        return attemptStatus
+
     ## DEF
     
     def run_server(self, path):
-        LOG.info("Run server...")
-        #command = vagrant_cd(path) + " && bundle exec rails server -p 3000 > /vagrant/log 2>&1 & sleep 10"
-        command = vagrant_cd(path) + " && nohup bundle exec rails server -p 3000 -d"
-        return vagrant_run_command(command)
+        command = '{} && bundle exec rails server -p {} -d'.format(
+            utils.cd(path), 
+            self.repo.project_type.default_port + 1)
+        return utils.run_command(command)
     ## DEF
     
     def sync_server(self, path):
-        LOG.info("Sync server...")
-        command = vagrant_cd(path) + " && bundle exec rake db:migrate"
-        return utils.vagrant_run_command(command)
+        command = '{} && bundle exec rake db:migrate'.format(utils.cd(path))
+        return utils.run_command(command)
     ## DEF
     
 ## CLASS

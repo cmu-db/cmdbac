@@ -156,7 +156,7 @@ class DjangoDeployer(BaseDeployer):
         last_missing_module_name = ''
         index = 0
         for tmp in range(threshold):
-            LOG.info('syncdb ...')
+            LOG.info('Syncing server ...')
             out = self.sync_server(deploy_path)
             # TODO: when sync error
             if out[0] != 0:
@@ -199,9 +199,11 @@ class DjangoDeployer(BaseDeployer):
                 break
         ## FOR
         
+        LOG.info('Running server ...')
         result = self.run_server(deploy_path)
 
         time.sleep(1)
+        LOG.info('Checking server ...')
         attemptStatus = self.check_server()
 
         result.get()
@@ -210,7 +212,6 @@ class DjangoDeployer(BaseDeployer):
     ## DEF
     
     def run_server(self, path):
-        LOG.info('Running server ...')
         command = '{} && unset DJANGO_SETTINGS_MODULE && python manage.py runserver 0.0.0.0:{}'.format(
             utils.cd(path), 
             self.repo.project_type.default_port + 1)
@@ -218,11 +219,8 @@ class DjangoDeployer(BaseDeployer):
     ## DEF
     
     def sync_server(self, path):
-        LOG.info('Syncing server ...')
         command = '{} && unset DJANGO_SETTINGS_MODULE && python manage.py syncdb --noinput'.format(
             utils.cd(path))
-            #command = '{} && python manage.py syncdb --noinput && python manage.py migrate --noinput'.format(
-        #    utils.cd(os.path.dirname(path)))
         return utils.run_command(command)
     ## DEF
     
