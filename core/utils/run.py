@@ -38,7 +38,6 @@ def run(args, cwd = None, shell = True, kill_tree = True, timeout = -1, env = No
             # so wrap to avoid OSError: no such process
             try: 
                 kill(pid, SIGKILL)
-                print pid
             except OSError:
                 pass
         return -9, '', ''
