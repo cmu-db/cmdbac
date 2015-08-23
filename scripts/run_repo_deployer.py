@@ -26,30 +26,24 @@ from crawler.models import *
 from deployers import *
 from utils import *
 
-def vagrant_deploy(repo_name, database_name):
-    print repo_name, database_name
+def vagrant_deploy(repo, database):
+    print repo, database
     return 
     os.system('vagrant ssh -c "{}"'.format(
-        'python /vagrant/vagrant_deploy.py {} {}'.format(repo_name, database_name)))
+        'python /vagrant/vagrant_deploy.py {} {}'.format(repo, database)))
 
 def main():
     logger = logging.getLogger('basic_logger')
     logger.setLevel(logging.DEBUG)
         
     while True:
-        repos = Repository.objects.filter(name="acecodes/acetools")
+        repos = Repository.objects.filter(name='acecodes/acetools')
         database = Database.objects.get(name='SQLite3')
         
         for repo in repos:
              
-            moduleName = "deployers.%s" % (repo.project_type.deployer_class.lower())
-            moduleHandle = __import__(moduleName, globals(), locals(), [repo.project_type.deployer_class])
-            klass = getattr(moduleHandle, repo.project_type.deployer_class)
-            
             print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
-            vagrant_deploy(repo.name, database.name)
-            deployer = klass(repo, database)
-            deployer.deploy()
+            vagrant_deploy(repo, database.name)
             break
         ## FOR
         break
