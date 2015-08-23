@@ -78,7 +78,9 @@ def main():
     vagrant_setup()
         
     while True:
-        repos = Repository.objects.filter(name='acecodes/acetools')
+        # repos = Repository.objects.filter(name='acecodes/acetools')
+        repos = Repository.objects.filter(name='aae4/btw')
+
         database = Database.objects.get(name='SQLite3')
         
         for repo in repos:

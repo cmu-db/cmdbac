@@ -118,19 +118,19 @@ class RoRDeployer(BaseDeployer):
         
         LOG.info('Installing requirements ...')
         out = self.install_requirements(deploy_path)
-        # LOG.info(out)
+        LOG.info(out)
         if not 'complete!' in out[1]:
             return ATTEMPT_STATUS_MISSING_DEPENDENCIES
 
         LOG.info('Syncing server ...')
         out = self.sync_server(deploy_path)
-        # LOG.info(out)
+        LOG.info(out)
         if "rake aborted!" in out[1]:
             return ATTEMPT_STATUS_RUNNING_ERROR
         
         LOG.info('Running server ...')
         out = self.run_server(deploy_path)
-        # LOG.info(out)
+        LOG.info(out)
 
         LOG.info('Checking server ...')
         attemptStatus = self.check_server()
@@ -142,7 +142,7 @@ class RoRDeployer(BaseDeployer):
     def run_server(self, path):
         command = '{} && bundle exec rails server -p {} -d'.format(
             utils.cd(path), 
-            self.repo.project_type.default_port + 1)
+            self.repo.project_type.default_port)
         return utils.run_command(command)
     ## DEF
     
