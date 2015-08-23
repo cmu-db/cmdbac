@@ -26,7 +26,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'crawler',
-        'HOST': 'localhost',
+        'HOST': '10.0.2.2',
         'PORT': '3306',
         'USER': 'root',
         'PASSWORD': '',
@@ -94,12 +94,12 @@ class DjangoDeployer(BaseDeployer):
         utils.pip_clear()
 
         setup_files = utils.search_file(deploy_path, 'setup.py')
-        # LOG.info('setup.py: {}'.format(setup_files))
+        LOG.info('setup.py: {}'.format(setup_files))
         if setup_files:
             return ATTEMPT_STATUS_NOT_AN_APPLICATION
 
         setting_files = utils.search_file(deploy_path, 'settings.py')
-        # LOG.info('settings.py: {}'.format(setting_files))
+        LOG.info('settings.py: {}'.format(setting_files))
         if not setting_files:
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
                 

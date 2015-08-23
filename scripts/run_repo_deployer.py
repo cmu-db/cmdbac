@@ -24,17 +24,58 @@ django.setup()
 
 from crawler.models import *
 from deployers import *
-from utils import *
+import utils
+
+copied_dir = ['crawler', 'db_webcrawler', 'core']
+
+def vagrant_setup():
+    print ('Setuping Vagrant ...')
+
+    for new_dir in copied_dir:
+        old_dir = os.path.join(os.path.dirname(__file__), "..", new_dir)
+        shutil.copytree(old_dir, os.path.join(os.path.dirname(__file__), new_dir))
+
+def vagrant_clear():
+    for new_dir in copied_dir:
+        try:
+            shutil.rmtree(os.path.join(os.path.dirname(__file__), new_dir))
+        except:
+            pass
+
+def set_vagrant_database():
+    settings_file = os.path.join(os.path.dirname(__file__), "db_webcrawler", "settings.py")
+    settings = open(settings_file).read()
+    if "'HOST': 'localhost'" in settings:
+        settings = settings.replace("'HOST': 'localhost'", "'HOST': '10.0.2.2'")
+        fout = open(settings_file, 'w')
+        fout.write(settings)
+        fout.flush()
+        fout.close()
+
+def unset_vagrant_database():
+    settings_file = os.path.join(os.path.dirname(__file__), "db_webcrawler", "settings.py")
+    settings = open(settings_file).read()
+    if "'HOST': '10.0.2.2'" in settings:
+        settings = settings.replace("'HOST': 'localhost'", "'HOST': 'localhost'")
+        fout = open(settings_file, 'w')
+        fout.write(settings)
+        fout.flush()
+        fout.close()
 
 def vagrant_deploy(repo, database):
-    print repo, database
-    return 
-    os.system('vagrant ssh -c "{}"'.format(
-        'python /vagrant/vagrant_deploy.py {} {}'.format(repo, database)))
+    set_vagrant_database()
+    os.system('cd {} && {}'.format(
+        os.path.dirname(__file__),
+        'vagrant ssh -c "{}"'.format(
+            'python /vagrant/vagrant_deploy.py {} {}'.format(repo, database))))
+    unset_vagrant_database()
 
 def main():
     logger = logging.getLogger('basic_logger')
     logger.setLevel(logging.DEBUG)
+
+    vagrant_clear()
+    vagrant_setup()
         
     while True:
         repos = Repository.objects.filter(name='acecodes/acetools')
@@ -44,10 +85,13 @@ def main():
              
             print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
             vagrant_deploy(repo, database.name)
+            
             break
         ## FOR
         break
     ## WHILE
+
+    vagrant_clear()
 
 if __name__ == '__main__':
     main()

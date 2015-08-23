@@ -130,7 +130,7 @@ class BaseDeployer(object):
         
         utils.remake_dir(BaseDeployer.TMP_DEPLOY_PATH)
         utils.unzip(BaseDeployer.TMP_ZIP, BaseDeployer.TMP_DEPLOY_PATH)
-        LOG.info('Deploy at {} ...'.format(BaseDeployer.TMP_DEPLOY_PATH))
+        LOG.info('Deploying at {} ...'.format(BaseDeployer.TMP_DEPLOY_PATH))
         
         try:
             attemptStatus = self.deploy_repo_attempt(attempt, BaseDeployer.TMP_DEPLOY_PATH)

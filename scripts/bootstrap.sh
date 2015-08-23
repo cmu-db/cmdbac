@@ -22,50 +22,37 @@ else
 fi
 
 
-#update apt-get
+# update apt-get
 apt-get update
 
-# install and configure git
+# install essentials
 apt-get -y install git
-
-# install make
-
 apt-get -y install make
-
-#install sqlite3
 apt-get -y install sqlite3
+apt-get -y install python-dev
+apt-get -y install unzip
 
-#install mysql
+# install pip
+wget https://bootstrap.pypa.io/get-pip.py -O /home/vagrant/get-pip.py
+python /home/vagrant/get-pip.py
+echo 'export PYTHONUSERBASE="/home/vagrant/pip"' >> /home/vagrant/.bashrc
+
+# install mysql
 debconf-set-selections <<<'mysql-server mysql-server/root_password password your_password'
 debconf-set-selections <<<'mysql-server mysql-server/root_password_again password your_password'
 apt-get -y install mysql-server
 apt-get -y install libmysqlclient-dev
-apt-get -y install python-dev
+pip install MySQL-python
 
-#install postgresql
+# install postgresql
 apt-get -y install postgresql postgresql-contrib
 apt-get -y install libpq-dev
 
+# install beautifulsoup
+pip install BeautifulSoup4
 
-#apt-get -y install python-pip
-wget https://bootstrap.pypa.io/get-pip.py -O /home/vagrant/get-pip.py
-python /home/vagrant/get-pip.py
-
-echo 'export PYTHONUSERBASE="/home/vagrant/pip"' >> /home/vagrant/.bashrc
-
-# for ruby on rails
-
-# can not find sqlite3.h
-apt-get -y install libsqlite3-dev
-
-apt-get -y install ruby-dev
-
-# missing libxml2
-apt-get -y install libxslt-dev libxml2-dev
-# rake aborted! Could not find a JavaScript runtime
-apt-get -y install nodejs 
-# Can't find Magick-config
-apt-get -y install libmagickwand-dev
+# install django
+pip install django
 
 # install ruby
 cd
@@ -79,10 +66,14 @@ exec $SHELL
 git clone https://github.com/sstephenson/rbenv-gem-rehash.git ~/.rbenv/plugins/rbenv-gem-rehash
 rbenv install 2.2.0
 rbenv global 2.2.0
-ruby -v
-
 gem update --system
-
 gem install bundle
 
+# install ruby-related
+apt-get -y install libsqlite3-dev
+apt-get -y install libxslt-dev libxml2-dev
+apt-get -y install nodejs 
+apt-get -y install libmagickwand-dev
+
+# install vim
 apt-get -y install vim
