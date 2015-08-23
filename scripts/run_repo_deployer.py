@@ -65,7 +65,7 @@ def unset_vagrant_database():
 def vagrant_deploy(repo, database):
     set_vagrant_database()
     os.system('cd {} && {}'.format(
-        os.path.dirname(__file__),
+        sys.path[0],
         'vagrant ssh -c "{}"'.format(
             'python /vagrant/vagrant_deploy.py {} {}'.format(repo, database))))
     unset_vagrant_database()
@@ -78,7 +78,8 @@ def main():
     vagrant_setup()
         
     while True:
-        repos = Repository.objects.filter(name='acecodes/acetools')
+        repos = Repository.objects.filter(name='acecodes/acetools') 
+        # repos = Repository.objects.filter(name='adamgillfillan/mental_health_app')
         # repos = Repository.objects.filter(name='aae4/btw')
 
         database = Database.objects.get(name='SQLite3')
