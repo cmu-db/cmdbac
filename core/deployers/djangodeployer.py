@@ -214,7 +214,7 @@ class DjangoDeployer(BaseDeployer):
     def run_server(self, path):
         command = '{} && unset DJANGO_SETTINGS_MODULE && python manage.py runserver 0.0.0.0:{}'.format(
             utils.cd(path), 
-            self.repo.project_type.default_port + 1)
+            self.repo.project_type.default_port)
         return utils.run_command_async(command, 5)
     ## DEF
     

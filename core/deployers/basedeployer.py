@@ -79,7 +79,7 @@ class BaseDeployer(object):
     
     def check_server(self):
         LOG.info("Checking server ...")
-        url = 'http://127.0.0.1:{}/'.format(self.repo.project_type.default_port + 1)
+        url = 'http://127.0.0.1:{}/'.format(self.repo.project_type.default_port)
         command = 'wget --spider {}'.format(url)
         out = utils.run_command(command)
         print out
@@ -91,8 +91,8 @@ class BaseDeployer(object):
     
     def kill_server(self):
         if 0:
-            LOG.info('Killing server on port {} ...'.format(self.repo.project_type.default_port + 1))
-            return utils.kill_port(self.repo.project_type.default_port + 1)
+            LOG.info('Killing server on port {} ...'.format(self.repo.project_type.default_port))
+            return utils.kill_port(self.repo.project_type.default_port)
     ## DEF
         
     def run_server(self):
