@@ -28,14 +28,14 @@ def pip_install(names, is_file):
     
     proxy = os.environ.get('http_proxy')
     if proxy:
-        command = command + '--proxy ' + proxy + ' '
-    command = command + 'install --user --build ' + home_path("pip/build")
+        command = '{} --proxy {} '.format(command, proxy)
+    command = '{} install --user --build {}'.format(command, home_path("pip/build"))
     if is_file:
         filename = home_path(names)
-        command = command + '-r ' + filename
+        command = '{} -r {}'.format(command, filename)
     else:
         for name in names:
-            command = command + name.name + '==' + name.version + ' '
+            command = '{} {}=={} '.format(command, name.name, name.version)
     out = run_command(command)
 
     pip_rm_build()

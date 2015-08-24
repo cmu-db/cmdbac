@@ -48,4 +48,4 @@ def run_command(command, timeout=1000):
 
 def run_command_async(command, timeout=1000):
     pool = Pool(processes=1)
-    return pool.apply_async(run_command, [command, timeout])
+    return pool.apply_async(run_command, [command, timeout]), pool

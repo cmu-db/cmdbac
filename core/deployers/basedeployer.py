@@ -77,16 +77,16 @@ class BaseDeployer(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
     
-    def check_server(self):
+    def check_server(self, urls):
         LOG.info("Checking server ...")
         url = 'http://127.0.0.1:{}/'.format(self.repo.project_type.default_port)
+        url = urlparse.urljoin(url, urls[0])
         command = 'wget --spider {}'.format(url)
         out = utils.run_command(command)
-        print out
-        if "200 OK" in out[2]:
-            return ATTEMPT_STATUS_SUCCESS
-        else:
+        if not "200 OK" in out[2]:
             return ATTEMPT_STATUS_RUNNING_ERROR
+        else:
+            return ATTEMPT_STATUS_SUCCESS
     ## DEF
     
     def kill_server(self):
