@@ -23,7 +23,8 @@ def main():
 	moduleHandle = __import__(moduleName, globals(), locals(), [repo.project_type.deployer_class])
 	klass = getattr(moduleHandle, repo.project_type.deployer_class)
 	deployer = klass(repo, database)
-	deployer.deploy()
+	if deployer.deploy() != 0:
+		sys.exit(-1)
 
 if __name__ == "__main__":
 	main()

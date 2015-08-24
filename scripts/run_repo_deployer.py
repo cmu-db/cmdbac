@@ -17,6 +17,7 @@ import socket
 
 from os.path import join
 from string import Template
+from itertools import chain
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 import django
@@ -64,11 +65,13 @@ def unset_vagrant_database():
 
 def vagrant_deploy(repo, database):
     set_vagrant_database()
-    os.system('cd {} && {}'.format(
+    out = os.system('cd {} && {}'.format(
         sys.path[0],
         'vagrant ssh -c "{}"'.format(
             'python /vagrant/vagrant_deploy.py {} {}'.format(repo, database))))
     unset_vagrant_database()
+
+    return out
 
 def main():
     logger = logging.getLogger('basic_logger')
@@ -85,10 +88,8 @@ def main():
         database = Database.objects.get(name='SQLite3')
         
         for repo in repos:
-             
             print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
             vagrant_deploy(repo, database.name)
-            
             break
         ## FOR
         break
@@ -96,5 +97,42 @@ def main():
 
     vagrant_clear()
 
+def test():
+    logger = logging.getLogger('basic_logger')
+    logger.setLevel(logging.DEBUG)
+
+    vagrant_clear()
+    vagrant_setup()
+        
+    result = 0
+
+    while True:
+        repos = Repository.objects.filter(name='acecodes/acetools') 
+        repos = repos | Repository.objects.filter(name='adamgillfillan/mental_health_app')
+        repos = repos | Repository.objects.filter(name='aae4/btw')
+
+        database = Database.objects.get(name='SQLite3')
+        
+        for repo in repos:
+            print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
+            result = vagrant_deploy(repo, database.name)
+            if result != 0:
+                break
+        ## FOR
+        break
+    ## WHILE
+
+    vagrant_clear()
+
+    print '############'
+    if result == 0:
+        print 'TEST PASSED!'
+    else:
+        print 'TEST FAILED!'
+    print '############'
+
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) < 2 or sys.argv[1] != 'test':
+        main()
+    else:
+        test()

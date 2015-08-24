@@ -118,7 +118,7 @@ class BaseDeployer(object):
         except:
             print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
-            return
+            return -1
 
         LOG.info('Downloading at {} ...'.format(attempt.sha))
         try:
@@ -126,7 +126,7 @@ class BaseDeployer(object):
         except:
             print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
-            return
+            return -1
         
         utils.remake_dir(BaseDeployer.TMP_DEPLOY_PATH)
         utils.unzip(BaseDeployer.TMP_ZIP, BaseDeployer.TMP_DEPLOY_PATH)
@@ -137,16 +137,16 @@ class BaseDeployer(object):
         except:
             print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_RUNNING_ERROR)
-            return
+            return -1
         if attemptStatus != ATTEMPT_STATUS_SUCCESS:
             self.save_attempt(attempt, attemptStatus)
-            return
+            return -1
         
         self.kill_server()
         # Okay we've seen everything that we wanted to see...
         self.save_attempt(attempt, attemptStatus)
         
-        return
+        return 0
     ## DEF
     
     def save_attempt(self, attempt, result):
