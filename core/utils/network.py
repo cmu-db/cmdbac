@@ -36,4 +36,4 @@ def get_latest_sha(repo):
     return data[0]['sha']
 
 def kill_port(port):
-    pass
+    return run_command('fuser -n tcp -k {}'.format(port))

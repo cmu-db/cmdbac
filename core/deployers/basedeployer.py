@@ -83,6 +83,7 @@ class BaseDeployer(object):
         url = urlparse.urljoin(url, urls[0])
         command = 'wget --spider {}'.format(url)
         out = utils.run_command(command)
+        LOG.info(out)
         if not "200 OK" in out[2]:
             return ATTEMPT_STATUS_RUNNING_ERROR
         else:
@@ -90,9 +91,8 @@ class BaseDeployer(object):
     ## DEF
     
     def kill_server(self):
-        if 0:
-            LOG.info('Killing server on port {} ...'.format(self.repo.project_type.default_port))
-            return utils.kill_port(self.repo.project_type.default_port)
+        LOG.info('Killing server on port {} ...'.format(self.repo.project_type.default_port))
+        return utils.kill_port(self.repo.project_type.default_port)
     ## DEF
         
     def run_server(self):
@@ -142,7 +142,7 @@ class BaseDeployer(object):
             self.save_attempt(attempt, attemptStatus)
             return -1
         
-        self.kill_server()
+        LOG.info(self.kill_server())
         # Okay we've seen everything that we wanted to see...
         self.save_attempt(attempt, attemptStatus)
         

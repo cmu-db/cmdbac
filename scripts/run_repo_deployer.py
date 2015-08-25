@@ -82,8 +82,8 @@ def main():
         
     while True:
         # repos = Repository.objects.filter(name='acecodes/acetools') 
-        # repos = Repository.objects.filter(name='adamgillfillan/mental_health_app')
-        repos = Repository.objects.filter(name='aae4/btw')
+        repos = Repository.objects.filter(name='adamgillfillan/mental_health_app')
+        # repos = Repository.objects.filter(name='aae4/btw')
 
         database = Database.objects.get(name='SQLite3')
         

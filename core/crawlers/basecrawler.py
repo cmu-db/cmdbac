@@ -26,10 +26,5 @@ class BaseCrawler(object):
         # For now let's do it once...
         nextResults = self.search()
     ## DEF
-        
-    #def save(self):
-        #repo_type = Type.objects.get(name=self.name)
-        #repo_type.cur_size = self.cur_size
-        #repo_type.save()
 
 ## CLASS

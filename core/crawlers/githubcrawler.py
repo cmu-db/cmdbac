@@ -21,7 +21,7 @@ from crawler.models import *
 
 LOG = logging.getLogger(__name__)
 LOG_handler = logging.StreamHandler()
-LOG_formatter = logging.Formatter(fmt='%(asctime)s [%(funcName)s:%(lineno)03d] %(levelname)-5s: %(message)s',
+LOG_formatter = logging.Formatter(fmt='%(asctime)s [%(filename)s:%(funcName)s:%(lineno)03d] %(levelname)-5s: %(message)s',
                                   datefmt='%m-%d-%Y %H:%M:%S')
 LOG_handler.setFormatter(LOG_formatter)
 LOG.addHandler(LOG_handler)
@@ -35,7 +35,6 @@ BASE_URL = "https://github.com/search?utf8=%E2%9C%93&q=${query}+" + \
            "in%3Apath+filename%3A${filename}+" +  \
            "size%3A${size}&" + \
            "type=Code&ref=searchresults"
-           
 GITHUB_HOST = 'https://github.com/'
 API_GITHUB_REPO = 'https://api.github.com/repos/'
 API_GITHUB_SLEEP = 4 # seconds
