@@ -25,6 +25,7 @@ def main():
 	deployer = klass(repo, database)
 	if deployer.deploy() != 0:
 		sys.exit(-1)
+	deployer.kill_server()
 
 if __name__ == "__main__":
 	main()

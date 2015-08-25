@@ -142,7 +142,7 @@ class BaseDeployer(object):
             self.save_attempt(attempt, attemptStatus)
             return -1
         
-        LOG.info(self.kill_server())
+        # LOG.info(self.kill_server())
         # Okay we've seen everything that we wanted to see...
         self.save_attempt(attempt, attemptStatus)
         
