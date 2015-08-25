@@ -74,6 +74,45 @@ class RoRDeployer(BaseDeployer):
     def get_urls(self):
         return ['']
     ## DEF
+
+    def sync_server(self, path):
+        LOG.info('Syncing server ...')
+        command = '{} && bundle exec rake db:migrate'.format(utils.cd(path))
+        return utils.run_command(command)
+    ## DEF
+
+    def run_server(self, path):
+        LOG.info('Running server ...')
+        command = '{} && bundle exec rails server -p {} -d'.format(
+            utils.cd(path), 
+            self.repo.project_type.default_port)
+        return utils.run_command(command)
+    ## DEF
+
+    def try_deploy(self, attempt, deploy_path):
+        LOG.info('Configuring settings ...')
+        self.configure_settings(deploy_path)
+        self.kill_server()
+        
+        LOG.info('Installing requirements ...')
+        out = self.install_requirements(deploy_path)
+        # LOG.info(out)
+        if not 'complete!' in out[1]:
+            return ATTEMPT_STATUS_MISSING_DEPENDENCIES
+
+        out = self.sync_server(deploy_path)
+        # LOG.info(out)
+        if "rake aborted!" in out[1]:
+            return ATTEMPT_STATUS_RUNNING_ERROR
+        
+        out = self.run_server(deploy_path)
+        LOG.info(out)
+
+        attemptStatus = self.check_server(self.get_urls())
+
+        return attemptStatus
+
+    ## DEF
     
     def deploy_repo_attempt(self, attempt, deploy_path):
         rakefiles = utils.search_file(deploy_path, 'Rakefile')
@@ -110,44 +149,9 @@ class RoRDeployer(BaseDeployer):
 
         return self.try_deploy(attempt, base_dir)
     ## DEF
-    
-    def try_deploy(self, attempt, deploy_path):
-        LOG.info('Configuring settings ...')
-        self.configure_settings(deploy_path)
-        self.kill_server()
-        
-        LOG.info('Installing requirements ...')
-        out = self.install_requirements(deploy_path)
-        # LOG.info(out)
-        if not 'complete!' in out[1]:
-            return ATTEMPT_STATUS_MISSING_DEPENDENCIES
 
-        out = self.sync_server(deploy_path)
-        # LOG.info(out)
-        if "rake aborted!" in out[1]:
-            return ATTEMPT_STATUS_RUNNING_ERROR
-        
-        out = self.run_server(deploy_path)
-        LOG.info(out)
-
-        attemptStatus = self.check_server(self.get_urls())
-
-        return attemptStatus
-
-    ## DEF
-    
-    def run_server(self, path):
-        LOG.info('Running server ...')
-        command = '{} && bundle exec rails server -p {} -d'.format(
-            utils.cd(path), 
-            self.repo.project_type.default_port)
-        return utils.run_command(command)
-    ## DEF
-    
-    def sync_server(self, path):
-        LOG.info('Syncing server ...')
-        command = '{} && bundle exec rake db:migrate'.format(utils.cd(path))
-        return utils.run_command(command)
+    def extract_database_info():
+        pass
     ## DEF
     
 ## CLASS

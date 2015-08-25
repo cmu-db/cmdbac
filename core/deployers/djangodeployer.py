@@ -109,53 +109,22 @@ class DjangoDeployer(BaseDeployer):
 
         return urls
     ## DEF
-    
-    def deploy_repo_attempt(self, attempt, deploy_path):
-        utils.pip_clear()
 
-        setup_files = utils.search_file(deploy_path, 'setup.py')
-        LOG.info('setup.py: {}'.format(setup_files))
-        if setup_files:
-            return ATTEMPT_STATUS_NOT_AN_APPLICATION
-
-        setting_files = utils.search_file(deploy_path, 'settings.py')
-        LOG.info('settings.py: {}'.format(setting_files))
-        if not setting_files:
-            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
-                
-        manage_files = utils.search_file(deploy_path, 'manage.py')
-        # LOG.info('manage.py: {}'.format(manage_files))
-        if not manage_files:
-            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
-
-        requirement_files = utils.search_file(deploy_path, 'requirements.txt')
-        #LOG.info('requirements.txt: {}'.format(self.requirement_files))
-        
-        manage_paths = [os.path.dirname(manage_file) for manage_file in manage_files]
-        # LOG.info('Manage path: {}'.format(manage_paths))
-        setting_paths = [os.path.dirname(os.path.dirname(setting_file)) for setting_file in setting_files]
-        # LOG.info('Setting path: {}'.format(setting_paths))
-        base_dirs = set.intersection(set(manage_paths), set(setting_paths))
-        if not base_dirs:
-            LOG.error('Can not find base directory!')
-            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
-        base_dir = next(iter(base_dirs))
-        LOG.info('Base directory: ' + base_dir)
-        manage_path = next(name for name in manage_paths if name.startswith(base_dir))
-        setting_file = next(name for name in setting_files if name.startswith(base_dir))
-        
-        attempt.base_dir = base_dir.split('/', 1)[1]
-        # LOG.info('BASE_DIR: ' + attempt.base_dir)
-
-        attempt.database = self.get_database(setting_file)
-        LOG.info('Database: ' + attempt.database.name)
-        
-        attempt.setting_dir = os.path.basename(os.path.dirname(setting_file))
-        # LOG.info('SETTING_DIR: ' + attempt.setting_dir)
-        
-        return self.try_deploy(attempt, manage_path, setting_file, requirement_files)
+    def sync_server(self, path):
+        LOG.info('Syncing server ...')
+        command = '{} && unset DJANGO_SETTINGS_MODULE && python manage.py syncdb --noinput'.format(
+            utils.cd(path))
+        return utils.run_command(command)
     ## DEF
-    
+
+    def run_server(self, path):
+        LOG.info('Running server ...')
+        command = '{} && unset DJANGO_SETTINGS_MODULE && python manage.py runserver 127.0.0.1:{}'.format(
+            utils.cd(path), 
+            self.repo.project_type.default_port)
+        return utils.run_command_async(command)
+    ## DEF
+
     def try_deploy(self, attempt, deploy_path, setting_path, requirement_files):
         LOG.info('Configuring settings ...')
         self.configure_settings(setting_path)
@@ -225,19 +194,54 @@ class DjangoDeployer(BaseDeployer):
         return attemptStatus
     ## DEF
     
-    def run_server(self, path):
-        LOG.info('Running server ...')
-        command = '{} && unset DJANGO_SETTINGS_MODULE && python manage.py runserver 127.0.0.1:{}'.format(
-            utils.cd(path), 
-            self.repo.project_type.default_port)
-        return utils.run_command_async(command)
+    def deploy_repo_attempt(self, attempt, deploy_path):
+        utils.pip_clear()
+
+        setup_files = utils.search_file(deploy_path, 'setup.py')
+        LOG.info('setup.py: {}'.format(setup_files))
+        if setup_files:
+            return ATTEMPT_STATUS_NOT_AN_APPLICATION
+
+        setting_files = utils.search_file(deploy_path, 'settings.py')
+        LOG.info('settings.py: {}'.format(setting_files))
+        if not setting_files:
+            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
+                
+        manage_files = utils.search_file(deploy_path, 'manage.py')
+        # LOG.info('manage.py: {}'.format(manage_files))
+        if not manage_files:
+            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
+
+        requirement_files = utils.search_file(deploy_path, 'requirements.txt')
+        #LOG.info('requirements.txt: {}'.format(self.requirement_files))
+        
+        manage_paths = [os.path.dirname(manage_file) for manage_file in manage_files]
+        # LOG.info('Manage path: {}'.format(manage_paths))
+        setting_paths = [os.path.dirname(os.path.dirname(setting_file)) for setting_file in setting_files]
+        # LOG.info('Setting path: {}'.format(setting_paths))
+        base_dirs = set.intersection(set(manage_paths), set(setting_paths))
+        if not base_dirs:
+            LOG.error('Can not find base directory!')
+            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
+        base_dir = next(iter(base_dirs))
+        LOG.info('Base directory: ' + base_dir)
+        manage_path = next(name for name in manage_paths if name.startswith(base_dir))
+        setting_file = next(name for name in setting_files if name.startswith(base_dir))
+        
+        attempt.base_dir = base_dir.split('/', 1)[1]
+        # LOG.info('BASE_DIR: ' + attempt.base_dir)
+
+        attempt.database = self.get_database(setting_file)
+        LOG.info('Database: ' + attempt.database.name)
+        
+        attempt.setting_dir = os.path.basename(os.path.dirname(setting_file))
+        # LOG.info('SETTING_DIR: ' + attempt.setting_dir)
+        
+        return self.try_deploy(attempt, manage_path, setting_file, requirement_files)
     ## DEF
-    
-    def sync_server(self, path):
-        LOG.info('Syncing server ...')
-        command = '{} && unset DJANGO_SETTINGS_MODULE && python manage.py syncdb --noinput'.format(
-            utils.cd(path))
-        return utils.run_command(command)
+
+    def extract_database_info():
+        pass
     ## DEF
     
 ## CLASS

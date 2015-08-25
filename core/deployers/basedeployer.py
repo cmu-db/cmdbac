@@ -69,38 +69,51 @@ class BaseDeployer(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
     
-    def deploy_repo_attempt(self, attempt, path):
-        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
-    ## DEF
-    
     def get_urls(self):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
-    
-    def check_server(self, urls):
-        LOG.info("Checking server ...")
-        url = 'http://127.0.0.1:{}/'.format(self.repo.project_type.default_port)
-        url = urlparse.urljoin(url, urls[0])
-        command = 'wget --spider {}'.format(url)
-        out = utils.run_command(command)
-        LOG.info(out)
-        if not "200 OK" in out[2]:
-            return ATTEMPT_STATUS_RUNNING_ERROR
-        else:
-            return ATTEMPT_STATUS_SUCCESS
+
+    def sync_server(self):
+        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
-    
-    def kill_server(self):
-        LOG.info('Killing server on port {} ...'.format(self.repo.project_type.default_port))
-        return utils.kill_port(self.repo.project_type.default_port)
-    ## DEF
-        
+
     def run_server(self):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
-    
-    def sync_server(self):
+
+    def deploy_repo_attempt(self, attempt, path):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
+    ## DEF
+
+    def save_attempt(self, attempt, result):
+        # Stop the log capture
+        self.log.removeHandler(self.logHandler)
+        self.logHandler.flush()
+        self.buffer.flush()
+        
+        attempt.result = result
+        attempt.log = self.buffer.getvalue()
+        attempt.stop_time = datetime.now()
+        attempt.save()
+        LOG.info("Saved Attempt #%s for %s" % (attempt, attempt.repo))
+        
+        # Populate packages
+        for pkg in self.packages_from_file:
+            dep = Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_FILE)
+            pkg.count = pkg.count + 1
+            pkg.save()
+        ## FOR
+        for pkg in self.packages_from_database:
+            Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_DATABASE)
+        ## FOR
+
+        # Make sure we update the repo to point to this 
+        # latest attempt
+        self.repo.valid_project = (result == ATTEMPT_STATUS_SUCCESS)
+        self.repo.latest_attempt = attempt
+        self.repo.attempts_count = self.repo.attempts_count + 1
+        self.repo.save()
+
     ## DEF
     
     def deploy(self):
@@ -148,39 +161,27 @@ class BaseDeployer(object):
         
         return 0
     ## DEF
-    
-    def save_attempt(self, attempt, result):
-        # Stop the log capture
-        self.log.removeHandler(self.logHandler)
-        self.logHandler.flush()
-        self.buffer.flush()
-        
-        attempt.result = result
-        attempt.log = self.buffer.getvalue()
-        attempt.stop_time = datetime.now()
-        attempt.save()
-        LOG.info("Saved Attempt #%s for %s" % (attempt, attempt.repo))
-        
-        # Populate packages
-        for pkg in self.packages_from_file:
-            dep = Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_FILE)
-            pkg.count = pkg.count + 1
-            pkg.save()
-        ## FOR
-        for pkg in self.packages_from_database:
-            Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_DATABASE)
-        ## FOR
 
-        # Make sure we update the repo to point to this 
-        # latest attempt
-        self.repo.valid_project = (result == ATTEMPT_STATUS_SUCCESS)
-        self.repo.latest_attempt = attempt
-        self.repo.attempts_count = self.repo.attempts_count + 1
-        self.repo.save()
-
+    def check_server(self, urls):
+        LOG.info("Checking server ...")
+        url = 'http://127.0.0.1:{}/'.format(self.repo.project_type.default_port)
+        url = urlparse.urljoin(url, urls[0])
+        command = 'wget --spider {}'.format(url)
+        out = utils.run_command(command)
+        LOG.info(out)
+        if not "200 OK" in out[2]:
+            return ATTEMPT_STATUS_RUNNING_ERROR
+        else:
+            return ATTEMPT_STATUS_SUCCESS
     ## DEF
 
     def extract_database_info():
-        pass
+        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
+
+    def kill_server(self):
+        LOG.info('Killing server on port {} ...'.format(self.repo.project_type.default_port))
+        return utils.kill_port(self.repo.project_type.default_port)
+    ## DEF
+    
 ## CLASS
