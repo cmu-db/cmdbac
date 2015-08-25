@@ -179,4 +179,8 @@ class BaseDeployer(object):
         self.repo.save()
 
     ## DEF
+
+    def extract_database_info():
+        pass
+    ## DEF
 ## CLASS
