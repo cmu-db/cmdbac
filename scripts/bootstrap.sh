@@ -74,14 +74,22 @@ pip install django
 
 # install dependencies
 install 'Git' git
+
 install 'SQLite' sqlite3 libsqlite3-dev
+
 install 'PostgreSQL' postgresql postgresql-contrib libpq-dev
-debconf-set-selections <<< "mysql-server mysql-server/root_password password ''"
-debconf-set-selections <<< "mysql-server mysql-server/root_password_again password ''"
+
+debconf-set-selections <<< "mysql-server mysql-server/root_password password root"
+debconf-set-selections <<< "mysql-server mysql-server/root_password_again password root"
 install 'MySQL' mysql-server libmysqlclient-dev
 pip install MySQL-python
+mysql -u root --password=root -e "CREATE DATABASE vm"
+
 install 'Nodejs' nodejs
+
 install 'Nokogiri dependencies' libxml2 libxml2-dev libxslt1-dev imagemagick libmagickwand-dev
+
+# Fix Dependencies
 apt-get -f -y install >/dev/null 2>&1
 
 # Needed for docs generation.
