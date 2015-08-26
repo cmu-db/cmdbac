@@ -45,7 +45,6 @@ DATABASES = {{
 class DjangoDeployer(BaseDeployer):
     def __init__(self, repo, database):
         BaseDeployer.__init__(self, repo, database)
-        self.setting_file = None
         self.database_name = 'django_app'
     ## DEF
     

@@ -57,7 +57,6 @@ gem 'mysql2'
 class RoRDeployer(BaseDeployer):
     def __init__(self, repo, database):
         BaseDeployer.__init__(self, repo, database)
-        self.setting_file = None
         self.database_name = 'ror_app'
     ## DEF
     
