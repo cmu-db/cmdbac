@@ -149,9 +149,5 @@ class RoRDeployer(BaseDeployer):
 
         return self.try_deploy(attempt, base_dir)
     ## DEF
-
-    def extract_database_info():
-        pass
-    ## DEF
     
 ## CLASS

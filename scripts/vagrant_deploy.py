@@ -24,9 +24,10 @@ def main():
 	klass = getattr(moduleHandle, repo.project_type.deployer_class)
 	deployer = klass(repo, database)
 	if deployer.deploy() != 0:
-		# deployer.kill_server()
+		deployer.kill_server()
 		sys.exit(-1)
-	# deployer.kill_server()
+	deployer.kill_server()
+	deployer.extract_database_info()
 
 if __name__ == "__main__":
 	main()

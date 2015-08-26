@@ -11,11 +11,11 @@ import traceback
 import urllib2
 import shutil
 import urlparse
-
 from StringIO import StringIO
 from string import Template
 from bs4 import BeautifulSoup
 from datetime import datetime
+import MySQLdb
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 from crawler.models import *
@@ -61,6 +61,14 @@ class BaseDeployer(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
     
+    def clear_database(self):
+        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
+    ## DEF
+
+    def extract_database_info(self):
+        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
+    ## DEF
+
     def configure_settings(self, settings_file):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
@@ -173,10 +181,6 @@ class BaseDeployer(object):
             return ATTEMPT_STATUS_RUNNING_ERROR
         else:
             return ATTEMPT_STATUS_SUCCESS
-    ## DEF
-
-    def extract_database_info():
-        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
 
     def kill_server(self):

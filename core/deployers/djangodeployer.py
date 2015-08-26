@@ -20,20 +20,21 @@ LOG = logging.getLogger()
 ## =====================================================================
 ## SETTINGS
 ## =====================================================================
+DATABASE_NAME = 'django_app'
 DJANGO_SETTINGS = """
 SECRET_KEY = 'abcdefghijklmnopqrstuvwxyz'
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-DATABASES = {
-    'default': {
+DATABASES = {{
+    'default': {{
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'vm',
+        'NAME': '{}',
         'HOST': '127.0.0.1',
         'PORT': '3306',
         'USER': 'root',
         'PASSWORD': 'root',
-    }
-}
-"""
+    }}
+}}
+""".format(DATABASE_NAME)
 
 ## =====================================================================
 ## DJANGO DEPLOYER
@@ -67,10 +68,27 @@ class DjangoDeployer(BaseDeployer):
         ## WITH
         return db
     ## DEF
+
+    def clear_database(self):
+        try:
+            conn = MySQLdb.connect(host='localhost',user='root',passwd='root',port=3306)
+            cur = conn.cursor()
+            cur.execute('drop database if exists {}'.format(DATABASE_NAME))
+            cur.execute('create database {}'.format(DATABASE_NAME))
+            cur.commit()
+            cur.close()
+            conn.close()
+        except:
+            print traceback.print_exc()
+    ## DEF
+
+    def extract_database_info(self):
+        pass
     
     def configure_settings(self, settings_file):
         with open(settings_file, "a") as my_file:
-            my_file.write(DJANGO_SETTINGS)
+            print DJANGO_SETTINGS.format(self.repo)
+            my_file.write(DJANGO_SETTINGS.format(self.repo))
         ## WITH
     ## DEF
     
@@ -129,6 +147,7 @@ class DjangoDeployer(BaseDeployer):
         LOG.info('Configuring settings ...')
         self.configure_settings(setting_path)
         self.kill_server()
+        self.clear_database()
 
         LOG.info('Installing requirements ...')
         self.installed_requirements = []
@@ -238,10 +257,6 @@ class DjangoDeployer(BaseDeployer):
         # LOG.info('SETTING_DIR: ' + attempt.setting_dir)
         
         return self.try_deploy(attempt, manage_path, setting_file, requirement_files)
-    ## DEF
-
-    def extract_database_info():
-        pass
     ## DEF
     
 ## CLASS
