@@ -5,6 +5,10 @@ import logging
 import re
 import time
 import importlib
+import traceback
+import MySQLdb
+
+from django.db import connection
 
 from basedeployer import BaseDeployer
 from crawler.models import *
@@ -20,7 +24,6 @@ LOG = logging.getLogger()
 ## =====================================================================
 ## SETTINGS
 ## =====================================================================
-DATABASE_NAME = 'django_app'
 DJANGO_SETTINGS = """
 SECRET_KEY = 'abcdefghijklmnopqrstuvwxyz'
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
@@ -34,7 +37,7 @@ DATABASES = {{
         'PASSWORD': 'root',
     }}
 }}
-""".format(DATABASE_NAME)
+"""
 
 ## =====================================================================
 ## DJANGO DEPLOYER
@@ -43,6 +46,7 @@ class DjangoDeployer(BaseDeployer):
     def __init__(self, repo, database):
         BaseDeployer.__init__(self, repo, database)
         self.setting_file = None
+        self.database_name = 'django_app'
     ## DEF
     
     def get_database(self, settings_file):
@@ -73,9 +77,9 @@ class DjangoDeployer(BaseDeployer):
         try:
             conn = MySQLdb.connect(host='localhost',user='root',passwd='root',port=3306)
             cur = conn.cursor()
-            cur.execute('drop database if exists {}'.format(DATABASE_NAME))
-            cur.execute('create database {}'.format(DATABASE_NAME))
-            cur.commit()
+            cur.execute('drop database if exists {}'.format(self.database_name))
+            cur.execute('create database {}'.format(self.database_name))
+            conn.commit()
             cur.close()
             conn.close()
         except:
@@ -83,12 +87,18 @@ class DjangoDeployer(BaseDeployer):
     ## DEF
 
     def extract_database_info(self):
-        pass
+        try:
+            conn = MySQLdb.connect(host='localhost',user='root',passwd='root',db=self.database_name, port=3306)
+            cur = conn.cursor()
+            cur.close()
+            conn.close()
+        except:
+            print traceback.print_exc()
+    ## DEF
     
     def configure_settings(self, settings_file):
         with open(settings_file, "a") as my_file:
-            print DJANGO_SETTINGS.format(self.repo)
-            my_file.write(DJANGO_SETTINGS.format(self.repo))
+            my_file.write(DJANGO_SETTINGS.format(self.database_name))
         ## WITH
     ## DEF
     
@@ -145,9 +155,9 @@ class DjangoDeployer(BaseDeployer):
 
     def try_deploy(self, attempt, deploy_path, setting_path, requirement_files):
         LOG.info('Configuring settings ...')
-        self.configure_settings(setting_path)
         self.kill_server()
         self.clear_database()
+        self.configure_settings(setting_path)
 
         LOG.info('Installing requirements ...')
         self.installed_requirements = []
