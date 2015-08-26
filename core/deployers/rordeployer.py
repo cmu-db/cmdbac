@@ -3,6 +3,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 import logging
 import re
+import traceback
+import MySQLdb
 
 from basedeployer import BaseDeployer
 from crawler.models import *
@@ -18,26 +20,35 @@ LOG = logging.getLogger()
 ## =====================================================================
 DATABASE_SETTINGS = """
 development:
-  adapter: sqlite3
-  database: db/development.sqlite3
+  adapter: mysql2
+  database: {}
   pool: 5
   timeout: 5000
+  username: root
+  password: root
+  shost: localhost
 
 test:
-  adapter: sqlite3
-  database: db/test.sqlite3
+  adapter: mysql2
+  database: {}
   pool: 5
   timeout: 5000
+  username: root
+  password: root
+  shost: localhost
 
 production:
-  adapter: sqlite3
-  database: db/production.sqlite3
+  adapter: mysql2
+  database: {}
   pool: 5
   timeout: 5000
+  username: root
+  password: root
+  shost: localhost
 """
 
 GEMFILE_SETTINGS = """
-gem 'sqlite3'
+gem 'mysql2'
 """
 
 ## =====================================================================
@@ -47,16 +58,42 @@ class RoRDeployer(BaseDeployer):
     def __init__(self, repo, database):
         BaseDeployer.__init__(self, repo, database)
         self.setting_file = None
+        self.database_name = 'ror_app'
     ## DEF
     
+    # TODO : fix
     def get_database(self, settings_file):
         db = Database.objects.get(name__iexact="sqlite3")
         return db
     ## DEF
+
+    def clear_database(self):
+        try:
+            conn = MySQLdb.connect(host='localhost',user='root',passwd='root',port=3306)
+            cur = conn.cursor()
+            cur.execute('drop database if exists {}'.format(self.database_name))
+            cur.execute('create database {}'.format(self.database_name))
+            conn.commit()
+            cur.close()
+            conn.close()
+        except:
+            print traceback.print_exc()
+    ## DEF
+
+    def extract_database_info(self):
+        try:
+            conn = MySQLdb.connect(host='localhost',user='root',passwd='root',db=self.database_name, port=3306)
+            cur = conn.cursor()
+            print cur.execute('show tables')
+            cur.close()
+            conn.close()
+        except:
+            print traceback.print_exc()
+    ## DEF
     
     def configure_settings(self, path):
         with open(os.path.join(path, 'config/database.yml'), "w") as my_file:
-            my_file.write(DATABASE_SETTINGS)
+            my_file.write(DATABASE_SETTINGS.format(self.database_name, self.database_name, self.database_name))
         ## WITH
         with open(os.path.join(path, 'Gemfile'), "a") as my_file:
             my_file.write(GEMFILE_SETTINGS)
@@ -91,17 +128,18 @@ class RoRDeployer(BaseDeployer):
 
     def try_deploy(self, attempt, deploy_path):
         LOG.info('Configuring settings ...')
-        self.configure_settings(deploy_path)
         self.kill_server()
+        self.clear_database()
+        self.configure_settings(deploy_path)
         
         LOG.info('Installing requirements ...')
         out = self.install_requirements(deploy_path)
-        # LOG.info(out)
+        LOG.info(out)
         if not 'complete!' in out[1]:
             return ATTEMPT_STATUS_MISSING_DEPENDENCIES
 
         out = self.sync_server(deploy_path)
-        # LOG.info(out)
+        LOG.info(out)
         if "rake aborted!" in out[1]:
             return ATTEMPT_STATUS_RUNNING_ERROR
         

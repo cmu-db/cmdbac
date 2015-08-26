@@ -49,6 +49,7 @@ class DjangoDeployer(BaseDeployer):
         self.database_name = 'django_app'
     ## DEF
     
+    # TODO : fix
     def get_database(self, settings_file):
         regexes = [
             re.compile(r'django\.db\.backends\.([\w\d]+)'),
