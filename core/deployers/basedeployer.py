@@ -62,7 +62,16 @@ class BaseDeployer(object):
     ## DEF
     
     def clear_database(self):
-        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
+        try:
+            conn = MySQLdb.connect(host='localhost',user='root',passwd='root',port=3306)
+            cur = conn.cursor()
+            cur.execute('drop database if exists {}'.format(self.database_name))
+            cur.execute('create database {}'.format(self.database_name))
+            conn.commit()
+            cur.close()
+            conn.close()
+        except:
+            print traceback.print_exc()
     ## DEF
 
     def extract_database_info(self):

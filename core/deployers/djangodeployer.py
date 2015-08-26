@@ -73,19 +73,6 @@ class DjangoDeployer(BaseDeployer):
         return db
     ## DEF
 
-    def clear_database(self):
-        try:
-            conn = MySQLdb.connect(host='localhost',user='root',passwd='root',port=3306)
-            cur = conn.cursor()
-            cur.execute('drop database if exists {}'.format(self.database_name))
-            cur.execute('create database {}'.format(self.database_name))
-            conn.commit()
-            cur.close()
-            conn.close()
-        except:
-            print traceback.print_exc()
-    ## DEF
-
     def extract_database_info(self):
         try:
             conn = MySQLdb.connect(host='localhost',user='root',passwd='root',db=self.database_name, port=3306)
