@@ -125,6 +125,9 @@ class DjangoDeployer(BaseDeployer):
         return urls
     ## DEF
 
+    def get_main_page(self):
+        print self.get_urls()
+
     def sync_server(self, path):
         LOG.info('Syncing server ...')
         command = '{} && unset DJANGO_SETTINGS_MODULE && python manage.py syncdb --noinput'.format(

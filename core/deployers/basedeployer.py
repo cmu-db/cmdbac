@@ -85,12 +85,12 @@ class BaseDeployer(object):
     def install_requirements(self):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
-    
-    def get_mainpage(self):
+
+    def get_urls(self):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
 
-    def get_urls(self):
+    def get_main_page(self):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
 
