@@ -83,3 +83,6 @@ NEWSPIDER_MODULE = 'driver.spiders'
 #HTTPCACHE_DIR='httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES=[]
 #HTTPCACHE_STORAGE='scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+# Disable S3 handler explicitly
+DOWNLOAD_HANDLERS={'s3': None}

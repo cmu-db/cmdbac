@@ -1,15 +1,20 @@
 # -*- coding: utf-8 -*-
 
 import scrapy
+from scrapy.spiders import CrawlSpider, Rule
+from scrapy.linkextractors import LinkExtractor
 
 from driver.items import FormItem
 
-class FormSpider(scrapy.Spider):
+class FormSpider(CrawlSpider):
     name = "form"
-    allowed_domains = ["dmoz.org"]
+    allowed_domains = ["www.hackerrank.com"]
     start_urls = [
         "https://www.hackerrank.com/login",
     ]
+
+    rules = (Rule (LinkExtractor(), callback="parse_form", follow= True),
+    )
 
     def parse(self, response):
         for sel in response.xpath('//form'):
