@@ -13,5 +13,10 @@ class DriverItem(scrapy.Item):
     # name = scrapy.Field()
     pass
 
+class InputItem(scrapy.Item):
+	id = scrapy.Field()
+	name = scrapy.Field()
+	type = scrapy.Field()
+
 class FormItem(scrapy.Item):
     inputs = scrapy.Field()

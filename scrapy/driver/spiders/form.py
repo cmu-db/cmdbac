@@ -4,7 +4,7 @@ import scrapy
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 
-from driver.items import FormItem
+from driver.items import InputItem, FormItem
 
 class FormSpider(CrawlSpider):
     name = "form"
@@ -18,12 +18,18 @@ class FormSpider(CrawlSpider):
 
     def parse(self, response):
         for sel in response.xpath('//form'):
-            item = FormItem()
+            formItem = FormItem()
             for ip in sel.xpath('//input[@type="text" or @type="password"]'):
+                id = ip.xpath('@id').extract()
                 name = ip.xpath('@name').extract()
-                if 'inputs' in item:
-                    item['inputs'].append(name)
+                type = ip.xpath('@type').extract()
+                inputItem = InputItem()
+                inputItem['id'] = id
+                inputItem['name'] = name
+                inputItem['type'] = type
+                if 'inputs' in formItem:
+                    formItem['inputs'].append(inputItem)
                 else:
-                    item['inputs'] = [name]
-            yield item
+                    formItem['inputs'] = [inputItem]
+            yield formItem
             
