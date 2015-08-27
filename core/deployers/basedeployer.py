@@ -78,7 +78,7 @@ class BaseDeployer(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
 
-    def configure_settings(self, settings_file):
+    def configure_settings(self):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
     

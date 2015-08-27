@@ -27,7 +27,8 @@ def main():
 		deployer.kill_server()
 		sys.exit(-1)
 	deployer.kill_server()
-	deployer.extract_database_info()
+	# deployer.extract_database_info()
+	deployer.get_main_page()
 
 if __name__ == "__main__":
 	main()

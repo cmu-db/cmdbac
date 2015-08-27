@@ -46,6 +46,7 @@ class DjangoDeployer(BaseDeployer):
     def __init__(self, repo, database):
         BaseDeployer.__init__(self, repo, database)
         self.database_name = 'django_app'
+        self.setting_path = None
     ## DEF
     
     # TODO : fix
@@ -83,8 +84,8 @@ class DjangoDeployer(BaseDeployer):
             print traceback.print_exc()
     ## DEF
     
-    def configure_settings(self, settings_file):
-        with open(settings_file, "a") as my_file:
+    def configure_settings(self):
+        with open(self.setting_path, "a") as my_file:
             my_file.write(DJANGO_SETTINGS.format(self.database_name))
         ## WITH
     ## DEF
@@ -102,9 +103,9 @@ class DjangoDeployer(BaseDeployer):
             return []
     ## DEF
     
-    def get_urls(self, setting_path):
-        sys.path.append(os.path.join(os.path.dirname(setting_path), os.pardir))
-        app_name = os.path.split(os.path.dirname(setting_path))[-1]
+    def get_urls(self):
+        sys.path.append(os.path.join(os.path.dirname(self.setting_path), os.pardir))
+        app_name = os.path.split(os.path.dirname(self.setting_path))[-1]
         urls_module = importlib.import_module('{}.urls'.format(app_name))
 
         urls = []
@@ -121,12 +122,13 @@ class DjangoDeployer(BaseDeployer):
 
         urls = list(set([re.sub(r'[\^\$]', '', url) for url in urls if '?' not in url]))
         urls = sorted(urls, key=len)
+        print urls
 
         return urls
     ## DEF
 
     def get_main_page(self):
-        print self.get_urls()
+        pass
 
     def sync_server(self, path):
         LOG.info('Syncing server ...')
@@ -143,11 +145,11 @@ class DjangoDeployer(BaseDeployer):
         return utils.run_command_async(command)
     ## DEF
 
-    def try_deploy(self, attempt, deploy_path, setting_path, requirement_files):
+    def try_deploy(self, attempt, deploy_path, requirement_files):
         LOG.info('Configuring settings ...')
         self.kill_server()
         self.clear_database()
-        self.configure_settings(setting_path)
+        self.configure_settings()
 
         LOG.info('Installing requirements ...')
         self.installed_requirements = []
@@ -206,7 +208,7 @@ class DjangoDeployer(BaseDeployer):
         result, p = self.run_server(deploy_path)
 
         time.sleep(1)
-        attemptStatus = self.check_server(self.get_urls(setting_path))
+        attemptStatus = self.check_server(self.get_urls())
 
         p.close()
 
@@ -244,9 +246,12 @@ class DjangoDeployer(BaseDeployer):
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
         base_dir = next(iter(base_dirs))
         LOG.info('Base directory: ' + base_dir)
+        
         manage_path = next(name for name in manage_paths if name.startswith(base_dir))
         setting_file = next(name for name in setting_files if name.startswith(base_dir))
         
+        self.setting_path = setting_file
+
         attempt.base_dir = base_dir.split('/', 1)[1]
         # LOG.info('BASE_DIR: ' + attempt.base_dir)
 
@@ -256,7 +261,7 @@ class DjangoDeployer(BaseDeployer):
         attempt.setting_dir = os.path.basename(os.path.dirname(setting_file))
         # LOG.info('SETTING_DIR: ' + attempt.setting_dir)
         
-        return self.try_deploy(attempt, manage_path, setting_file, requirement_files)
+        return self.try_deploy(attempt, manage_path, requirement_files)
     ## DEF
     
 ## CLASS

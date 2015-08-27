@@ -36,7 +36,7 @@ def vagrant_setup():
         old_dir = os.path.join(os.path.dirname(__file__), "..", new_dir)
         shutil.copytree(old_dir, os.path.join(os.path.dirname(__file__), new_dir))
 
-    print utils.run_command('cd {} && {}'.format(sys.path[0], 'vagrant up'))
+    utils.run_command('cd {} && {}'.format(sys.path[0], 'vagrant up'))
 
 def vagrant_clear():
     for new_dir in copied_dir:
@@ -45,7 +45,7 @@ def vagrant_clear():
         except:
             pass
 
-    print utils.run_command('cd {} && {}'.format(sys.path[0], 'vagrant halt'))
+    utils.run_command('cd {} && {}'.format(sys.path[0], 'vagrant halt'))
 
 def set_vagrant_database():
     settings_file = os.path.join(os.path.dirname(__file__), "db_webcrawler", "settings.py")

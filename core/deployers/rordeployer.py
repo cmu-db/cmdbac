@@ -58,6 +58,7 @@ class RoRDeployer(BaseDeployer):
     def __init__(self, repo, database):
         BaseDeployer.__init__(self, repo, database)
         self.database_name = 'ror_app'
+        self.setting_path = None
     ## DEF
     
     # TODO : fix
@@ -76,11 +77,11 @@ class RoRDeployer(BaseDeployer):
             print traceback.print_exc()
     ## DEF
     
-    def configure_settings(self, path):
-        with open(os.path.join(path, 'config/database.yml'), "w") as my_file:
+    def configure_settings(self):
+        with open(os.path.join(self.setting_path, 'config/database.yml'), "w") as my_file:
             my_file.write(DATABASE_SETTINGS.format(self.database_name, self.database_name, self.database_name))
         ## WITH
-        with open(os.path.join(path, 'Gemfile'), "a") as my_file:
+        with open(os.path.join(self.setting_path, 'Gemfile'), "a") as my_file:
             my_file.write(GEMFILE_SETTINGS)
         ## WITH
     ## DEF
@@ -97,7 +98,7 @@ class RoRDeployer(BaseDeployer):
         return ['']
     ## DEF
 
-    def get_main_page():
+    def get_main_page(self):
         pass
 
     def sync_server(self, path):
@@ -118,7 +119,7 @@ class RoRDeployer(BaseDeployer):
         LOG.info('Configuring settings ...')
         self.kill_server()
         self.clear_database()
-        self.configure_settings(deploy_path)
+        self.configure_settings()
         
         LOG.info('Installing requirements ...')
         out = self.install_requirements(deploy_path)
@@ -158,7 +159,6 @@ class RoRDeployer(BaseDeployer):
         if not db_files:
             LOG.error("Unable to find database.yml")
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
-            return
         db_file_paths = [os.path.dirname(os.path.dirname(db_file)) for db_file in db_files if os.path.basename(os.path.normpath(os.path.dirname(db_file))) == "config"]
         
         base_dirs = set.intersection(set(rakefile_paths), set(gemfile_paths), set(db_file_paths))
@@ -166,6 +166,8 @@ class RoRDeployer(BaseDeployer):
             LOG.error('Can not find base directory!')
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
         base_dir = next(iter(base_dirs))
+
+        self.setting_path = base_dir
 
         attempt.base_dir = base_dir.split('/', 1)[1]
         # LOG.info('BASE_DIR: ' + attempt.base_dir)
