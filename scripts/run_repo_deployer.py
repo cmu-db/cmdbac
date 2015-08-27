@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os, sys
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "core"))
+sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
+sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 
 import datetime
 import time
@@ -33,7 +33,7 @@ def vagrant_setup():
     print ('Setuping Vagrant ...')
 
     for new_dir in copied_dir:
-        old_dir = os.path.join(os.path.dirname(__file__), "..", new_dir)
+        old_dir = os.path.join(os.path.dirname(__file__), os.pardir, new_dir)
         shutil.copytree(old_dir, os.path.join(os.path.dirname(__file__), new_dir))
 
     utils.run_command('cd {} && {}'.format(sys.path[0], 'vagrant up'))
@@ -72,7 +72,7 @@ def vagrant_deploy(repo, database):
     out = os.system('cd {} && {}'.format(
         sys.path[0],
         'vagrant ssh -c "{}"'.format(
-            'python /vagrant/vagrant_deploy.py {} {}'.format(repo, database))))
+            'python /vagrant/core/scripts/vagrant_deploy.py {} {}'.format(repo, database))))
     unset_vagrant_database()
 
     return out
