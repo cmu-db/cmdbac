@@ -7,8 +7,7 @@ import time
 import importlib
 import traceback
 import MySQLdb
-
-from django.db import connection
+import urlparse
 
 from basedeployer import BaseDeployer
 from crawler.models import *
@@ -122,13 +121,9 @@ class DjangoDeployer(BaseDeployer):
 
         urls = list(set([re.sub(r'[\^\$]', '', url) for url in urls if '?' not in url]))
         urls = sorted(urls, key=len)
-        print urls
-
+        
         return urls
     ## DEF
-
-    def get_main_page(self):
-        pass
 
     def sync_server(self, path):
         LOG.info('Syncing server ...')

@@ -98,9 +98,6 @@ class RoRDeployer(BaseDeployer):
         return ['']
     ## DEF
 
-    def get_main_page(self):
-        pass
-
     def sync_server(self, path):
         LOG.info('Syncing server ...')
         command = '{} && bundle exec rake db:migrate'.format(utils.cd(path))

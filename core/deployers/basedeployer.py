@@ -91,7 +91,13 @@ class BaseDeployer(object):
     ## DEF
 
     def get_main_page(self):
-        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
+        urls = self.get_urls()
+        for url in urls:
+            if not url.startswith('admin/'):
+                ret_url = 'http://127.0.0.1:{}/'.format(self.repo.project_type.default_port)
+                ret_url = urlparse.urljoin(ret_url, url)
+                return ret_url
+        return None
     ## DEF
 
     def sync_server(self):
