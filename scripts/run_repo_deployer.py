@@ -28,20 +28,34 @@ from deployers import *
 import utils
 
 copied_dir = ['crawler', 'db_webcrawler', 'core']
+vagrant_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'vagrant')
+copied_files = []
 
 def vagrant_setup():
     print ('Setuping Vagrant ...')
 
+    ## Copy files
     for new_dir in copied_dir:
         old_dir = os.path.join(os.path.dirname(__file__), os.pardir, new_dir)
         shutil.copytree(old_dir, os.path.join(os.path.dirname(__file__), new_dir))
 
+    for f in os.listdir(vagrant_dir):
+        copied_files.append(f)
+        shutil.copy2(os.path.join(vagrant_dir, f), os.path.dirname(__file__))
+
     utils.run_command('cd {} && {}'.format(sys.path[0], 'vagrant up'))
 
 def vagrant_clear():
+    # Delete files
     for new_dir in copied_dir:
         try:
             shutil.rmtree(os.path.join(os.path.dirname(__file__), new_dir))
+        except:
+            pass
+
+    for f in copied_files:
+        try:
+            shutil.rmtree(f)
         except:
             pass
 
