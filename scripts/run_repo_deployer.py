@@ -55,7 +55,7 @@ def vagrant_clear():
 
     for f in copied_files:
         try:
-            os.remove(f)
+            os.remove(os.path.join(os.path.dirname(__file__), f))
         except:
             pass
 
