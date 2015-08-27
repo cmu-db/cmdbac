@@ -23,7 +23,7 @@ class Driver(object):
 	def __init__(self):
 
 	def drive(self):
-		# get main page
-		# recursively find all pages and extract the forms
-		# generate input for the forms and submit them	
+		# get main page -- finished : get_main_page
+		# recursively find all pages and extract the forms -- work on : mine.py
+		# generate input for the forms and submit them	-- work on : submit.py
 		
