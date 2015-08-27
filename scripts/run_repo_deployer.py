@@ -55,7 +55,7 @@ def vagrant_clear():
 
     for f in copied_files:
         try:
-            shutil.rmtree(f)
+            os.remove(f)
         except:
             pass
 
