@@ -22,7 +22,11 @@ class Driver(object):
 		main_page = deployer.get_main_page()
 		print main_page
 
-		utils.run_command('pwd')
+		print os.path.join(os.path.dirname(__file__), 'scrapy')
+
+		print utils.run_command('cd {} && {}'.format(
+			os.path.join(os.path.dirname(__file__), 'scrapy'),
+			'scrapy crawl form'))
 		# recursively find all pages and extract the forms -- work on : mine.py
 		# generate input for the forms and submit them	-- work on : submit.py
 		

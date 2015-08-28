@@ -72,6 +72,10 @@ pip install BeautifulSoup4
 echo installing Djano
 pip install django
 
+# install scrapy
+echo installing scrapy
+pip install scrapy
+
 # install dependencies
 install 'Git' git
 

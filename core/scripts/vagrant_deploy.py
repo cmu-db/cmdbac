@@ -30,8 +30,8 @@ def main():
 		sys.exit(-1)
 	deployer.kill_server()
 	# deployer.extract_database_info()
-	# driver = Driver()
-	# driver.drive(deployer)
+	driver = Driver()
+	driver.drive(deployer)
 
 if __name__ == "__main__":
 	main()
