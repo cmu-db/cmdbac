@@ -20,7 +20,6 @@ class FormSpider(CrawlSpider):
       self.start_urls = [kwargs.get('start_url')]  
 
     def parse(self, response):
-        print '123'
         for sel in response.xpath('//form'):
             formItem = FormItem()
             for ip in sel.xpath('//input[@type="text" or @type="password"]'):

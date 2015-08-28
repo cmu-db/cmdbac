@@ -30,6 +30,8 @@ def main():
 		sys.exit(-1)
 	driver = Driver()
 	driver.drive(deployer)
+	while True:
+		pass
 	# deployer.kill_server()
 	# deployer.extract_database_info()
 
