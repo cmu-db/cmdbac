@@ -14,7 +14,13 @@ class FormSpider(CrawlSpider):
     rules = (Rule (LinkExtractor(), callback="parse_form", follow= True),
     )
 
+    def __init__(self, *args, **kwargs): 
+      super(FormSpider, self).__init__(*args, **kwargs)
+
+      self.start_urls = [kwargs.get('start_url')]  
+
     def parse(self, response):
+        print '123'
         for sel in response.xpath('//form'):
             formItem = FormItem()
             for ip in sel.xpath('//input[@type="text" or @type="password"]'):
