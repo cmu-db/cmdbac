@@ -40,8 +40,9 @@ def vagrant_setup():
         shutil.copytree(old_dir, os.path.join(os.path.dirname(__file__), new_dir))
 
     for f in os.listdir(vagrant_dir):
-        copied_files.append(f)
-        shutil.copy2(os.path.join(vagrant_dir, f), os.path.dirname(__file__))
+        if not f.startswith('.'):
+            copied_files.append(f)
+            shutil.copy2(os.path.join(vagrant_dir, f), os.path.dirname(__file__))
 
     utils.run_command('cd {} && {}'.format(sys.path[0], 'vagrant up'))
 

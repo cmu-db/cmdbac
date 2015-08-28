@@ -9,6 +9,7 @@ django.setup()
 
 from crawler.models import *
 from deployers import *
+from drivers import *
 from utils import *
 
 def main():
@@ -29,7 +30,8 @@ def main():
 		sys.exit(-1)
 	deployer.kill_server()
 	# deployer.extract_database_info()
-	print deployer.get_main_page()
+	# driver = Driver()
+	# driver.drive(deployer)
 
 if __name__ == "__main__":
 	main()
