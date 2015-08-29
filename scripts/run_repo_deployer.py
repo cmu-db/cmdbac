@@ -42,7 +42,7 @@ def vagrant_setup():
     for f in os.listdir(vagrant_dir):
         if not f.startswith('.'):
             copied_files.append(f)
-            shutil.copy2(os.path.join(vagrant_dir, f), os.path.dirname(__file__))
+            shutil.copy2(os.path.join(vagrant_dir, f), sys.path[0])
 
     utils.run_command('cd {} && {}'.format(sys.path[0], 'vagrant up'))
 
