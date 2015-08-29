@@ -29,8 +29,10 @@ class Driver(object):
 			'scrapy crawl form -o forms.json -a start_url="{}"').format(main_page))
 
 		with open(os.path.join(os.path.dirname(__file__), 'extract', 'forms.json')) as json_forms:
-			forms = json.load(json_forms)
-		print forms
+			try:
+				forms = json.load(json_forms)
+			except:
+				forms = []
 
 		# generate input for the forms and submit them
 		for form in forms:
