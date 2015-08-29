@@ -2,7 +2,7 @@
 
 import scrapy
 from scrapy.spiders import CrawlSpider, Rule
-from scrapy.linkextractors import LinkExtractor
+from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 
 from driver.items import InputItem, FormItem
 
@@ -11,7 +11,8 @@ class FormSpider(CrawlSpider):
     # allowed_domains = ["www.hackerrank.com"]
     # start_urls = ["https://www.hackerrank.com/login"]
 
-    rules = (Rule (LinkExtractor(), callback="parse_form", follow= True),
+    rules = (
+    	Rule (SgmlLinkExtractor(allow=('')), callback='parse_form', follow=True),
     )
 
     def __init__(self, *args, **kwargs): 
@@ -19,10 +20,10 @@ class FormSpider(CrawlSpider):
 
       self.start_urls = [kwargs.get('start_url')]  
 
-    def parse(self, response):
+    def parse_form(self, response):
         for sel in response.xpath('//form'):
             formItem = FormItem()
-            for ip in sel.xpath('//input[@type="text" or @type="password"]'):
+            for ip in sel.xpath('//input[@type="text" or @type="password" or @type="email"]'):
                 id = ip.xpath('@id').extract()
                 name = ip.xpath('@name').extract()
                 type = ip.xpath('@type').extract()
