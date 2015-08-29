@@ -35,4 +35,8 @@ class Driver(object):
 		# generate input for the forms and submit them
 		for form in forms:
 			submit.submit(form)
+
+		out = utils.run_command('cd {} && {}'.format(
+			os.path.join(os.path.dirname(__file__), 'extract'), 
+			'rm -f forms.json'))
 		

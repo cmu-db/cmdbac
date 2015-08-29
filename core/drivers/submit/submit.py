@@ -15,6 +15,7 @@ def submit(form):
 	br.open(form['url'])
 
 	br.select_form(nr=get_form_index(br, form))
-	br['user_email'] = '123@123.com'
-	br['user_password'] = '123'
+	for input in form['inputs']:
+		br[input['name']] = 'test@test.com'
+		print input['name']
 	print br.submit()
