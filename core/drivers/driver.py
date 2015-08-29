@@ -25,10 +25,10 @@ class Driver(object):
 		
 		# recursively crawl all pages and extract the forms
 		out = utils.run_command('cd {} && {}'.format(
-			os.path.join(os.path.dirname(__file__), 'scrapy'),
+			os.path.join(os.path.dirname(__file__), 'extract'),
 			'scrapy crawl form -o forms.json -a start_url="{}"').format(main_page))
 
-		with open(os.path.join(os.path.dirname(__file__), 'scrapy', 'forms.json')) as json_forms:
+		with open(os.path.join(os.path.dirname(__file__), 'extract', 'forms.json')) as json_forms:
 			forms = json.load(json_forms)
 		print forms
 
