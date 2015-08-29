@@ -23,12 +23,12 @@ class FormSpider(CrawlSpider):
     def parse_form(self, response):
         for sel in response.xpath('//form'):
             formItem = FormItem()
-            formItem['id'] = sel.xpath('@id').extract()
+            formItem['id'] = sel.xpath('@id').extract()[0]
             formItem['url'] = response.url
             for ip in sel.xpath('//input[@type="text" or @type="password" or @type="email"]'):
-                id = ip.xpath('@id').extract()
-                name = ip.xpath('@name').extract()
-                type = ip.xpath('@type').extract()
+                id = ip.xpath('@id').extract()[0]
+                name = ip.xpath('@name').extract()[0]
+                type = ip.xpath('@type').extract()[0]
                 inputItem = InputItem()
                 inputItem['id'] = id
                 inputItem['name'] = name

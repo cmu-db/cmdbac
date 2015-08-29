@@ -93,6 +93,8 @@ install 'Nodejs' nodejs
 
 install 'Nokogiri dependencies' libxml2 libxml2-dev libxslt1-dev imagemagick libmagickwand-dev
 
+pip install mechanize
+
 # Fix Dependencies
 apt-get -f -y install >/dev/null 2>&1
 

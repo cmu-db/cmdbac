@@ -4,8 +4,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 import logging
 import json
 
-from crawler.models import *
 import utils
+import submit
 
 ## =====================================================================
 ## LOGGING CONFIGURATION
@@ -18,7 +18,7 @@ class Driver(object):
 	
 	def __init__(self):
 		pass
-	
+
 	def drive(self, deployer):
 		# get main page
 		main_page = deployer.get_main_page()
@@ -34,5 +34,5 @@ class Driver(object):
 
 		# generate input for the forms and submit them
 		for form in forms:
-			pass
+			submit.submit(form)
 		
