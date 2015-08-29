@@ -20,3 +20,4 @@ class InputItem(scrapy.Item):
 
 class FormItem(scrapy.Item):
     inputs = scrapy.Field()
+    action = scrapy.Field()
