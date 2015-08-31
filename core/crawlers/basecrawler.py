@@ -6,7 +6,6 @@ import json
 import re
 
 from url import URL
-from utils import Utils
 from string import Template
 from bs4 import BeautifulSoup
 from datetime import datetime

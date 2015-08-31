@@ -11,7 +11,6 @@ from string import Template
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-from utils import Utils
 from basecrawler import BaseCrawler
 from crawler.models import *
 
@@ -57,14 +56,6 @@ class GitHubCrawler(BaseCrawler):
         #self.cur_size = self.project_type.cur_size
     ## DEF
     
-    def loadURL(self, url):
-        LOG.info("Retrieving data from %s" % url)
-        request = urllib2.Request(url)
-        request.add_header('Authorization', 'token %s' % self.crawlerStatus.source.search_token)
-        response = urllib2.urlopen(request)
-        return response
-    ## DEF
-    
     def nextURL(self):
         # Check whether there is a next url that we need to load
         # from where we left off from our last run
@@ -84,6 +75,44 @@ class GitHubCrawler(BaseCrawler):
             self.crawlerStatus.cur_size = self.crawlerStatus.cur_size + 1
         return self.template.substitute(args)
     ## DEF
+
+    def loadURL(self, url):
+        LOG.info("Retrieving data from %s" % url)
+        request = urllib2.Request(url)
+        request.add_header('Authorization', 'token %s' % self.crawlerStatus.source.search_token)
+        response = urllib2.urlopen(request)
+        return response
+    ## DEF
+
+    def get_api_data(self, name):
+        reponse = self.loadURL(os.path.join(API_GITHUB_REPO, name))
+        data = json.load(reponse)
+        return data
+    ## DEF
+
+    def get_webpage_data(self, name):
+        data = {}
+        response = self.loadURL(os.path.join(GITHUB_HOST, name))
+        soup = BeautifulSoup(response.read())
+        numbers = soup.find_all(class_='num text-emphasized')
+        
+        # The fields that we want to extract integers
+        # The order matters here
+        fields = [
+            "commits_count",
+            "branches_count",
+            "releases_count",
+            "contributors_count",
+        ]
+        for i in xrange(len(fields)):
+            try:
+                data[fields[i]] = int(re.sub("\D", "", numbers[i].string))
+            except:
+                data[fields[i]] = 0
+        ## FOR
+
+        return data
+    ## DEF
     
     def search(self):
         # Load and parse!
@@ -102,6 +131,12 @@ class GitHubCrawler(BaseCrawler):
                 api_data = self.get_api_data(name)
                 webpage_data = self.get_webpage_data(name)
                 
+                def none2empty(string):
+                    if string:
+                        return string
+                    else:
+                        return ''
+
                 # Create the new repository
                 repo = Repository()
                 repo.name = name
@@ -114,11 +149,11 @@ class GitHubCrawler(BaseCrawler):
                 repo.created_at = datetime.strptime(api_data['created_at'], "%Y-%m-%dT%H:%M:%SZ")
                 repo.updated_at = datetime.strptime(api_data['updated_at'], "%Y-%m-%dT%H:%M:%SZ")
                 repo.pushed_at = datetime.strptime(api_data['pushed_at'], "%Y-%m-%dT%H:%M:%SZ")
-                repo.homepage = Utils.none2empty(api_data['homepage'])
+                repo.homepage = none2empty(api_data['homepage'])
                 repo.size = api_data['size']
                 repo.stargazers_count = api_data['stargazers_count']
                 repo.watchers_count = api_data['watchers_count']
-                repo.language = Utils.none2empty(api_data['language'])
+                repo.language = none2empty(api_data['language'])
                 repo.has_issues = api_data['has_issues']
                 repo.has_downloads = api_data['has_downloads']
                 repo.has_wiki = api_data['has_wiki']
@@ -156,38 +191,3 @@ class GitHubCrawler(BaseCrawler):
             
         return
     ## DEF
-
-    def get_webpage_data(self, name):
-        data = {}
-        response = self.loadURL(os.path.join(GITHUB_HOST, name))
-        soup = BeautifulSoup(response.read())
-        numbers = soup.find_all(class_='num text-emphasized')
-        
-        # The fields that we want to extract integers
-        # The order matters here
-        fields = [
-            "commits_count",
-            "branches_count",
-            "releases_count",
-            "contributors_count",
-        ]
-        for i in xrange(len(fields)):
-            try:
-                data[fields[i]] = int(re.sub("\D", "", numbers[i].string))
-            except:
-                data[fields[i]] = 0
-        ## FOR
-
-        return data
-    ## DEF
-
-    def get_api_data(self, name):
-        reponse = self.loadURL(os.path.join(API_GITHUB_REPO, name))
-        data = json.load(reponse)
-        return data
-    ## DEF
-
-    #def save(self):
-        #repo_type = ProjectType.objects.get(name=self.name)
-        #repo_type.cur_size = self.cur_size
-        #repo_type.save()
