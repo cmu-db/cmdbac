@@ -150,8 +150,42 @@ def test():
         print 'TEST FAILED!'
     print '############'
 
+def mass():
+	logger = logging.getLogger('basic_logger')
+	logger.setLevel(logging.DEBUG)
+
+	vagrant_clear()
+	vagrant_setup()
+  
+	result = 0
+
+	while True:
+		repos = Repository.objects.all()
+
+		database = Database.objects.get(name='SQLite3')
+        
+		for repo in repos:
+			print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
+			result = vagrant_deploy(repo, database.name)
+			if result != 0:
+				break
+		## FOR
+		break
+	## WHILE
+
+	vagrant_clear()
+
+	print '############'
+	if result == 0:
+		print 'TEST PASSED!'
+	else:
+		print 'TEST FAILED!'
+	print '############'
+
 if __name__ == '__main__':
-    if len(sys.argv) < 2 or sys.argv[1] != 'test':
+    if len(sys.argv) < 2:
         main()
-    else:
+    elif len(sys.argv) == 2 and sys.argv[1] != 'test':
         test()
+    elif len(sys.argv) == 2 and sys.argv[1] != 'mass':
+        mass()
