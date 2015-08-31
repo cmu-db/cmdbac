@@ -160,7 +160,7 @@ def mass():
 	result = 0
 
 	while True:
-		repos = Repository.objects.all()
+		repos = Repository.objects.filter()
 
 		database = Database.objects.get(name='SQLite3')
         
@@ -185,7 +185,7 @@ def mass():
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         main()
-    elif len(sys.argv) == 2 and sys.argv[1] != 'test':
+    elif len(sys.argv) == 2 and sys.argv[1] == 'test':
         test()
-    elif len(sys.argv) == 2 and sys.argv[1] != 'mass':
+    elif len(sys.argv) == 2 and sys.argv[1] == 'mass':
         mass()
