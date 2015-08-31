@@ -168,7 +168,7 @@ def mass():
 			print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
 			result = vagrant_deploy(repo, database.name)
 			if result != 0:
-				raw_input()
+				raw_input('press any key to continue ...')
 		## FOR
 		break
 	## WHILE
