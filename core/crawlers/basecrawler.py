@@ -1,5 +1,7 @@
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
+sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
+
 
 import time
 import json

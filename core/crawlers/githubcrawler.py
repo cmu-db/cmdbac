@@ -6,6 +6,7 @@ import json
 import re
 import urllib2
 import logging
+import urlparse
 
 from string import Template
 from bs4 import BeautifulSoup
@@ -79,20 +80,20 @@ class GitHubCrawler(BaseCrawler):
     def loadURL(self, url):
         LOG.info("Retrieving data from %s" % url)
         request = urllib2.Request(url)
-        request.add_header('Authorization', 'token %s' % self.crawlerStatus.source.search_token)
+        # request.add_header('Authorization', 'token %s' % self.crawlerStatus.source.search_token)
         response = urllib2.urlopen(request)
         return response
     ## DEF
 
     def get_api_data(self, name):
-        reponse = self.loadURL(os.path.join(API_GITHUB_REPO, name))
+        reponse = self.loadURL(urlparse.urljoin(API_GITHUB_REPO, name))
         data = json.load(reponse)
         return data
     ## DEF
 
     def get_webpage_data(self, name):
         data = {}
-        response = self.loadURL(os.path.join(GITHUB_HOST, name))
+        response = self.loadURL(urlparse.urljoin(GITHUB_HOST, name))
         soup = BeautifulSoup(response.read())
         numbers = soup.find_all(class_='num text-emphasized')
         
@@ -144,7 +145,7 @@ class GitHubCrawler(BaseCrawler):
                 repo.project_type = self.crawlerStatus.project_type
                 repo.last_attempt = None
                 repo.private = api_data['private']
-                repo.description = Utils.none2empty(api_data['description'])
+                repo.description = none2empty(api_data['description'])
                 repo.fork = api_data['fork']
                 repo.created_at = datetime.strptime(api_data['created_at'], "%Y-%m-%dT%H:%M:%SZ")
                 repo.updated_at = datetime.strptime(api_data['updated_at'], "%Y-%m-%dT%H:%M:%SZ")
