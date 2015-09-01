@@ -80,9 +80,6 @@ class RepositorySource(models.Model):
 class CrawlerStatus(models.Model):
     source = models.ForeignKey('RepositorySource')
     project_type = models.ForeignKey('ProjectType')
-    min_size = models.IntegerField()
-    max_size = models.IntegerField()
-    cur_size = models.IntegerField()
     next_url = models.URLField(null=True)
     last_crawler_time = models.DateTimeField(auto_now=True)
     

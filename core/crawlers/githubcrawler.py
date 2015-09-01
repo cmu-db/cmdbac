@@ -32,9 +32,7 @@ LOG.setLevel(logging.INFO)
 ## GITHUB CONFIGURATION
 ## =====================================================================
 
-BASE_URL = "https://github.com/search?utf8=%E2%9C%93&q=${query}+" + \
-           "in%3Apath+filename%3A${filename}&" +  \
-           "type=Code&ref=searchresults"
+BASE_URL = "https://github.com/search?q=${query}"
 GITHUB_HOST = 'https://github.com/'
 API_GITHUB_REPO = 'https://api.github.com/repos/'
 API_GITHUB_SLEEP = 4 # seconds
@@ -58,19 +56,8 @@ class GitHubCrawler(BaseCrawler):
         
         # Otherwise, compute what the next page we want to load
         args = {
-            "query": self.crawlerStatus.project_type.filename,
-            "filename": self.crawlerStatus.project_type.filename,
+            "query": self.crawlerStatus.project_type.name
         }
-
-        if 0:
-            if self.crawlerStatus.cur_size == self.crawlerStatus.max_size:
-                args["size"] = '>'+str(self.crawlerStatus.cur_size)
-                self.crawlerStatus.cur_size = self.min_size
-            else:
-                args["size"] = self.crawlerStatus.cur_size
-                self.crawlerStatus.cur_size = self.crawlerStatus.cur_size + 1
-
-        args["stars"] = ">10"
 
         return self.template.substitute(args)
     ## DEF

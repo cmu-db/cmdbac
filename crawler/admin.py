@@ -14,7 +14,7 @@ class RepositorySourceAdmin(admin.ModelAdmin):
 ## CLASS
 
 class CrawlerStatusAdmin(admin.ModelAdmin):
-    list_display = [ 'id', 'source', 'project_type', 'cur_size', 'min_size', 'max_size', 'next_url', 'last_crawler_time', ]
+    list_display = [ 'id', 'source', 'project_type', 'next_url', 'last_crawler_time', ]
 ## CLASS
 
 class RepositoryAdmin(admin.ModelAdmin):

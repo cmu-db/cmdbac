@@ -160,15 +160,13 @@ def mass():
 	result = 0
 
 	while True:
-		repos = Repository.objects.all().order_by('-commits_count')
+		repos = Repository.objects.all()
 
 		database = Database.objects.get(name='SQLite3')
         
 		for repo in repos:
 			print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
 			result = vagrant_deploy(repo, database.name)
-			if result != 0:
-				raw_input('press any key to continue ...')
 		## FOR
 		break
 	## WHILE
