@@ -32,8 +32,7 @@ LOG.setLevel(logging.INFO)
 ## =====================================================================
 
 BASE_URL = "https://github.com/search?utf8=%E2%9C%93&q=${query}+" + \
-           "in%3Apath+filename%3A${filename}+" +  \
-           "size%3A${size}&" + \
+           "in%3Apath+filename%3A${filename}&" +  \
            "type=Code&ref=searchresults"
 GITHUB_HOST = 'https://github.com/'
 API_GITHUB_REPO = 'https://api.github.com/repos/'
@@ -59,8 +58,8 @@ class GitHubCrawler(BaseCrawler):
     
     def nextURL(self):
         # Check whether there is a next url that we need to load
-        # from where we left off from our last run
-        if not self.crawlerStatus.next_url is None:
+        # from where we left off from our last run\
+        if not self.crawlerStatus.next_url is None and not self.crawlerStatus.next_url == '':
             return self.crawlerStatus.next_url
         
         # Otherwise, compute what the next page we want to load
@@ -68,12 +67,17 @@ class GitHubCrawler(BaseCrawler):
             "query": self.crawlerStatus.project_type.filename,
             "filename": self.crawlerStatus.project_type.filename,
         }
-        if self.crawlerStatus.cur_size == self.crawlerStatus.max_size:
-            args["size"] = '>'+str(self.crawlerStatus.cur_size)
-            self.crawlerStatus.cur_size = self.min_size
-        else:
-            args["size"] = self.crawlerStatus.cur_size
-            self.crawlerStatus.cur_size = self.crawlerStatus.cur_size + 1
+
+        if 0:
+            if self.crawlerStatus.cur_size == self.crawlerStatus.max_size:
+                args["size"] = '>'+str(self.crawlerStatus.cur_size)
+                self.crawlerStatus.cur_size = self.min_size
+            else:
+                args["size"] = self.crawlerStatus.cur_size
+                self.crawlerStatus.cur_size = self.crawlerStatus.cur_size + 1
+
+        args["stars"] = ">10"
+
         return self.template.substitute(args)
     ## DEF
 
@@ -128,8 +132,12 @@ class GitHubCrawler(BaseCrawler):
             if Repository.objects.filter(name=name).exists():
                 LOG.info("Repository '%s' already exists" % name)
             else:
-                LOG.info("Found new repository '%s'" % name)
                 api_data = self.get_api_data(name)
+
+                if api_data['stargazers_count'] < 10:
+                    continue
+
+                LOG.info("Found new repository '%s'" % name)
                 webpage_data = self.get_webpage_data(name)
                 
                 def none2empty(string):

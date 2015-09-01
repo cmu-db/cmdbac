@@ -8,7 +8,7 @@
     "min_size": 60, 
     "source": 1, 
     "project_type": 1, 
-    "next_url": "https://github.com//search?p=3&q=models.py+in%3Apath+filename%3Amodels.py+size%3A367&ref=searchresults&type=Code&utf8=%E2%9C%93", 
+    "next_url": "", 
     "max_size": 55000
   }
 },
@@ -21,7 +21,7 @@
     "min_size": 0, 
     "source": 1, 
     "project_type": 2, 
-    "next_url": "https://github.com//search?p=2&q=database.yml+in%3Apath+filename%3Adatabase.yml+size%3A317&ref=searchresults&type=Code&utf8=%E2%9C%93", 
+    "next_url": "", 
     "max_size": 2500
   }
 }

@@ -35,6 +35,5 @@ if __name__ == '__main__':
             time.sleep(60)
             #crawler.save()
         ## FOR
-        break
     ## WHILE
 ## IF
