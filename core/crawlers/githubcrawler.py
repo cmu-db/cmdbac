@@ -65,7 +65,6 @@ class GitHubCrawler(BaseCrawler):
     def load_url(self, url):
         LOG.info("Retrieving data from %s" % url)
         request = urllib2.Request(url)
-        # request.add_header('Authorization', 'token %s' % self.crawlerStatus.source.search_token)
         response = urllib2.urlopen(request)
         return response
     ## DEF
@@ -103,13 +102,15 @@ class GitHubCrawler(BaseCrawler):
     def search(self):
         # Load and parse!
         response = self.load_url(self.next_url())
+        print response
         soup = BeautifulSoup(response.read())
-        titles = soup.find_all(class_='title')
+        titles = soup.find_all(class_='repo-list-name')
         LOG.info("Found %d repositories" % len(titles))
         
         # Pick through the results and find repos
         for title in titles:
-            name = title.contents[1].string
+            name = title.contents[1]['href'][1:]
+
             if Repository.objects.filter(name=name).exists():
                 LOG.info("Repository '%s' already exists" % name)
             else:

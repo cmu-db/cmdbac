@@ -3,26 +3,20 @@
   "pk": 1, 
   "model": "crawler.crawlerstatus", 
   "fields": {
-    "cur_size": 300, 
     "last_crawler_time": "2015-01-16T15:59:45", 
-    "min_size": 60, 
     "source": 1, 
     "project_type": 1, 
-    "next_url": "", 
-    "max_size": 55000
+    "next_url": ""
   }
 },
 {
   "pk": 2, 
   "model": "crawler.crawlerstatus", 
   "fields": {
-    "cur_size": 300, 
     "last_crawler_time": "2015-01-16T15:58:19", 
-    "min_size": 0, 
     "source": 1, 
     "project_type": 2, 
-    "next_url": "", 
-    "max_size": 2500
+    "next_url": ""
   }
 }
 ]
