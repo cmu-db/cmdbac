@@ -43,18 +43,11 @@ API_GITHUB_SLEEP = 4 # seconds
 ## GITHUB CRAWLER
 ## =====================================================================
 class GitHubCrawler(BaseCrawler):
-    def __init__(self, crawlerStatus):
-        BaseCrawler.__init__(self, crawlerStatus)
+    def __init__(self, crawlerStatus, auth):
+        BaseCrawler.__init__(self, crawlerStatus, auth)
 
         # Basic Search String
         self.template = Template(BASE_URL)
-
-        # model file less than min_size don't use database
-        #self.min_size = self.project_type.min_size
-        
-        # less then 1000 files larger than threshold_size
-        #self.max_size = self.project_type.max_size
-        #self.cur_size = self.project_type.cur_size
     ## DEF
     
     def next_url(self):
@@ -91,9 +84,8 @@ class GitHubCrawler(BaseCrawler):
     ## DEF
 
     def get_api_data(self, name):
-        response = requests.get(urlparse.urljoin(API_GITHUB_REPO, name), auth=())
+        response = requests.get(urlparse.urljoin(API_GITHUB_REPO, name), auth=(self.auth['user'], self.auth['pass']))
         data = response.json()
-        print data
         return data
     ## DEF
 

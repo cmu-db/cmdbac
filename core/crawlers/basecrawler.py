@@ -15,8 +15,9 @@ from datetime import datetime
 from crawler.models import *
 
 class BaseCrawler(object):
-    def __init__(self, crawlerStatus):
+    def __init__(self, crawlerStatus, auth):
         self.crawlerStatus = crawlerStatus
+        self.auth = auth
     # DEF
         
     def search(self):
