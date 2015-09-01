@@ -7,6 +7,8 @@ import time
 import traceback
 import logging
 logging.basicConfig(filename='repo_crawler.log',level=logging.DEBUG)
+import requests
+from requests.auth import HTTPBasicAuth
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 import django
@@ -16,6 +18,8 @@ import crawlers
 from crawler.models import *
 
 if __name__ == '__main__':
+
+    requests.get('https://api.github.com/user', auth=HTTPBasicAuth('zeyuanxy', 'wazy41871314'))
     
     while True:
         for cs in CrawlerStatus.objects.all():

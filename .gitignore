@@ -4,3 +4,4 @@ log.txt
 *.pyc
 *.sqlite3
 *.kate-swp
+secrets.json

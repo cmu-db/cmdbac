@@ -7,6 +7,7 @@ import re
 import urllib2
 import logging
 import urlparse
+import requests
 
 from string import Template
 from bs4 import BeautifulSoup
@@ -56,7 +57,7 @@ class GitHubCrawler(BaseCrawler):
         #self.cur_size = self.project_type.cur_size
     ## DEF
     
-    def nextURL(self):
+    def next_url(self):
         # Check whether there is a next url that we need to load
         # from where we left off from our last run\
         if not self.crawlerStatus.next_url is None and not self.crawlerStatus.next_url == '':
@@ -81,7 +82,7 @@ class GitHubCrawler(BaseCrawler):
         return self.template.substitute(args)
     ## DEF
 
-    def loadURL(self, url):
+    def load_url(self, url):
         LOG.info("Retrieving data from %s" % url)
         request = urllib2.Request(url)
         # request.add_header('Authorization', 'token %s' % self.crawlerStatus.source.search_token)
@@ -90,14 +91,15 @@ class GitHubCrawler(BaseCrawler):
     ## DEF
 
     def get_api_data(self, name):
-        reponse = self.loadURL(urlparse.urljoin(API_GITHUB_REPO, name))
-        data = json.load(reponse)
+        response = requests.get(urlparse.urljoin(API_GITHUB_REPO, name), auth=())
+        data = response.json()
+        print data
         return data
     ## DEF
 
     def get_webpage_data(self, name):
         data = {}
-        response = self.loadURL(urlparse.urljoin(GITHUB_HOST, name))
+        response = self.load_url(urlparse.urljoin(GITHUB_HOST, name))
         soup = BeautifulSoup(response.read())
         numbers = soup.find_all(class_='num text-emphasized')
         
@@ -121,7 +123,7 @@ class GitHubCrawler(BaseCrawler):
     
     def search(self):
         # Load and parse!
-        response = self.loadURL(self.nextURL())
+        response = self.load_url(self.next_url())
         soup = BeautifulSoup(response.read())
         titles = soup.find_all(class_='title')
         LOG.info("Found %d repositories" % len(titles))
