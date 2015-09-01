@@ -16,7 +16,7 @@ def home(request):
     stats = []
     for t in ProjectType.objects.all():
         repo_type = t.name
-        repos = Repository.objects.filter(project_type=t, valid_project=True)
+        repos = Repository.objects.filter(project_type=t)
         num_repo = repos.count()
         num_suc = repos.filter(latest_attempt__result=ATTEMPT_STATUS_SUCCESS).count()
         num_pkg = Package.objects.filter(project_type=t).count()
