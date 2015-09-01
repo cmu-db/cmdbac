@@ -41,7 +41,8 @@ def repositories(request):
         del queries_no_page_order['order_by']
     context['queries_no_page_order'] = queries_no_page_order
 
-    repositories = Repository.objects.filter(valid_project=True)
+    # repositories = Repository.objects.filter(valid_project=True)
+    repositories = Repository.objects.all()
     if request.GET.__contains__('search'):
         repositories = repositories.filter(name__contains=request.GET['search'])
     result_list = request.GET.getlist('results')
@@ -53,7 +54,7 @@ def repositories(request):
     order_by = request.GET.get('order_by', 'crawler_date')
     repositories = repositories.order_by(order_by)
 
-    paginator = Paginator(repositories, 50) # Show 100 contacts per page
+    paginator = Paginator(repositories, 50) # Show 50 repos per page
     page = request.GET.get('page')
     try:
         repositories = paginator.page(page)
