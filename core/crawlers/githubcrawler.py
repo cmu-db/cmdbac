@@ -33,7 +33,10 @@ LOG.setLevel(logging.INFO)
 ## GITHUB CONFIGURATION
 ## =====================================================================
 
-BASE_URL = "https://github.com/search?"
+BASE_URL = "https://github.com/search?utf8=%E2%9C%93&q=${query}+" + \
+           "filename%3A${filename}+" + \
+           "language%3A${language}&" + \
+           "type=Code&ref=searchresults"
 GITHUB_HOST = 'https://github.com/'
 API_GITHUB_REPO = 'https://api.github.com/repos/'
 API_GITHUB_SLEEP = 4 # seconds
@@ -44,6 +47,8 @@ API_GITHUB_SLEEP = 4 # seconds
 class GitHubCrawler(BaseCrawler):
     def __init__(self, crawlerStatus, auth):
         BaseCrawler.__init__(self, crawlerStatus, auth)
+
+        self.template = Template(BASE_URL)
     ## DEF
     
     def next_url(self):
@@ -53,11 +58,13 @@ class GitHubCrawler(BaseCrawler):
             return self.crawlerStatus.next_url
         
         # Otherwise, compute what the next page we want to load
-        args = urllib.urlencode({
-            "q": self.crawlerStatus.project_type.name
-        })
+        args = {
+            "query": self.crawlerStatus.project_type.name,
+            "filename": self.crawlerStatus.project_type.filename,
+            "language": self.crawlerStatus.project_type.language
+        }
 
-        return BASE_URL + args
+        return self.template.substitute(args)
     ## DEF
 
     def load_url(self, url):
@@ -102,12 +109,12 @@ class GitHubCrawler(BaseCrawler):
         response = self.load_url(self.next_url())
         print response
         soup = BeautifulSoup(response.read())
-        titles = soup.find_all(class_='repo-list-name')
+        titles = soup.find_all(class_='title')
         LOG.info("Found %d repositories" % len(titles))
         
         # Pick through the results and find repos
         for title in titles:
-            name = title.contents[1]['href'][1:]
+            name = title.contents[1].string
 
             if Repository.objects.filter(name=name).exists():
                 LOG.info("Repository '%s' already exists" % name)

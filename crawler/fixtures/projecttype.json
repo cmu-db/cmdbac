@@ -7,7 +7,8 @@
     "deployer_class": "DjangoDeployer", 
     "default_port": 8000, 
     "name": "Django", 
-    "filename": "models.py"
+    "filename": "models.py",
+    "language": "python"
   }
 },
 {
@@ -18,7 +19,8 @@
     "deployer_class": "RoRDeployer", 
     "default_port": 3000, 
     "name": "Ruby on Rails", 
-    "filename": "database.yml"
+    "filename": "database.yml",
+    "language": "ruby"
   }
 }
 ]

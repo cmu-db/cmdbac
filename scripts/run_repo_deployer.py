@@ -185,5 +185,5 @@ if __name__ == '__main__':
         main()
     elif len(sys.argv) == 2 and sys.argv[1] == 'test':
         test()
-    elif len(sys.argv) == 2 and sys.argv[1] == 'mass':
+    elif len(sys.argv) == 2 and sys.argv[1] == 'all':
         mass()
