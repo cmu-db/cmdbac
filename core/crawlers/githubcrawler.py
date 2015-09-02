@@ -60,7 +60,7 @@ class GitHubCrawler(BaseCrawler):
         # Otherwise, compute what the next page we want to load
         args = {
             "query": urllib.urlencode({
-                'q': self.crawlerStatus.project_type.name})[2:],
+                'q': self.crawlerStatus.project_type.name})[2:] if self.crawlerStatus.project_type.id == 1 else '',
             "filename": self.crawlerStatus.project_type.filename,
             "language": self.crawlerStatus.project_type.language
         }
@@ -108,7 +108,6 @@ class GitHubCrawler(BaseCrawler):
     def search(self):
         # Load and parse!
         response = self.load_url(self.next_url())
-        print response
         soup = BeautifulSoup(response.read())
         titles = soup.find_all(class_='title')
         LOG.info("Found %d repositories" % len(titles))
