@@ -4,6 +4,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 import time
 import json
 import re
+import urllib
 import urllib2
 import logging
 import urlparse
@@ -32,7 +33,7 @@ LOG.setLevel(logging.INFO)
 ## GITHUB CONFIGURATION
 ## =====================================================================
 
-BASE_URL = "https://github.com/search?q=${query}"
+BASE_URL = "https://github.com/search?"
 GITHUB_HOST = 'https://github.com/'
 API_GITHUB_REPO = 'https://api.github.com/repos/'
 API_GITHUB_SLEEP = 4 # seconds
@@ -43,9 +44,6 @@ API_GITHUB_SLEEP = 4 # seconds
 class GitHubCrawler(BaseCrawler):
     def __init__(self, crawlerStatus, auth):
         BaseCrawler.__init__(self, crawlerStatus, auth)
-
-        # Basic Search String
-        self.template = Template(BASE_URL)
     ## DEF
     
     def next_url(self):
@@ -55,11 +53,11 @@ class GitHubCrawler(BaseCrawler):
             return self.crawlerStatus.next_url
         
         # Otherwise, compute what the next page we want to load
-        args = {
-            "query": self.crawlerStatus.project_type.name
-        }
+        args = urllib.urlencode({
+            "q": self.crawlerStatus.project_type.name
+        })
 
-        return self.template.substitute(args)
+        return BASE_URL + args
     ## DEF
 
     def load_url(self, url):
@@ -115,9 +113,6 @@ class GitHubCrawler(BaseCrawler):
                 LOG.info("Repository '%s' already exists" % name)
             else:
                 api_data = self.get_api_data(name)
-
-                if api_data['stargazers_count'] < 10:
-                    continue
 
                 LOG.info("Found new repository '%s'" % name)
                 webpage_data = self.get_webpage_data(name)

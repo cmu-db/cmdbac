@@ -35,7 +35,7 @@ if __name__ == '__main__':
             except:
                 print traceback.print_exc()
                 pass
-            time.sleep(60)
+            time.sleep(10)
             #crawler.save()
         ## FOR
     ## WHILE
