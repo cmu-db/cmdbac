@@ -31,11 +31,6 @@ def main():
 	driver = Driver()
 	driver.drive(deployer)
 	deployer.kill_server()
-	if 0:
-		while True:
-			pass
-	
-	# deployer.kill_server()
 	# deployer.extract_database_info()
 
 if __name__ == "__main__":

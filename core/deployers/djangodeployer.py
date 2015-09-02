@@ -93,7 +93,6 @@ class DjangoDeployer(BaseDeployer):
                 requirements = re.sub('mysql-python==.*', '', requirements, flags=re.IGNORECASE)
                 fout = open(requirement_file, 'w')
                 fout.write(requirements)
-                print requirements
                 fout.flush()
                 fout.close()
     ## DEF
@@ -104,8 +103,6 @@ class DjangoDeployer(BaseDeployer):
             old_packages = utils.pip_freeze()
             for requirement_file in requirement_files:
                 out = utils.pip_install(requirement_file, True)
-                print out[1]
-                print out[2]
             new_packages = utils.pip_freeze()
             diff_packages = list(set(new_packages) - set(old_packages))
             return diff_packages
