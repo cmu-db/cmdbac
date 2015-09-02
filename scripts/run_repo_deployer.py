@@ -27,7 +27,7 @@ from crawler.models import *
 from deployers import *
 import utils
 
-copied_dir = ['crawler', 'db_webcrawler', 'core']
+copied_dir = ['crawler', 'db_webcrawler', 'core', 'secrets']
 vagrant_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'vagrant')
 copied_files = []
 
@@ -101,11 +101,11 @@ def main():
         
     while True:
         # repos = Repository.objects.filter(name='acecodes/acetools') 
-        repos = Repository.objects.filter(name='adamgillfillan/mental_health_app')
+        repos = Repository.objects.filter(name='llovett/gallagry')
         # repos = Repository.objects.filter(name='aae4/btw')
 
-        database = Database.objects.get(name='SQLite3')
-        
+        database = Database.objects.get(name='MySQL')
+ 
         for repo in repos:
             print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
             vagrant_deploy(repo, database.name)
@@ -130,7 +130,7 @@ def test():
         repos = repos | Repository.objects.filter(name='adamgillfillan/mental_health_app')
         repos = repos | Repository.objects.filter(name='aae4/btw')
 
-        database = Database.objects.get(name='SQLite3')
+        database = Database.objects.get(name='MySQL')
         
         for repo in repos:
             print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
@@ -151,39 +151,43 @@ def test():
     print '############'
 
 def mass():
-	logger = logging.getLogger('basic_logger')
-	logger.setLevel(logging.DEBUG)
+    logger = logging.getLogger('basic_logger')
+    logger.setLevel(logging.DEBUG)
 
-	vagrant_clear()
-	vagrant_setup()
+    vagrant_clear()
+    vagrant_setup()
   
-	result = 0
+    result = 0
 
-	while True:
-		repos = Repository.objects.all()
+    while True:
+        repos = Repository.objects.all()
 
-		database = Database.objects.get(name='SQLite3')
+        database = Database.objects.get(name='MySQL')
         
-		for repo in repos:
-			print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
-			result = vagrant_deploy(repo, database.name)
-		## FOR
-		break
-	## WHILE
+        for repo in repos:
+            print repo.latest_attempt
+            if not repo.latest_attempt:
+                continue
+                print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
+                result = vagrant_deploy(repo, database.name)
+                # raw_input('press any key to continue')
+        ## FOR
+        break
+    ## WHILE
 
-	vagrant_clear()
+    vagrant_clear()
 
-	print '############'
-	if result == 0:
-		print 'TEST PASSED!'
-	else:
-		print 'TEST FAILED!'
-	print '############'
+    print '############'
+    if result == 0:
+        print 'TEST PASSED!'
+    else:
+        print 'TEST FAILED!'
+    print '############'
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         main()
     elif len(sys.argv) == 2 and sys.argv[1] == 'test':
         test()
-    elif len(sys.argv) == 2 and sys.argv[1] == 'all':
+    elif len(sys.argv) == 2 and sys.argv[1] == 'mass':
         mass()

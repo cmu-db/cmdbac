@@ -62,8 +62,8 @@ class RoRDeployer(BaseDeployer):
     ## DEF
     
     # TODO : fix
-    def get_database(self, settings_file):
-        db = Database.objects.get(name__iexact="sqlite3")
+    def get_database(self, setting_file):
+        db = Database.objects.get(name__iexact="MySQL")
         return db
     ## DEF
 
@@ -117,6 +117,9 @@ class RoRDeployer(BaseDeployer):
         self.kill_server()
         self.clear_database()
         self.configure_settings()
+
+        attempt.database = self.get_database(os.path.join(self.setting_path, 'config/database.yml'))
+        # LOG.info('Database: ' + attempt.database.name)
         
         LOG.info('Installing requirements ...')
         out = self.install_requirements(deploy_path)
@@ -168,9 +171,6 @@ class RoRDeployer(BaseDeployer):
 
         attempt.base_dir = base_dir.split('/', 1)[1]
         # LOG.info('BASE_DIR: ' + attempt.base_dir)
-
-        attempt.database = self.get_database(os.path.join(base_dir, 'config/database.yml'))
-        # LOG.info('Database: ' + attempt.database.name)
 
         return self.try_deploy(attempt, base_dir)
     ## DEF

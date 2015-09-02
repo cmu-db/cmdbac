@@ -33,7 +33,7 @@ DATABASES = {{
         'HOST': '127.0.0.1',
         'PORT': '3306',
         'USER': 'root',
-        'PASSWORD': 'root',
+        'PASSWORD': 'root'
     }}
 }}
 """
@@ -46,16 +46,16 @@ class DjangoDeployer(BaseDeployer):
         BaseDeployer.__init__(self, repo, database)
         self.database_name = 'django_app'
         self.setting_path = None
+        self.requirement_files = None
     ## DEF
     
-    # TODO : fix
-    def get_database(self, settings_file):
+    def get_database(self, setting_file):
         regexes = [
             re.compile(r'django\.db\.backends\.([\w\d]+)'),
             re.compile('adapter\s*:\s*([\w\d]+)')
         ]
         db = Database(name="Unknown")
-        with open(settings_file, 'r') as infile:
+        with open(setting_file, 'r') as infile:
             for regex in regexes:
                 for line in infile:
                     p = regex.search(line);
@@ -84,9 +84,18 @@ class DjangoDeployer(BaseDeployer):
     ## DEF
     
     def configure_settings(self):
-        with open(self.setting_path, "a") as my_file:
-            my_file.write(DJANGO_SETTINGS.format(self.database_name))
+        with open(self.setting_path, "a") as my_setting_file:
+            my_setting_file.write(DJANGO_SETTINGS.format(self.database_name))
         ## WITH
+        for requirement_file in self.requirement_files:
+            with open(requirement_file, "r") as my_requirement_file:
+                requirements = my_requirement_file.read()
+                requirements = re.sub('mysql-python==.*', '', requirements, flags=re.IGNORECASE)
+                fout = open(requirement_file, 'w')
+                fout.write(requirements)
+                print requirements
+                fout.flush()
+                fout.close()
     ## DEF
     
     def install_requirements(self, requirement_files):
@@ -95,6 +104,8 @@ class DjangoDeployer(BaseDeployer):
             old_packages = utils.pip_freeze()
             for requirement_file in requirement_files:
                 out = utils.pip_install(requirement_file, True)
+                print out[1]
+                print out[2]
             new_packages = utils.pip_freeze()
             diff_packages = list(set(new_packages) - set(old_packages))
             return diff_packages
@@ -127,7 +138,7 @@ class DjangoDeployer(BaseDeployer):
 
     def sync_server(self, path):
         LOG.info('Syncing server ...')
-        command = '{} && unset DJANGO_SETTINGS_MODULE && python manage.py syncdb --noinput'.format(
+        command = '{} && unset DJANGO_SETTINGS_MODULE && python manage.py migrate'.format(
             utils.cd(path))
         return utils.run_command(command)
     ## DEF
@@ -146,6 +157,9 @@ class DjangoDeployer(BaseDeployer):
         self.clear_database()
         self.configure_settings()
 
+        attempt.database = self.get_database(self.setting_path)
+        LOG.info('Database: ' + attempt.database.name)
+
         LOG.info('Installing requirements ...')
         self.installed_requirements = []
         self.packages_from_database = []
@@ -162,7 +176,6 @@ class DjangoDeployer(BaseDeployer):
         index = 0
         for tmp in range(threshold):
             out = self.sync_server(deploy_path)
-            # TODO: when sync error
             if out[0] != 0:
                 LOG.info(out)
             out = out[2].strip().splitlines()
@@ -228,6 +241,8 @@ class DjangoDeployer(BaseDeployer):
 
         requirement_files = utils.search_file(deploy_path, 'requirements.txt')
         #LOG.info('requirements.txt: {}'.format(self.requirement_files))
+
+        self.requirement_files = requirement_files
         
         manage_paths = [os.path.dirname(manage_file) for manage_file in manage_files]
         # LOG.info('Manage path: {}'.format(manage_paths))
@@ -247,14 +262,16 @@ class DjangoDeployer(BaseDeployer):
 
         attempt.base_dir = base_dir.split('/', 1)[1]
         # LOG.info('BASE_DIR: ' + attempt.base_dir)
-
-        attempt.database = self.get_database(setting_file)
-        LOG.info('Database: ' + attempt.database.name)
         
         attempt.setting_dir = os.path.basename(os.path.dirname(setting_file))
         # LOG.info('SETTING_DIR: ' + attempt.setting_dir)
         
         return self.try_deploy(attempt, manage_path, requirement_files)
+    ## DEF
+
+    def kill_server(self):
+        utils.pip_clear()
+        return super(DjangoDeployer, self).kill_server()
     ## DEF
     
 ## CLASS

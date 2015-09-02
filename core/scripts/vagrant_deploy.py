@@ -30,6 +30,7 @@ def main():
 		sys.exit(-1)
 	driver = Driver()
 	driver.drive(deployer)
+	deployer.kill_server()
 	if 0:
 		while True:
 			pass

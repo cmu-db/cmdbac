@@ -7,6 +7,9 @@ import traceback
 
 from run import run_command
 
+with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
+    auth = json.load(auth_file)
+
 def query(url):
     request = urllib2.Request(url)
     response = urllib2.urlopen(request)
