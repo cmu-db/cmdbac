@@ -14,7 +14,7 @@ def pip_clear():
 
 def pip_freeze():
     out = run_command('pip freeze')
-    out = out.strip().splitlines()
+    out = out[1].strip().splitlines()
     out = [line for line in out if not ' ' in line and '==' in line]
     return out
 
