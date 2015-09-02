@@ -20,7 +20,7 @@
     "default_port": 3000, 
     "name": "Ruby on Rails", 
     "filename": "database.yml",
-    "language": "ruby"
+    "language": "yaml"
   }
 }
 ]

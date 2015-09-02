@@ -59,7 +59,8 @@ class GitHubCrawler(BaseCrawler):
         
         # Otherwise, compute what the next page we want to load
         args = {
-            "query": self.crawlerStatus.project_type.name,
+            "query": urllib.urlencode({
+                'q': self.crawlerStatus.project_type.name})[2:],
             "filename": self.crawlerStatus.project_type.filename,
             "language": self.crawlerStatus.project_type.language
         }
