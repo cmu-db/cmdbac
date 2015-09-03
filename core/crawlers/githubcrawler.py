@@ -65,6 +65,13 @@ class GitHubCrawler(BaseCrawler):
             "language": self.crawlerStatus.project_type.language
         }
 
+        if self.crawlerStatus.cur_size == self.crawlerStatus.max_size:
+            args["size"] = '>'+str(self.crawlerStatus.cur_size)
+            self.crawlerStatus.cur_size = self.min_size
+        else:
+            args["size"] = self.crawlerStatus.cur_size
+            self.crawlerStatus.cur_size = self.crawlerStatus.cur_size + 1
+
         return self.template.substitute(args)
     ## DEF
 

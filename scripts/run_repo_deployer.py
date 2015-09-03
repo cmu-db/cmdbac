@@ -101,7 +101,7 @@ def main():
         
     while True:
         # repos = Repository.objects.filter(name='acecodes/acetools') 
-        repos = Repository.objects.filter(name='llovett/gallagry')
+        repos = Repository.objects.filter(name='praveenkishor123/blog1')
         # repos = Repository.objects.filter(name='aae4/btw')
 
         database = Database.objects.get(name='MySQL')
@@ -109,7 +109,6 @@ def main():
         for repo in repos:
             print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
             vagrant_deploy(repo, database.name)
-            break
         ## FOR
         break
     ## WHILE
@@ -164,13 +163,20 @@ def mass():
 
         database = Database.objects.get(name='MySQL')
         
+        temp_flag = True
         for repo in repos:
-            print repo.latest_attempt
-            if not repo.latest_attempt:
+            flag = False
+            for attempt in Attempt.objects.filter(repo=repo):
+                if attempt.result_name == 'Success':
+                    flag = True
+                    break
+            if repo.name == 'kylemboos/kbsite-u':
+                temp_flag = False
+            if temp_flag:
                 continue
+            if flag:
                 print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
                 result = vagrant_deploy(repo, database.name)
-                # raw_input('press any key to continue')
         ## FOR
         break
     ## WHILE

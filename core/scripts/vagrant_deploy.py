@@ -3,7 +3,11 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 
+import utils
+utils.pip_clear()
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
+
 import django
 django.setup()
 
@@ -28,9 +32,10 @@ def main():
 	if deployer.deploy() != 0:
 		deployer.kill_server()
 		sys.exit(-1)
-	driver = Driver()
-	driver.drive(deployer)
-	deployer.kill_server()
+	# driver = Driver()
+	# driver.drive(deployer)
+	raw_input('press any key to continue ...')
+	# deployer.kill_server()
 	# deployer.extract_database_info()
 
 if __name__ == "__main__":

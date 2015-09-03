@@ -6,7 +6,10 @@
     "last_crawler_time": "2015-01-16T15:59:45", 
     "source": 1, 
     "project_type": 1, 
-    "next_url": ""
+    "next_url": "",
+    "min_size": 100,
+    "cur_size": 100,
+    "max_size": 2000
   }
 },
 {
@@ -16,7 +19,10 @@
     "last_crawler_time": "2015-01-16T15:58:19", 
     "source": 1, 
     "project_type": 2, 
-    "next_url": ""
+    "next_url": "",
+    "min_size": 100,
+    "cur_size": 100, 
+    "max_size": 2000
   }
 }
 ]

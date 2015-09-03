@@ -136,7 +136,8 @@ class BaseDeployer(object):
 
         # Make sure we update the repo to point to this 
         # latest attempt
-        self.repo.valid_project = (result == ATTEMPT_STATUS_SUCCESS)
+        if self.repo.valid_project != ATTEMPT_STATUS_SUCCESS:
+            self.repo.valid_project = (result == ATTEMPT_STATUS_SUCCESS)
         self.repo.latest_attempt = attempt
         self.repo.attempts_count = self.repo.attempts_count + 1
         self.repo.save()
@@ -168,8 +169,14 @@ class BaseDeployer(object):
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return -1
         
-        utils.remake_dir(BaseDeployer.TMP_DEPLOY_PATH)
-        utils.unzip(BaseDeployer.TMP_ZIP, BaseDeployer.TMP_DEPLOY_PATH)
+        try:
+            utils.remake_dir(BaseDeployer.TMP_DEPLOY_PATH)
+            utils.unzip(BaseDeployer.TMP_ZIP, BaseDeployer.TMP_DEPLOY_PATH)
+        except:
+            print traceback.print_exc()
+            self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
+            return -1
+
         LOG.info('Deploying at {} ...'.format(BaseDeployer.TMP_DEPLOY_PATH))
         
         try:
