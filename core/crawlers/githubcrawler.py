@@ -35,7 +35,7 @@ LOG.setLevel(logging.INFO)
 
 BASE_URL = "https://github.com/search?utf8=%E2%9C%93&q=${query}+" + \
            "filename%3A${filename}+" + \
-           "language%3A${language}&" + \
+           "size%3A${size}&" + \
            "type=Code&ref=searchresults"
 GITHUB_HOST = 'https://github.com/'
 API_GITHUB_REPO = 'https://api.github.com/repos/'
@@ -61,8 +61,7 @@ class GitHubCrawler(BaseCrawler):
         args = {
             "query": urllib.urlencode({
                 'q': self.crawlerStatus.project_type.name})[2:] if self.crawlerStatus.project_type.id == 1 else '',
-            "filename": self.crawlerStatus.project_type.filename,
-            "language": self.crawlerStatus.project_type.language
+            "filename": self.crawlerStatus.project_type.filename
         }
 
         if self.crawlerStatus.cur_size == self.crawlerStatus.max_size:

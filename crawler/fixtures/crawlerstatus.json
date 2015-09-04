@@ -7,9 +7,9 @@
     "source": 1, 
     "project_type": 1, 
     "next_url": "",
-    "min_size": 100,
-    "cur_size": 100,
-    "max_size": 2000
+    "min_size": 10000,
+    "cur_size": 10000,
+    "max_size": 20000
   }
 },
 {
@@ -20,9 +20,9 @@
     "source": 1, 
     "project_type": 2, 
     "next_url": "",
-    "min_size": 100,
-    "cur_size": 100, 
-    "max_size": 2000
+    "min_size": 1000,
+    "cur_size": 1000, 
+    "max_size": 10000
   }
 }
 ]
