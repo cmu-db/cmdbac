@@ -1,3 +1,4 @@
+# 09/02
 kremerben/ru_blog_analytics
 richil-bhalerao/yelp239
 mjm698/Stash
@@ -14,3 +15,38 @@ mnzaki/coolsoft-13
 sysuccc/QiuDaBao
 jorgeloviedo/decyr-python
 IllegalCactus/argument-workbench
+
+#09/03
+0x55aa/django-account
+0x55aa/gravatar
+4justinstewart/Polity
+aae4/btw
+aahill50/jQuery-continued
+aaron-coding/Tweet_clone
+aavalkov/carpooling
+aavalkov/photo-sharing
+aavalkov/stack_overflow_clone
+aavalkov/twitter_clone
+abalyasnikov/123
+abbysmalls/file-share
+abhishekjain16/spree2.3
+acheevit/hh_bookshelf
+AdamDotCom/my-rvm
+adamm123/uni-stuff
+adamshapiro531/bootstrap-app
+adamwen/QSSA
+adasko90/blog
+adiadrian21/PyDjTestSite
+AdmiralHackbar/email_auth
+adoseofjess/EarthquakesAPI
+aghyad/website-bootstrapper
+aGleason1/2014isucdc2-shell
+agmcleod/preemptive-hack
+ahernan24/testapp
+ahung/friend_circles
+AimeeKnight/Devise-Starter
+ajayyadav/falcon-dashboard
+ajkumark/gamestore
+akannur/student_database-app
+
+# 09/04 stops at akonit/lab_6

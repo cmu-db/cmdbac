@@ -162,16 +162,24 @@ def mass():
         repos = Repository.objects.all()
 
         database = Database.objects.get(name='MySQL')
+
+        total = 0
+        for repo in repos:
+            if repo.valid_project:
+                total += 1
         
         temp_flag = True
+        index = 0
         for repo in repos:
             flag = False
             for attempt in Attempt.objects.filter(repo=repo):
                 if attempt.result_name == 'Success':
                     flag = True
                     break
-            if repo.name == 'kylemboos/kbsite-u':
+            if repo.name == 'adamgillfillan/mental_health_app':
                 temp_flag = False
+            index += 1
+            print '{}/{}'.format(index, total)
             if temp_flag:
                 continue
             if flag:

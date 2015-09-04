@@ -37,7 +37,7 @@ globals()['ATTEMPT_STATUS_CODES'] = ATTEMPT_STATUS_CODES
 class ProjectType(models.Model):
     name = models.CharField(max_length=16)
     filename = models.CharField(max_length=200)
-    language = models.CharField(max_length=200)
+    # language = models.CharField(max_length=200)
     deployer_class = models.CharField(max_length=16)
     default_port = models.PositiveSmallIntegerField(null=False)
     logo = models.CharField(max_length=100)
@@ -81,6 +81,9 @@ class RepositorySource(models.Model):
 class CrawlerStatus(models.Model):
     source = models.ForeignKey('RepositorySource')
     project_type = models.ForeignKey('ProjectType')
+    min_size = models.IntegerField()
+    cur_size = models.IntegerField()
+    max_size = models.IntegerField()
     next_url = models.URLField(null=True)
     last_crawler_time = models.DateTimeField(auto_now=True)
     
@@ -131,7 +134,7 @@ class Repository(models.Model):
     contributors_count = models.IntegerField()
     attempts_count = models.IntegerField()
     crawler_date = models.DateTimeField(auto_now_add=True)
-    updated_date = models.DateTimeField(auto_now_add=True, auto_now=True)
+    updated_date = models.DateTimeField(auto_now=True)
     
     def __unicode__(self):
         return self.name
