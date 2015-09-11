@@ -30,7 +30,6 @@ def main():
 	klass = getattr(moduleHandle, repo.project_type.deployer_class)
 	deployer = klass(repo, database)
 	if deployer.deploy() != 0:
-		deployer.kill_server()
 		sys.exit(-1)
 	# driver = Driver()
 	# driver.drive(deployer)

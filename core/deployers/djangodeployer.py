@@ -141,6 +141,7 @@ class DjangoDeployer(BaseDeployer):
     ## DEF
 
     def run_server(self, path):
+        self.configure_network()
         LOG.info('Running server ...')
         command = '{} && unset DJANGO_SETTINGS_MODULE && python manage.py runserver 0.0.0.0:{}'.format(
             utils.cd(path), 

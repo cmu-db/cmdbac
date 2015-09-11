@@ -105,6 +105,7 @@ class RoRDeployer(BaseDeployer):
     ## DEF
 
     def run_server(self, path):
+        self.configure_network()
         LOG.info('Running server ...')
         command = '{} && bundle exec rails server -p {} -d'.format(
             utils.cd(path), 

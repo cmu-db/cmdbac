@@ -43,3 +43,9 @@ def get_latest_sha(repo):
 
 def kill_port(port):
     return run_command('fuser -n tcp -k {}'.format(port))
+
+def block_network():
+    return run_command('ufw enable')
+
+def unblock_network():
+    return run_command('ufw disable')

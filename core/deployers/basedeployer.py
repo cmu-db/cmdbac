@@ -104,6 +104,11 @@ class BaseDeployer(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
 
+    def self.configure_network(self):
+        LOG.info('Configuring network ...')
+        utils.block_network()
+    ## DEF
+
     def run_server(self):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
@@ -189,8 +194,8 @@ class BaseDeployer(object):
             self.save_attempt(attempt, attemptStatus)
             return -1
         
-        # LOG.info(self.kill_server())
-        # Okay we've seen everything that we wanted to see...
+        LOG.info(self.kill_server())
+        
         self.save_attempt(attempt, attemptStatus)
         
         return 0
@@ -211,7 +216,9 @@ class BaseDeployer(object):
 
     def kill_server(self):
         LOG.info('Killing server on port {} ...'.format(self.repo.project_type.default_port))
-        return utils.kill_port(self.repo.project_type.default_port)
+        ret = utils.kill_port(self.repo.project_type.default_port)
+        utils.unblock_network()
+        return ret
     ## DEF
     
 ## CLASS
