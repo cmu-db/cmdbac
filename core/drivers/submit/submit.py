@@ -17,4 +17,4 @@ def submit(form):
 	br.select_form(nr=get_form_index(br, form))
 	for input in form['inputs']:
 		br[input['name']] = 'test@test.com'
-	print br.submit()
+	response = br.submit()

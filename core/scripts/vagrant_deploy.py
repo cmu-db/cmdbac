@@ -34,7 +34,7 @@ def main():
 		sys.exit(-1)
 	# driver = Driver()
 	# driver.drive(deployer)
-	raw_input('press any key to continue ...')
+	# raw_input('press any key to continue ...')
 	# deployer.kill_server()
 	# deployer.extract_database_info()
 

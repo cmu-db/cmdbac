@@ -101,7 +101,7 @@ def main():
         
     while True:
         # repos = Repository.objects.filter(name='acecodes/acetools') 
-        repos = Repository.objects.filter(name='praveenkishor123/blog1')
+        repos = Repository.objects.filter(name='hasadna/OpenCommunity')
         # repos = Repository.objects.filter(name='aae4/btw')
 
         database = Database.objects.get(name='MySQL')
@@ -149,6 +149,55 @@ def test():
         print 'TEST FAILED!'
     print '############'
 
+def mass_man():
+    logger = logging.getLogger('basic_logger')
+    logger.setLevel(logging.DEBUG)
+
+    vagrant_clear()
+    vagrant_setup()
+  
+    result = 0
+
+    while True:
+        repos = Repository.objects.all()
+
+        database = Database.objects.get(name='MySQL')
+
+        index = 0
+        total = len(repos)
+        temp_flag = True
+
+        for repo in repos:
+            index += 1
+            print '{}/{}'.format(index, total)
+
+            if repo.name == 'akonit/lab_6':
+                temp_flag = False
+            if temp_flag:
+                continue
+
+            flag = False
+            for attempt in Attempt.objects.filter(repo=repo):
+                if attempt.result_name == 'Success':
+                    flag = True
+                    break
+            
+            if flag:
+                print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
+                result = vagrant_deploy(repo, database.name)
+        ## FOR
+        break
+    ## WHILE
+
+    vagrant_clear()
+
+    print '############'
+    if result == 0:
+        print 'TEST PASSED!'
+    else:
+        print 'TEST FAILED!'
+    print '############'
+
 def mass():
     logger = logging.getLogger('basic_logger')
     logger.setLevel(logging.DEBUG)
@@ -163,28 +212,15 @@ def mass():
 
         database = Database.objects.get(name='MySQL')
 
-        total = 0
-        for repo in repos:
-            if repo.valid_project:
-                total += 1
-        
-        temp_flag = True
         index = 0
+        total = len(repos)
+        
         for repo in repos:
-            flag = False
-            for attempt in Attempt.objects.filter(repo=repo):
-                if attempt.result_name == 'Success':
-                    flag = True
-                    break
-            if repo.name == 'adamgillfillan/mental_health_app':
-                temp_flag = False
             index += 1
             print '{}/{}'.format(index, total)
-            if temp_flag:
-                continue
-            if flag:
-                print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
-                result = vagrant_deploy(repo, database.name)
+            
+            print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
+            result = vagrant_deploy(repo, database.name)
         ## FOR
         break
     ## WHILE

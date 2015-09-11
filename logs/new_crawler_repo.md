@@ -16,7 +16,7 @@ sysuccc/QiuDaBao
 jorgeloviedo/decyr-python
 IllegalCactus/argument-workbench
 
-#09/03
+#09/03 
 0x55aa/django-account
 0x55aa/gravatar
 4justinstewart/Polity
@@ -49,4 +49,17 @@ ajayyadav/falcon-dashboard
 ajkumark/gamestore
 akannur/student_database-app
 
-# 09/04 stops at akonit/lab_6
+# 09/04
+albertwohletz/combatmanager
+alexanderfrankel/ticketee
+alexdinnel/CookBook-Rails
+alexdinnel/cryptid-tracker
+alexdinnel/lesson-and-sections
+alexdinnel/Wildlife-tracker-rails-
+alexi215/close_to_home
+alexpeattie/chart_refactoring
+alexpgross/Hackernews
+alexpgross/noobnews
+alexpgross/Rails_Contacts
+alexpgross/sample_app
+alexpinsky/angshake
