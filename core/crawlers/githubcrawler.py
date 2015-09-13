@@ -116,6 +116,8 @@ class GitHubCrawler(BaseCrawler):
             LOG.info("Repository '%s' already exists" % name)
         else:
             api_data = self.get_api_data(name)
+            if api_data.get('message', '') == 'Not Found':
+                raise Exception('Not Found')
 
             LOG.info("Found new repository '%s'" % name)
             webpage_data = self.get_webpage_data(name)
@@ -159,9 +161,6 @@ class GitHubCrawler(BaseCrawler):
             repo.attempts_count = 0
             repo.save()
             LOG.info("Successfully created new repository '%s' [%d]" % (repo, repo.id))
-            
-            # Sleep for a little bit to prevent us from getting blocked
-            time.sleep(API_GITHUB_SLEEP)
         ## IF
     
     def search(self):
@@ -175,6 +174,8 @@ class GitHubCrawler(BaseCrawler):
         for title in titles:
             name = title.contents[1].string
             add_repository(name)
+            # Sleep for a little bit to prevent us from getting blocked
+            time.sleep(API_GITHUB_SLEEP)
         ## FOR
 
         # Figure out what is the next page that we need to load

@@ -53,21 +53,26 @@ def repositories(request):
     # repositories = Repository.objects.filter(valid_project=True)
     if request.GET.__contains__('delete'):
         print 'delete: ' + request.GET['delete']
-        Repository.objects.filter(name__contains=request.GET['delete']).delete()
+        try:
+            utils.delete_repo(request.GET['delete'])
+            messages.success(request, 'Successfully deleted repository {}'.format(request.GET['delete']))
+        except:
+            messages.success(request, 'Failed to delete repository {}'.format(request.GET['delete']))
 
     repositories = Repository.objects.all()
     if request.GET.__contains__('search'):
         print 'search: ' + request.GET['search']
         repositories = repositories.filter(name__contains=request.GET['search'])
 
-    if request.GET.__contains__('url') and request.GET.__contains__('type'):
-        if request.GET['type'] == 'django':
-            utils.add_repo(request.GET['url'], 1)
-            messages.success(request, 'Successfully added new repository {}'.format(request.GET['url']))
-        elif request.GET['type'] == 'ror':
-            utils.add_repo(request.GET['url'], 2)
-            messages.success(request, 'Successfully added new repository {}'.format(request.GET['url']))
-            
+    if request.GET.__contains__('add') and request.GET.__contains__('type'):
+        print 'add ' + request.GET['type'] + ': ' + request.GET['add']
+        project_type_map = {'django': 1, 'ror': 2}
+        try:    
+            utils.add_repo(request.GET['add'], project_type_map[request.GET['type']])
+            messages.success(request, 'Successfully added new repository {}'.format(request.GET['add']))
+        except:
+            messages.error(request, 'Failed to add new repository {}'.format(request.GET['add']))
+
     result_list = request.GET.getlist('results')
     if result_list:
         repositories = repositories.filter(latest_attempt__result__in=result_list)
@@ -93,7 +98,6 @@ def repositories(request):
     context['type_form'] = ProjectTypeForm(request.GET)
     context["repositories"] = repositories
     context['search'] = search
-    print queries_no_page
     return render(request, 'repositories.html', context)
 
 def repository(request, user_name, repo_name):

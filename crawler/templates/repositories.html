@@ -10,9 +10,15 @@ Repositories &raquo; Database Application Crawler
 {% include "add_repository.html" %}
 
 {% if messages %}
+<div>
 <ul class="messages">
     {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% if message.tags == 'success' %}
+            <div class="alert alert-success" role="alert">{{message}}</div>
+        {% endif %}
+        {% if message.tags == 'error' %}
+            <div class="alert alert-danger" role="alert">{{message}}</div>
+        {% endif %}
     {% endfor %}
 </ul>
 {% endif %}

@@ -24,8 +24,7 @@ def add_repo(repo_name, crawler_status_id):
         klass = getattr(moduleHandle, repo_source.crawler_class)
         crawler = klass(cs, auth)
 
-        try:
-            crawler.add_repository(repo_name)
-        except:
-            print traceback.print_exc()
+        crawler.add_repository(repo_name)
 
+def delete_repo(repo_name):
+    Repository.objects.filter(name__contains=request.GET['delete']).delete()
