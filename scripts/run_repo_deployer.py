@@ -234,6 +234,14 @@ def mass():
         print 'TEST FAILED!'
     print '############'
 
+def deploy(repo_name):
+    database = Database.objects.get(name='MySQL')
+
+    for repo in Repository.objects.filter(name=repo_name):
+        print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
+        result = vagrant_deploy(repo, database.name)
+        return result
+
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         main()
@@ -241,3 +249,5 @@ if __name__ == '__main__':
         test()
     elif len(sys.argv) == 2 and sys.argv[1] == 'mass':
         mass()
+    elif len(sys.argv) == 3 and sys.argv[1] == 'deploy':
+        sys.exit(deploy(sys.argv[2]))

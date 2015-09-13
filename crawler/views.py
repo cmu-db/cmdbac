@@ -2,7 +2,8 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 
-import crawlers
+import traceback
+from threading import Thread
  
 from django.shortcuts import render
 from models import *
@@ -12,6 +13,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 
 import utils
+import crawlers
 
 class Statistic:
     def __init__(self, repo_type, num_repo, num_pkg, num_suc, num_deploy):
@@ -70,9 +72,12 @@ def repositories(request):
         repo_name = request.GET['deploy']
         print 'deploy: ' + repo_name
         try:
-            utils.deploy_repo(repo_name)
+            thread = Thread(target = utils.deploy_repo, args = (repo_name, ))
+            thread.start()
+            thread.join()
             messages.success(request, 'Successfully deployed repository {}'.format(repo_name))
         except:
+            print traceback.print_exc()
             messages.error(request, 'Failed to deploy repository {}'.format(repo_name))
         finally:
             return redirect('repositories')

@@ -104,7 +104,7 @@ class BaseDeployer(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
 
-    def self.configure_network(self):
+    def configure_network(self):
         LOG.info('Configuring network ...')
         utils.block_network()
     ## DEF
@@ -194,7 +194,7 @@ class BaseDeployer(object):
             self.save_attempt(attempt, attemptStatus)
             return -1
         
-        LOG.info(self.kill_server())
+        self.kill_server()
         
         self.save_attempt(attempt, attemptStatus)
         

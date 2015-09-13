@@ -7,7 +7,6 @@ import time
 import json
 import re
 
-from url import URL
 from string import Template
 from bs4 import BeautifulSoup
 from datetime import datetime

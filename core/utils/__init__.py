@@ -3,3 +3,4 @@ from network import download_repo, get_latest_sha, kill_port, block_network, unb
 from file import search_file, remake_dir, unzip, cd
 from pip import pip_clear, pip_install, pip_freeze
 from data import add_repo, delete_repo, deploy_repo
+from vagrant import vagrant_setup, vagrant_clear, vagrant_deploy
