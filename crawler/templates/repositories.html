@@ -85,13 +85,27 @@ Repositories &raquo; Database Application Crawler
                     <td>{{repository.updated_date|date:'Y-m-d H:i:s' }}</td>
                     
                     <td>
+                        <div class="row">
+                        <div class="col-xs-3">
+                        <form action="{% url 'repositories' %}" method="get">
+                            <input type="hidden" value="{{repository.name}}" name="deploy"/>
+                            <label for="deploy" class="btn">
+                                <i class="glyphicon glyphicon-circle-arrow-down" title="deploy"></i>
+                            </label>
+                            <input id="deploy" class="hidden" type="submit"/> 
+                        </form>
+                        </div>
+
+                        <div class="col-xs-3">
                         <form action="{% url 'repositories' %}" method="get">
                             <input type="hidden" value="{{repository.name}}" name="delete"/>
                             <label for="delete" class="btn">
-                                <i class="glyphicon glyphicon-trash"></i>
+                                <i class="glyphicon glyphicon-trash" title="delete"></i>
                             </label>
                             <input id="delete" class="hidden" type="submit"/> 
                         </form>
+                        </div>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}

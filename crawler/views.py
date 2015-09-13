@@ -54,30 +54,45 @@ def repositories(request):
     # repositories = Repository.objects.filter(valid_project=True)
 
     if request.GET.__contains__('add') and request.GET.__contains__('type'):
-        print 'add ' + request.GET['type'] + ': ' + request.GET['add']
+        repo_name = request.GET['add']
+        repo_type = request.GET['type']
+        print 'add ' + repo_type + ': ' + repo_name
         project_type_map = {'django': 1, 'ror': 2}
         try:    
-            utils.add_repo(request.GET['add'], project_type_map[request.GET['type']])
-            messages.success(request, 'Successfully added new repository {}'.format(request.GET['add']))
+            utils.add_repo(repo_name, project_type_map[repo_type])
+            messages.success(request, 'Successfully added new repository {}'.format(repo_name))
         except:
-            messages.error(request, 'Failed to add new repository {}'.format(request.GET['add']))
+            messages.error(request, 'Failed to add new repository {}'.format(repo_name))
+        finally:
+            return redirect('repositories')
+
+    if request.GET.__contains__('deploy'):
+        repo_name = request.GET['deploy']
+        print 'deploy: ' + repo_name
+        try:
+            utils.deploy_repo(repo_name)
+            messages.success(request, 'Successfully deployed repository {}'.format(repo_name))
+        except:
+            messages.error(request, 'Failed to deploy repository {}'.format(repo_name))
         finally:
             return redirect('repositories')
 
     if request.GET.__contains__('delete'):
-        print 'delete: ' + request.GET['delete']
+        repo_name = request.GET['delete']
+        print 'delete: ' + repo_name
         try:
-            utils.delete_repo(request.GET['delete'])
-            messages.success(request, 'Successfully deleted repository {}'.format(request.GET['delete']))
+            utils.delete_repo(repo_name)
+            messages.success(request, 'Successfully deleted repository {}'.format(repo_name))
         except:
-            messages.error(request, 'Failed to delete repository {}'.format(request.GET['delete']))
+            messages.error(request, 'Failed to delete repository {}'.format(repo_name))
         finally:
             return redirect('repositories')
 
     repositories = Repository.objects.all()
     if request.GET.__contains__('search'):
-        print 'search: ' + request.GET['search']
-        repositories = repositories.filter(name__contains=request.GET['search'])
+        repo_name = request.GET['search']
+        print 'search: ' + repo_name
+        repositories = repositories.filter(name__contains=repo_name)
 
     result_list = request.GET.getlist('results')
     if result_list:
