@@ -1,7 +1,16 @@
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
+sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
+
+import crawlers
+ 
 from django.shortcuts import render
 from models import *
 from forms import *
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib import messages
+
+import utils
 
 class Statistic:
     def __init__(self, repo_type, num_repo, num_pkg, num_suc, num_deploy):
@@ -45,10 +54,20 @@ def repositories(request):
     if request.GET.__contains__('delete'):
         print 'delete: ' + request.GET['delete']
         Repository.objects.filter(name__contains=request.GET['delete']).delete()
+
     repositories = Repository.objects.all()
     if request.GET.__contains__('search'):
         print 'search: ' + request.GET['search']
         repositories = repositories.filter(name__contains=request.GET['search'])
+
+    if request.GET.__contains__('url') and request.GET.__contains__('type'):
+        if request.GET['type'] == 'django':
+            utils.add_repo(request.GET['url'], 1)
+            messages.success(request, 'Successfully added new repository {}'.format(request.GET['url']))
+        elif request.GET['type'] == 'ror':
+            utils.add_repo(request.GET['url'], 2)
+            messages.success(request, 'Successfully added new repository {}'.format(request.GET['url']))
+            
     result_list = request.GET.getlist('results')
     if result_list:
         repositories = repositories.filter(latest_attempt__result__in=result_list)

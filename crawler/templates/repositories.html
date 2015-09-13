@@ -8,6 +8,15 @@ Repositories &raquo; Database Application Crawler
 {% block main %}
 {% include "status_codes.html" %}
 {% include "add_repository.html" %}
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 <h2 class="page-header">Repositories</h2>
 
 <form action="{% url 'repositories' %}" method="get">

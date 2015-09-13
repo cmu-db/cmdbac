@@ -110,6 +110,59 @@ class GitHubCrawler(BaseCrawler):
 
         return data
     ## DEF
+
+    def add_repository(self, name):
+        if Repository.objects.filter(name=name).exists():
+            LOG.info("Repository '%s' already exists" % name)
+        else:
+            api_data = self.get_api_data(name)
+
+            LOG.info("Found new repository '%s'" % name)
+            webpage_data = self.get_webpage_data(name)
+            
+            def none2empty(string):
+                if string:
+                    return string
+                else:
+                    return ''
+
+            # Create the new repository
+            repo = Repository()
+            repo.name = name
+            repo.source = self.crawlerStatus.source
+            repo.project_type = self.crawlerStatus.project_type
+            repo.last_attempt = None
+            repo.private = api_data['private']
+            repo.description = none2empty(api_data['description'])
+            repo.fork = api_data['fork']
+            repo.created_at = datetime.strptime(api_data['created_at'], "%Y-%m-%dT%H:%M:%SZ")
+            repo.updated_at = datetime.strptime(api_data['updated_at'], "%Y-%m-%dT%H:%M:%SZ")
+            repo.pushed_at = datetime.strptime(api_data['pushed_at'], "%Y-%m-%dT%H:%M:%SZ")
+            repo.homepage = none2empty(api_data['homepage'])
+            repo.size = api_data['size']
+            repo.stargazers_count = api_data['stargazers_count']
+            repo.watchers_count = api_data['watchers_count']
+            repo.language = none2empty(api_data['language'])
+            repo.has_issues = api_data['has_issues']
+            repo.has_downloads = api_data['has_downloads']
+            repo.has_wiki = api_data['has_wiki']
+            repo.has_pages= api_data['has_pages']
+            repo.forks_count = api_data['forks_count']
+            repo.open_issues_count = api_data['open_issues_count']
+            repo.default_branch = api_data['default_branch']
+            repo.network_count = api_data['network_count']
+            repo.subscribers_count = api_data['subscribers_count']
+            repo.commits_count = webpage_data['commits_count']
+            repo.branches_count = webpage_data['branches_count']
+            repo.releases_count = webpage_data['releases_count']
+            repo.contributors_count = webpage_data['contributors_count']
+            repo.attempts_count = 0
+            repo.save()
+            LOG.info("Successfully created new repository '%s' [%d]" % (repo, repo.id))
+            
+            # Sleep for a little bit to prevent us from getting blocked
+            time.sleep(API_GITHUB_SLEEP)
+        ## IF
     
     def search(self):
         # Load and parse!
@@ -121,58 +174,7 @@ class GitHubCrawler(BaseCrawler):
         # Pick through the results and find repos
         for title in titles:
             name = title.contents[1].string
-
-            if Repository.objects.filter(name=name).exists():
-                LOG.info("Repository '%s' already exists" % name)
-            else:
-                api_data = self.get_api_data(name)
-
-                LOG.info("Found new repository '%s'" % name)
-                webpage_data = self.get_webpage_data(name)
-                
-                def none2empty(string):
-                    if string:
-                        return string
-                    else:
-                        return ''
-
-                # Create the new repository
-                repo = Repository()
-                repo.name = name
-                repo.source = self.crawlerStatus.source
-                repo.project_type = self.crawlerStatus.project_type
-                repo.last_attempt = None
-                repo.private = api_data['private']
-                repo.description = none2empty(api_data['description'])
-                repo.fork = api_data['fork']
-                repo.created_at = datetime.strptime(api_data['created_at'], "%Y-%m-%dT%H:%M:%SZ")
-                repo.updated_at = datetime.strptime(api_data['updated_at'], "%Y-%m-%dT%H:%M:%SZ")
-                repo.pushed_at = datetime.strptime(api_data['pushed_at'], "%Y-%m-%dT%H:%M:%SZ")
-                repo.homepage = none2empty(api_data['homepage'])
-                repo.size = api_data['size']
-                repo.stargazers_count = api_data['stargazers_count']
-                repo.watchers_count = api_data['watchers_count']
-                repo.language = none2empty(api_data['language'])
-                repo.has_issues = api_data['has_issues']
-                repo.has_downloads = api_data['has_downloads']
-                repo.has_wiki = api_data['has_wiki']
-                repo.has_pages= api_data['has_pages']
-                repo.forks_count = api_data['forks_count']
-                repo.open_issues_count = api_data['open_issues_count']
-                repo.default_branch = api_data['default_branch']
-                repo.network_count = api_data['network_count']
-                repo.subscribers_count = api_data['subscribers_count']
-                repo.commits_count = webpage_data['commits_count']
-                repo.branches_count = webpage_data['branches_count']
-                repo.releases_count = webpage_data['releases_count']
-                repo.contributors_count = webpage_data['contributors_count']
-                repo.attempts_count = 0
-                repo.save()
-                LOG.info("Successfully created new repository '%s' [%d]" % (repo, repo.id))
-                
-                # Sleep for a little bit to prevent us from getting blocked
-                time.sleep(API_GITHUB_SLEEP)
-            ## IF
+            add_repository(name)
         ## FOR
 
         # Figure out what is the next page that we need to load
