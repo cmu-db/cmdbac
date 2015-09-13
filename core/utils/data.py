@@ -7,6 +7,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 import django
 django.setup()
 
+import traceback
 import json
 import crawlers
 from crawler.models import *
@@ -24,8 +25,19 @@ def add_repo(repo_name, crawler_status_id):
         klass = getattr(moduleHandle, repo_source.crawler_class)
         crawler = klass(cs, auth)
 
-        crawler.add_repository(repo_name)
+        try:
+            crawler.add_repository(repo_name)
+        except Exception, e:
+            print traceback.print_exc()
+            raise e
+
+def deploy_repo(repo_name):
+    pass        
 
 def delete_repo(repo_name):
     for repo in Repository.objects.filter(name__contains=repo_name):
-        repo.delete()
+        try:
+            repo.delete()
+        except Exception, e:
+            print traceback.print_exc()
+            raise e

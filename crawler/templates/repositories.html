@@ -87,7 +87,10 @@ Repositories &raquo; Database Application Crawler
                     <td>
                         <form action="{% url 'repositories' %}" method="get">
                             <input type="hidden" value="{{repository.name}}" name="delete"/>
-                            <input class="btn btn-primary btn-lg" type="submit" value="Delete"/>
+                            <label for="delete" class="btn">
+                                <i class="glyphicon glyphicon-trash"></i>
+                            </label>
+                            <input id="delete" class="hidden" type="submit"/> 
                         </form>
                     </td>
                 </tr>

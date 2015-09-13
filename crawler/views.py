@@ -70,7 +70,7 @@ def repositories(request):
             utils.delete_repo(request.GET['delete'])
             messages.success(request, 'Successfully deleted repository {}'.format(request.GET['delete']))
         except:
-            messages.success(request, 'Failed to delete repository {}'.format(request.GET['delete']))
+            messages.error(request, 'Failed to delete repository {}'.format(request.GET['delete']))
         finally:
             return redirect('repositories')
 
