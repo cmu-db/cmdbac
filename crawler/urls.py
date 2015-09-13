@@ -1,7 +1,6 @@
 from django.conf.urls import patterns, include, url
 urlpatterns = patterns('',
     url(r'^$', 'crawler.views.home', name='home'),
-    url(r'^repositories/delete/*/$', 'crawler.views.repositories', name='repositories_delete'),
     url(r'^repositories/$', 'crawler.views.repositories', name='repositories'),
     url(r'^packages/$', 'crawler.views.packages', name='packages'),
     url(r'^repository/(?P<user_name>.+)/(?P<repo_name>.+)/', 'crawler.views.repository', name='repository'),
