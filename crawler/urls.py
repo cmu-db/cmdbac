@@ -1,9 +1,9 @@
 from django.conf.urls import patterns, include, url
 urlpatterns = patterns('',
     url(r'^$', 'crawler.views.home', name='home'),
+    url(r'^repositories/delete/*/$', 'crawler.views.repositories', name='repositories_delete'),
     url(r'^repositories/$', 'crawler.views.repositories', name='repositories'),
     url(r'^packages/$', 'crawler.views.packages', name='packages'),
-    #url(r'^repository/(?P<name>.*)$', 'crawler.views.repository', name='repository'),
     url(r'^repository/(?P<user_name>.+)/(?P<repo_name>.+)/', 'crawler.views.repository', name='repository'),
     url(r'^package/(?P<id>\d+)$', 'crawler.views.package', name='package'),
     url(r'^dependency/(?P<id>\d+)$', 'crawler.views.dependency', name='dependency'),

@@ -45,13 +45,13 @@ Repositories &raquo; Database Application Crawler
             {% if repositories %}
                 {% for repository in repositories %}
                 <tr>
-                    <td><a id="{{ repository.name}}" href="{% url 'repository' repository.get_user_name repository.get_repo_name %}?{{ queries.urlencode }}">{{ repository.name }}</a></td>
+                    <td><a id="{{ repository.name}}" href="{% url 'repository' repository.get_user_name repository.get_repo_name %}?{{ queries.urlencode }}">{{repository.name}}</a></td>
                     
                     <td><a href="{{ repository.get_url }}"><img src="{% static repository.source.logo %}" alt="{{ repository.source.name }}" title="View on {{ repository.source.name }}" class="source-logo" /></a></td>
                     
                     <td><img src="{% static repository.project_type.logo %}" alt="{{ repository.project_type.name }}" title="{{ repository.project_type.name }}" class="projecttype-logo" /></td>
 
-                    <td>{{ repository.commits_count }}</td>
+                    <td>{{repository.commits_count}}</td>
 
                     <td>{{repository.attempts_count}}</td>
 
@@ -66,6 +66,12 @@ Repositories &raquo; Database Application Crawler
                     
                     <td>{{repository.updated_date|date:'Y-m-d H:i:s' }}</td>
                     
+                    <td>
+                        <form action="{% url 'repositories' %}" method="get">
+                            <input type="hidden" value="{{repository.name}}" name="delete"/>
+                            <input class="btn btn-primary btn-lg" type="submit" value="Delete"/>
+                        </form>
+                    </td>
                 </tr>
                 {% endfor %}
             {% endif %}

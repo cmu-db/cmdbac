@@ -42,8 +42,12 @@ def repositories(request):
     context['queries_no_page_order'] = queries_no_page_order
 
     # repositories = Repository.objects.filter(valid_project=True)
+    if request.GET.__contains__('delete'):
+        print 'delete: ' + request.GET['delete']
+        Repository.objects.filter(name__contains=request.GET['delete']).delete()
     repositories = Repository.objects.all()
     if request.GET.__contains__('search'):
+        print 'search: ' + request.GET['search']
         repositories = repositories.filter(name__contains=request.GET['search'])
     result_list = request.GET.getlist('results')
     if result_list:
@@ -70,7 +74,6 @@ def repositories(request):
     context['type_form'] = ProjectTypeForm(request.GET)
     context["repositories"] = repositories
     context['search'] = search
-    print 'search: ' + str(search)
     print queries_no_page
     return render(request, 'repositories.html', context)
 
