@@ -9,6 +9,7 @@ from models import *
 from forms import *
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
+from django.shortcuts import redirect
 
 import utils
 
@@ -51,18 +52,6 @@ def repositories(request):
     context['queries_no_page_order'] = queries_no_page_order
 
     # repositories = Repository.objects.filter(valid_project=True)
-    if request.GET.__contains__('delete'):
-        print 'delete: ' + request.GET['delete']
-        try:
-            utils.delete_repo(request.GET['delete'])
-            messages.success(request, 'Successfully deleted repository {}'.format(request.GET['delete']))
-        except:
-            messages.success(request, 'Failed to delete repository {}'.format(request.GET['delete']))
-
-    repositories = Repository.objects.all()
-    if request.GET.__contains__('search'):
-        print 'search: ' + request.GET['search']
-        repositories = repositories.filter(name__contains=request.GET['search'])
 
     if request.GET.__contains__('add') and request.GET.__contains__('type'):
         print 'add ' + request.GET['type'] + ': ' + request.GET['add']
@@ -72,6 +61,23 @@ def repositories(request):
             messages.success(request, 'Successfully added new repository {}'.format(request.GET['add']))
         except:
             messages.error(request, 'Failed to add new repository {}'.format(request.GET['add']))
+        finally:
+            return redirect('repositories')
+
+    if request.GET.__contains__('delete'):
+        print 'delete: ' + request.GET['delete']
+        try:
+            utils.delete_repo(request.GET['delete'])
+            messages.success(request, 'Successfully deleted repository {}'.format(request.GET['delete']))
+        except:
+            messages.success(request, 'Failed to delete repository {}'.format(request.GET['delete']))
+        finally:
+            return redirect('repositories')
+
+    repositories = Repository.objects.all()
+    if request.GET.__contains__('search'):
+        print 'search: ' + request.GET['search']
+        repositories = repositories.filter(name__contains=request.GET['search'])
 
     result_list = request.GET.getlist('results')
     if result_list:

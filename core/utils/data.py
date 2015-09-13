@@ -27,4 +27,5 @@ def add_repo(repo_name, crawler_status_id):
         crawler.add_repository(repo_name)
 
 def delete_repo(repo_name):
-    Repository.objects.filter(name__contains=request.GET['delete']).delete()
+    for repo in Repository.objects.filter(name__contains=repo_name):
+        repo.delete()
