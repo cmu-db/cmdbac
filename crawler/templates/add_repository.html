@@ -1,0 +1,26 @@
+<div class="modal fade" id="addRepositoryModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Add Repository</h4>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'repositories' %}" method="get">
+                    <div class="form-group">
+                        <label for="url">URL:</label>
+                        <input type="text" class="form-control" name="url">
+                    </div>
+                    <label class="radio-inline"><input type="radio" name="type" value="django">Django</label>
+                    <label class="radio-inline"><input type="radio" name="type" value="ror">Ruby on Rails</label>
+                    <div style="margin: 10px; text-align: center;">
+                        <input class="btn btn-primary btn-lg" type="submit" value="Add"/>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

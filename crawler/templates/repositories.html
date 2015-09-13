@@ -7,6 +7,7 @@ Repositories &raquo; Database Application Crawler
 
 {% block main %}
 {% include "status_codes.html" %}
+{% include "add_repository.html" %}
 <h2 class="page-header">Repositories</h2>
 
 <form action="{% url 'repositories' %}" method="get">
@@ -26,6 +27,8 @@ Repositories &raquo; Database Application Crawler
     </div>
     </div>
 </form>
+
+<a class="btn btn-primary btn-lg" style="float:right" href="#" data-toggle="modal" data-target="#addRepositoryModal">Add Repository</a>
 
 
 <div class="table-responsive" style="clear:both;">
