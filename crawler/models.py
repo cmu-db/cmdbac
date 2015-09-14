@@ -135,7 +135,8 @@ class Repository(models.Model):
     attempts_count = models.IntegerField()
     crawler_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
-    
+    setup_scripts = models.TextField()
+
     def __unicode__(self):
         return self.name
     def get_user_name(self):
