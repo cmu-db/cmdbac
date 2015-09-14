@@ -13,7 +13,7 @@ with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets
     auth = json.load(auth_file)
 
 def query(url):
-    response = requests.get(url, auth=(auth['user'], auth['pass']))
+    response = requests.get(url, auth=(auth['user'], auth['pass']), verify=False)
     return response
 
 GITHUB_DOWNLOAD_URL_TEMPLATE = Template('https://github.com/${name}/archive/${sha}.zip')
