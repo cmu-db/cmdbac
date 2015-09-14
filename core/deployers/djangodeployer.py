@@ -224,10 +224,11 @@ class DjangoDeployer(BaseDeployer):
     def deploy_repo_attempt(self, attempt, deploy_path):
         utils.pip_clear()
 
-        setup_files = utils.search_file(deploy_path, 'setup.py')
-        # LOG.info('setup.py: {}'.format(setup_files))
-        if setup_files:
-            return ATTEMPT_STATUS_NOT_AN_APPLICATION
+        if 0:
+            setup_files = utils.search_file(deploy_path, 'setup.py')
+            # LOG.info('setup.py: {}'.format(setup_files))
+            if setup_files:
+                return ATTEMPT_STATUS_NOT_AN_APPLICATION
 
         setting_files = utils.search_file(deploy_path, 'settings.py')
         # LOG.info('settings.py: {}'.format(setting_files))

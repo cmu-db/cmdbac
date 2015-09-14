@@ -45,8 +45,9 @@ def deploy_repo(repo_name):
         except Exception, e:
             print traceback.print_exc()
             raise e
+        finally:
+            utils.vagrant_clear()
         print result
-        utils.vagrant_clear()
         return result
 
 def delete_repo(repo_name):
