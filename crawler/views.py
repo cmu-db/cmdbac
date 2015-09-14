@@ -74,7 +74,7 @@ def repositories(request):
         try:
             thread = Thread(target = utils.deploy_repo, args = (repo_name, ))
             thread.start()
-            thread.join()
+            # thread.join()
             messages.success(request, 'Successfully deployed repository {}'.format(repo_name))
         except:
             print traceback.print_exc()
