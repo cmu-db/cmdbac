@@ -217,12 +217,9 @@ class DjangoDeployer(BaseDeployer):
         
         result, p = self.run_server(deploy_path)
 
-        time.sleep(1)
+        time.sleep(5)
         attemptStatus = self.check_server(self.get_urls())
-
-        while True:
-            pass
-
+        
         return attemptStatus
     ## DEF
     
