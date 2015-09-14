@@ -95,6 +95,8 @@ install 'Nokogiri dependencies' libxml2 libxml2-dev libxslt1-dev imagemagick lib
 
 pip install mechanize
 
+pip install virtualenv
+
 # Fix Dependencies
 apt-get -f -y install >/dev/null 2>&1
 

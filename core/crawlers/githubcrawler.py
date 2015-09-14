@@ -111,7 +111,7 @@ class GitHubCrawler(BaseCrawler):
         return data
     ## DEF
 
-    def add_repository(self, name):
+    def add_repository(self, name, setup_scripts):
         if Repository.objects.filter(name=name).exists():
             LOG.info("Repository '%s' already exists" % name)
         else:
@@ -159,6 +159,7 @@ class GitHubCrawler(BaseCrawler):
             repo.releases_count = webpage_data['releases_count']
             repo.contributors_count = webpage_data['contributors_count']
             repo.attempts_count = 0
+            repo.setup_scripts = setup_scripts
             repo.save()
             LOG.info("Successfully created new repository '%s' [%d]" % (repo, repo.id))
         ## IF

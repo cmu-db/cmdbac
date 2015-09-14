@@ -58,10 +58,11 @@ def repositories(request):
     if request.GET.__contains__('add') and request.GET.__contains__('type'):
         repo_name = request.GET['add']
         repo_type = request.GET['type']
+        repo_setup_scripts = request.GET['scripts']
         print 'add ' + repo_type + ': ' + repo_name
         project_type_map = {'django': 1, 'ror': 2}
         try:    
-            utils.add_repo(repo_name, project_type_map[repo_type])
+            utils.add_repo(repo_name, project_type_map[repo_type], repo_setup_scripts)
             messages.success(request, 'Successfully added new repository {}'.format(repo_name))
         except:
             messages.error(request, 'Failed to add new repository {}'.format(repo_name))

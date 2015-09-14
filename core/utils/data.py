@@ -16,7 +16,7 @@ import utils
 with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
         auth = json.load(auth_file)
 
-def add_repo(repo_name, crawler_status_id):
+def add_repo(repo_name, crawler_status_id, repo_setup_scripts):
     for cs in CrawlerStatus.objects.filter(id=crawler_status_id):
         repo_source = cs.source
         project_type = cs.project_type
@@ -27,7 +27,7 @@ def add_repo(repo_name, crawler_status_id):
         crawler = klass(cs, auth)
 
         try:
-            crawler.add_repository(repo_name)
+            crawler.add_repository(repo_name, repo_setup_scripts)
         except Exception, e:
             print traceback.print_exc()
             raise e
