@@ -6,6 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 import traceback
 import shutil
 from run import run_command
+from file import cd
 
 copied_dir = ['crawler', 'db_webcrawler', 'core', 'secrets']
 vagrant_dir = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, 'vagrant')
@@ -19,7 +20,7 @@ def vagrant_setup():
         old_dir = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, new_dir)
         shutil.copytree(old_dir, os.path.join(vagrant_dir, new_dir))
 
-    run_command('cd {} && {}'.format(vagrant_dir, 'vagrant up'))
+    run_command('{} && {}'.format(cd(vagrant_dir), 'vagrant up'))
 
 def vagrant_clear():
     # Delete files
@@ -29,7 +30,7 @@ def vagrant_clear():
         except:
             pass
 
-    run_command('cd {} && {}'.format(vagrant_dir, 'vagrant halt'))
+    run_command('{} && {}'.format(cd(vagrant_dir), 'vagrant halt'))
 
 def set_vagrant_database():
     settings_file = os.path.join(vagrant_dir, "db_webcrawler", "settings.py")
@@ -53,8 +54,8 @@ def unset_vagrant_database():
 
 def vagrant_deploy(repo, database):
     set_vagrant_database()
-    out = os.system('cd {} && {}'.format(
-        vagrant_dir,
+    out = os.system('{} && {}'.format(
+        cd(vagrant_dir),
         'vagrant ssh -c "{}"'.format(
             'python /vagrant/core/scripts/vagrant_deploy.py {} {}'.format(repo, database))))
     unset_vagrant_database()

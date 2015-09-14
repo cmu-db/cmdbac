@@ -35,3 +35,11 @@ def remake_dir(path):
 
 def cd(path):
     return "cd "+ path
+
+def rename_file(old_file, new_file):
+    return run_command('mv {} {}'.format(
+        old_file,
+        new_file))
+
+def copy_file(old_file, new_file):
+    shutil.copy2(old_file, new_file)

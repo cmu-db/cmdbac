@@ -110,11 +110,14 @@ class DjangoDeployer(BaseDeployer):
         else:
             return []
     ## DEF
-    
+
     def get_urls(self):
         sys.path.append(os.path.join(os.path.dirname(self.setting_path), os.pardir))
         app_name = os.path.split(os.path.dirname(self.setting_path))[-1]
-        urls_module = importlib.import_module('{}.urls'.format(app_name))
+        try:
+            urls_module = importlib.import_module('{}.urls'.format(app_name))
+        except:
+            return ['']
 
         urls = []
         def get_urls_rec(urllist, url):
@@ -170,53 +173,55 @@ class DjangoDeployer(BaseDeployer):
         ## FOR
         LOG.info('Installed requirements: {}'.format(self.installed_requirements))
 
-        if 0:
-            threshold = 10
-            last_missing_module_name = ''
-            index = 0
-            for tmp in range(threshold):
-                out = self.sync_server(deploy_path)
-                if out[0] != 0:
-                    LOG.info(out)
-                out = out[2].strip().splitlines()
-                if out and out[-1].strip().startswith('ImportError'):
-                    line = out[-1].strip()
-                    match = re.search('(?<=No module named )\S+', line)
-                    if match:
-                        missing_module_name = match.group(0)
-                        LOG.info('Missing module: ' + missing_module_name) 
-                        if missing_module_name == last_missing_module_name:
-                            index = index + 1
-                            if index == len(candidate_packages):
-                                LOG.info('No more possible packages!')
-                                return ATTEMPT_STATUS_MISSING_DEPENDENCIES
-                            out = utils.pip_install([candidate_packages[index]], False)
-                            LOG.info('pip install output: {}'.format(out))
-                        else:
-                            if last_missing_module_name != '':
-                                self.packages_from_database.append(candidate_packages[index])
-                            candidate_package_ids = Module.objects.filter(name=missing_module_name).values_list('package_id', flat=True)
-                            if not candidate_package_ids:
-                                LOG.info('No possible packages!')
-                                return ATTEMPT_STATUS_MISSING_DEPENDENCIES
-                            last_missing_module_name = missing_module_name
-                            candidate_packages = Package.objects.filter(id__in=candidate_package_ids).order_by('-count', 'name', '-version')
-                            LOG.info('Candidate packages: {}'.format(candidate_packages))
-                            index = 0
-                            out = utils.pip_install([candidate_packages[0]], False)
-                            LOG.info('pip install output: {}'.format(out))
+        threshold = 10
+        last_missing_module_name = ''
+        index = 0
+        for tmp in range(threshold):
+            out = self.sync_server(deploy_path)
+            if out[0] != 0:
+                LOG.info(out)
+            out = out[2].strip().splitlines()
+            if out and out[-1].strip().startswith('ImportError'):
+                line = out[-1].strip()
+                match = re.search('(?<=No module named )\S+', line)
+                if match:
+                    missing_module_name = match.group(0)
+                    LOG.info('Missing module: ' + missing_module_name) 
+                    if missing_module_name == last_missing_module_name:
+                        index = index + 1
+                        if index == len(candidate_packages):
+                            LOG.info('No more possible packages!')
+                            return ATTEMPT_STATUS_MISSING_DEPENDENCIES
+                        out = utils.pip_install([candidate_packages[index]], False)
+                        LOG.info('pip install output: {}'.format(out))
                     else:
-                        return ATTEMPT_STATUS_MISSING_DEPENDENCIES
+                        if last_missing_module_name != '':
+                            self.packages_from_database.append(candidate_packages[index])
+                        candidate_package_ids = Module.objects.filter(name=missing_module_name).values_list('package_id', flat=True)
+                        if not candidate_package_ids:
+                            LOG.info('No possible packages!')
+                            return ATTEMPT_STATUS_MISSING_DEPENDENCIES
+                        last_missing_module_name = missing_module_name
+                        candidate_packages = Package.objects.filter(id__in=candidate_package_ids).order_by('-count', 'name', '-version')
+                        LOG.info('Candidate packages: {}'.format(candidate_packages))
+                        index = 0
+                        out = utils.pip_install([candidate_packages[0]], False)
+                        LOG.info('pip install output: {}'.format(out))
                 else:
-                    if last_missing_module_name != '':
-                        self.packages_from_database.append(candidate_packages[index])
-                    break
-            ## FOR
+                    return ATTEMPT_STATUS_MISSING_DEPENDENCIES
+            else:
+                if last_missing_module_name != '':
+                    self.packages_from_database.append(candidate_packages[index])
+                break
+        ## FOR
         
         result, p = self.run_server(deploy_path)
 
         time.sleep(1)
         attemptStatus = self.check_server(self.get_urls())
+
+        while True:
+            pass
 
         return attemptStatus
     ## DEF
@@ -233,7 +238,12 @@ class DjangoDeployer(BaseDeployer):
         setting_files = utils.search_file(deploy_path, 'settings.py')
         # LOG.info('settings.py: {}'.format(setting_files))
         if not setting_files:
-            print utils.search_file(deploy_path, 'settings_example.py')
+            for candidate_setting_files in utils.search_file(deploy_path, 'settings_example.py'):
+                utils.copy_file(candidate_setting_files, os.path.join(os.path.dirname(candidate_setting_files), "settings.py"))
+                break
+            setting_files = utils.search_file(deploy_path, 'settings.py')
+        if not setting_files:
+            return ATTEMPT_STATUS_NOT_AN_APPLICATION
 
         if not setting_files:
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES

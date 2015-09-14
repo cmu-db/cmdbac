@@ -94,7 +94,7 @@ install 'Nodejs' nodejs
 install 'Nokogiri dependencies' libxml2 libxml2-dev libxslt1-dev imagemagick libmagickwand-dev
 
 pip install mechanize
-
+pip install python-dateutil
 pip install virtualenv
 
 # Fix Dependencies
