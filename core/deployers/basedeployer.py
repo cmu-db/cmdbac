@@ -194,7 +194,7 @@ class BaseDeployer(object):
             self.save_attempt(attempt, attemptStatus)
             return -1
         
-        self.kill_server()
+        # self.kill_server()
         
         self.save_attempt(attempt, attemptStatus)
         

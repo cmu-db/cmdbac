@@ -19,6 +19,6 @@ class InputItem(scrapy.Item):
 	type = scrapy.Field()
 
 class FormItem(scrapy.Item):
-	id = scrapy.Field()
+	action = scrapy.Field()
 	url = scrapy.Field()
 	inputs = scrapy.Field()

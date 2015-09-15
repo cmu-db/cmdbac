@@ -8,7 +8,7 @@ from driver.items import InputItem, FormItem
 
 class FormSpider(CrawlSpider):
     name = "form"
-    # allowed_domains = ["www.hackerrank.com"]
+    allowed_domains = ["127.0.0.1"]
     # start_urls = ["https://www.hackerrank.com/login"]
 
     rules = (
@@ -23,7 +23,7 @@ class FormSpider(CrawlSpider):
     def parse_form(self, response):
         for sel in response.xpath('//form'):
             formItem = FormItem()
-            formItem['id'] = sel.xpath('@id').extract()[0]
+            formItem['action'] = sel.xpath('@action').extract()[0]
             formItem['url'] = response.url
             for ip in sel.xpath('//input[@type="text" or @type="password" or @type="email"]'):
                 id = ip.xpath('@id').extract()[0]

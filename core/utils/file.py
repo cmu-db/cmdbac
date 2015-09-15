@@ -43,3 +43,9 @@ def rename_file(old_file, new_file):
 
 def copy_file(old_file, new_file):
     shutil.copy2(old_file, new_file)
+
+def remove_file(path):
+    try:
+        os.remove(path)
+    except:
+        pass

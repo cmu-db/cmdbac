@@ -87,7 +87,7 @@ debconf-set-selections <<< "mysql-server mysql-server/root_password password roo
 debconf-set-selections <<< "mysql-server mysql-server/root_password_again password root"
 install 'MySQL' mysql-server libmysqlclient-dev
 pip install MySQL-python
-mysql -u root --password=root -e "CREATE DATABASE vm"
+# mysql -u root --password=root -e "CREATE DATABASE vm"
 
 install 'Nodejs' nodejs
 
