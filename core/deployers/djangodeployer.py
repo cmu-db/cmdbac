@@ -36,7 +36,9 @@ DATABASES = {{
         'PASSWORD': 'root'
     }}
 }}
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = '/tmp/crawler'
+REGISTRATION_CAPTCHA = False
 """
 
 ## =====================================================================
@@ -144,6 +146,16 @@ class DjangoDeployer(BaseDeployer):
         return utils.run_command(command)
     ## DEF
 
+    def create_superuser(self, path):
+        LOG.info('Creating superuser ...')
+        command = '{} && unset DJANGO_SETTINGS_MODULE && {}'.format(
+            utils.cd(path),
+            """
+            echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@test.com', 'admin')" | python manage.py shell
+            """)
+        return utils.run_command(command)
+    ## DEF
+
     def run_server(self, path):
         self.configure_network()
         LOG.info('Running server ...')
@@ -215,6 +227,8 @@ class DjangoDeployer(BaseDeployer):
                 break
         ## FOR
         
+        print self.create_superuser(deploy_path)
+
         result, p = self.run_server(deploy_path)
 
         time.sleep(5)

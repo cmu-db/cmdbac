@@ -20,16 +20,8 @@ class Driver(object):
 	def __init__(self):
 		pass
 
-	def get_register_form(self, forms):
-		register_patterns = ['register']
-		for form in forms:
-			for register_pattern in register_patterns:
-				if register_pattern in form['action']:
-					return form
-
 	def register(self, forms):
-		regsiter_form = self.get_register_form(forms)
-		print regsiter_form
+		submit.register(forms)
 
 	def drive(self, deployer):
 		# get main page
@@ -48,7 +40,6 @@ class Driver(object):
 				print traceback.print_exc()
 				forms = []
 
-		print len(forms)
 		self.register(forms)
 
 		# generate input for the forms and submit them
