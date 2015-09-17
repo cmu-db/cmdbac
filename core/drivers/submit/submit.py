@@ -2,6 +2,8 @@
 
 import os
 import mechanize
+import re
+from urlparse import urlparse
 
 def get_form_index(br, form):
 	index = 0
@@ -11,7 +13,7 @@ def get_form_index(br, form):
 		index = index + 1
 	return index
 
-def submit(form, inputs):
+def submit_form(form, inputs):
 	br = mechanize.Browser()
 	br.open(form['url'])
 
@@ -45,27 +47,47 @@ def get_register_form(forms):
 			return form
 	return None
 
-def register(forms):
-	register_form = get_register_form(forms)
-	if register_form == None:
-		return None
-
+def fill_form(form, matched_patterns = {}):
 	inputs = {}
-	for input in register_form['inputs']:
-		for pattern, value in patterns.values():
+	for input in form['inputs']:
+		for pattern_name in patterns:
+			pattern, value = patterns[pattern_name]
 			if match_any_pattern(input['name'], pattern):
 				inputs[input['name']] = value[0]
+				matched_patterns[pattern_name] = value[0]
 				break
-	print inputs
 
-	submit(register_form, inputs)
+	submit_form(form, inputs)
 
+	return matched_patterns
+
+def verify_email(form, matched_patterns):
 	email_file = None
 	for log_file in os.listdir('/tmp/crawler'):
 		if log_file.endswith('.log'):
 			email_file = log_file
 			break
 	if not email_file:
+		return
+
+	email_content = open(os.path.join('/tmp/crawler', email_file)).read()
+	verify_url = re.search('http://.+', email_content)
+	if not verify_url:
+		return
+	verify_url = urlparse(verify_url.group(0))._replace(netloc = urlparse(form['url']).netloc)
+	verify_url = verify_url.geturl()
+	
+
+
+
+def register(forms):
+	register_form = get_register_form(forms)
+	if register_form == None:
 		return None
 
-	print open(os.path.join('/tmp/crawler', email_file)).read()
+	matched_patterns = fill_form(register_form)
+	
+	if 'email' in matched_patterns:
+		matched_patterns = verify_email(register_form, matched_patterns)
+
+	return matched_patterns
