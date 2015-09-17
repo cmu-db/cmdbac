@@ -20,12 +20,16 @@ def submit_form(form, inputs):
 	br = mechanize.Browser()
 	br.open(form['url'])
 
-	br.select_form(nr=get_form_index(br, form))
+	try:
+		br.select_form(nr=get_form_index(br, form))
+	except:
+		return
+	print form
 	for input in form['inputs']:
 		if input['name'] in inputs:
 			br[input['name']] = inputs[input['name']]
-	response = br.submit()
-	print response
+	response = br.submit().read()
+	return response
 
 def match_any_pattern(name, patterns):
 	return any(pattern in name.lower() for pattern in patterns)
@@ -80,9 +84,12 @@ def verify_email(form, matched_patterns):
 	verify_url = urlparse(verify_url.group(0))._replace(netloc = urlparse(form['url']).netloc)
 	verify_url = verify_url.geturl()
 	
-	verify_form = extract.extract_form(verify_url)
-	print verify_form
-	#matched_patterns = fill_form(verify_form, matched_patterns)
+	verify_forms = extract.extract_forms(verify_url)
+	print verify_url
+	for verify_form in verify_forms:
+		verify_form['url'] = verify_url
+		print verify_form
+		matched_patterns = fill_form(verify_form, matched_patterns)
 
 	return matched_patterns
 
@@ -97,4 +104,5 @@ def register(forms):
 	if 'email' in matched_patterns:
 		matched_patterns = verify_email(register_form, matched_patterns)
 
+	print matched_patterns
 	return matched_patterns

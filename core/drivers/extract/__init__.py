@@ -1,1 +1,1 @@
-from extract import extract_form, extract_all_forms
+from extract import extract_forms, extract_all_forms

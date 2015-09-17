@@ -5,11 +5,11 @@ import utils
 import json
 import traceback
 
-def extract_form(url):
+def extract_forms(url):
 	utils.remove_file(os.path.join(os.path.dirname(__file__), 'form.json'))
 	out = utils.run_command('{} && {}'.format(
 		utils.cd(os.path.join(os.path.dirname(__file__))),
-		'scrapy crawl form -o form.json -a start_url="{}" follow=false'.format(url)))
+		'scrapy crawl form -o form.json -a start_url="{}" -a follow=false'.format(url)))
 		
 	with open(os.path.join(os.path.dirname(__file__), 'form.json')) as json_forms:
 		try:
