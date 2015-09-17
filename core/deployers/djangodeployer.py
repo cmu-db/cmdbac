@@ -7,13 +7,10 @@ import time
 import importlib
 import traceback
 import MySQLdb
-import urlparse
 
 from basedeployer import BaseDeployer
 from crawler.models import *
 import utils
-
-from multiprocessing import Pool
 
 ## =====================================================================
 ## LOGGING CONFIGURATION

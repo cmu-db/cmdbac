@@ -3,21 +3,7 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 
-import datetime
-import time
-import pkgutil
 import traceback
-import urllib2
-import shutil
-import logging
-import re
-import io
-import json
-import socket
-
-from os.path import join
-from string import Template
-from itertools import chain
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 import django
@@ -28,9 +14,6 @@ from deployers import *
 import utils
 
 def test():
-    logger = logging.getLogger('basic_logger')
-    logger.setLevel(logging.DEBUG)
-
     vagrant_clear()
     vagrant_setup()
         

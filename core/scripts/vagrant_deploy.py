@@ -7,14 +7,12 @@ import utils
 utils.pip_clear()
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
-
 import django
 django.setup()
 
 from crawler.models import *
 from deployers import *
 from drivers import *
-from utils import *
 
 def main():
 	if len(sys.argv) != 3:

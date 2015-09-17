@@ -9,6 +9,7 @@ django.setup()
 
 import traceback
 import json
+
 import crawlers
 from crawler.models import *
 import utils

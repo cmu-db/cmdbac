@@ -2,14 +2,12 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
 import time
-import json
 import re
 import urllib
 import urllib2
 import logging
 import urlparse
 import requests
-
 from string import Template
 from bs4 import BeautifulSoup
 from datetime import datetime

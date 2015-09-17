@@ -1,11 +1,9 @@
-import urllib2
+import os
 from string import Template
 import json
 import time
-import shutil
 import traceback
 import requests
-import os
 
 from run import run_command
 

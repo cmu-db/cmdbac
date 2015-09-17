@@ -1,8 +1,3 @@
-# this file is take from stackoverflow
-# http://stackoverflow.com/questions/1191374/subprocess-with-timeout
-
-from os import kill
-from signal import alarm, signal, SIGALRM, SIGKILL
 from subprocess import PIPE, Popen
 from multiprocessing import Pool
 
@@ -11,7 +6,7 @@ def get_process_children(pid):
     stdout, stderr = p.communicate()
     return [int(p) for p in stdout.split()]
 
-def run(args, cwd = None, shell = True, kill_tree = True, timeout = -1, env = None):
+def run(args, cwd = None, shell = True, timeout = -1, env = None):
     '''
     Run a command
     '''
