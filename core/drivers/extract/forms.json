@@ -1,0 +1,4 @@
+[{"action": "/contact/", "url": "http://127.0.0.1:8100/contact/", "inputs": [{"type": "text", "id": "id_subject", "name": "subject"}, {"type": "text", "id": "id_name", "name": "name"}, {"type": "email", "id": "id_email", "name": "email"}, {"type": "text", "id": "id_content", "name": "content"}]},
+{"action": "/accounts/login/", "url": "http://127.0.0.1:8100/accounts/login/?next=%2F", "inputs": [{"type": "text", "id": "id_username", "name": "username"}, {"type": "password", "id": "id_password", "name": "password"}]},
+{"action": "/accounts/register/", "url": "http://127.0.0.1:8100/accounts/register/", "inputs": [{"type": "email", "id": "id_email", "name": "email"}, {"type": "text", "id": "id_content", "name": "content"}, {"type": "text", "id": "id_username", "name": "username"}, {"type": "text", "id": "id_first_name", "name": "first_name"}]},
+{"action": "/search/", "url": "http://127.0.0.1:8100/", "inputs": [{"type": "text", "id": "id_q", "name": "q"}]}]

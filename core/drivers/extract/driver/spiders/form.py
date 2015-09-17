@@ -8,18 +8,20 @@ from driver.items import InputItem, FormItem
 
 class FormSpider(CrawlSpider):
     name = "form"
-    allowed_domains = ["127.0.0.1"]
-    # start_urls = ["https://www.hackerrank.com/login"]
-
-    rules = (
-    	Rule (SgmlLinkExtractor(allow=('')), callback='parse_form', follow=True),
-    )
+    allowed_domains = ["127.0.0.1"]    
 
     def __init__(self, *args, **kwargs): 
-      super(FormSpider, self).__init__(*args, **kwargs)
+        super(FormSpider, self).__init__(*args, **kwargs)
 
-      self.start_urls = [kwargs.get('start_url')]  
+        self.start_urls = [kwargs.get('start_url')]
+        
+        follow = True if kwargs.get('follow') == 'true' else False
+        self.rules = (
+            Rule (SgmlLinkExtractor(allow=('')), callback='parse_form', follow=follow),
+        )
+        super(FormSpider, self)._compile_rules()
 
+ 
     def parse_form(self, response):
         for sel in response.xpath('//form'):
             formItem = FormItem()

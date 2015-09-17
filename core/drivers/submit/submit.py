@@ -81,7 +81,8 @@ def verify_email(form, matched_patterns):
 	verify_url = verify_url.geturl()
 	
 	verify_form = extract.extract_form(verify_url)
-	matched_patterns = fill_form(verify_form, matched_patterns)
+	print verify_form
+	#matched_patterns = fill_form(verify_form, matched_patterns)
 
 	return matched_patterns
 
