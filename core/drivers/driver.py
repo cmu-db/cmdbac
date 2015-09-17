@@ -6,6 +6,7 @@ import json
 import traceback
 
 import utils
+import extract
 import submit
 
 ## =====================================================================
@@ -20,33 +21,13 @@ class Driver(object):
 	def __init__(self):
 		pass
 
-	def register(self, forms):
-		submit.register(forms)
-
 	def drive(self, deployer):
 		# get main page
-		main_page = deployer.get_main_page()
+		main_url = deployer.get_main_url()
 		
-		# recursively crawl all pages and extract the forms
-		utils.remove_file(os.path.join(os.path.dirname(__file__), 'extract', 'forms.json'))
-		out = utils.run_command('{} && {}'.format(
-			utils.cd(os.path.join(os.path.dirname(__file__), 'extract')),
-			'scrapy crawl form -o forms.json -a start_url="{}"'.format(main_page)))
-		
-		with open(os.path.join(os.path.dirname(__file__), 'extract', 'forms.json')) as json_forms:
-			try:
-				forms = json.load(json_forms)
-			except:
-				print traceback.print_exc()
-				forms = []
+		# extract all the forms
+		forms = extract.extract_all_forms(main_url)
 
-		self.register(forms)
-
-		# generate input for the forms and submit them
-		#for form in forms:
-		#	submit.submit(form)
-
-		out = utils.run_command('cd {} && {}'.format(
-			os.path.join(os.path.dirname(__file__), 'extract'), 
-			'rm -f forms.json'))
+		# register the user
+		submit.register(forms)
 		

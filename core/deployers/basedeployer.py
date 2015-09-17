@@ -1,19 +1,12 @@
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
-import time
-import json
-import re
 import logging
 import socket
-import pkgutil
 import traceback
-import urllib2
-import shutil
 import urlparse
 from StringIO import StringIO
 from string import Template
-from bs4 import BeautifulSoup
 from datetime import datetime
 import MySQLdb
 
@@ -90,7 +83,7 @@ class BaseDeployer(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
 
-    def get_main_page(self):
+    def get_main_url(self):
         urls = self.get_urls()
         for url in urls:
             if not url.startswith('admin/'):

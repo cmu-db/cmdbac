@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
-import os
 import mechanize
 import re
 from urlparse import urlparse
+
+import extract
 
 def get_form_index(br, form):
 	index = 0
@@ -77,7 +80,10 @@ def verify_email(form, matched_patterns):
 	verify_url = urlparse(verify_url.group(0))._replace(netloc = urlparse(form['url']).netloc)
 	verify_url = verify_url.geturl()
 	
+	verify_form = extract.extract_form(verify_url)
+	matched_patterns = fill_form(verify_form, matched_patterns)
 
+	return matched_patterns
 
 
 def register(forms):
