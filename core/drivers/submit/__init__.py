@@ -1,1 +1,2 @@
-from submit import *
+from register import register
+from login import login
