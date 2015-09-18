@@ -25,7 +25,6 @@ def extract_all_forms(url):
 	out = utils.run_command('{} && {}'.format(
 		utils.cd(os.path.join(os.path.dirname(__file__))),
 		'scrapy crawl form -o forms.json -a start_url="{}" -a follow=true'.format(url)))
-	print out
 		
 	with open(os.path.join(os.path.dirname(__file__), 'forms.json')) as json_forms:
 		try:

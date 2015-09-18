@@ -27,6 +27,16 @@ class Driver(object):
 		# extract all the forms
 		forms = extract.extract_all_forms(main_url)
 
-		# register the user
-		submit.register(forms)
+		# register
+		info = submit.register(forms)
+		if info == None:
+			pass
+		else:
+			print 'Register Successfully ...'
 		
+		# login
+		response = submit.login(forms, info)
+		if response == None:
+			pass
+		else:
+			print 'Login Successfully ...'

@@ -35,10 +35,16 @@ def fill_form(form, matched_patterns = {}):
 		for pattern_name in patterns:
 			pattern, value = patterns[pattern_name]
 			if match_any_pattern(input['name'], pattern):
-				inputs[input['name']] = value[0]
-				matched_patterns[pattern_name] = value[0]
+				if pattern_name in matched_patterns:
+					inputs[input['name']] = matched_patterns[pattern_name]
+				else:
+					inputs[input['name']] = value[0]
+					matched_patterns[pattern_name] = value[0]
 				break
 
-	submit_form(form, inputs)
+	try:
+		response = submit_form(form, inputs)
+	except:
+		return None, None
 
-	return matched_patterns
+	return matched_patterns, response

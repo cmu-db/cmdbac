@@ -34,7 +34,7 @@ def verify_email(form, matched_patterns):
 	verify_forms = extract.extract_forms(verify_url)
 	for verify_form in verify_forms:
 		verify_form['url'] = verify_url
-		matched_patterns = fill_form(verify_form, matched_patterns)
+		matched_patterns, response = fill_form(verify_form, matched_patterns)
 
 	return matched_patterns
 
@@ -44,10 +44,11 @@ def register(forms):
 	if register_form == None:
 		return None
 
-	matched_patterns = fill_form(register_form)
+	matched_patterns, response = fill_form(register_form)
+	if matched_patterns == None:
+		return None
 	
 	if 'email' in matched_patterns:
 		matched_patterns = verify_email(register_form, matched_patterns)
 
-	print matched_patterns
 	return matched_patterns
