@@ -7,6 +7,7 @@ Repositories &raquo; Database Application Crawler
 
 {% block main %}
 {% include "status_codes.html" %}
+{% include "add_module.html" %}
 {% include "add_repository.html" %}
 
 {% if messages %}
@@ -36,15 +37,22 @@ Repositories &raquo; Database Application Crawler
 
     <div style="float:left">
         <b>Name:</b>
-    <input type="Search" placeholder='Search by full name' value='{{ search }}' class="form-control" name='search'/>
-    <div style="margin: 20px">
-    <input class="btn btn-primary btn-lg" type="submit" value="Filter"/>
-    </div>
+        <input type="Search" placeholder='Search by full name' value='{{ search }}' class="form-control" name='search'/>
+        <div style="margin: 20px">
+            <input class="btn btn-primary btn-lg" type="submit" value="Filter"/>
+        </div>
     </div>
 </form>
 
-<a class="btn btn-primary btn-lg" style="float:right" href="#" data-toggle="modal" data-target="#addRepositoryModal">Add Repository</a>
+<div style="float:right">
+    <div style="margin: 20px">
+        <a class="btn btn-primary btn-lg" style="" href="#" data-toggle="modal" data-target="#addModuleModal">Add Module</a>
+    </div>
 
+    <div style="margin: 20px">
+        <a class="btn btn-primary btn-lg" style="" href="#" data-toggle="modal" data-target="#addRepositoryModal">Add Repository</a>
+    </div>
+</div>
 
 <div class="table-responsive" style="clear:both;">
     <table class="table table-striped">
@@ -92,7 +100,7 @@ Repositories &raquo; Database Application Crawler
                                     <label for="deploy{{repository.id}}" class="btn">
                                         <i class="glyphicon glyphicon-circle-arrow-down" title="deploy"></i>
                                     </label>
-                                    <input id="deploy{{repository.id}}" name="deploy{{repository.id}}" class="hidden" type="submit"/> 
+                                    <input id="deploy{{repository.id}}" class="hidden" type="submit"/> 
                                 </form>
                                 </div>
 
@@ -102,7 +110,7 @@ Repositories &raquo; Database Application Crawler
                                     <label for="delete{{repository.id}}" class="btn">
                                         <i class="glyphicon glyphicon-trash" title="delete"></i>
                                     </label>
-                                    <input id="delete{{repository.id}}" name="delete{{repository.id}}" class="hidden" type="submit"/> 
+                                    <input id="delete{{repository.id}}" class="hidden" type="submit"/> 
                                 </form>
                             </div>
                         </div>

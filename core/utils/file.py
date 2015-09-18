@@ -1,5 +1,6 @@
 import os
 import shutil
+import re
 
 from run import run_command
 
@@ -8,6 +9,16 @@ def search_file(directory_name, file_name):
     for root, dirs, files in os.walk(directory_name):
         for file in files:
             if file == file_name:
+                path = os.path.join(root, file)
+                if not os.path.islink(path):
+                    result.append(path)
+    return result
+
+def search_file_regex(directory_name, file_name_pattern):
+    result = []
+    for root, dirs, files in os.walk(directory_name):
+        for file in files:
+            if re.search(file_name_pattern, file):
                 path = os.path.join(root, file)
                 if not os.path.islink(path):
                     result.append(path)

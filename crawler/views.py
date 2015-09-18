@@ -55,11 +55,27 @@ def repositories(request):
 
     # repositories = Repository.objects.filter(valid_project=True)
 
-    if request.GET.__contains__('add') and request.GET.__contains__('type'):
-        repo_name = request.GET['add']
+    if request.GET.__contains__('module') and request.GET.__contains__('package') and request.GET.__contains__('type') and request.GET.__contains__('version'):
+        module_name = request.GET['module']
+        package_name = request.GET['package']
+        package_type = request.GET['type']
+        package_version = request.GET['version']
+        print 'add ' + package_type + ' module : ' + module_name
+        project_type_map = {'django': 1, 'ror': 2}
+        try:    
+            utils.add_module(module_name, package_name, project_type_map[package_type], package_version)
+            messages.success(request, 'Successfully added new module {}'.format(module_name))
+        except:
+            print traceback.print_exc()
+            messages.error(request, 'Failed to add new module {}'.format(repo_name))
+        finally:
+            return redirect('repositories')
+
+    if request.GET.__contains__('repo') and request.GET.__contains__('type'):
+        repo_name = request.GET['repo']
         repo_type = request.GET['type']
         repo_setup_scripts = request.GET['scripts']
-        print 'add ' + repo_type + ': ' + repo_name
+        print 'add ' + repo_type + ' repository : ' + repo_name
         project_type_map = {'django': 1, 'ror': 2}
         try:    
             utils.add_repo(repo_name, project_type_map[repo_type], repo_setup_scripts)

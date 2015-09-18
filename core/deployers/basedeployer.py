@@ -35,9 +35,9 @@ class BaseDeployer(object):
     def __init__(self, repo, database):
         self.repo = repo
         self.database = database
-        self.installed_requirements = [ ]
-        self.packages_from_file = [ ]
-        self.packages_from_database = [ ]
+        self.installed_requirements = []
+        self.packages_from_file = []
+        self.packages_from_database = []
         self.requirement_files = None
         
         # Create a buffer so that we can capture all log commands 

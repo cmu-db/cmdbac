@@ -1,4 +1,4 @@
-<div class="modal fade" id="addRepositoryModal">
+<div class="modal fade" id="addModuleModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -8,17 +8,21 @@
             <div class="modal-body">
                 <form action="{% url 'repositories' %}" method="get" role="form">
                     <div class="form-group">
-                        <label for="repo">URL:</label>
-                        <input type="text" class="form-control" name="repo">
+                        <label for="module">Module Name:</label>
+                        <input type="text" class="form-control" name="module">
                     </div>
                     <div class="form-group">
-                        <label for="type">Type:</label><br/> 
+                        <label for="package">Package Name:</label>
+                        <input type="text" class="form-control" name="package">
+                    </div>
+                    <div class="form-group">
+                        <label for="type">Type:</label><br/>    
                         <label class="radio-inline"><input type="radio" name="type" value="django">Django</label>
                         <label class="radio-inline"><input type="radio" name="type" value="ror">Ruby on Rails</label>
                     </div>
                     <div class="form-group">
-                        <label for="scripts">Scripts:</label>
-                        <textarea class="form-control" rows="10" id="scripts" name="scripts"></textarea>
+                        <label for="version">Version:</label>
+                        <input type="text" class="form-control" name="version">
                     </div>
                     <div class="form-group">
                         <div style="margin: 10px; text-align: center;">

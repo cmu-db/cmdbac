@@ -195,7 +195,8 @@ class DjangoDeployer(BaseDeployer):
                 match = re.search('(?<=No module named )\S+', line)
                 if match:
                     missing_module_name = match.group(0)
-                    LOG.info('Missing module: ' + missing_module_name) 
+                    LOG.info('Missing module: ' + missing_module_name)
+                    
                     if missing_module_name == last_missing_module_name:
                         index = index + 1
                         if index == len(candidate_packages):
@@ -244,18 +245,24 @@ class DjangoDeployer(BaseDeployer):
                 return ATTEMPT_STATUS_NOT_AN_APPLICATION
 
         setting_files = utils.search_file(deploy_path, 'settings.py')
-        # LOG.info('settings.py: {}'.format(setting_files))
+        
         if not setting_files:
             for candidate_setting_files in utils.search_file(deploy_path, 'settings_example.py'):
                 utils.copy_file(candidate_setting_files, os.path.join(os.path.dirname(candidate_setting_files), "settings.py"))
                 break
             setting_files = utils.search_file(deploy_path, 'settings.py')
+        
+        if not setting_files:
+            for candidate_setting_files in utils.search_file_regex(deploy_path, '^settings.*\.py$'):
+                utils.copy_file(candidate_setting_files, os.path.join(os.path.dirname(candidate_setting_files), "settings.py"))
+                break
+            setting_files = utils.search_file(deploy_path, 'settings.py')
+        
         if not setting_files:
             return ATTEMPT_STATUS_NOT_AN_APPLICATION
 
-        if not setting_files:
-            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
-                
+        LOG.info('settings.py: {}'.format(setting_files))
+
         manage_files = utils.search_file(deploy_path, 'manage.py')
         # LOG.info('manage.py: {}'.format(manage_files))
         if not manage_files:
@@ -267,15 +274,8 @@ class DjangoDeployer(BaseDeployer):
         self.requirement_files = requirement_files
         
         manage_paths = [os.path.dirname(manage_file) for manage_file in manage_files]
-        # LOG.info('Manage path: {}'.format(manage_paths))
-        setting_paths = [os.path.dirname(os.path.dirname(setting_file)) for setting_file in setting_files]
-        # LOG.info('Setting path: {}'.format(setting_paths))
-        base_dirs = set.intersection(set(manage_paths), set(setting_paths))
-        if not base_dirs:
-            LOG.error('Can not find base directory!')
-            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
-        base_dir = next(iter(base_dirs))
-        LOG.info('Base directory: ' + base_dir)
+        
+        base_dir = next(name for name in manage_paths)
         
         manage_path = next(name for name in manage_paths if name.startswith(base_dir))
         setting_file = next(name for name in setting_files if name.startswith(base_dir))
