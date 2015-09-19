@@ -24,7 +24,7 @@ def pip_rm_build():
     command = 'sudo rm -rf {}'.format(home_path('pip/build'))
     return run_command(command)
 
-def pip_install(names, is_file):
+def pip_install(names, is_file, has_version = True):
     command = 'pip '
     
     proxy = os.environ.get('http_proxy')
@@ -36,7 +36,23 @@ def pip_install(names, is_file):
         command = '{} -r {}'.format(command, filename)
     else:
         for name in names:
-            command = '{} {}=={} '.format(command, name.name, name.version)
+            if has_version:
+                command = '{} {}=={} '.format(command, name.name, name.version)
+            else:
+                command = '{} {} --upgrade'.format(command, name.name)
+    out = run_command(command)
+
+    pip_rm_build()
+    return out
+
+def pip_install_text(name):
+    command = 'pip '
+    
+    proxy = os.environ.get('http_proxy')
+    if proxy:
+        command = '{} --proxy {} '.format(command, proxy)
+    command = '{} install --user --build {}'.format(command, home_path("pip/build"))
+    command = '{} {} '.format(command, name)
     out = run_command(command)
 
     pip_rm_build()

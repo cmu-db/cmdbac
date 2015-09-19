@@ -30,13 +30,12 @@ class Driver(object):
 		# register
 		info = submit.register(forms)
 		if info == None:
-			pass
+			print 'Fail to register ...'
 		else:
 			print 'Register Successfully ...'
-		
-		# login
-		response = submit.login(forms, info)
-		if response == None:
-			pass
-		else:
-			print 'Login Successfully ...'
+			# login
+			response = submit.login(forms, info)
+			if response == None:
+				print 'Fail to register ...'
+			else:
+				print 'Login Successfully ...'

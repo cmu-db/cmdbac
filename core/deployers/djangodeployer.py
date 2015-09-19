@@ -182,47 +182,76 @@ class DjangoDeployer(BaseDeployer):
         ## FOR
         LOG.info('Installed requirements: {}'.format(self.installed_requirements))
 
-        threshold = 10
+        threshold = 100
         last_missing_module_name = ''
         index = 0
+        dependencies = []
         for tmp in range(threshold):
-            out = self.sync_server(deploy_path)
-            if out[0] != 0:
-                LOG.info(out)
-            out = out[2].strip().splitlines()
-            if out and out[-1].strip().startswith('ImportError'):
-                line = out[-1].strip()
+            output = self.sync_server(deploy_path)
+            if output[0] != 0:
+                LOG.info(output)
+            else:
+                LOG.info(output)
+                break
+            split_output = output[2].strip().splitlines()
+            if split_output and split_output[-1].strip().startswith('ImportError'):
+                line = split_output[-1].strip()
                 match = re.search('(?<=No module named )\S+', line)
                 if match:
                     missing_module_name = match.group(0)
                     LOG.info('Missing module: ' + missing_module_name)
-                    
                     if missing_module_name == last_missing_module_name:
+                        missing_module_name, candidate_packages, index = dependencies[-1]
                         index = index + 1
-                        if index == len(candidate_packages):
-                            LOG.info('No more possible packages!')
+                        if index < len(candidate_packages):
+                            dependencies[-1] = (missing_module_name, candidate_packages, index)
+                            pip_output = utils.pip_install([candidate_packages[index]], False)
+                            # LOG.info('pip install output: {}'.format(pip_output))
+                        elif index == len(candidate_packages):
+                            output = utils.pip_install([candidate_packages[index - 1]], False, False)
+                            # LOG.info('pip install output: {}'.format(output))    
+                        else:
+                            # LOG.info('No more possible packages!')
                             return ATTEMPT_STATUS_MISSING_DEPENDENCIES
-                        out = utils.pip_install([candidate_packages[index]], False)
-                        LOG.info('pip install output: {}'.format(out))
                     else:
-                        if last_missing_module_name != '':
-                            self.packages_from_database.append(candidate_packages[index])
+                        #if last_missing_module_name != '':
+                        #    self.packages_from_database.append(candidate_packages[index])
                         candidate_package_ids = Module.objects.filter(name=missing_module_name).values_list('package_id', flat=True)
                         if not candidate_package_ids:
                             LOG.info('No possible packages!')
                             return ATTEMPT_STATUS_MISSING_DEPENDENCIES
                         last_missing_module_name = missing_module_name
                         candidate_packages = Package.objects.filter(id__in=candidate_package_ids).order_by('-count', 'name', '-version')
-                        LOG.info('Candidate packages: {}'.format(candidate_packages))
+                        # LOG.info('Candidate packages: {}'.format(candidate_packages))
+                        dependencies.append((missing_module_name, candidate_packages, 0))
                         index = 0
-                        out = utils.pip_install([candidate_packages[0]], False)
-                        LOG.info('pip install output: {}'.format(out))
+                        pip_output = utils.pip_install([candidate_packages[0]], False)
+                        # LOG.info('pip install output: {}'.format(pip_output))
+                else:
+                        matched_candidate_packages = None
+                        matched_index = None
+                        for dependency_index in range(len(dependencies)):
+                            missing_module_name, candidate_packages, index = dependencies[dependency_index]
+                            if missing_module_name in output[2].strip():
+                                index = index + 1
+                                if index < len(candidate_packages):
+                                    dependencies[dependency_index] = (missing_module_name, candidate_packages, index)
+                                    output = utils.pip_install([candidate_packages[index]], False)
+                                    # LOG.info('pip install output: {}'.format(output))
+                                elif index == len(candidate_packages):
+                                    output = utils.pip_install([candidate_packages[index - 1]], False, False)
+                                    # LOG.info('pip install output: {}'.format(output))
+                                else:
+                                    LOG.info('No more possible packages!')
+                                    return ATTEMPT_STATUS_MISSING_DEPENDENCIES
+            else:
+                match2 = re.search('pip install ([a-zA-Z\-_]+)', output[2].strip())
+                if match2:
+                    package_name = match2.group(1)
+                    output = utils.pip_install_text(package_name)
+                    # LOG.info('pip install output: {}'.format(output))
                 else:
                     return ATTEMPT_STATUS_MISSING_DEPENDENCIES
-            else:
-                if last_missing_module_name != '':
-                    self.packages_from_database.append(candidate_packages[index])
-                break
         ## FOR
         
         print self.create_superuser(deploy_path)
