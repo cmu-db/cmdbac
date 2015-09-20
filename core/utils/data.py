@@ -41,7 +41,7 @@ def add_repo(repo_name, crawler_status_id, repo_setup_scripts):
         try:
             crawler.add_repository(repo_name, repo_setup_scripts)
         except Exception, e:
-            print traceback.print_exc()
+            # print traceback.print_exc()
             raise e
 
 def deploy_repo(repo_name):
@@ -55,7 +55,7 @@ def deploy_repo(repo_name):
         try:
             result = utils.vagrant_deploy(repo, database.name)
         except Exception, e:
-            print traceback.print_exc()
+            # print traceback.print_exc()
             raise e
         finally:
             utils.vagrant_clear()
@@ -67,5 +67,5 @@ def delete_repo(repo_name):
         try:
             repo.delete()
         except Exception, e:
-            print traceback.print_exc()
+            # print traceback.print_exc()
             raise e

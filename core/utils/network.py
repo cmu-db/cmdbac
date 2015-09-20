@@ -33,7 +33,7 @@ def get_latest_sha(repo):
     try:
         response = query(url)
     except:
-        print traceback.print_exc()
+        # print traceback.print_exc()
         return
     data = response.json()
     time.sleep(1) 

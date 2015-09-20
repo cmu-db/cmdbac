@@ -64,7 +64,8 @@ class BaseDeployer(object):
             cur.close()
             conn.close()
         except:
-            print traceback.print_exc()
+            # print traceback.print_exc()
+            pass
     ## DEF
 
     def extract_database_info(self):
@@ -155,7 +156,7 @@ class BaseDeployer(object):
         try:
             attempt.sha = utils.get_latest_sha(self.repo)
         except:
-            print traceback.print_exc()
+            # print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return -1
 
@@ -163,7 +164,7 @@ class BaseDeployer(object):
         try:
             utils.download_repo(attempt, BaseDeployer.TMP_ZIP)
         except:
-            print traceback.print_exc()
+            # print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return -1
         
@@ -171,7 +172,7 @@ class BaseDeployer(object):
             utils.remake_dir(BaseDeployer.TMP_DEPLOY_PATH)
             utils.unzip(BaseDeployer.TMP_ZIP, BaseDeployer.TMP_DEPLOY_PATH)
         except:
-            print traceback.print_exc()
+            # print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return -1
 
@@ -181,7 +182,7 @@ class BaseDeployer(object):
             attemptStatus = self.deploy_repo_attempt(attempt, BaseDeployer.TMP_DEPLOY_PATH)
         except:
             print traceback.print_exc()
-            self.save_attempt(attempt, ATTEMPT_STATUS_RUNNING_ERROR)
+            # self.save_attempt(attempt, ATTEMPT_STATUS_RUNNING_ERROR)
             return -1
         if attemptStatus != ATTEMPT_STATUS_SUCCESS:
             self.save_attempt(attempt, attemptStatus)

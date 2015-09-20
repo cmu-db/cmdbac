@@ -73,7 +73,8 @@ class RoRDeployer(BaseDeployer):
             cur.close()
             conn.close()
         except:
-            print traceback.print_exc()
+            # print traceback.print_exc()
+            pass
     ## DEF
     
     def configure_settings(self):

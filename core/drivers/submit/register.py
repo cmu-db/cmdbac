@@ -40,7 +40,6 @@ def verify_email(form, matched_patterns):
 
 
 def register(forms):
-	print forms
 	register_form = get_register_form(forms)
 	if register_form == None:
 		return None

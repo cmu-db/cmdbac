@@ -1,10 +1,6 @@
-# 09/02
-kremerben/ru_blog_analytics
-richil-bhalerao/yelp239
-mjm698/Stash
-ishalTaj/demo
-marcosomma/django-send-email
-rocketu_blog_analytics
+# Example Applications
+EdisonResearch/weblate
+EdisonResearch/Simple-Q-A-App-using-Python-Django
 Dayana-Marinova/Cinema-Reservation-System
 mmlunde/applikasjonen
 kylemboos/kbsite-u

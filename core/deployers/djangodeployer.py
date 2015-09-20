@@ -80,7 +80,8 @@ class DjangoDeployer(BaseDeployer):
             cur.close()
             conn.close()
         except:
-            print traceback.print_exc()
+            # print traceback.print_exc()
+            pass
     ## DEF
     
     def configure_settings(self):
@@ -177,8 +178,12 @@ class DjangoDeployer(BaseDeployer):
         packages = self.install_requirements(requirement_files)
         for package in packages:
             name, version = package.split('==')
-            pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
-            self.installed_requirements.append(pkg)
+            try:
+                pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
+                self.installed_requirements.append(pkg)
+            except:
+                # print traceback.print_exc()
+                pass
         ## FOR
         LOG.info('Installed requirements: {}'.format(self.installed_requirements))
 
