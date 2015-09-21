@@ -50,4 +50,4 @@ def register(forms):
 	if 'email' in matched_patterns:
 		matched_patterns = verify_email(register_form, matched_patterns)
 
-	return matched_patterns
+	return register_form, matched_patterns

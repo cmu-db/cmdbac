@@ -29,20 +29,19 @@ class Driver(object):
 		forms = extract.extract_all_forms(main_url)
 
 		# register
-		info = submit.register(forms)
+		register_form, info = submit.register(forms)
 		if info == None:
 			print 'Fail to register ...'
 			return
 		print 'Register Successfully ...'
 			
 		# login
-		response, br = submit.login(forms, info)
-		if response == None:
+		login_form, br = submit.login(forms, info)
+		if login_form == None:
 			print 'Fail to register ...'
 			return
 
 		print 'Login Successfully ...'
-		print br._ua_handlers['_cookies'].cookiejar
-		# response = requests.post("http://127.0.0.1:8000/user/login")
 		forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar)
+		forms = filter(lambda form: form != register_form and form != login_form, forms)
 		print forms

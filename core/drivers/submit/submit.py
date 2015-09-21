@@ -33,7 +33,13 @@ def submit_form(form, inputs):
 	for input in form['inputs']:
 		if input['name'] in inputs:
 			br[input['name']] = inputs[input['name']]
-	response = br.submit().read()
+
+	try:
+		response = br.submit().read()
+	except:
+		print traceback.print_exc()
+		return None, None
+
 	return response, br
 
 def fill_form(form, matched_patterns = {}):

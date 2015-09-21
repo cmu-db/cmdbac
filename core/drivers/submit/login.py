@@ -19,4 +19,6 @@ def login(forms, matched_patterns):
 
 	matched_patterns, response, br = fill_form(login_form, matched_patterns)
 
-	return response, br
+	if response == None:
+		return None, None
+	return login_form, br
