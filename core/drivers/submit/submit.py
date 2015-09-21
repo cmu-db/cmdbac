@@ -2,6 +2,7 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
 import mechanize
+import traceback
 
 from patterns import patterns, match_any_pattern
 import extract
@@ -9,9 +10,15 @@ import extract
 def get_form_index(br, form):
 	index = 0
 	for f in br.forms():
-		if str(f.attrs['action']) == form['action']:
+		if str(f.attrs.get('action', '')) == form['action']:
 			break
 		index = index + 1
+	if index == len(br.forms()):
+		index = 0
+		for f in br.forms():
+			if str(f.attrs.get('actions', '')) == form['action']:
+				break
+			index = index + 1
 	return index
 
 def submit_form(form, inputs):
@@ -21,6 +28,7 @@ def submit_form(form, inputs):
 	try:
 		br.select_form(nr=get_form_index(br, form))
 	except:
+		print traceback.print_exc()
 		return
 
 	for input in form['inputs']:
@@ -43,6 +51,7 @@ def fill_form(form, matched_patterns = {}):
 				break
 
 	try:
+		print inputs
 		response = submit_form(form, inputs)
 	except:
 		return None, None

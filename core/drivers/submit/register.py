@@ -22,12 +22,12 @@ def verify_email(form, matched_patterns):
 			email_file = log_file
 			break
 	if not email_file:
-		return
+		return matched_patterns
 
 	email_content = open(os.path.join('/tmp/crawler', email_file)).read()
 	verify_url = re.search('http://.+', email_content)
 	if not verify_url:
-		return
+		return matched_patterns
 	verify_url = urlparse(verify_url.group(0))._replace(netloc = urlparse(form['url']).netloc)
 	verify_url = verify_url.geturl()
 	
@@ -38,17 +38,19 @@ def verify_email(form, matched_patterns):
 
 	return matched_patterns
 
-
 def register(forms):
 	register_form = get_register_form(forms)
 	if register_form == None:
 		return None
+	print register_form
 
 	matched_patterns, response = fill_form(register_form)
-	if matched_patterns == None:
+	if matched_patterns == None or response == None:
 		return None
 	
 	if 'email' in matched_patterns:
 		matched_patterns = verify_email(register_form, matched_patterns)
+
+	print response
 
 	return matched_patterns

@@ -1,7 +1,6 @@
 # Example Applications
 EdisonResearch/weblate
 EdisonResearch/Simple-Q-A-App-using-Python-Django
-Dayana-Marinova/Cinema-Reservation-System
 mmlunde/applikasjonen
 kylemboos/kbsite-u
 derkcris/ourwebcatalog

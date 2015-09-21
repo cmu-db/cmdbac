@@ -8,7 +8,7 @@ import traceback
 def extract_forms(url):
 	utils.remove_file(os.path.join(os.path.dirname(__file__), 'form.json'))
 	out = utils.run_command('{} && {}'.format(
-		utils.cd(os.path.join(os.path.dirname(__file__))),
+		utils.cd(os.path.dirname(os.path.abspath(__file__))),
 		'scrapy crawl form -o form.json -a start_url="{}" -a follow=false'.format(url)))
 		
 	try:
@@ -23,14 +23,14 @@ def extract_forms(url):
 def extract_all_forms(url):
 	utils.remove_file(os.path.join(os.path.dirname(__file__), 'forms.json'))
 	out = utils.run_command('{} && {}'.format(
-		utils.cd(os.path.join(os.path.dirname(__file__))),
+		utils.cd(os.path.dirname(os.path.abspath(__file__))),
 		'scrapy crawl form -o forms.json -a start_url="{}" -a follow=true'.format(url)))
 	
 	try:
 		with open(os.path.join(os.path.dirname(__file__), 'forms.json')) as json_forms:
 			forms = json.load(json_forms)
 	except:
-		# print traceback.print_exc()
+		print traceback.print_exc()
 		forms = []
 
 	return forms

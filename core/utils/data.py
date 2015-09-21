@@ -45,9 +45,6 @@ def add_repo(repo_name, crawler_status_id, repo_setup_scripts):
             raise e
 
 def deploy_repo(repo_name):
-    utils.vagrant_clear()
-    utils.vagrant_setup()
-
     database = Database.objects.get(name='MySQL')
 
     for repo in Repository.objects.filter(name=repo_name):
@@ -57,8 +54,6 @@ def deploy_repo(repo_name):
         except Exception, e:
             # print traceback.print_exc()
             raise e
-        finally:
-            utils.vagrant_clear()
         print result
         return result
 
