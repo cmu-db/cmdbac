@@ -259,7 +259,7 @@ class DjangoDeployer(BaseDeployer):
                     return ATTEMPT_STATUS_MISSING_DEPENDENCIES
         ## FOR
         
-        print self.create_superuser(deploy_path)
+        self.create_superuser(deploy_path)
 
         result, p = self.run_server(deploy_path)
 

@@ -2,6 +2,7 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
 import mechanize
+import cookielib
 import traceback
 
 from patterns import patterns, match_any_pattern
@@ -12,20 +13,18 @@ def get_form_index(br, form):
 	for f in br.forms():
 		if str(f.attrs.get('action', '')) == form['action']:
 			break
-		index = index + 1
-	if index == len(br.forms()):
-		index = 0
-		for f in br.forms():
-			if str(f.attrs.get('actions', '')) == form['action']:
+		if str(f.attrs.get('actions', '')) == form['action']:
 				break
-			index = index + 1
+		index = index + 1
 	return index
 
 def submit_form(form, inputs):
 	br = mechanize.Browser()
-	br.open(form['url'])
+	cj = cookielib.LWPCookieJar() 
+	br.set_cookiejar(cj)
 
 	try:
+		br.open(form['url'])
 		br.select_form(nr=get_form_index(br, form))
 	except:
 		print traceback.print_exc()
@@ -35,7 +34,7 @@ def submit_form(form, inputs):
 		if input['name'] in inputs:
 			br[input['name']] = inputs[input['name']]
 	response = br.submit().read()
-	return response
+	return response, br
 
 def fill_form(form, matched_patterns = {}):
 	inputs = {}
@@ -51,9 +50,9 @@ def fill_form(form, matched_patterns = {}):
 				break
 
 	try:
-		print inputs
-		response = submit_form(form, inputs)
+		response, br = submit_form(form, inputs)
 	except:
-		return None, None
+		print traceback.print_exc()
+		return None, None, None
 
-	return matched_patterns, response
+	return matched_patterns, response, br

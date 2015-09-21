@@ -3,6 +3,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
 import logging
 import traceback
+import requests
 
 import utils
 import extract
@@ -31,11 +32,17 @@ class Driver(object):
 		info = submit.register(forms)
 		if info == None:
 			print 'Fail to register ...'
-		else:
-			print 'Register Successfully ...'
-			# login
-			response = submit.login(forms, info)
-			if response == None:
-				print 'Fail to register ...'
-			else:
-				print 'Login Successfully ...'
+			return
+		print 'Register Successfully ...'
+			
+		# login
+		response, br = submit.login(forms, info)
+		if response == None:
+			print 'Fail to register ...'
+			return
+
+		print 'Login Successfully ...'
+		print br._ua_handlers['_cookies'].cookiejar
+		# response = requests.post("http://127.0.0.1:8000/user/login")
+		forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar)
+		print forms

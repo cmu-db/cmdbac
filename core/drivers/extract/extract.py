@@ -5,11 +5,18 @@ import utils
 import json
 import traceback
 
-def extract_forms(url):
-	utils.remove_file(os.path.join(os.path.dirname(__file__), 'form.json'))
-	out = utils.run_command('{} && {}'.format(
-		utils.cd(os.path.dirname(os.path.abspath(__file__))),
-		'scrapy crawl form -o form.json -a start_url="{}" -a follow=false'.format(url)))
+def extract_forms(url, follow="false", cookie_jar = None):
+	utils.remove_file(os.path.join(os.path.dirname(__file__), 'results.json'))
+	if cookie_jar == None:
+		out = utils.run_command('{} && {}'.format(
+			utils.cd(os.path.dirname(os.path.abspath(__file__))),
+			'scrapy crawl form -o form.json -a start_url="{}" -a follow={}'.format(url, follow)))
+	else:
+		cookie_jar_path = os.path.join(os.path.abspath(__file__), "cookie_jar.txt")
+		cookie_jar.save(cookie_jar_path)
+		out = utils.run_command('{} && {}'.format(
+			utils.cd(os.path.dirname(os.path.abspath(__file__))),
+			'scrapy crawl form_with_cookie -o form.json -a start_url="{}" -a cookie_jar={}'.format(url, cookie_jar_path)))
 		
 	try:
 		with open(os.path.join(os.path.dirname(__file__), 'form.json')) as json_forms:
@@ -21,16 +28,7 @@ def extract_forms(url):
 	return forms
 
 def extract_all_forms(url):
-	utils.remove_file(os.path.join(os.path.dirname(__file__), 'forms.json'))
-	out = utils.run_command('{} && {}'.format(
-		utils.cd(os.path.dirname(os.path.abspath(__file__))),
-		'scrapy crawl form -o forms.json -a start_url="{}" -a follow=true'.format(url)))
-	
-	try:
-		with open(os.path.join(os.path.dirname(__file__), 'forms.json')) as json_forms:
-			forms = json.load(json_forms)
-	except:
-		print traceback.print_exc()
-		forms = []
+	return extract_forms(url, "true")
 
-	return forms
+def extract_all_forms_with_cookie(url, cookie_jar):
+	return extract_forms(url, "true", cookie_jar)
