@@ -42,6 +42,11 @@ class Driver(object):
 			return
 
 		print 'Login Successfully ...'
+		
 		forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar)
 		forms = filter(lambda form: form != register_form and form != login_form, forms)
-		print forms
+		for form in forms:
+			for i in range(5):
+				submit.fill_form_random(form, br)
+
+		print 'Fill Forms Successfully ...'
