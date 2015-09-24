@@ -30,10 +30,6 @@ def main():
 	if deployer.deploy() != 0:
 		deployer.kill_server()
 		sys.exit(-1)
-	driver = Driver()
-	driver.drive(deployer)
-	raw_input('press any key to continue ...')
-	deployer.kill_server()
 	# deployer.extract_database_info()
 
 if __name__ == "__main__":

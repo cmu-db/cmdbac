@@ -12,6 +12,7 @@ import MySQLdb
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 from crawler.models import *
+from drivers import *
 import utils
 
 ## =====================================================================
@@ -111,13 +112,15 @@ class BaseDeployer(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
 
-    def save_attempt(self, attempt, result):
+    def save_attempt(self, attempt, result, register_result = USER_STATUS_UNKNOWN, login_result = USER_STATUS_UNKNOWN):
         # Stop the log capture
         self.log.removeHandler(self.logHandler)
         self.logHandler.flush()
         self.buffer.flush()
         
         attempt.result = result
+        attempt.login = login_result
+        attempt.register = register_result
         attempt.log = self.buffer.getvalue()
         attempt.stop_time = datetime.now()
         attempt.save()
@@ -189,8 +192,12 @@ class BaseDeployer(object):
             return -1
         
         # self.kill_server()
+
+        driver = Driver()
+        driverResult = driver.drive(self)
+        raw_input('press any key to continue ...')
         
-        self.save_attempt(attempt, attemptStatus)
+        self.save_attempt(attempt, attemptStatus, driverResult['login'], driverResult['register'])
         
         return 0
     ## DEF

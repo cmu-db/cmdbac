@@ -5,6 +5,7 @@ import logging
 import traceback
 import requests
 
+from crawler.models import *
 import utils
 import extract
 import submit
@@ -32,14 +33,14 @@ class Driver(object):
 		register_form, info = submit.register(forms)
 		if info == None:
 			print 'Fail to register ...'
-			return
+			return {'register': USER_STATUS_FAIL, 'login': USER_STATUS_UNKOWN}
 		print 'Register Successfully ...'
 			
 		# login
 		login_form, br = submit.login(forms, info)
 		if login_form == None:
 			print 'Fail to register ...'
-			return
+			return {'register': USER_STATUS_SUCCESS, 'login': USER_STATUS_FAIL}
 
 		print 'Login Successfully ...'
 		
@@ -50,3 +51,5 @@ class Driver(object):
 				submit.fill_form_random(form, br)
 
 		print 'Fill Forms Successfully ...'
+
+		return {'register': USER_STATUS_SUCCESS, 'login': USER_STATUS_SUCCESS, 'forms': forms, 'queries': None}

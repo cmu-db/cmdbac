@@ -32,6 +32,24 @@ for x,y,z in ATTEMPT_STATUS:
 ATTEMPT_STATUS = temp
 globals()['ATTEMPT_STATUS_CODES'] = ATTEMPT_STATUS_CODES
 
+# Login or Regsiter Status
+USER_STATUS = (
+    ('OK', 'Success', 'info'),
+    ('ER', 'Fail', 'danger'),
+    ('NF', 'Not found', 'warning'),
+    ('UN', 'Unknown', 'warning'),
+)
+USER_STATUS_CODES = { }
+USER_STATUS_NAMES = { }
+temp = [ ]
+for x,y,z in USER_STATUS:
+    globals()['USER_STATUS_' + y.replace(" ", "_").upper()] = x
+    USER_STATUS_CODES[x] = z
+    USER_STATUS_NAMES[x] = y
+    temp.append( (x,y) )
+USER_STATUS = temp
+globals()['USER_STATUS_CODES'] = USER_STATUS_CODES
+
 # ----------------------------------------------------------------------------
 
 class ProjectType(models.Model):
@@ -179,6 +197,14 @@ class Attempt(models.Model):
         return ATTEMPT_STATUS_CODES[self.result]
     def resultName(self):
         return ATTEMPT_STATUS_NAMES[self.result]
+    def registerLabel(self):
+        return USER_STATUS_CODES[self.register]
+    def registerName(self):
+        return USER_STATUS_NAMES[self.register]
+    def loginLabel(self):
+        return USER_STATUS_CODES[self.login]
+    def loginName(self):
+        return USER_STATUS_NAMES[self.login]
     def duration(self):
         return (self.stop_time - self.start_time).total_seconds()
     def commit_url(self):
@@ -190,6 +216,12 @@ class Attempt(models.Model):
     result = models.CharField(max_length=2, choices=ATTEMPT_STATUS, default=None, null=True)
     result_label = property(resultLabel)
     result_name = property(resultName)
+    register = models.CharField(max_length=2, choices=USER_STATUS, default=None, null=True)
+    register_label = property(registerLabel)
+    register_name = property(registerName)
+    login = models.CharField(max_length=2, choices=USER_STATUS, default=None, null=True)
+    login_label = property(loginLabel)
+    login_name = property(loginName)
     log = models.TextField(default='')
     dependencies = models.ManyToManyField(Package, through='Dependency')
     hostname = models.CharField(max_length=200)
