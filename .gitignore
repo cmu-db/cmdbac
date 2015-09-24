@@ -5,3 +5,4 @@ log.txt
 *.sqlite3
 *.kate-swp
 *.json
+*.box
