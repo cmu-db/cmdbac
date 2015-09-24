@@ -52,4 +52,5 @@ class Driver(object):
 
 		print 'Fill Forms Successfully ...'
 
-		return {'register': USER_STATUS_SUCCESS, 'login': USER_STATUS_SUCCESS, 'forms': forms, 'queries': None}
+		return {'register': USER_STATUS_SUCCESS, 'login': USER_STATUS_SUCCESS, 
+				'user':info, 'forms': forms, 'queries': None}

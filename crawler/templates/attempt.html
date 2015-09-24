@@ -108,21 +108,21 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
 </div>
 
 <h2 class="sub-header">Driver</h2>
-<div class="col-xs-6">
+<div class="col-xs-12">
     <div class="table-responsive">
         <table class="table table-bordered table-striped">
             <colgroup>
-                <col class="col-xs-2">
-                <col class="col-xs-6">
+                <col class="col-xs-4">
+                <col class="col-xs-8">
             </colgroup>
             <tbody>
                 <tr>
                     <td>Register Result</td>
-                    <td><span class="label label-{{ attempt.result_label }}">{{attempt.result_name}}</span></td>
+                    <td><span class="label label-{{ attempt.result_label }}">{{attempt.login_name}}</span></td>
                 </tr>
                 <tr>
                     <td>Login Result</td>
-                    <td><span class="label label-{{ attempt.result_label }}">{{attempt.result_name}}</span></td>
+                    <td><span class="label label-{{ attempt.result_label }}">{{attempt.login_name}}</span></td>
                 </tr>
             </tbody>
         </table>

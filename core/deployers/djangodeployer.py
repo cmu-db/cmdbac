@@ -219,8 +219,6 @@ class DjangoDeployer(BaseDeployer):
                             # LOG.info('No more possible packages!')
                             return ATTEMPT_STATUS_MISSING_DEPENDENCIES
                     else:
-                        #if last_missing_module_name != '':
-                        #    self.packages_from_database.append(candidate_packages[index])
                         candidate_package_ids = Module.objects.filter(name=missing_module_name).values_list('package_id', flat=True)
                         if not candidate_package_ids:
                             LOG.info('No possible packages!')
@@ -258,6 +256,9 @@ class DjangoDeployer(BaseDeployer):
                 else:
                     return ATTEMPT_STATUS_MISSING_DEPENDENCIES
         ## FOR
+
+        for missing_module_name, candidate_packages, index in dependencies:
+            self.packages_from_database.append(candidate_packages[index])
         
         self.create_superuser(deploy_path)
 
