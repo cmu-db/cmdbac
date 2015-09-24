@@ -243,3 +243,18 @@ class Module(models.Model):
         unique_together = ('name', 'package')
 ## CLASS
 
+class Form(models.Model):
+    action = models.CharField(max_length = 200)
+    url = models.CharField(max_length = 200)
+    attempt = models.ForeignKey('Attempt')
+## CLASS
+
+class Field(models.Model):
+    name = models.CharField(max_length = 200)
+    type = models.CharField(max_length = 200)
+    form = models.ForeignKey('Form')
+## CLASS
+
+class Query(models.Model):
+    content = models.TextField()
+    form = models.ForeignKey('Form')
