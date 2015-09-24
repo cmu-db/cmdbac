@@ -257,8 +257,12 @@ class DjangoDeployer(BaseDeployer):
                     return ATTEMPT_STATUS_MISSING_DEPENDENCIES
         ## FOR
 
+        print dependencies
+        
         for missing_module_name, candidate_packages, index in dependencies:
             self.packages_from_database.append(candidate_packages[index])
+
+        print self.packages_from_database
         
         self.create_superuser(deploy_path)
 

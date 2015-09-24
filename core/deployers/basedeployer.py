@@ -133,6 +133,7 @@ class BaseDeployer(object):
             pkg.save()
         ## FOR
         for pkg in self.packages_from_database:
+            print pkg
             Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_DATABASE)
         ## FOR
 
@@ -195,10 +196,11 @@ class BaseDeployer(object):
 
         driver = Driver()
         driverResult = driver.drive(self)
+
+        self.save_attempt(attempt, attemptStatus, driverResult['register'], driverResult['login'])
+        
         raw_input('press any key to continue ...')
-        
-        self.save_attempt(attempt, attemptStatus, driverResult['login'], driverResult['register'])
-        
+
         return 0
     ## DEF
 

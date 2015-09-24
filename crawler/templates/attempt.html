@@ -130,5 +130,9 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
 </div>
 
 <h2 class="sub-header">Log</h2>
-<pre>{{ attempt.log }}</pre>
+<a href="#" id="attempt-log-show" class="showLink" onclick="showHide('attempt-log');return false;">See more.</a></p>
+<div id="attempt-log" class="more">
+    <p><a href="#" id="attempt-log-hide" class="hideLink" onclick="showHide('attempt-log');return false;">Hide this content.</a></p>
+    <pre>{{ attempt.log }}</pre>
+</div>
 {% endblock %}
