@@ -13,6 +13,13 @@ import submit
 ## =====================================================================
 ## LOGGING CONFIGURATION
 ## =====================================================================
+LOG = logging.getLogger('django.db.backends')
+LOG_handler = logging.StreamHandler()
+LOG_formatter = logging.Formatter(fmt='%(asctime)s [%(filename)s:%(funcName)s:%(lineno)03d] %(levelname)-5s: %(message)s',
+                                  datefmt='%m-%d-%Y %H:%M:%S')
+LOG_handler.setFormatter(LOG_formatter)
+LOG.addHandler(LOG_handler)
+LOG.setLevel(logging.DEBUG)
 
 ## =====================================================================
 ## DRIVER
