@@ -112,7 +112,7 @@ class BaseDeployer(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
 
-    def save_attempt(self, attempt, result, register_result = USER_STATUS_UNKNOWN, login_result = USER_STATUS_UNKNOWN):
+    def save_attempt(self, attempt, result, register_result = USER_STATUS_UNKNOWN, login_result = USER_STATUS_UNKNOWN, forms = None):
         # Stop the log capture
         self.log.removeHandler(self.logHandler)
         self.logHandler.flush()
@@ -124,6 +124,19 @@ class BaseDeployer(object):
         attempt.log = self.buffer.getvalue()
         attempt.stop_time = datetime.now()
         attempt.save()
+        for f in forms:
+            form = Form()
+            form.action = f['action']
+            form.url = f['url']
+            form.attempt = attempt
+            form.save()
+            for input in f['inputs']:
+                field = Field()
+                field.name = input['name']
+                field.type = input['type']
+                field.form = form
+                field.save()
+
         LOG.info("Saved Attempt #%s for %s" % (attempt, attempt.repo))
         
         # Populate packages
@@ -197,7 +210,7 @@ class BaseDeployer(object):
         driver = Driver()
         driverResult = driver.drive(self)
 
-        self.save_attempt(attempt, attemptStatus, driverResult['register'], driverResult['login'])
+        self.save_attempt(attempt, attemptStatus, driverResult['register'], driverResult['login'], driverResult['forms'])
         
         raw_input('press any key to continue ...')
 
