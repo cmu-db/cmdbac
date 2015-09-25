@@ -79,6 +79,14 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
                     <td>Base Directory</td>
                     <td>{{attempt.base_dir}}</td>
                 </tr>
+                <tr>
+                    <td>Register Result</td>
+                    <td><span class="label label-{{ attempt.result_label }}">{{attempt.login_name}}</span></td>
+                </tr>
+                <tr>
+                    <td>Login Result</td>
+                    <td><span class="label label-{{ attempt.result_label }}">{{attempt.login_name}}</span></td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -107,26 +115,53 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
     </table>
 </div>
 
-<h2 class="sub-header">Driver</h2>
-<div class="col-xs-12">
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-            <colgroup>
-                <col class="col-xs-4">
-                <col class="col-xs-8">
-            </colgroup>
-            <tbody>
-                <tr>
-                    <td>Register Result</td>
-                    <td><span class="label label-{{ attempt.result_label }}">{{attempt.login_name}}</span></td>
-                </tr>
-                <tr>
-                    <td>Login Result</td>
-                    <td><span class="label label-{{ attempt.result_label }}">{{attempt.login_name}}</span></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+<h2 class="sub-header">Forms</h2>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Form #</th>
+                <th>Action</th>
+                <th>Url</th>
+                <th>Fields</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if forms %}
+            {% for form in forms %}
+            <tr>
+                <td>{{ form.id }}</td>
+                <td>{{ form.action }}</td>
+                <td>{{ form.url }}</td>
+                <td>
+                    {% if form.fields %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Field #</th>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for field in form.fields %}
+                                <tr>
+                                    <td>{{ field.id }}</td>
+                                    <td>{{ field.name }}</td>
+                                    <td>{{ field.type }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
 </div>
 
 <h2 class="sub-header">Log</h2>

@@ -187,8 +187,18 @@ def dependency(request, id):
 def attempt(request, id):
     attempt = Attempt.objects.get(id=id)
     dependencies = Dependency.objects.filter(attempt__id=id).order_by('package__name')
+    forms = Form.objects.filter(attempt=attempt)
     context = {}
     context['attempt'] = attempt
     context['dependencies'] = dependencies
     context['queries'] = request.GET.copy()
+    context['forms'] = []
+    for form in forms:
+        fields = Field.objects.filter(form=form)
+        context['forms'].append({
+            'id': form.id,
+            'action': form.action,
+            'url': form.url,
+            'fields': fields
+        })
     return render(request, 'attempt.html', context)
