@@ -71,3 +71,16 @@ def fill_form(form, matched_patterns = {}, br = None):
 		return None, None, None, None
 
 	return matched_patterns, inputs, response, br
+
+def fill_form_random(form, br):
+	inputs = {}
+	for input in form['inputs']:
+		inputs[input['name']] = gen_random_value()
+
+	try:
+		response, br = submit_form(form, inputs, br)
+	except:
+		print traceback.print_exc()
+		return None
+
+	return inputs

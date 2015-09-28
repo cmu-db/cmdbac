@@ -1,3 +1,3 @@
 from register import register
 from login import login
-from submit import fill_form
+from submit import fill_form_random
