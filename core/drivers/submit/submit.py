@@ -45,7 +45,11 @@ def submit_form(form, inputs, br = None):
 
 	return response, br
 
-def fill_form(form, matched_patterns = {}):
+def gen_random_value(chars = string.ascii_letters + string.digits):
+	length = random.choice(range(8, 21))
+	return ''.join(random.choice(chars) for x in range(length))
+
+def fill_form(form, matched_patterns = {}, br = None):
 	inputs = {}
 	for input in form['inputs']:
 		for pattern_name in patterns:
@@ -57,26 +61,6 @@ def fill_form(form, matched_patterns = {}):
 					inputs[input['name']] = value[0]
 					matched_patterns[pattern_name] = value[0]
 				break
-
-	try:
-		response, br = submit_form(form, inputs)
-	except:
-		print traceback.print_exc()
-		return None, None, None
-
-	return matched_patterns, response, br
-
-def gen_random_value(chars = string.ascii_letters + string.digits):
-	length = random.choice(range(8, 21))
-	return ''.join(random.choice(chars) for x in range(length))
-
-def fill_form_random(form, br):
-	inputs = {}
-	for input in form['inputs']:
-		for pattern_name in patterns:
-			pattern, value = patterns[pattern_name]
-			if match_any_pattern(input['name'], pattern):
-				inputs[input['name']] = value[0]
 			else:
 				inputs[input['name']] = gen_random_value()
 
@@ -84,6 +68,6 @@ def fill_form_random(form, br):
 		response, br = submit_form(form, inputs, br)
 	except:
 		print traceback.print_exc()
-		return None, None, None
+		return None, None, None, None
 
-	return response, br
+	return matched_patterns, inputs, response, br

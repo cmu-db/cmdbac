@@ -4,6 +4,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 import logging
 import traceback
 import requests
+import re
 
 from crawler.models import *
 import utils
@@ -33,6 +34,20 @@ class Driver(object):
 		else:
 			return sql_log_file.readlines()[last_line_no-1:]
 
+	def match_query(self, queries, inputs):
+		for query in queries:
+			matched = False
+			query = re.search('Query.?(.+)', query)
+			if query == None:
+				continue
+			query = query.group(1)
+			for name, value in sorted(inputs.items(), key=lambda (x, y): len(y), reverse=True):
+				if value in query:
+					query = query.replace(value, name)
+					matched = True
+			if matched == True:
+				print query
+
 	def drive(self, deployer):
 		# get main page
 		main_url = deployer.get_main_url()
@@ -42,27 +57,28 @@ class Driver(object):
 
 		# register
 		last_line_no = self.check_log()
-		print last_line_no
-		register_form, info = submit.register(forms)
-		print self.check_log(last_line_no)
+		register_form, info, inputs = submit.register(forms)
 		if info == None:
 			print 'Fail to register ...'
 			return {'register': USER_STATUS_FAIL, 'login': USER_STATUS_UNKOWN}
 		print 'Register Successfully ...'
+		self.match_query(self.check_log(last_line_no), inputs)
 			
 		# login
+		last_line_no = self.check_log()
 		login_form, br = submit.login(forms, info)
 		if login_form == None:
 			print 'Fail to register ...'
 			return {'register': USER_STATUS_SUCCESS, 'login': USER_STATUS_FAIL}
 
 		print 'Login Successfully ...'
+		self.match_query(self.check_log(last_line_no), inputs)
 		
 		forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar)
 		other_forms = filter(lambda form: form != register_form and form != login_form, forms)
 		for form in other_forms:
 			for i in range(5):
-				submit.fill_form_random(form, br)
+				submit.fill_form(form, br=br)
 
 		print 'Fill Forms Successfully ...'
 

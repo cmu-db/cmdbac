@@ -46,6 +46,7 @@ class FormSpider(CrawlSpider):
                 inputItem['id'] = id
                 inputItem['name'] = name
                 inputItem['type'] = type
+                inputItem['value'] = ''
                 if 'inputs' in formItem:
                     formItem['inputs'].append(inputItem)
                 else:

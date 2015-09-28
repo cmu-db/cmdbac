@@ -1,9 +1,9 @@
 # Patterns
 email_patterns = ['email']
 email_values = ['test@gmail.com']
-username_patterns = ['username', 'name']
+username_patterns = ['username']
 username_values = ['test']
-password_patterns = ['password', 'pass']
+password_patterns = ['password']
 password_values = ['Test1234--']
 patterns = {
 	'email': (email_patterns, email_values),
