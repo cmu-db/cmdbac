@@ -13,13 +13,10 @@ import submit
 ## =====================================================================
 ## LOGGING CONFIGURATION
 ## =====================================================================
-LOG = logging.getLogger('django.db.backends')
-LOG_handler = logging.StreamHandler()
-LOG_formatter = logging.Formatter(fmt='%(asctime)s [%(filename)s:%(funcName)s:%(lineno)03d] %(levelname)-5s: %(message)s',
-                                  datefmt='%m-%d-%Y %H:%M:%S')
-LOG_handler.setFormatter(LOG_formatter)
-LOG.addHandler(LOG_handler)
-LOG.setLevel(logging.DEBUG)
+
+
+## MYSQL General Log Configuration
+MYSQL_GENERAL_LOG_FILE = '/var/log/mysql/mysql.log'
 
 ## =====================================================================
 ## DRIVER
@@ -29,6 +26,13 @@ class Driver(object):
 	def __init__(self):
 		pass
 
+	def check_log(self, last_line_no = None):
+		sql_log_file = open(MYSQL_GENERAL_LOG_FILE, 'r')
+		if last_line_no == None:
+			return len(sql_log_file.readlines())
+		else:
+			return sql_log_file.readlines()[last_line_no-1:]
+
 	def drive(self, deployer):
 		# get main page
 		main_url = deployer.get_main_url()
@@ -37,7 +41,10 @@ class Driver(object):
 		forms = extract.extract_all_forms(main_url)
 
 		# register
+		last_line_no = self.check_log()
+		print last_line_no
 		register_form, info = submit.register(forms)
+		print self.check_log(last_line_no)
 		if info == None:
 			print 'Fail to register ...'
 			return {'register': USER_STATUS_FAIL, 'login': USER_STATUS_UNKOWN}
