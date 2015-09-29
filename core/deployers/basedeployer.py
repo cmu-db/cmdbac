@@ -130,6 +130,11 @@ class BaseDeployer(object):
             form.url = f['url']
             form.attempt = attempt
             form.save()
+            for q in f['queries']:
+                query = Query()
+                query.content = q
+                query.form = form
+                query.save()
             for input in f['inputs']:
                 field = Field()
                 field.name = input['name']

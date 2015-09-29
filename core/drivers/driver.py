@@ -57,7 +57,7 @@ class Driver(object):
 		
 		# extract all the forms
 		forms = extract.extract_all_forms(main_url)
-		ret_forms = {'others': []}
+		ret_forms = []
 
 		# register
 		last_line_no = self.check_log()
@@ -67,7 +67,7 @@ class Driver(object):
 			return {'register': USER_STATUS_FAIL, 'login': USER_STATUS_UNKOWN}
 		print 'Register Successfully ...'
 		register_form['queries'] = self.match_query(self.check_log(last_line_no), inputs)
-		ret_forms['register'] = register_form
+		ret_forms.append(register_form)
 			
 		# login
 		last_line_no = self.check_log()
@@ -77,7 +77,7 @@ class Driver(object):
 			return {'register': USER_STATUS_SUCCESS, 'login': USER_STATUS_FAIL}
 		print 'Login Successfully ...'
 		login_form['queries'] = self.match_query(self.check_log(last_line_no), inputs)
-		ret_forms['login'] = login_form
+		ret_forms.append(login_form)
 		
 		forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar)
 		other_forms = filter(lambda form: form != register_form and form != login_form, forms)
@@ -85,7 +85,7 @@ class Driver(object):
 			last_line_no = self.check_log()
 			part_inputs = submit.fill_form_random(form, br)
 			form['queries'] = self.match_query(self.check_log(last_line_no), part_inputs)
-			ret_forms['others'].append(form)
+			ret_forms.append(form)
 			for i in range(5):
 				submit.fill_form_random(form, br)
 
