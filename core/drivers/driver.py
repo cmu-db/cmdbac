@@ -44,7 +44,7 @@ class Driver(object):
 			query = query.group(1)
 			for name, value in sorted(inputs.items(), key=lambda (x, y): len(y), reverse=True):
 				if value in query:
-					query = query.replace(value, name)
+					query = query.replace(value, '<span style="color:red">{}</span>'.format(name))
 					matched = True
 			if matched == True:
 				print query
@@ -80,7 +80,7 @@ class Driver(object):
 		ret_forms.append(login_form)
 		
 		forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar)
-		other_forms = filter(lambda form: form != register_form and form != login_form, forms)
+		other_forms = filter(lambda form: form['action'] not in [register_form['action'], login_form['action']], forms)
 		for form in other_forms:
 			last_line_no = self.check_log()
 			part_inputs = submit.fill_form_random(form, br)
