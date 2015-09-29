@@ -195,10 +195,12 @@ def attempt(request, id):
     context['forms'] = []
     for form in forms:
         fields = Field.objects.filter(form=form)
+        queries = Query.objects.filter(form=form)
         context['forms'].append({
             'id': form.id,
             'action': form.action,
             'url': form.url,
-            'fields': fields
+            'fields': fields,
+            'queries': queries
         })
     return render(request, 'attempt.html', context)
