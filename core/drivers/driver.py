@@ -60,8 +60,12 @@ class Driver(object):
 
 		# register
 		last_line_no = self.check_log()
-		register_form, info, inputs = submit.register(forms)
-		if info == None:
+		try:
+			register_form, info, inputs = submit.register(forms)
+		except:
+			print 'Fail to register ...'
+			return {'register': USER_STATUS_FAIL, 'login': USER_STATUS_UNKOWN}
+		if register_form == None or info == None or inputs == None:
 			print 'Fail to register ...'
 			return {'register': USER_STATUS_FAIL, 'login': USER_STATUS_UNKOWN}
 		print 'Register Successfully ...'
@@ -70,19 +74,31 @@ class Driver(object):
 			
 		# login
 		last_line_no = self.check_log()
-		login_form, br = submit.login(forms, info)
-		if login_form == None:
+		try:
+			login_form, br = submit.login(forms, info)
+		except:
+			print 'Fail to register ...'
+			return {'register': USER_STATUS_SUCCESS, 'login': USER_STATUS_FAIL}
+		if login_form == None or br == None:
 			print 'Fail to register ...'
 			return {'register': USER_STATUS_SUCCESS, 'login': USER_STATUS_FAIL}
 		print 'Login Successfully ...'
 		login_form['queries'] = self.match_query(self.check_log(last_line_no), inputs)
 		ret_forms.append(login_form)
 		
+		# submit other forms
 		forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar)
 		other_forms = filter(lambda form: form['action'] not in [register_form['action'], login_form['action']], forms)
 		for form in other_forms:
 			last_line_no = self.check_log()
-			part_inputs = submit.fill_form_random(form, br)
+			try:
+				part_inputs = submit.fill_form_random(form, br)
+			except:
+				print 'Fill in Form on {} Failed ...'.format(form['url'])
+				continue
+			if part_inputs == None:
+				print 'Fill in Form on {} Failed ...'.format(form['url'])
+				continue
 			form['queries'] = self.match_query(self.check_log(last_line_no), part_inputs)
 			ret_forms.append(form)
 			for i in range(5):

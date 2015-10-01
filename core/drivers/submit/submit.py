@@ -26,22 +26,14 @@ def submit_form(form, inputs, br = None):
 		cj = cookielib.LWPCookieJar() 
 		br.set_cookiejar(cj)
 
-	try:
-		br.open(form['url'])
-		br.select_form(nr=get_form_index(br, form))
-	except:
-		print traceback.print_exc()
-		return
+	br.open(form['url'])
+	br.select_form(nr=get_form_index(br, form))
 
 	for input in form['inputs']:
 		if input['name'] in inputs:
 			br[input['name']] = inputs[input['name']]
 
-	try:
-		response = br.submit().read()
-	except:
-		print traceback.print_exc()
-		return None, None
+	response = br.submit().read()
 
 	return response, br
 
@@ -64,11 +56,7 @@ def fill_form(form, matched_patterns = {}, br = None):
 			else:
 				inputs[input['name']] = gen_random_value()
 
-	try:
-		response, br = submit_form(form, inputs, br)
-	except:
-		print traceback.print_exc()
-		return None, None, None, None
+	response, br = submit_form(form, inputs, br)
 
 	return matched_patterns, inputs, response, br
 
@@ -77,10 +65,6 @@ def fill_form_random(form, br):
 	for input in form['inputs']:
 		inputs[input['name']] = gen_random_value()
 
-	try:
-		response, br = submit_form(form, inputs, br)
-	except:
-		print traceback.print_exc()
-		return None
+	response, br = submit_form(form, inputs, br)
 
 	return inputs
