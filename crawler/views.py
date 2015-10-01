@@ -146,8 +146,6 @@ def repositories(request):
 def repository(request, user_name, repo_name):
     context = {}
     context['queries'] = request.GET.copy()
-    print 'queries: '
-    print request.GET.copy()
     
     repository = Repository.objects.get(name=user_name + '/' + repo_name)
     attempts = Attempt.objects.filter(repo=repository).order_by("-id")

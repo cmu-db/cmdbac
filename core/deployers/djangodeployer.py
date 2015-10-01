@@ -203,9 +203,29 @@ class DjangoDeployer(BaseDeployer):
                         return ATTEMPT_STATUS_MISSING_DEPENDENCIES
                     
                     candidate_packages = Package.objects.filter(id__in=candidate_package_ids).order_by('-version', '-count', 'name')
-                    dependencies.append((missing_module_name, candidate_packages, -1))
                     pip_output = utils.pip_install([candidate_packages[0]], False, False)            
                     LOG.info('pip install output: {}'.format(pip_output))
+                    try:
+                        version = re.search('Successfully installed .*-(.*)', pip_output[1]).group(1)
+                        if any(package.version == version for package in candidate_packages):
+                            for package_index in range(len(candidate_packages)):
+                                if candidate_packages[package_index].version == version:
+                                    candidate_packages = candidate_packages[package_index] + candidate_packages[:package_index] + candidate_packages[package_index + 1:]
+                                    break
+                        else:
+                            latest_package = Package()
+                            latest_package.project_type = candidate_packages[0].project_type
+                            latest_package.name = candidate_packages[0].name
+                            latest_package.version = version
+                            latest_package.save()
+                            module = Module()
+                            module.name = missing_module_name
+                            module.package = latest_package
+                            module.save()
+                            candidate_packages = [latest_package] + candidate_packages
+                    except:
+                        print traceback.print_exc()
+                    dependencies.append((missing_module_name, candidate_packages, 0))
             else:
                     for dependency_index in range(len(dependencies)):
                         missing_module_name, candidate_packages, index = dependencies[dependency_index]
@@ -247,12 +267,7 @@ class DjangoDeployer(BaseDeployer):
         ## FOR
 
         for missing_module_name, candidate_packages, index in dependencies:
-            if index == -1:
-                package = candidate_packages[0]
-                package.version = ''
-                self.packages_from_database.append(package)
-            else:
-                self.packages_from_database.append(candidate_packages[index])
+            self.packages_from_database.append(candidate_packages[index])
         print self.packages_from_database
 
         return attemptStatus

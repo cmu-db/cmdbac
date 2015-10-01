@@ -27,6 +27,7 @@ def add_module(module_name, package_name, package_type_id, package_version):
         module = Module()
         module.name = module_name
         module.package = package
+        module.save()
 
 def add_repo(repo_name, crawler_status_id, repo_setup_scripts):
     for cs in CrawlerStatus.objects.filter(id=crawler_status_id):
