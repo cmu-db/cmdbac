@@ -47,7 +47,6 @@ class Driver(object):
 					query = query.replace(value, '<span style="color:red">{}</span>'.format(name))
 					matched = True
 			if matched == True:
-				print query
 				ret_queries.append(query)
 		return ret_queries
 
@@ -91,6 +90,5 @@ class Driver(object):
 
 		print 'Fill Forms Successfully ...'
 
-		print ret_forms
 		return {'register': USER_STATUS_SUCCESS, 'login': USER_STATUS_SUCCESS, 
 				'user':info, 'forms': ret_forms}

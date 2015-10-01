@@ -37,6 +37,8 @@ class BaseDeployer(object):
         self.repo = repo
         self.database = database
         self.requirement_files = None
+        self.packages_from_database = []
+        self.packages_from_file = []
         
         # Create a buffer so that we can capture all log commands 
         # to include in the database for this attempt

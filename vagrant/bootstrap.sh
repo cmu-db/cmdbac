@@ -72,10 +72,6 @@ pip install BeautifulSoup4
 echo installing Djano
 pip install django
 
-# install scrapy
-echo installing scrapy
-pip install scrapy
-
 # install dependencies
 install 'Git' git
 
@@ -92,6 +88,10 @@ pip install MySQL-python
 install 'Nodejs' nodejs
 
 install 'Nokogiri dependencies' libxml2 libxml2-dev libxslt1-dev imagemagick libmagickwand-dev
+
+# install scrapy
+echo installing scrapy
+pip install scrapy
 
 pip install mechanize
 pip install python-dateutil
