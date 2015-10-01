@@ -152,6 +152,8 @@ class BaseDeployer(object):
         ## FOR
         for pkg in self.packages_from_database:
             Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_DATABASE)
+            pkg.count = pkg.count + 1
+            pkg.save()
         ## FOR
 
         # Make sure we update the repo to point to this 

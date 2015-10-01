@@ -72,9 +72,13 @@ class DjangoDeployer(BaseDeployer):
     ## DEF
     
     def install_requirements(self, requirement_files):
+        ret_packages = []
         if requirement_files:
             for requirement_file in requirement_files:
                 out = utils.pip_install(requirement_file, True)
+                with open(requirement_file, "r") as my_requirement_file:
+                    ret_packages += my_requirement_file.readlines()
+        return ret_packages
     ## DEF
 
     def get_urls(self):
@@ -105,8 +109,6 @@ class DjangoDeployer(BaseDeployer):
 
     def sync_server(self, path):
         LOG.info('Syncing server ...')
-        # command = '{} && unset DJANGO_SETTINGS_MODULE && python manage.py migrate'.format(
-        #    utils.cd(path))
         command = '{} && {} && unset DJANGO_SETTINGS_MODULE && python manage.py syncdb --noinput'.format(
             utils.to_env(), utils.cd(path))
         return utils.run_command(command)
@@ -114,11 +116,6 @@ class DjangoDeployer(BaseDeployer):
 
     def create_superuser(self, path):
         LOG.info('Creating superuser ...')
-        #command = '{} && unset DJANGO_SETTINGS_MODULE && {}'.format(
-        #    utils.cd(path),
-        #    """
-        #    echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@test.com', 'admin')" | python manage.py shell
-        #    """)
         command = '{} && {} && {}'.format(
             utils.to_env(),
             utils.cd(path),
@@ -131,9 +128,6 @@ class DjangoDeployer(BaseDeployer):
     def run_server(self, path):
         self.configure_network()
         LOG.info('Running server ...')
-        #command = '{} && unset DJANGO_SETTINGS_MODULE && python manage.py runserver 0.0.0.0:{}'.format(
-        #    utils.cd(path), 
-        #    self.repo.project_type.default_port)
         command = '{} && {} && unset DJANGO_SETTINGS_MODULE && python manage.py runserver 0.0.0.0:{}'.format(
             utils.to_env(),
             utils.cd(path),
@@ -151,16 +145,19 @@ class DjangoDeployer(BaseDeployer):
         LOG.info('Database: ' + attempt.database.name)
 
         LOG.info('Installing requirements ...')
-        self.install_requirements(requirement_files)
-        if 0:
-            for package in packages:
+        packages = self.install_requirements(requirement_files)
+        for package in packages:
+            if len(package.split('==')) >= 2:
                 name, version = package.split('==')
-                try:
-                    pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
-                    self.installed_requirements.append(pkg)
-                except:
-                    print traceback.print_exc()
-                    pass
+            elif len(package.split('>=')) >= 2:
+                name, version = package.split('>=')
+            else:
+                name, version = package, ''
+            print name, version
+            try:
+                pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
+            except:
+                print traceback.print_exc()
         ## FOR
 
         threshold = 50
@@ -276,7 +273,7 @@ class DjangoDeployer(BaseDeployer):
         if not setting_files:
             return ATTEMPT_STATUS_NOT_AN_APPLICATION
 
-        LOG.info('settings.py: {}'.format(setting_files))
+        # LOG.info('settings.py: {}'.format(setting_files))
 
         manage_files = utils.search_file(deploy_path, 'manage.py')
         # LOG.info('manage.py: {}'.format(manage_files))
@@ -284,7 +281,7 @@ class DjangoDeployer(BaseDeployer):
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
 
         requirement_files = utils.search_file(deploy_path, 'requirements.txt')
-        #LOG.info('requirements.txt: {}'.format(self.requirement_files))
+        # LOG.info('requirements.txt: {}'.format(self.requirement_files))
 
         self.requirement_files = requirement_files
         
