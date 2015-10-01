@@ -64,7 +64,7 @@ class BaseDeployer(object):
             cur.close()
             conn.close()
         except:
-            # print traceback.print_exc()
+            print traceback.print_exc()
             pass
     ## DEF
 
@@ -144,17 +144,15 @@ class BaseDeployer(object):
 
         LOG.info("Saved Attempt #%s for %s" % (attempt, attempt.repo))
         
-        if 0:
-            # Populate packages
-            for pkg in self.packages_from_file:
-                dep = Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_FILE)
-                pkg.count = pkg.count + 1
-                pkg.save()
-            ## FOR
-            for pkg in self.packages_from_database:
-                print pkg
-                Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_DATABASE)
-            ## FOR
+        # Populate packages
+        for pkg in self.packages_from_file:
+            dep = Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_FILE)
+            pkg.count = pkg.count + 1
+            pkg.save()
+        ## FOR
+        for pkg in self.packages_from_database:
+            Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_DATABASE)
+        ## FOR
 
         # Make sure we update the repo to point to this 
         # latest attempt
@@ -179,7 +177,7 @@ class BaseDeployer(object):
         try:
             attempt.sha = utils.get_latest_sha(self.repo)
         except:
-            # print traceback.print_exc()
+            print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return -1
 
@@ -187,7 +185,7 @@ class BaseDeployer(object):
         try:
             utils.download_repo(attempt, BaseDeployer.TMP_ZIP)
         except:
-            # print traceback.print_exc()
+            print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return -1
         
@@ -195,7 +193,7 @@ class BaseDeployer(object):
             utils.remake_dir(BaseDeployer.TMP_DEPLOY_PATH)
             utils.unzip(BaseDeployer.TMP_ZIP, BaseDeployer.TMP_DEPLOY_PATH)
         except:
-            # print traceback.print_exc()
+            print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return -1
 
@@ -205,7 +203,7 @@ class BaseDeployer(object):
             attemptStatus = self.deploy_repo_attempt(attempt, BaseDeployer.TMP_DEPLOY_PATH)
         except:
             print traceback.print_exc()
-            # self.save_attempt(attempt, ATTEMPT_STATUS_RUNNING_ERROR)
+            self.save_attempt(attempt, ATTEMPT_STATUS_RUNNING_ERROR)
             return -1
         if attemptStatus != ATTEMPT_STATUS_SUCCESS:
             self.save_attempt(attempt, attemptStatus)

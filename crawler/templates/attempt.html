@@ -107,7 +107,7 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
             {% for dependency in dependencies %}
             <tr>
                 <td>{{ dependency.package.name }}=={{ dependency.package.version }}</td>
-                <td>{{ dependency.source.name }}</td>
+                <td><span class="label label-{{ dependency.source_label }}">{{dependency.source_name}}</span></td>
             </tr>
             {% endfor %}
             {% endif %}

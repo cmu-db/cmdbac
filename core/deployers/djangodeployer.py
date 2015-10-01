@@ -50,26 +50,7 @@ class DjangoDeployer(BaseDeployer):
     ## DEF
     
     def get_database(self, setting_file):
-        regexes = [
-            re.compile(r'django\.db\.backends\.([\w\d]+)'),
-            re.compile('adapter\s*:\s*([\w\d]+)')
-        ]
-        db = Database(name="Unknown")
-        with open(setting_file, 'r') as infile:
-            for regex in regexes:
-                for line in infile:
-                    p = regex.search(line);
-                    if p:
-                        dbName = p.group(1).lower()
-                        if dbName == "sqlite": dbName = "sqlite3" # HACK
-                        db = Database.objects.get(name__iexact=dbName)
-                        if not db is None:
-                            break
-                ## FOR
-                if not db is None:
-                    break
-            ## FOR
-        ## WITH
+        db = Database.objects.get(name__iexact="MySQL")
         return db
     ## DEF
 
@@ -226,7 +207,6 @@ class DjangoDeployer(BaseDeployer):
                     last_missing_module_name = missing_module_name
                     candidate_packages = Package.objects.filter(id__in=candidate_package_ids).order_by('-count', 'name', '-version')
                     dependencies.append((missing_module_name, candidate_packages, 0))
-                    index = -1
                     pip_output = utils.pip_install([candidate_packages[0]], False, False)            
                     LOG.info('pip install output: {}'.format(pip_output))
             else:
@@ -243,8 +223,6 @@ class DjangoDeployer(BaseDeployer):
                                 return ATTEMPT_STATUS_MISSING_DEPENDENCIES
         ## FOR
 
-        print dependencies
-        
         self.create_superuser(deploy_path)
 
         for _ in range(threshold):
@@ -273,7 +251,8 @@ class DjangoDeployer(BaseDeployer):
 
         for missing_module_name, candidate_packages, index in dependencies:
             self.packages_from_database.append(candidate_packages[index])
-        
+        print self.packages_from_database
+
         return attemptStatus
     ## DEF
     
