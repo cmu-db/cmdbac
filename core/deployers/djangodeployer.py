@@ -153,9 +153,9 @@ class DjangoDeployer(BaseDeployer):
                 name, version = package.split('>=')
             else:
                 name, version = package, ''
-            print name, version
             try:
                 pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
+                self.packages_from_file.append(pkg)
             except:
                 print traceback.print_exc()
         ## FOR
