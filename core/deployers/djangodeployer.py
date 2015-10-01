@@ -196,14 +196,14 @@ class DjangoDeployer(BaseDeployer):
                         LOG.info('No more possible packages!')
                         return ATTEMPT_STATUS_MISSING_DEPENDENCIES
                 else:
+                    last_missing_module_name = missing_module_name
                     candidate_package_ids = Module.objects.filter(name=missing_module_name).values_list('package_id', flat=True)
                     if not candidate_package_ids:
                         LOG.info('No possible packages!')
                         return ATTEMPT_STATUS_MISSING_DEPENDENCIES
                     
-                    last_missing_module_name = missing_module_name
-                    candidate_packages = Package.objects.filter(id__in=candidate_package_ids).order_by('-count', 'name', '-version')
-                    dependencies.append((missing_module_name, candidate_packages, 0))
+                    candidate_packages = Package.objects.filter(id__in=candidate_package_ids).order_by('-version', '-count', 'name')
+                    dependencies.append((missing_module_name, candidate_packages, -1))
                     pip_output = utils.pip_install([candidate_packages[0]], False, False)            
                     LOG.info('pip install output: {}'.format(pip_output))
             else:
@@ -247,7 +247,12 @@ class DjangoDeployer(BaseDeployer):
         ## FOR
 
         for missing_module_name, candidate_packages, index in dependencies:
-            self.packages_from_database.append(candidate_packages[index])
+            if index == -1:
+                package = candidate_packages[0]
+                package.version = ''
+                self.packages_from_database.append(package)
+            else:
+                self.packages_from_database.append(candidate_packages[index])
         print self.packages_from_database
 
         return attemptStatus

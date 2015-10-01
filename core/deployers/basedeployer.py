@@ -148,12 +148,13 @@ class BaseDeployer(object):
         for pkg in self.packages_from_file:
             dep = Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_FILE)
             pkg.count = pkg.count + 1
-            pkg.save()
+            pkg.save()  
         ## FOR
         for pkg in self.packages_from_database:
             Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_DATABASE)
-            pkg.count = pkg.count + 1
-            pkg.save()
+            if pkg.version != '':
+                pkg.count = pkg.count + 1
+                pkg.save()
         ## FOR
 
         # Make sure we update the repo to point to this 
