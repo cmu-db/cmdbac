@@ -60,7 +60,6 @@ class RoRDeployer(BaseDeployer):
         self.setting_path = None
     ## DEF
     
-    # TODO : fix
     def get_database(self, setting_file):
         db = Database.objects.get(name__iexact="MySQL")
         return db

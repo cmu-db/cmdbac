@@ -96,6 +96,10 @@ install 'Nokogiri dependencies' libxml2 libxml2-dev libxslt1-dev imagemagick lib
 pip install mechanize
 pip install python-dateutil
 pip install virtualenv
+pip install virtualenvwrapper
+export WORKON_HOME=~/Envs
+mkdir -p $WORKON_HOME
+source /usr/local/bin/virtualenvwrapper.sh
 
 # Fix Dependencies
 apt-get -f -y install >/dev/null 2>&1

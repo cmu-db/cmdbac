@@ -36,9 +36,6 @@ class BaseDeployer(object):
     def __init__(self, repo, database):
         self.repo = repo
         self.database = database
-        self.installed_requirements = []
-        self.packages_from_file = []
-        self.packages_from_database = []
         self.requirement_files = None
         
         # Create a buffer so that we can capture all log commands 
@@ -124,36 +121,38 @@ class BaseDeployer(object):
         attempt.log = self.buffer.getvalue()
         attempt.stop_time = datetime.now()
         attempt.save()
-        for f in forms:
-            form = Form()
-            form.action = f['action']
-            form.url = f['url']
-            form.attempt = attempt
-            form.save()
-            for q in f['queries']:
-                query = Query()
-                query.content = q
-                query.form = form
-                query.save()
-            for input in f['inputs']:
-                field = Field()
-                field.name = input['name']
-                field.type = input['type']
-                field.form = form
-                field.save()
+        if forms != None:
+            for f in forms:
+                form = Form()
+                form.action = f['action']
+                form.url = f['url']
+                form.attempt = attempt
+                form.save()
+                for q in f['queries']:
+                    query = Query()
+                    query.content = q
+                    query.form = form
+                    query.save()
+                for input in f['inputs']:
+                    field = Field()
+                    field.name = input['name']
+                    field.type = input['type']
+                    field.form = form
+                    field.save()
 
         LOG.info("Saved Attempt #%s for %s" % (attempt, attempt.repo))
         
-        # Populate packages
-        for pkg in self.packages_from_file:
-            dep = Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_FILE)
-            pkg.count = pkg.count + 1
-            pkg.save()
-        ## FOR
-        for pkg in self.packages_from_database:
-            print pkg
-            Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_DATABASE)
-        ## FOR
+        if 0:
+            # Populate packages
+            for pkg in self.packages_from_file:
+                dep = Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_FILE)
+                pkg.count = pkg.count + 1
+                pkg.save()
+            ## FOR
+            for pkg in self.packages_from_database:
+                print pkg
+                Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_DATABASE)
+            ## FOR
 
         # Make sure we update the repo to point to this 
         # latest attempt
