@@ -13,37 +13,15 @@ from crawler.models import *
 from deployers import *
 import utils
 
-def test():
-    vagrant_clear()
-    vagrant_setup()
-        
-    result = 0
+def main():
+    database = Database.objects.get(name='MySQL')
 
-    while True:
-        repos = Repository.objects.filter(name='acecodes/acetools') 
-        repos = repos | Repository.objects.filter(name='adamgillfillan/mental_health_app')
-        repos = repos | Repository.objects.filter(name='aae4/btw')
-
-        database = Database.objects.get(name='MySQL')
-        
-        for repo in repos:
-            print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
-            result = vagrant_deploy(repo, database.name)
-            if result != 0:
-                break
-        ## FOR
-        break
-    ## WHILE
-
-    vagrant_clear()
-
-    print '############'
-    if result == 0:
-        print 'TEST PASSED!'
-    else:
-        print 'TEST FAILED!'
-    print '############'
+    for repo in Repository.objects.filter(project_type_id = 1):
+        print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
+        try:
+            utils.vagrant_deploy(repo, database.name)
+        except:
+            pass
 
 if __name__ == '__main__':
-    if len(sys.argv) == 2 and sys.argv[1] == 'test':
-        test()
+    main()
