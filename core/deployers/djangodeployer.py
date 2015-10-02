@@ -210,7 +210,7 @@ class DjangoDeployer(BaseDeployer):
                         if any(package.version == version for package in candidate_packages):
                             for package_index in range(len(candidate_packages)):
                                 if candidate_packages[package_index].version == version:
-                                    candidate_packages = candidate_packages[package_index] + candidate_packages[:package_index] + candidate_packages[package_index + 1:]
+                                    candidate_packages = [candidate_packages[package_index]] + candidate_packages[:package_index] + candidate_packages[package_index + 1:]
                                     break
                         else:
                             latest_package = Package()
