@@ -3,11 +3,19 @@ from django.db import models
 
 # Dependency Package Source
 PACKAGE_SOURCE = (
-    ('D', 'Database'),
-    ('F', 'File'),
+    ('D', 'Database', 'default'),
+    ('F', 'File', 'info'),
 )
-for x,y in PACKAGE_SOURCE:
+PACKAGE_SOURCE_CODES = {}
+PACKAGE_SOURCE_NAMES = {}
+temp = []
+for x, y, z in PACKAGE_SOURCE:
     globals()['PACKAGE_SOURCE_' + y.upper()] = x
+    PACKAGE_SOURCE_CODES[x] = z
+    PACKAGE_SOURCE_NAMES[x] = y
+    temp.append((x,y))
+PACKAGE_SOURCE = temp
+globals()['PACKAGE_SOURCE_CODES'] = PACKAGE_SOURCE_CODES
 
 # Deployment Attempt Status
 ATTEMPT_STATUS = (
@@ -21,14 +29,14 @@ ATTEMPT_STATUS = (
     ('OK', 'Success', 'success'),
     ('UN', 'Unknown', 'warning'),
 )
-ATTEMPT_STATUS_CODES = { }
-ATTEMPT_STATUS_NAMES = { }
-temp = [ ]
-for x,y,z in ATTEMPT_STATUS:
+ATTEMPT_STATUS_CODES = {}
+ATTEMPT_STATUS_NAMES = {}
+temp = []
+for x, y, z in ATTEMPT_STATUS:
     globals()['ATTEMPT_STATUS_' + y.replace(" ", "_").upper()] = x
     ATTEMPT_STATUS_CODES[x] = z
     ATTEMPT_STATUS_NAMES[x] = y
-    temp.append( (x,y) )
+    temp.append((x,y))
 ATTEMPT_STATUS = temp
 globals()['ATTEMPT_STATUS_CODES'] = ATTEMPT_STATUS_CODES
 
@@ -39,14 +47,14 @@ USER_STATUS = (
     ('NF', 'Not found', 'warning'),
     ('UN', 'Unknown', 'warning'),
 )
-USER_STATUS_CODES = { }
-USER_STATUS_NAMES = { }
-temp = [ ]
-for x,y,z in USER_STATUS:
+USER_STATUS_CODES = {}
+USER_STATUS_NAMES = {}
+temp = []
+for x, y, z in USER_STATUS:
     globals()['USER_STATUS_' + y.replace(" ", "_").upper()] = x
     USER_STATUS_CODES[x] = z
     USER_STATUS_NAMES[x] = y
-    temp.append( (x,y) )
+    temp.append((x,y))
 USER_STATUS = temp
 globals()['USER_STATUS_CODES'] = USER_STATUS_CODES
 
@@ -183,9 +191,16 @@ class Package(models.Model):
 ## CLASS
 
 class Dependency(models.Model):
+    def sourceLabel(self):
+        return PACKAGE_SOURCE_CODES[self.source]
+    def sourceName(self):
+        return PACKAGE_SOURCE_NAMES[self.source]
+
     attempt = models.ForeignKey('Attempt')
     package = models.ForeignKey('Package')
     source = models.CharField(max_length=2, choices=PACKAGE_SOURCE, default=None, null=True)
+    source_label = property(sourceLabel)
+    source_name = property(sourceName)
 
     class Meta:
         unique_together = ('attempt', 'package')

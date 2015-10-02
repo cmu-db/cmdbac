@@ -72,10 +72,6 @@ pip install BeautifulSoup4
 echo installing Djano
 pip install django
 
-# install scrapy
-echo installing scrapy
-pip install scrapy
-
 # install dependencies
 install 'Git' git
 
@@ -93,9 +89,17 @@ install 'Nodejs' nodejs
 
 install 'Nokogiri dependencies' libxml2 libxml2-dev libxslt1-dev imagemagick libmagickwand-dev
 
+# install scrapy
+echo installing scrapy
+pip install scrapy
+
 pip install mechanize
 pip install python-dateutil
 pip install virtualenv
+pip install virtualenvwrapper
+export WORKON_HOME=~/Envs
+mkdir -p $WORKON_HOME
+source /usr/local/bin/virtualenvwrapper.sh
 
 # Fix Dependencies
 apt-get -f -y install >/dev/null 2>&1

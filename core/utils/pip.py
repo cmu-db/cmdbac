@@ -6,31 +6,26 @@ from file import cd
 
 HOME_DIR = expanduser('~')
 
+ENV_PATH = ''
+
 def home_path(path):
     return os.path.join(HOME_DIR, path)
 
-def pip_clear():
-    command = 'sudo rm -rf {} {}'.format(home_path('pip/build/'), home_path('.local/'))
+def configure_env(path):
+    global ENV_PATH
+    ENV_PATH = path
+    command = 'virtualenv {}'.format(path)
     return run_command(command)
 
-def pip_freeze():
-    out = run_command('pip freeze')
-    out = out[1].strip().splitlines()
-    out = [line for line in out if not ' ' in line and '==' in line]
-    return out
-
-def pip_rm_build():
-    # pip will save meta data in build directory if install failed
-    command = 'sudo rm -rf {}'.format(home_path('pip/build'))
-    return run_command(command)
+def to_env():
+    return '{} && {}'.format(cd(ENV_PATH), 'source bin/activate')
 
 def pip_install(names, is_file, has_version = True):
-    command = 'pip '
+    command = '{} && pip install'.format(to_env())
     
     proxy = os.environ.get('http_proxy')
     if proxy:
         command = '{} --proxy {} '.format(command, proxy)
-    command = '{} install --user --build {}'.format(command, home_path("pip/build"))
     if is_file:
         filename = home_path(names)
         command = '{} -r {}'.format(command, filename)
@@ -42,18 +37,21 @@ def pip_install(names, is_file, has_version = True):
                 command = '{} {} --upgrade'.format(command, name.name)
     out = run_command(command)
 
-    pip_rm_build()
     return out
 
 def pip_install_text(name):
-    command = 'pip '
+    command = '{} && pip install'.format(to_env())
     
     proxy = os.environ.get('http_proxy')
     if proxy:
         command = '{} --proxy {} '.format(command, proxy)
-    command = '{} install --user --build {}'.format(command, home_path("pip/build"))
     command = '{} {} '.format(command, name)
     out = run_command(command)
 
-    pip_rm_build()
+    return out
+
+def pip_freeze():
+    out = run_command('{} && pip freeze'.format(to_env()))
+    out = out[1].strip().splitlines()
+    out = [line for line in out if not ' ' in line and '==' in line]
     return out
