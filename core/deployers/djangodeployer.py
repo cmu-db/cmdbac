@@ -160,7 +160,7 @@ class DjangoDeployer(BaseDeployer):
                 print traceback.print_exc()
         ## FOR
 
-        threshold = 50
+        threshold = 20
         last_missing_module_name = ''
         index = -1
         dependencies = []
@@ -240,35 +240,14 @@ class DjangoDeployer(BaseDeployer):
                                 return ATTEMPT_STATUS_MISSING_DEPENDENCIES
         ## FOR
 
-        self.create_superuser(deploy_path)
-
-        for _ in range(threshold):
-            self.run_server(deploy_path)
-            time.sleep(5)
-            attemptStatus = self.check_server(self.get_urls())
-            if attemptStatus != ATTEMPT_STATUS_SUCCESS:
-                self.kill_server()
-            else:
-                break
-
-            pip_install_flag = False
-            for dependency_index in range(len(dependencies)):
-                missing_module_name, candidate_packages, index = dependencies[dependency_index]
-                index = index + 1
-                if index < len(candidate_packages):
-                    output = utils.pip_install([candidate_packages[index]], False)
-                    LOG.info('pip install output: {}'.format(output))
-                    pip_install_flag = True
-                    dependencies[dependency_index] = (missing_module_name, candidate_packages, index)
-                    break
-            if pip_install_flag == False:          
-                LOG.info('No more possible packages!')
-                return ATTEMPT_STATUS_MISSING_DEPENDENCIES
-        ## FOR
-
         for missing_module_name, candidate_packages, index in dependencies:
             self.packages_from_database.append(candidate_packages[index])
-        print self.packages_from_database
+
+        self.create_superuser(deploy_path)
+
+        self.run_server(deploy_path)
+        time.sleep(5)
+        attemptStatus = self.check_server(self.get_urls())
 
         return attemptStatus
     ## DEF
