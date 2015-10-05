@@ -45,7 +45,7 @@ USER_STATUS = (
     ('OK', 'Success', 'info'),
     ('ER', 'Fail', 'danger'),
     ('NF', 'Not found', 'warning'),
-    ('UN', 'Unknown', 'warning'),
+    ('UN', 'Unknown', 'default'),
 )
 USER_STATUS_CODES = {}
 USER_STATUS_NAMES = {}
