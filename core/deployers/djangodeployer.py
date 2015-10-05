@@ -301,9 +301,5 @@ class DjangoDeployer(BaseDeployer):
         
         return self.try_deploy(attempt, manage_path, requirement_files)
     ## DEF
-
-    def kill_server(self):
-        return super(DjangoDeployer, self).kill_server()
-    ## DEF
     
 ## CLASS
