@@ -219,8 +219,6 @@ class BaseDeployer(object):
 
         self.save_attempt(attempt, attemptStatus, driverResult['register'], driverResult['login'], driverResult['forms'])
         
-        raw_input('press any key to continue ...')
-
         return 0
     ## DEF
 

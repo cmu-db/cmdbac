@@ -10,7 +10,6 @@ import django
 django.setup()
 
 from crawler.models import *
-from deployers import *
 import utils
 
 def main():
