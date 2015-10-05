@@ -64,10 +64,10 @@ class Driver(object):
 			register_form, info, inputs = submit.register(forms)
 		except:
 			print 'Fail to register ...'
-			return {'register': USER_STATUS_FAIL, 'login': USER_STATUS_UNKOWN}
+			return {'register': USER_STATUS_FAIL, 'login': USER_STATUS_UNKNOWN}
 		if register_form == None or info == None or inputs == None:
 			print 'Fail to register ...'
-			return {'register': USER_STATUS_FAIL, 'login': USER_STATUS_UNKOWN}
+			return {'register': USER_STATUS_FAIL, 'login': USER_STATUS_UNKNOWN}
 		print 'Register Successfully ...'
 		register_form['queries'] = self.match_query(self.check_log(last_line_no), inputs)
 		ret_forms.append(register_form)
