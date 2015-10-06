@@ -124,8 +124,8 @@ class RoRDeployer(BaseDeployer):
         
         LOG.info('Installing requirements ...')
         out = self.install_requirements(deploy_path)
-        # LOG.info(out)
         if not 'complete!' in out:
+            LOG.info(out)
             return ATTEMPT_STATUS_MISSING_DEPENDENCIES
         packages = out.split('\n')
         for package in packages:
@@ -148,8 +148,7 @@ class RoRDeployer(BaseDeployer):
 
         attemptStatus = self.check_server(self.get_urls())
 
-        return attemptStatus, deploy_path
-
+        return attemptStatus
     ## DEF
     
     def deploy_repo_attempt(self, attempt, deploy_path):
@@ -178,6 +177,7 @@ class RoRDeployer(BaseDeployer):
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
         base_dir = next(iter(base_dirs))
 
+        self.deploy_path = base_dir
         self.setting_path = base_dir
 
         attempt.base_dir = base_dir.split('/', 1)[1]

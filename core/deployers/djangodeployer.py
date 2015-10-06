@@ -249,7 +249,7 @@ class DjangoDeployer(BaseDeployer):
         time.sleep(5)
         attemptStatus = self.check_server(self.get_urls())
 
-        return attemptStatus, deploy_path
+        return attemptStatus
     ## DEF
     
     def deploy_repo_attempt(self, attempt, deploy_path):
@@ -270,14 +270,14 @@ class DjangoDeployer(BaseDeployer):
             setting_files = utils.search_file(deploy_path, 'settings.py')
         
         if not setting_files:
-            return ATTEMPT_STATUS_NOT_AN_APPLICATION
+            return ATTEMPT_STATUS_NOT_AN_APPLICATION, None
 
         # LOG.info('settings.py: {}'.format(setting_files))
 
         manage_files = utils.search_file(deploy_path, 'manage.py')
         # LOG.info('manage.py: {}'.format(manage_files))
         if not manage_files:
-            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
+            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES, None
 
         requirement_files = utils.search_file(deploy_path, 'requirements.txt')
         # LOG.info('requirements.txt: {}'.format(self.requirement_files))
@@ -291,6 +291,7 @@ class DjangoDeployer(BaseDeployer):
         manage_path = next(name for name in manage_paths if name.startswith(base_dir))
         setting_file = next(name for name in setting_files if name.startswith(base_dir))
         
+        self.deploy_path = manage_path
         self.setting_path = setting_file
 
         attempt.base_dir = base_dir.split('/', 1)[1]

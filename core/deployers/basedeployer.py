@@ -39,6 +39,7 @@ class BaseDeployer(object):
         self.requirement_files = None
         self.packages_from_database = []
         self.packages_from_file = []
+        self.deploy_path = None
         
         # Create a buffer so that we can capture all log commands 
         # to include in the database for this attempt
@@ -164,8 +165,16 @@ class BaseDeployer(object):
         self.repo.latest_attempt = attempt
         self.repo.attempts_count = self.repo.attempts_count + 1
         self.repo.save()
-
     ## DEF
+
+    def delete_deploy_dir(self):
+        while os.path.dirname(self.deploy_path) != BaseDeployer.TMP_DEPLOY_PATH:
+            self.deploy_path = os.path.dirname(self.deploy_path)
+            try:
+                print self.deploy_path
+                utils.rm_dir(self.deploy_path)
+            except:
+                print traceback.print_exc()
     
     def deploy(self):
         LOG.info('Deploying repo: {} ...'.format(self.repo.name))
@@ -203,13 +212,16 @@ class BaseDeployer(object):
         LOG.info('Deploying at {} ...'.format(BaseDeployer.TMP_DEPLOY_PATH))
         
         try:
-            attemptStatus, deployPath = self.deploy_repo_attempt(attempt, BaseDeployer.TMP_DEPLOY_PATH)
+            attemptStatus = self.deploy_repo_attempt(attempt, BaseDeployer.TMP_DEPLOY_PATH)
         except:
             print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_RUNNING_ERROR)
+            self.delete_deploy_dir()
             return -1
+           
         if attemptStatus != ATTEMPT_STATUS_SUCCESS:
             self.save_attempt(attempt, attemptStatus)
+            self.delete_deploy_dir()
             return -1
 
         driver = Driver()
@@ -218,10 +230,7 @@ class BaseDeployer(object):
 
         self.save_attempt(attempt, attemptStatus, driverResult['register'], driverResult['login'], driverResult['forms'])
         
-        try:
-            utils.rm_dir(deployPath)
-        except:
-            print traceback.print_exc()
+        self.delete_deploy_dir()
 
         return 0
     ## DEF
