@@ -222,7 +222,7 @@ class DjangoDeployer(BaseDeployer):
                             module.name = missing_module_name
                             module.package = latest_package
                             module.save()
-                            candidate_packages = [latest_package] + candidate_packages
+                            candidate_packages = list([latest_package]) + list(candidate_packages)
                     except:
                         print traceback.print_exc()
                     dependencies.append((missing_module_name, candidate_packages, 0))
@@ -245,7 +245,7 @@ class DjangoDeployer(BaseDeployer):
 
         self.create_superuser(deploy_path)
 
-        self.run_server(deploy_path)
+        LOG.info(self.run_server(deploy_path))
         time.sleep(5)
         attemptStatus = self.check_server(self.get_urls())
 

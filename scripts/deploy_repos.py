@@ -16,6 +16,8 @@ def main():
     database = Database.objects.get(name='MySQL')
 
     for repo in Repository.objects.filter(project_type_id = 1):
+        if repo.latest_attempt != None:
+            continue
         print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
         try:
             utils.vagrant_deploy(repo, database.name)
