@@ -193,7 +193,7 @@ class BaseDeployer(object):
             return -1
         
         try:
-            utils.remake_dir(BaseDeployer.TMP_DEPLOY_PATH)
+            utils.make_dir(BaseDeployer.TMP_DEPLOY_PATH)
             utils.unzip(BaseDeployer.TMP_ZIP, BaseDeployer.TMP_DEPLOY_PATH)
         except:
             print traceback.print_exc()
@@ -203,7 +203,7 @@ class BaseDeployer(object):
         LOG.info('Deploying at {} ...'.format(BaseDeployer.TMP_DEPLOY_PATH))
         
         try:
-            attemptStatus = self.deploy_repo_attempt(attempt, BaseDeployer.TMP_DEPLOY_PATH)
+            attemptStatus, deployPath = self.deploy_repo_attempt(attempt, BaseDeployer.TMP_DEPLOY_PATH)
         except:
             print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_RUNNING_ERROR)
@@ -211,14 +211,18 @@ class BaseDeployer(object):
         if attemptStatus != ATTEMPT_STATUS_SUCCESS:
             self.save_attempt(attempt, attemptStatus)
             return -1
-        
-        # self.kill_server()
 
         driver = Driver()
         driverResult = driver.drive(self)
+        self.kill_server()
 
         self.save_attempt(attempt, attemptStatus, driverResult['register'], driverResult['login'], driverResult['forms'])
         
+        try:
+            utils.rm_dir(deployPath)
+        except:
+            print traceback.print_exc()
+
         return 0
     ## DEF
 

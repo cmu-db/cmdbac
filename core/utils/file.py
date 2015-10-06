@@ -40,8 +40,7 @@ def chmod_dir(path):
     if os.path.exists(path):
         os.chmod(path, 0777)
 
-def remake_dir(path):
-    rm_dir(path)
+def make_dir(path):
     mk_dir(path)
     chmod_dir(path)
 

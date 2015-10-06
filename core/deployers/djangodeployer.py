@@ -249,7 +249,7 @@ class DjangoDeployer(BaseDeployer):
         time.sleep(5)
         attemptStatus = self.check_server(self.get_urls())
 
-        return attemptStatus
+        return attemptStatus, deploy_path
     ## DEF
     
     def deploy_repo_attempt(self, attempt, deploy_path):
