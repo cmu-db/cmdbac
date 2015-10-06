@@ -4,6 +4,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 import logging
 import traceback
 import MySQLdb
+import re
 
 from basedeployer import BaseDeployer
 from crawler.models import *
@@ -89,8 +90,8 @@ class RoRDeployer(BaseDeployer):
         if path:
             command = '{} && bundle install'.format(utils.cd(path))
             out = utils.run_command(command)
-            return out
-        return []
+            return out[1]
+        return ''
     ## DEF
     
     def get_urls(self):
@@ -123,9 +124,19 @@ class RoRDeployer(BaseDeployer):
         
         LOG.info('Installing requirements ...')
         out = self.install_requirements(deploy_path)
-        LOG.info(out)
-        if not 'complete!' in out[1]:
+        # LOG.info(out)
+        if not 'complete!' in out:
             return ATTEMPT_STATUS_MISSING_DEPENDENCIES
+        packages = out.split('\n')
+        for package in packages:
+            s = re.search('Using (.*) (.*)', package)
+            if s:
+                name, version = s.group(1), s.group(2)
+                try:
+                    pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
+                    self.packages_from_file.append(pkg)
+                except:
+                    print traceback.print_exc()
 
         out = self.sync_server(deploy_path)
         LOG.info(out)
