@@ -170,11 +170,11 @@ class BaseDeployer(object):
     def delete_deploy_dir(self):
         while os.path.dirname(self.deploy_path) != BaseDeployer.TMP_DEPLOY_PATH:
             self.deploy_path = os.path.dirname(self.deploy_path)
-            try:
-                print self.deploy_path
-                utils.rm_dir(self.deploy_path)
-            except:
-                print traceback.print_exc()
+        try:
+            print self.deploy_path
+            utils.rm_dir(self.deploy_path)
+        except:
+            print traceback.print_exc()
     
     def deploy(self):
         LOG.info('Deploying repo: {} ...'.format(self.repo.name))
