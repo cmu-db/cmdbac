@@ -41,6 +41,7 @@ def chmod_dir(path):
         os.chmod(path, 0777)
 
 def make_dir(path):
+    rm_dir(path)
     mk_dir(path)
     chmod_dir(path)
 

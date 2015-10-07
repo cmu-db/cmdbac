@@ -34,7 +34,7 @@ DATABASES = {{
     }}
 }}
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = '/tmp/crawler'
+EMAIL_FILE_PATH = '{}'
 REGISTRATION_CAPTCHA = False
 """
 
@@ -67,7 +67,7 @@ class DjangoDeployer(BaseDeployer):
     
     def configure_settings(self):
         with open(self.setting_path, "a") as my_setting_file:
-            my_setting_file.write(DJANGO_SETTINGS.format(self.database_name))
+            my_setting_file.write(DJANGO_SETTINGS.format(self.database_name, self.deployer_path))
         ## WITH
     ## DEF
     
@@ -186,7 +186,6 @@ class DjangoDeployer(BaseDeployer):
                 missing_module_name = match.group(0)
                 LOG.info('Missing module: ' + missing_module_name)
                 if missing_module_name == last_missing_module_name:
-                    print missing_module_name, last_missing_module_name
                     missing_module_name, candidate_packages, index = dependencies[-1]
                     index = index + 1
                     if index < len(candidate_packages):

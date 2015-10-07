@@ -31,7 +31,7 @@ def pip_install(names, is_file, has_version = True):
         command = '{} -r {}'.format(command, filename)
     else:
         for name in names:
-            if has_version:
+            if has_version and name.version != None and name.version != '':
                 command = '{} {}=={} '.format(command, name.name, name.version)
             else:
                 command = '{} {} --upgrade'.format(command, name.name)
