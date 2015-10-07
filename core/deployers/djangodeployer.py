@@ -186,6 +186,7 @@ class DjangoDeployer(BaseDeployer):
                 missing_module_name = match.group(0)
                 LOG.info('Missing module: ' + missing_module_name)
                 if missing_module_name == last_missing_module_name:
+                    print missing_module_name, last_missing_module_name
                     missing_module_name, candidate_packages, index = dependencies[-1]
                     index = index + 1
                     if index < len(candidate_packages):
