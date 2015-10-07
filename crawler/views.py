@@ -153,35 +153,6 @@ def repository(request, user_name, repo_name):
     context['attempts'] = attempts
     return render(request, 'repository.html', context)
 
-def packages(request):
-    packages = Package.objects.all().order_by('name', 'version')
-    paginator = Paginator(packages, 100) # Show 100 contacts per page
-    page = request.GET.get('page')
-    try:
-        packages = paginator.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        packages = paginator.page(1)
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        packages = paginator.page(paginator.num_pages)
-    context = {'packages': packages}
-    return render(request, 'packages.html', context)
-     
-def package(request, id):
-    package = Package.objects.get(id=id)
-    modules = Module.objects.filter(package__id=id)
-    context = {}
-    context['package'] = package
-    context['modules'] = modules
-    return render(request, 'package.html', context)
-
-def dependency(request, id):
-    dependencies = Dependency.objects.filter(attempt__id=id)
-    context = {}
-    context['dependencies'] = dependencies
-    return render(request, 'dependency.html', context)
-
 def attempt(request, id):
     attempt = Attempt.objects.get(id=id)
     dependencies = Dependency.objects.filter(attempt__id=id).order_by('package__name')
