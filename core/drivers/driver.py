@@ -5,6 +5,7 @@ import logging
 import traceback
 import requests
 import re
+import copy
 
 from crawler.models import *
 import utils
@@ -59,43 +60,59 @@ class Driver(object):
 		ret_forms = []
 
 		# register
+		register_result = USER_STATUS_UNKNOWN
 		last_line_no = self.check_log()
 		try:
 			register_form, info, inputs = submit.register(forms)
 		except:
-			print 'Fail to register ...'
-			return {'register': USER_STATUS_FAIL, 'login': USER_STATUS_UNKNOWN, 'user': None, 'forms': None}
+			register_form = info = inputs = None
 		if register_form == None or info == None or inputs == None:
 			print 'Fail to register ...'
-			return {'register': USER_STATUS_FAIL, 'login': USER_STATUS_UNKNOWN, 'user': None, 'forms': None}
-		print 'Register Successfully ...'
-		register_form['queries'] = self.match_query(self.check_log(last_line_no), inputs)
-		ret_forms.append(register_form)
+			register_result = USER_STATUS_FAIL
+		else:
+			print 'Register Successfully ...'
+			register_result = USER_STATUS_SUCCESS
+			register_form['queries'] = self.match_query(self.check_log(last_line_no), inputs)
+		if register_form != None:
+			ret_forms.append(register_form)
+			register_form_raw = copy.deepcopy(register_form)
+			del register_form_raw['queries']
+		else:
+			register_form_raw = None
 			
 		# login
+		login_result = USER_STATUS_UNKNOWN
 		last_line_no = self.check_log()
 		try:
 			login_form, br = submit.login(forms, info)
 		except:
-			print 'Fail to register ...'
-			return {'register': USER_STATUS_SUCCESS, 'login': USER_STATUS_FAIL, 'user': info, 'forms': None}
+			login_form = br = None
 		if login_form == None or br == None:
-			print 'Fail to register ...'
-			return {'register': USER_STATUS_SUCCESS, 'login': USER_STATUS_FAIL, 'user': info, 'forms': None}
-		print 'Login Successfully ...'
-		login_form['queries'] = self.match_query(self.check_log(last_line_no), inputs)
-		ret_forms.append(login_form)
+			print 'Fail to login ...'
+			login_result = USER_STATUS_FAIL
+		else:
+			print 'Login Successfully ...'
+			login_result = USER_STATUS_SUCCESS
+			login_form['queries'] = self.match_query(self.check_log(last_line_no), inputs)
+		if login_form != None:
+			ret_forms.append(login_form)
+			login_form_raw = copy.deepcopy(login_form)
+			del login_form_raw['queries']
+		else:
+			login_form_raw = None
 		
 		# submit other forms
-		forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar)
-		other_forms = filter(lambda form: form['action'] not in [register_form['action'], login_form['action']], forms)
+		if br != None:
+			forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar)
+			other_forms = filter(lambda form: form not in [register_form_raw, login_form_raw], forms)
+		else:
+			other_forms = filter(lambda form: form not in [register_form_raw, login_form_raw], forms)
 		for form in other_forms:
 			last_line_no = self.check_log()
 			try:
 				part_inputs = submit.fill_form_random(form, br)
 			except:
-				print 'Fill in Form on {} Failed ...'.format(form['url'])
-				continue
+				part_inputs = None
 			if part_inputs == None:
 				print 'Fill in Form on {} Failed ...'.format(form['url'])
 				continue
@@ -106,5 +123,5 @@ class Driver(object):
 
 		print 'Fill Forms Successfully ...'
 
-		return {'register': USER_STATUS_SUCCESS, 'login': USER_STATUS_SUCCESS, 
+		return {'register': register_result, 'login': login_result, 
 				'user':info, 'forms': ret_forms}
