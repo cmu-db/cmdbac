@@ -143,8 +143,7 @@ class RoRDeployer(BaseDeployer):
         if "rake aborted!" in out[1]:
             return ATTEMPT_STATUS_RUNNING_ERROR
         
-        out = self.run_server(deploy_path)
-        LOG.info(out)
+        LOG.info(self.run_server(deploy_path))
 
         attemptStatus = self.check_server(self.get_urls())
 

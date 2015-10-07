@@ -229,18 +229,7 @@ class DjangoDeployer(BaseDeployer):
                         print traceback.print_exc()
                     dependencies.append((missing_module_name, candidate_packages, 0))
             else:
-                    for dependency_index in range(len(dependencies)):
-                        missing_module_name, candidate_packages, index = dependencies[dependency_index]
-                        if missing_module_name in output[2].strip():
-                            index = index + 1
-                            if index < len(candidate_packages):
-                                dependencies[dependency_index] = (missing_module_name, candidate_packages, index)
-                                LOG.info('pip install {}'.format(candidate_packages[index]))
-                                pip_output = utils.pip_install([candidate_packages[index]], False)
-                                LOG.info('pip install output: {}'.format(pip_output))
-                            else:
-                                LOG.info('No more possible packages!')
-                                return ATTEMPT_STATUS_MISSING_DEPENDENCIES
+                return ATTEMPT_STATUS_RUNNING_ERROR
         ## FOR
 
         for missing_module_name, candidate_packages, index in dependencies:
@@ -248,7 +237,7 @@ class DjangoDeployer(BaseDeployer):
 
         self.create_superuser(deploy_path)
 
-        LOG.info(self.run_server(deploy_path))
+        self.run_server(deploy_path)
         time.sleep(5)
         attemptStatus = self.check_server(self.get_urls())
 
