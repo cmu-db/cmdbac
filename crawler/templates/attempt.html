@@ -120,7 +120,6 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Form #</th>
                 <th>Action</th>
                 <th>Url</th>
                 <th>Fields</th>
@@ -131,7 +130,6 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
             {% if forms %}
             {% for form in forms %}
             <tr>
-                <td>{{ form.id }}</td>
                 <td>{{ form.action }}</td>
                 <td>{{ form.url }}</td>
                 <td>
@@ -140,7 +138,6 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Field #</th>
                                     <th>Name</th>
                                     <th>Type</th>
                                 </tr>
@@ -148,7 +145,6 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
                             <tbody>
                                 {% for field in form.fields %}
                                 <tr>
-                                    <td>{{ field.id }}</td>
                                     <td>{{ field.name }}</td>
                                     <td>{{ field.type }}</td>
                                 </tr>
