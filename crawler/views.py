@@ -66,7 +66,7 @@ def repositories(request):
             utils.add_module(module_name, package_name, project_type_map[package_type], package_version)
             messages.success(request, 'Successfully added new module {}'.format(module_name))
         except:
-            # print traceback.print_exc()
+            print traceback.print_exc()
             messages.error(request, 'Failed to add new module {}'.format(repo_name))
         finally:
             return redirect('repositories')
