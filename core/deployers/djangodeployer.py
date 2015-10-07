@@ -190,6 +190,7 @@ class DjangoDeployer(BaseDeployer):
                     index = index + 1
                     if index < len(candidate_packages):
                         dependencies[-1] = (missing_module_name, candidate_packages, index)
+                        LOG.info('pip install {}'.format(candidate_packages[index]))
                         pip_output = utils.pip_install([candidate_packages[index]], False)
                         LOG.info('pip install output: {}'.format(pip_output))
                     else:
@@ -203,6 +204,7 @@ class DjangoDeployer(BaseDeployer):
                         return ATTEMPT_STATUS_MISSING_DEPENDENCIES
                     
                     candidate_packages = Package.objects.filter(id__in=candidate_package_ids).order_by('-version', '-count', 'name')
+                    LOG.info('pip install {}'.format(candidate_packages[0]))
                     pip_output = utils.pip_install([candidate_packages[0]], False, False)            
                     LOG.info('pip install output: {}'.format(pip_output))
                     try:
@@ -233,6 +235,7 @@ class DjangoDeployer(BaseDeployer):
                             index = index + 1
                             if index < len(candidate_packages):
                                 dependencies[dependency_index] = (missing_module_name, candidate_packages, index)
+                                LOG.info('pip install {}'.format(candidate_packages[index]))
                                 pip_output = utils.pip_install([candidate_packages[index]], False)
                                 LOG.info('pip install output: {}'.format(pip_output))
                             else:
