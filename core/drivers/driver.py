@@ -63,7 +63,7 @@ class Driver(object):
 		register_result = USER_STATUS_UNKNOWN
 		last_line_no = self.check_log()
 		try:
-			register_form, info, inputs = submit.register(forms)
+			register_form, info, inputs = submit.register(deployer.deploy_path, forms)
 		except:
 			register_form = info = inputs = None
 		if register_form == None or info == None or inputs == None:

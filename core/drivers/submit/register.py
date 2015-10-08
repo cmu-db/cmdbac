@@ -15,16 +15,16 @@ def get_register_form(forms):
 			return form
 	return None
 
-def verify_email(form, matched_patterns):
+def verify_email(deploy_path, form, matched_patterns):
 	email_file = None
-	for log_file in os.listdir('/tmp/crawler'):
+	for log_file in os.listdir(deploy_path):
 		if log_file.endswith('.log'):
 			email_file = log_file
 			break
 	if not email_file:
 		return matched_patterns, None
 
-	email_content = open(os.path.join('/tmp/crawler', email_file)).read()
+	email_content = open(os.path.join(deploy_path, email_file)).read()
 	verify_url = re.search('http://.+', email_content)
 	if not verify_url:
 		return matched_patterns, None
@@ -38,7 +38,7 @@ def verify_email(form, matched_patterns):
 
 	return matched_patterns, inputs
 
-def register(forms):
+def register(deploy_path, forms):
 	register_form = get_register_form(forms)
 	if register_form == None:
 		return None
