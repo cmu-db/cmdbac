@@ -165,11 +165,11 @@ class Repository(models.Model):
 
     def __unicode__(self):
         return self.name
-    def get_user_name(self):
+    def user_name(self):
         return self.name.split('/')[0]
-    def get_repo_name(self):
+    def repo_name(self):
         return self.name.split('/')[1]
-    def get_url(self):
+    def repo_url(self):
         return self.source.get_url(self.name)
     
     class Meta:

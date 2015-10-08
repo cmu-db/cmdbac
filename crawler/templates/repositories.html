@@ -71,9 +71,9 @@ Repositories &raquo; Database Application Crawler
             {% if repositories %}
                 {% for repository in repositories %}
                 <tr>
-                    <td><a id="{{ repository.name}}" href="{% url 'repository' repository.get_user_name repository.get_repo_name %}?{{ queries.urlencode }}">{{repository.name}}</a></td>
+                    <td><a id="{{ repository.name}}" href="{% url 'repository' repository.user_name repository.repo_name %}?{{ queries.urlencode }}">{{repository.name}}</a></td>
                     
-                    <td><a href="{{ repository.get_url }}"><img src="{% static repository.source.logo %}" alt="{{ repository.source.name }}" title="View on {{ repository.source.name }}" class="source-logo" /></a></td>
+                    <td><a href="{{ repository.repo_url }}"><img src="{% static repository.source.logo %}" alt="{{ repository.source.name }}" title="View on {{ repository.source.name }}" class="source-logo" /></a></td>
                     
                     <td><img src="{% static repository.project_type.logo %}" alt="{{ repository.project_type.name }}" title="{{ repository.project_type.name }}" class="projecttype-logo" /></td>
 
