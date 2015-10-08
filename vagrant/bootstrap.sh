@@ -96,10 +96,7 @@ pip install scrapy
 pip install mechanize
 pip install python-dateutil
 pip install virtualenv
-pip install virtualenvwrapper
-export WORKON_HOME=~/Envs
-mkdir -p $WORKON_HOME
-source /usr/local/bin/virtualenvwrapper.sh
+pip install hurry.filesize
 
 # Fix Dependencies
 apt-get -f -y install >/dev/null 2>&1
