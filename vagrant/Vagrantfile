@@ -20,4 +20,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     config.vm.provision :shell, path: 'bootstrap.sh', keep_color: true
 
+    config.proxy.http = "http://proxy.pdl.cmu.edu:3128/"
+    config.proxy.https = "http://proxy.pdl.cmu.edu:3128/"
+    config.proxy.no_proxy = "localhost,127.0.0.1"
+
 end
