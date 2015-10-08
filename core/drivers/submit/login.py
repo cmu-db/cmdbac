@@ -6,9 +6,11 @@ from patterns import patterns, match_any_pattern
 from submit import fill_form
 
 def get_login_form(forms):
-	login_patterns = ['login']
+	login_patterns = ['login', 'signin', 'sign-in', 'sign_in']
 	for form in forms:
 		if match_any_pattern(form['action'], login_patterns):
+			return form
+		if match_any_pattern(form['url'], login_patterns):
 			return form
 	return None
 
