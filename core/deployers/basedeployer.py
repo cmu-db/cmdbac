@@ -90,16 +90,12 @@ class BaseDeployer(object):
     ## DEF
 
     def save_attempt(self, attempt, result, register_result = USER_STATUS_UNKNOWN, login_result = USER_STATUS_UNKNOWN, forms = None):
-        # Stop the log capture
-        self.log.removeHandler(self.logHandler)
-        self.logHandler.flush()
-        self.buffer.flush()
-        
         attempt.result = result
         attempt.login = login_result
         attempt.register = register_result
         attempt.log = self.buffer.getvalue()
         attempt.stop_time = datetime.now()
+        attempt.size = utils.get_size(self.deploy_path)
         attempt.save()
         if forms != None:
             for f in forms:

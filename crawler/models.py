@@ -63,7 +63,6 @@ globals()['USER_STATUS_CODES'] = USER_STATUS_CODES
 class ProjectType(models.Model):
     name = models.CharField(max_length=16)
     filename = models.CharField(max_length=200)
-    # language = models.CharField(max_length=200)
     deployer_class = models.CharField(max_length=16)
     default_port = models.PositiveSmallIntegerField(null=False)
     logo = models.CharField(max_length=100)
@@ -228,6 +227,15 @@ class Attempt(models.Model):
     start_time = models.DateTimeField()
     stop_time = models.DateTimeField(default=None, null=True)
     duration = property(duration)
+
+    repo = models.ForeignKey('Repository', null=True)
+    sha = models.CharField(max_length=200, null=True)
+    size = models.IntegerField()
+    database = models.ForeignKey('Database', null=False)
+    dependencies = models.ManyToManyField(Package, through='Dependency')
+    log = models.TextField(default='')
+    hostname = models.CharField(max_length=200)
+
     result = models.CharField(max_length=2, choices=ATTEMPT_STATUS, default=None, null=True)
     result_label = property(resultLabel)
     result_name = property(resultName)
@@ -237,14 +245,7 @@ class Attempt(models.Model):
     login = models.CharField(max_length=2, choices=USER_STATUS, default=None, null=True)
     login_label = property(loginLabel)
     login_name = property(loginName)
-    log = models.TextField(default='')
-    dependencies = models.ManyToManyField(Package, through='Dependency')
-    hostname = models.CharField(max_length=200)
-    sha = models.CharField(max_length=200, null=True)
-    database = models.ForeignKey('Database', null=False)
-    repo = models.ForeignKey('Repository', null=True)
-    base_dir = models.CharField(max_length=200, null=True)
-    setting_dir = models.CharField(max_length=200, null=True)
+    
 
     def __unicode__(self):
         return unicode(self.id)
