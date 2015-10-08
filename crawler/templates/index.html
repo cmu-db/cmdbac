@@ -23,6 +23,7 @@
                 <th># of Repo</th>
                 <th># of Deploy</th>
                 <th># of Success</th>
+                <th>Success Rate</th>
             </tr>
         </thead>
         <tbody>
@@ -33,6 +34,7 @@
                     <td>{{ stat.num_repo }}</td>
                     <td>{{ stat.num_deploy }}
                     <td>{{ stat.num_suc }}</td>
+                    <td>{{ stat.suc_rate }}%</td>
                 </tr>
                 {% endfor %}
                 {% endif %}

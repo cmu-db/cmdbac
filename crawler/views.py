@@ -16,12 +16,15 @@ import utils
 import crawlers
 
 class Statistic:
-    def __init__(self, repo_type, num_repo, num_pkg, num_suc, num_deploy):
+    def __init__(self, repo_type, num_repo, num_suc, num_deploy):
         self.repo_type = repo_type
         self.num_repo = num_repo
-        self.num_pkg = num_pkg
         self.num_suc = num_suc
         self.num_deploy = num_deploy
+        if self.num_deploy == 0:
+            self.suc_rate = 0
+        else:
+            self.suc_rate = int(self.num_suc * 100 / self.num_deploy)
 
 def home(request):
     context = {}
@@ -31,9 +34,9 @@ def home(request):
         repos = Repository.objects.filter(project_type=t)
         num_repo = repos.count()
         num_suc = repos.filter(latest_attempt__result=ATTEMPT_STATUS_SUCCESS).count()
-        num_pkg = Package.objects.filter(project_type=t).count()
-        num_deploy = repos.exclude(latest_attempt=None).count
-        stat = Statistic(repo_type, num_repo, num_pkg, num_suc, num_deploy)
+        # num_pkg = Package.objects.filter(project_type=t).count()
+        num_deploy = repos.exclude(latest_attempt=None).count()
+        stat = Statistic(repo_type, num_repo, num_suc, num_deploy)
         stats.append(stat)
     context['stats'] = stats
     context['attempts'] = Attempt.objects.exclude(result=ATTEMPT_STATUS_NOT_AN_APPLICATION).order_by('-start_time')[:5]
