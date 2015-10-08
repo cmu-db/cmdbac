@@ -6,22 +6,18 @@ from file import cd
 
 HOME_DIR = expanduser('~')
 
-ENV_PATH = ''
-
 def home_path(path):
     return os.path.join(HOME_DIR, path)
 
 def configure_env(path):
-    global ENV_PATH
-    ENV_PATH = path
     command = 'virtualenv {}'.format(path)
     return run_command(command)
 
-def to_env():
+def to_env(path):
     return '{} && {}'.format(cd(ENV_PATH), 'source bin/activate')
 
-def pip_install(names, is_file, has_version = True):
-    command = '{} && pip install'.format(to_env())
+def pip_install(path, names, is_file, has_version = True):
+    command = '{} && pip install'.format(to_env(path))
     
     proxy = os.environ.get('http_proxy')
     if proxy:
@@ -39,8 +35,8 @@ def pip_install(names, is_file, has_version = True):
 
     return out
 
-def pip_install_text(name):
-    command = '{} && pip install'.format(to_env())
+def pip_install_text(path, name):
+    command = '{} && pip install'.format(to_env(path))
     
     proxy = os.environ.get('http_proxy')
     if proxy:
@@ -50,8 +46,8 @@ def pip_install_text(name):
 
     return out
 
-def pip_freeze():
-    out = run_command('{} && pip freeze'.format(to_env()))
+def pip_freeze(path):
+    out = run_command('{} && pip freeze'.format(to_env(path)))
     out = out[1].strip().splitlines()
     out = [line for line in out if not ' ' in line and '==' in line]
     return out
