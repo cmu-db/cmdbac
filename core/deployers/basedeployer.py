@@ -30,7 +30,7 @@ LOG.setLevel(logging.INFO)
 ## BASE DEPLOYER
 ## =====================================================================
 class BaseDeployer(object):
-    TMP_ZIP = "tmp.zip"
+    TMP_ZIP_FILE = "tmp.zip"
     TMP_DEPLOY_PATH = "/tmp/crawler"
     
     def __init__(self, repo, database):
@@ -39,8 +39,8 @@ class BaseDeployer(object):
         self.requirement_files = None
         self.packages_from_database = []
         self.packages_from_file = []
-        self.deploy_path = None
-        self.deployer_path = self.TMP_DEPLOY_PATH
+        self.zip_file = TMP_ZIP_FILE
+        self.deploy_path = self.TMP_DEPLOY_PATH
         
         # Create a buffer so that we can capture all log commands 
         # to include in the database for this attempt
@@ -187,24 +187,24 @@ class BaseDeployer(object):
 
         LOG.info('Downloading at {} ...'.format(attempt.sha))
         try:
-            utils.download_repo(attempt, BaseDeployer.TMP_ZIP)
+            utils.download_repo(attempt, self.zip_file)
         except:
             print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return -1
         
         try:
-            utils.make_dir(self.deployer_path)
-            utils.unzip(BaseDeployer.TMP_ZIP, BaseDeployer.TMP_DEPLOY_PATH)
+            utils.make_dir(self.deploy_path)
+            utils.unzip(self.zip_file, self.deploy_path)
         except:
             print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return -1
 
-        LOG.info('Deploying at {} ...'.format(BaseDeployer.TMP_DEPLOY_PATH))
+        LOG.info('Deploying at {} ...'.format(self.deploy_path))
         
         try:
-            attemptStatus = self.deploy_repo_attempt(attempt, BaseDeployer.TMP_DEPLOY_PATH)
+            attemptStatus = self.deploy_repo_attempt(attempt, self.deploy_path)
         except:
             print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_RUNNING_ERROR)
