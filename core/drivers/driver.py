@@ -121,5 +121,7 @@ class Driver(object):
 			for i in range(5):
 				submit.fill_form_random(form, br)
 
+		raw_input('...')
+
 		return {'register': register_result, 'login': login_result, 
 				'user':info, 'forms': ret_forms}

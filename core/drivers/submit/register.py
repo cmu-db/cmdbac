@@ -9,9 +9,11 @@ from patterns import patterns, match_any_pattern
 from submit import fill_form
 
 def get_register_form(forms):
-	register_patterns = ['register']
+	register_patterns = ['register', 'signup', 'sign-up', 'sign_up']
 	for form in forms:
 		if match_any_pattern(form['action'], register_patterns):
+			return form
+		if match_any_pattern(form['url'], register_patterns):
 			return form
 	return None
 
@@ -44,9 +46,9 @@ def register(deploy_path, forms):
 		return None
 	
 	matched_patterns, inputs, response, br = fill_form(register_form)
-	
+
 	if 'email' in matched_patterns:
-		matched_patterns, part_inputs = verify_email(register_form, matched_patterns)
+		matched_patterns, part_inputs = verify_email(deploy_path, register_form, matched_patterns)
 		if part_inputs != None:
 			inputs.update(part_inputs)
 
