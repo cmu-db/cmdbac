@@ -78,7 +78,7 @@ class RoRDeployer(BaseDeployer):
     ## DEF
     
     def get_main_url(self):
-        return 'http://127.0.0.1:{}/'.format(self.repo.project_type.default_port)
+        return 'http://127.0.0.1:{}/'.format(self.port)
     ## DEF
 
     def sync_server(self, path):
@@ -92,7 +92,7 @@ class RoRDeployer(BaseDeployer):
         LOG.info('Running server ...')
         command = '{} && bundle exec rails server -p {} -d'.format(
             utils.cd(path), 
-            self.repo.project_type.default_port)
+            self.port)
         return utils.run_command(command)
     ## DEF
 

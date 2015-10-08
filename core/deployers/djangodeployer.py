@@ -93,7 +93,7 @@ class DjangoDeployer(BaseDeployer):
         urls = self.get_urls()
         for url in urls:
             if not url.startswith('admin/'):
-                ret_url = 'http://127.0.0.1:{}/'.format(self.repo.project_type.default_port)
+                ret_url = 'http://127.0.0.1:{}/'.format(self.port)
                 ret_url = urlparse.urljoin(ret_url, url)
                 return ret_url
         return None
@@ -123,7 +123,7 @@ class DjangoDeployer(BaseDeployer):
         command = '{} && {} && unset DJANGO_SETTINGS_MODULE && python manage.py runserver 0.0.0.0:{}'.format(
             utils.to_env(),
             utils.cd(path),
-            self.repo.project_type.default_port)
+            self.port)
         return utils.run_command_async(command)
     ## DEF
 

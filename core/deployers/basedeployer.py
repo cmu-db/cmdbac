@@ -39,9 +39,11 @@ class BaseDeployer(object):
         self.requirement_files = None
         self.packages_from_database = []
         self.packages_from_file = []
+        self.id = 0
         self.zip_file = self.TMP_ZIP_FILE
         self.deploy_path = self.TMP_DEPLOY_PATH
-        self.setting_path = None 
+        self.setting_path = None
+        self.port = int(self.repo.project_type.default_port) + int(self.id)
 
         # Create a buffer so that we can capture all log commands to include in the database for this attempt
         self.log = logging.getLogger()
@@ -219,8 +221,8 @@ class BaseDeployer(object):
     ## DEF
 
     def kill_server(self):
-        LOG.info('Killing server on port {} ...'.format(self.repo.project_type.default_port))
-        ret = utils.kill_port(self.repo.project_type.default_port)
+        LOG.info('Killing server on port {} ...'.format(self.port))
+        ret = utils.kill_port(self.port)
         utils.unblock_network()
         return ret
     ## DEF
