@@ -31,33 +31,16 @@ class NodeDeployer(BaseDeployer):
         self.setting_path = None
         self.requirement_files = None
     ## DEF
-    
-    def get_database(self, setting_file):
-        db = Database.objects.get(name__iexact="MySQL")
-        return db
-    ## DEF
 
-    def extract_database_info(self):
-        try:
-            conn = MySQLdb.connect(host='localhost',user='root',passwd='root',db=self.database_name, port=3306)
-            cur = conn.cursor()
-            cur.close()
-            conn.close()
-        except:
-            # print traceback.print_exc()
-            pass
-    ## DEF
-    
     def configure_settings(self):
         pass
-        ## WITH
     ## DEF
     
     def install_requirements(self, requirement_files):
         pass
     ## DEF
 
-    def get_urls(self):
+    def get_main_url(self):
         pass
     ## DEF
 

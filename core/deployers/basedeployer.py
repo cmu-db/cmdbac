@@ -41,19 +41,12 @@ class BaseDeployer(object):
         self.packages_from_file = []
         self.zip_file = TMP_ZIP_FILE
         self.deploy_path = self.TMP_DEPLOY_PATH
-        
-        # Create a buffer so that we can capture all log commands 
-        # to include in the database for this attempt
-        self.log = logging.getLogger()
-        self.buffer = StringIO()
-        self.logHandler = logging.StreamHandler(self.buffer)
-        formatter = logging.Formatter("%(message)s")
-        self.logHandler.setFormatter(formatter)
-        self.log.addHandler(self.logHandler)    
+        self.setting_path = None 
     ## DEF
     
     def get_database(self, settings_file):
-        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
+        db = Database.objects.get(name__iexact="MySQL")
+        return db
     ## DEF
     
     def clear_database(self):
@@ -67,36 +60,19 @@ class BaseDeployer(object):
             conn.close()
         except:
             print traceback.print_exc()
-            pass
-    ## DEF
-
-    def extract_database_info(self):
-        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
-    ## DEF
-
-    def configure_settings(self):
-        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
     
-    def install_requirements(self):
-        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
-    ## DEF
-
-    def get_urls(self):
-        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
+    def extract_database_info(self):
+        try:
+            conn = MySQLdb.connect(host='localhost',user='root',passwd='root',db=self.database_name, port=3306)
+            cur = conn.cursor()
+            cur.close()
+            conn.close()
+        except:
+            print traceback.print_exc()
     ## DEF
 
     def get_main_url(self):
-        urls = self.get_urls()
-        for url in urls:
-            if not url.startswith('admin/'):
-                ret_url = 'http://127.0.0.1:{}/'.format(self.repo.project_type.default_port)
-                ret_url = urlparse.urljoin(ret_url, url)
-                return ret_url
-        return None
-    ## DEF
-
-    def sync_server(self):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
 
@@ -223,10 +199,9 @@ class BaseDeployer(object):
         return 0
     ## DEF
 
-    def check_server(self, urls):
+    def check_server(self):
         LOG.info("Checking server ...")
-        url = 'http://127.0.0.1:{}/'.format(self.repo.project_type.default_port)
-        url = urlparse.urljoin(url, urls[0])
+        url = self.get_main_url()
         command = 'wget --spider {}'.format(url)
         out = utils.run_command(command)
         LOG.info(out)

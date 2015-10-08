@@ -45,24 +45,6 @@ class DjangoDeployer(BaseDeployer):
     def __init__(self, repo, database):
         BaseDeployer.__init__(self, repo, database)
         self.database_name = 'django_app'
-        self.setting_path = None
-        self.requirement_files = None
-    ## DEF
-    
-    def get_database(self, setting_file):
-        db = Database.objects.get(name__iexact="MySQL")
-        return db
-    ## DEF
-
-    def extract_database_info(self):
-        try:
-            conn = MySQLdb.connect(host='localhost',user='root',passwd='root',db=self.database_name, port=3306)
-            cur = conn.cursor()
-            cur.close()
-            conn.close()
-        except:
-            # print traceback.print_exc()
-            pass
     ## DEF
     
     def configure_settings(self):
@@ -105,6 +87,16 @@ class DjangoDeployer(BaseDeployer):
         urls = sorted(urls, key=len)
         
         return urls
+    ## DEF
+
+    def get_main_url(self):
+        urls = self.get_urls()
+        for url in urls:
+            if not url.startswith('admin/'):
+                ret_url = 'http://127.0.0.1:{}/'.format(self.repo.project_type.default_port)
+                ret_url = urlparse.urljoin(ret_url, url)
+                return ret_url
+        return None
     ## DEF
 
     def sync_server(self, path):
@@ -245,7 +237,7 @@ class DjangoDeployer(BaseDeployer):
     ## DEF
     
     def deploy_repo_attempt(self, attempt, deploy_path):
-        LOG.info(utils.configure_env(self.TMP_DEPLOY_PATH))
+        LOG.info(utils.configure_env(self.deploy_path))
 
         setting_files = utils.search_file(deploy_path, 'settings.py')
         
@@ -272,9 +264,7 @@ class DjangoDeployer(BaseDeployer):
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES, None
 
         requirement_files = utils.search_file(deploy_path, 'requirements.txt')
-        # LOG.info('requirements.txt: {}'.format(self.requirement_files))
-
-        self.requirement_files = requirement_files
+        # LOG.info('requirements.txt: {}'.format(requirement_files))
         
         manage_paths = [os.path.dirname(manage_file) for manage_file in manage_files]
         
@@ -283,7 +273,6 @@ class DjangoDeployer(BaseDeployer):
         manage_path = next(name for name in manage_paths if name.startswith(base_dir))
         setting_file = next(name for name in setting_files if name.startswith(base_dir))
         
-        self.deploy_path = manage_path
         self.setting_path = setting_file
 
         attempt.base_dir = base_dir.split('/', 1)[1]

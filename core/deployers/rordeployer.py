@@ -58,23 +58,6 @@ class RoRDeployer(BaseDeployer):
     def __init__(self, repo, database):
         BaseDeployer.__init__(self, repo, database)
         self.database_name = 'ror_app'
-        self.setting_path = None
-    ## DEF
-    
-    def get_database(self, setting_file):
-        db = Database.objects.get(name__iexact="MySQL")
-        return db
-    ## DEF
-
-    def extract_database_info(self):
-        try:
-            conn = MySQLdb.connect(host='localhost',user='root',passwd='root',db=self.database_name, port=3306)
-            cur = conn.cursor()
-            cur.close()
-            conn.close()
-        except:
-            # print traceback.print_exc()
-            pass
     ## DEF
     
     def configure_settings(self):
@@ -94,8 +77,8 @@ class RoRDeployer(BaseDeployer):
         return ''
     ## DEF
     
-    def get_urls(self):
-        return ['']
+    def get_main_url(self):
+        return 'http://127.0.0.1:{}/'.format(self.repo.project_type.default_port)
     ## DEF
 
     def sync_server(self, path):
@@ -176,7 +159,6 @@ class RoRDeployer(BaseDeployer):
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
         base_dir = next(iter(base_dirs))
 
-        self.deploy_path = base_dir
         self.setting_path = base_dir
 
         attempt.base_dir = base_dir.split('/', 1)[1]
