@@ -40,8 +40,8 @@ class BaseDeployer(object):
         self.packages_from_database = []
         self.packages_from_file = []
         self.id = 0
-        self.zip_file = self.TMP_ZIP_FILE
-        self.deploy_path = self.TMP_DEPLOY_PATH
+        self.zip_file = self.TMP_ZIP_FILE + str(self.id)
+        self.deploy_path = self.TMP_DEPLOY_PATH + str(self.id)
         self.setting_path = None
         self.port = int(self.repo.project_type.default_port) + int(self.id)
 
