@@ -22,7 +22,7 @@ def vagrant_setup():
         old_dir = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, new_dir)
         shutil.copytree(old_dir, os.path.join(vagrant_dir, new_dir))
 
-    run_command('{} && {}'.format(cd(vagrant_dir), 'vagrant up'))
+    # run_command('{} && {}'.format(cd(vagrant_dir), 'vagrant up'))
 
 def vagrant_clear():
     # Delete files
@@ -32,7 +32,7 @@ def vagrant_clear():
         except:
             pass
 
-    run_command('{} && {}'.format(cd(vagrant_dir), 'vagrant halt'))
+    # run_command('{} && {}'.format(cd(vagrant_dir), 'vagrant halt'))
 
 def set_vagrant_database():
     settings_file = os.path.join(vagrant_dir, "db_webcrawler", "settings.py")
