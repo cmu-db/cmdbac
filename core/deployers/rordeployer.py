@@ -128,7 +128,7 @@ class RoRDeployer(BaseDeployer):
         
         LOG.info(self.run_server(deploy_path))
 
-        attemptStatus = self.check_server(self.get_urls())
+        attemptStatus = self.check_server()
 
         return attemptStatus
     ## DEF

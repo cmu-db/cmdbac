@@ -39,9 +39,16 @@ class BaseDeployer(object):
         self.requirement_files = None
         self.packages_from_database = []
         self.packages_from_file = []
-        self.zip_file = TMP_ZIP_FILE
+        self.zip_file = self.TMP_ZIP_FILE
         self.deploy_path = self.TMP_DEPLOY_PATH
         self.setting_path = None 
+
+        # Create a buffer so that we can capture all log commands to include in the database for this attempt
+        self.log = logging.getLogger()
+        self.buffer = StringIO()
+        self.logHandler = logging.StreamHandler(self.buffer)
+        self.logHandler.setFormatter(LOG_formatter)
+        self.log.addHandler(self.logHandler)    
     ## DEF
     
     def get_database(self, settings_file):
@@ -90,6 +97,11 @@ class BaseDeployer(object):
     ## DEF
 
     def save_attempt(self, attempt, result, register_result = USER_STATUS_UNKNOWN, login_result = USER_STATUS_UNKNOWN, forms = None):
+        # Stop capturing the log
+        self.log.removeHandler(self.logHandler)
+        self.logHandler.flush()
+        self.buffer.flush()
+
         attempt.result = result
         attempt.login = login_result
         attempt.register = register_result
@@ -131,8 +143,7 @@ class BaseDeployer(object):
                 pkg.save()
         ## FOR
 
-        # Make sure we update the repo to point to this 
-        # latest attempt
+        # Make sure we update the repo to point to this latest attempt
         if self.repo.valid_project != ATTEMPT_STATUS_SUCCESS:
             self.repo.valid_project = (result == ATTEMPT_STATUS_SUCCESS)
         self.repo.latest_attempt = attempt

@@ -1,4 +1,5 @@
 import os
+import hurry.filesize
 from django.db import models
 
 # Dependency Package Source
@@ -223,6 +224,8 @@ class Attempt(models.Model):
         return (self.stop_time - self.start_time).total_seconds()
     def commit_url(self):
         return self.repo.source.get_commit_url(self.repo.name, self.sha)
+    def readable_size(self):
+        return hurry.filesize.size(self.size, system=hurry.filesize.alternative)
 
     start_time = models.DateTimeField()
     stop_time = models.DateTimeField(default=None, null=True)
