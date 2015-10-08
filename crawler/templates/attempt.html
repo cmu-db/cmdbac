@@ -11,7 +11,7 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
         <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{attempt.repo.name}}">Repositories</a>
         <span class="divider"></span>
     <li>
-        <a href="{% url 'repository' attempt.repo.get_user_name attempt.repo.get_repo_name %}?{{ queries.urlencode }}#{{ attempt.id }}">{{attempt.repo.name}}</a>
+        <a href="{% url 'repository' attempt.repo.user_name attempt.repo.repo_name %}?{{ queries.urlencode }}#{{ attempt.id }}">{{attempt.repo.name}}</a>
         <span class="divider"></span>
     <li>Attempt #{{attempt.id}}
 </ul>
@@ -48,6 +48,10 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
                         &mdash;
                     {% endif %}
                     </td>
+                </tr>
+                <tr>
+                    <td>Size</td>
+                    <td>{{ attempt.readable_size }}</td>
                 </tr>
                 <tr>
                     <td>Attempt Result</td>
