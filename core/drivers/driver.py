@@ -58,8 +58,11 @@ class Driver(object):
             br.get(main_url)
             br.save_screenshot(screenshot_path)
             br.quit
+            return screenshot_path
         except:
             print traceback.print_exc()
+            return None
+
 
     def drive(self, deployer):
         # get main page
@@ -132,8 +135,9 @@ class Driver(object):
                 submit.fill_form_random(form, br)
 
         print 'Saving Screenshot ...'
-        screenshot_path = os.path.join(deployer.deploy_path, 'screenshot.png')
-        self.save_screenshot(main_url, screenshot_path)
+        screenshot_path = self.save_screenshot(main_url, os.path.join(deployer.deploy_path, 'screenshot.png'))
+
+
 
         return {'register': register_result, 'login': login_result, 
                 'user':info, 'forms': ret_forms, 'screenshot': screenshot_path}

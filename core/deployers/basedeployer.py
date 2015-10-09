@@ -98,19 +98,27 @@ class BaseDeployer(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
 
-    def save_attempt(self, attempt, result, register_result = USER_STATUS_UNKNOWN, login_result = USER_STATUS_UNKNOWN, forms = None):
+    def save_attempt(self, attempt, attempt_result, driver_result):
+        register_result = driver_result.get('register', USER_STATUS_UNKNOWN)
+        login_result = driver_result.get('login', USER_STATUS_UNKNOWN)
+        forms = driver_result.get('forms', None)
+        screenshot_path = driver_result.get('screenshot', None)
+
         # Stop capturing the log
         self.log.removeHandler(self.logHandler)
         self.logHandler.flush()
         self.buffer.flush()
 
-        attempt.result = result
+        # save attempt
+        attempt.result = attempt_result
         attempt.login = login_result
         attempt.register = register_result
         attempt.log = self.buffer.getvalue()
         attempt.stop_time = datetime.now()
         attempt.size = utils.get_size(self.deploy_path)
         attempt.save()
+
+        # save forms
         if forms != None:
             for f in forms:
                 form = Form()
@@ -130,6 +138,14 @@ class BaseDeployer(object):
                     field.form = form
                     field.save()
 
+        # save screenshot
+        if screenshot_path != None:
+            screenshot = open(screenshot_path, 'rb')
+            image = Image()
+            image.data = screenshot.read()
+            image.attempt = attempt
+            image.save()
+
         LOG.info("Saved Attempt #%s for %s" % (attempt, attempt.repo))
         
         # Populate packages
@@ -147,7 +163,7 @@ class BaseDeployer(object):
 
         # Make sure we update the repo to point to this latest attempt
         if self.repo.valid_project != ATTEMPT_STATUS_SUCCESS:
-            self.repo.valid_project = (result == ATTEMPT_STATUS_SUCCESS)
+            self.repo.valid_project = (attempt_result == ATTEMPT_STATUS_SUCCESS)
         self.repo.latest_attempt = attempt
         self.repo.attempts_count = self.repo.attempts_count + 1
         self.repo.save()
@@ -203,7 +219,7 @@ class BaseDeployer(object):
         driverResult = driver.drive(self)
         self.kill_server()
 
-        self.save_attempt(attempt, attemptStatus, driverResult['register'], driverResult['login'], driverResult['forms'])
+        self.save_attempt(attempt, attemptStatus, driverResult)
         
         return 0
     ## DEF
