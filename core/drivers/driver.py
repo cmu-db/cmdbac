@@ -77,8 +77,9 @@ class Driver(object):
         register_result = USER_STATUS_UNKNOWN
         last_line_no = self.check_log()
         try:
-            register_form, info, inputs = submit.register(deployer.deploy_path, forms)
+            register_form, info, inputs = submit.register(deployer.base_path, forms)
         except:
+            print traceback.print_exc()
             register_form = info = inputs = None
         if register_form == None or info == None or inputs == None:
             print 'Fail to register ...'
@@ -100,6 +101,7 @@ class Driver(object):
         try:
             login_form, br = submit.login(forms, info)
         except:
+            print traceback.print_exc()
             login_form = br = None
         if login_form == None or br == None:
             print 'Fail to login ...'
