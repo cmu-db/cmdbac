@@ -98,7 +98,7 @@ class BaseDeployer(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
 
-    def save_attempt(self, attempt, attempt_result, driver_result):
+    def save_attempt(self, attempt, attempt_result, driver_result = {}):
         register_result = driver_result.get('register', USER_STATUS_UNKNOWN)
         login_result = driver_result.get('login', USER_STATUS_UNKNOWN)
         forms = driver_result.get('forms', None)
@@ -221,7 +221,7 @@ class BaseDeployer(object):
         except:
             print traceback.print_exc()
             driver_result = None
-    
+
         self.kill_server()
 
         self.save_attempt(attempt, attemptStatus, driverResult)
