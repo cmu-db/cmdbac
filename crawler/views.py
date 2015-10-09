@@ -157,13 +157,16 @@ def repository(request, user_name, repo_name):
     return render(request, 'repository.html', context)
 
 def attempt(request, id):
-    attempt = Attempt.objects.get(id=id)
-    dependencies = Dependency.objects.filter(attempt__id=id).order_by('package__name')
-    forms = Form.objects.filter(attempt=attempt)
     context = {}
-    context['attempt'] = attempt
-    context['dependencies'] = dependencies
     context['queries'] = request.GET.copy()
+
+    attempt = Attempt.objects.get(id=id)
+    context['attempt'] = attempt
+
+    dependencies = Dependency.objects.filter(attempt__id=id).order_by('package__name')
+    context['dependencies'] = dependencies
+    
+    forms = Form.objects.filter(attempt=attempt)
     context['forms'] = []
     for form in forms:
         fields = Field.objects.filter(form=form)
@@ -175,4 +178,10 @@ def attempt(request, id):
             'fields': fields,
             'queries': queries
         })
+
+    image = Image.objects.get(attempt=attempt)
+    screenshot = open(os.path.join(os.path.dirname(__file__), 'static', 'screenshot.png'), 'wb')
+    screenshot.write(image.data)
+    screenshot.close()
+
     return render(request, 'attempt.html', context)

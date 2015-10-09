@@ -1,8 +1,8 @@
 .vagrant/
-log.txt
 *.log
 *.pyc
 *.sqlite3
 *.kate-swp
 *.json
 *.box
+screenshot.png
