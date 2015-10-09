@@ -277,3 +277,15 @@ class Field(models.Model):
 class Query(models.Model):
     content = models.TextField()
     form = models.ForeignKey('Form')
+
+class Image(models.Model):
+    def set_data(self, data):
+        self._data = base64.encodestring(data)
+    def get_data(self):
+        return base64.decodestring(self._data)
+
+    _data = models.TextField(db_column='data', blank=True)
+    data = property(get_data, set_data)
+    attempt = models.ForeignKey('Attempt')
+
+    
