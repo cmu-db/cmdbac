@@ -93,11 +93,13 @@ install 'Nokogiri dependencies' libxml2 libxml2-dev libxslt1-dev imagemagick lib
 echo installing scrapy
 pip install scrapy
 
+# web and env
 pip install mechanize
 pip install python-dateutil
 pip install virtualenv
 pip install hurry.filesize
 pip install selenium
+install 'phantomjs' phantomjs
 
 # Fix Dependencies
 apt-get -f -y install >/dev/null 2>&1
