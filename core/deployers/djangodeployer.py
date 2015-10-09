@@ -49,7 +49,7 @@ class DjangoDeployer(BaseDeployer):
     
     def configure_settings(self):
         with open(self.setting_path, "a") as my_setting_file:
-            my_setting_file.write(DJANGO_SETTINGS.format(self.database_name, self.deployer_path))
+            my_setting_file.write(DJANGO_SETTINGS.format(self.database_name, self.deploy_path))
         ## WITH
     ## DEF
     
