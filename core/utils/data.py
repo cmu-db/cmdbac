@@ -51,7 +51,7 @@ def deploy_repo(repo_name):
     for repo in Repository.objects.filter(name=repo_name):
         print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
         try:
-            result = utils.vagrant_deploy(repo, database.name)
+            result = utils.vagrant_deploy(repo, database.name, 0)
         except Exception, e:
             # print traceback.print_exc()
             raise e

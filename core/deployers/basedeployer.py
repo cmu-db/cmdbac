@@ -33,17 +33,17 @@ class BaseDeployer(object):
     TMP_ZIP_FILE = "tmp.zip"
     TMP_DEPLOY_PATH = "/tmp/crawler"
     
-    def __init__(self, repo, database):
+    def __init__(self, repo, database, deploy_id):
         self.repo = repo
         self.database = database
         self.requirement_files = None
         self.packages_from_database = []
         self.packages_from_file = []
-        self.id = 0
-        self.zip_file = self.TMP_ZIP_FILE + str(self.id)
-        self.deploy_path = self.TMP_DEPLOY_PATH + str(self.id)
+        self.deploy_id = deploy_id
+        self.zip_file = self.TMP_ZIP_FILE + str(self.deploy_id)
+        self.deploy_path = self.TMP_DEPLOY_PATH + str(self.deploy_id)
         self.setting_path = None
-        self.port = int(self.repo.project_type.default_port) + int(self.id)
+        self.port = int(self.repo.project_type.default_port) + int(self.deploy_id)
 
         # Create a buffer so that we can capture all log commands to include in the database for this attempt
         self.log = logging.getLogger()

@@ -54,12 +54,12 @@ def unset_vagrant_database():
         fout.flush()
         fout.close()
 
-def vagrant_deploy(repo, database):
+def vagrant_deploy(repo, database, deploy_id):
     set_vagrant_database()
     out = os.system('{} && {}'.format(
         cd(vagrant_dir),
         'vagrant ssh -c "{}"'.format(
-            'python /vagrant/core/scripts/vagrant_deploy.py {} {}'.format(repo, database))))
+            'python /vagrant/core/scripts/vagrant_deploy.py {} {} {}'.format(repo, database, deploy_id))))
     unset_vagrant_database()
 
     return out

@@ -42,8 +42,8 @@ REGISTRATION_CAPTCHA = False
 ## DJANGO DEPLOYER
 ## =====================================================================
 class DjangoDeployer(BaseDeployer):
-    def __init__(self, repo, database):
-        BaseDeployer.__init__(self, repo, database)
+    def __init__(self, repo, database, deploy_id):
+        BaseDeployer.__init__(self, repo, database, deploy_id)
         self.database_name = 'django_app'
     ## DEF
     

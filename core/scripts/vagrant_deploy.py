@@ -14,10 +14,11 @@ from deployers import *
 from drivers import *
 
 def main():
-	if len(sys.argv) != 3:
+	if len(sys.argv) != 4:
 		return
 	repo_name = sys.argv[1]
 	database_name = sys.argv[2]
+	deploy_id = sys.argv[3]
 
 	repo = Repository.objects.get(name=repo_name)
 	database = Database.objects.get(name=database_name)
@@ -25,7 +26,7 @@ def main():
 	moduleName = "deployers.%s" % (repo.project_type.deployer_class.lower())
 	moduleHandle = __import__(moduleName, globals(), locals(), [repo.project_type.deployer_class])
 	klass = getattr(moduleHandle, repo.project_type.deployer_class)
-	deployer = klass(repo, database)
+	deployer = klass(repo, database, deploy_id)
 	if deployer.deploy() != 0:
 		deployer.kill_server()
 		sys.exit(-1)

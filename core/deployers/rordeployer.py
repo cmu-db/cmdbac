@@ -55,8 +55,8 @@ gem 'mysql2'
 ## RUBY ON RAILS DEPLOYER
 ## =====================================================================
 class RoRDeployer(BaseDeployer):
-    def __init__(self, repo, database):
-        BaseDeployer.__init__(self, repo, database)
+    def __init__(self, repo, database, deploy_id):
+        BaseDeployer.__init__(self, repo, database, deploy_id)
         self.database_name = 'ror_app'
     ## DEF
     
