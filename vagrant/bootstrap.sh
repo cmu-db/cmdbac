@@ -97,6 +97,7 @@ pip install mechanize
 pip install python-dateutil
 pip install virtualenv
 pip install hurry.filesize
+pip install selenium
 
 # Fix Dependencies
 apt-get -f -y install >/dev/null 2>&1
