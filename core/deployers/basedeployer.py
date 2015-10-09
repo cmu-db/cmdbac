@@ -220,7 +220,7 @@ class BaseDeployer(object):
             driverResult = driver.drive(self)
         except:
             print traceback.print_exc()
-            driver_result = None
+            driverResult = {}
 
         self.kill_server()
 

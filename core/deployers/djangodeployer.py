@@ -7,6 +7,7 @@ import time
 import importlib
 import traceback
 import MySQLdb
+import urlparse
 
 from basedeployer import BaseDeployer
 from crawler.models import *
@@ -49,7 +50,7 @@ class DjangoDeployer(BaseDeployer):
     
     def configure_settings(self):
         with open(self.setting_path, "a") as my_setting_file:
-            my_setting_file.write(DJANGO_SETTINGS.format(self.database_name, self.deploy_path))
+            my_setting_file.write(DJANGO_SETTINGS.format(self.database_name, self.base_path))
         ## WITH
     ## DEF
     
@@ -121,7 +122,7 @@ class DjangoDeployer(BaseDeployer):
         self.configure_network()
         LOG.info('Running server ...')
         command = '{} && {} && unset DJANGO_SETTINGS_MODULE && python manage.py runserver 0.0.0.0:{}'.format(
-            utils.to_env(),
+            utils.to_env(self.base_path),
             utils.cd(path),
             self.port)
         return utils.run_command_async(command)

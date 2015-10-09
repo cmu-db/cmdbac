@@ -14,7 +14,7 @@ def configure_env(path):
     return run_command(command)
 
 def to_env(path):
-    return '{} && {}'.format(cd(ENV_PATH), 'source bin/activate')
+    return '{} && {}'.format(cd(path), 'source bin/activate')
 
 def pip_install(path, names, is_file, has_version = True):
     command = '{} && pip install'.format(to_env(path))

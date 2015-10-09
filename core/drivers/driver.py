@@ -67,7 +67,8 @@ class Driver(object):
     def drive(self, deployer):
         # get main page
         main_url = deployer.get_main_url()
-        
+        print main_url
+
         # extract all the forms
         forms = extract.extract_all_forms(main_url)
         ret_forms = []
@@ -135,7 +136,7 @@ class Driver(object):
                 submit.fill_form_random(form, br)
 
         print 'Saving Screenshot ...'
-        screenshot_path = self.save_screenshot(main_url, os.path.join(deployer.deploy_path, 'screenshot.png'))
+        screenshot_path = self.save_screenshot(main_url, os.path.join(deployer.base_path, 'screenshot.png'))
 
 
 
