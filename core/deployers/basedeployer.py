@@ -41,7 +41,7 @@ class BaseDeployer(object):
         self.packages_from_file = []
         self.deploy_id = deploy_id
         self.zip_file = self.TMP_ZIP_FILE + str(self.deploy_id)
-        self.deploy_path = self.TMP_DEPLOY_PATH + str(self.deploy_id)
+        self.base_path = self.TMP_DEPLOY_PATH + str(self.deploy_id)
         self.setting_path = None
         self.port = int(self.repo.project_type.default_port) + int(self.deploy_id)
 
@@ -115,7 +115,7 @@ class BaseDeployer(object):
         attempt.register = register_result
         attempt.log = self.buffer.getvalue()
         attempt.stop_time = datetime.now()
-        attempt.size = utils.get_size(self.deploy_path)
+        attempt.size = utils.get_size(self.base_path)
         attempt.save()
 
         # save forms
@@ -195,17 +195,17 @@ class BaseDeployer(object):
             return -1
         
         try:
-            utils.make_dir(self.deploy_path)
-            utils.unzip(self.zip_file, self.deploy_path)
+            utils.make_dir(self.base_path)
+            utils.unzip(self.zip_file, self.base_path)
         except:
             print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return -1
 
-        LOG.info('Deploying at {} ...'.format(self.deploy_path))
+        LOG.info('Deploying at {} ...'.format(self.base_path))
         
         try:
-            attemptStatus = self.deploy_repo_attempt(attempt, self.deploy_path)
+            attemptStatus = self.deploy_repo_attempt(attempt, self.base_path)
         except:
             print traceback.print_exc()
             self.save_attempt(attempt, ATTEMPT_STATUS_RUNNING_ERROR)

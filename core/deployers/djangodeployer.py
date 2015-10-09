@@ -102,14 +102,14 @@ class DjangoDeployer(BaseDeployer):
     def sync_server(self, path):
         LOG.info('Syncing server ...')
         command = '{} && {} && unset DJANGO_SETTINGS_MODULE && python manage.py syncdb --noinput'.format(
-            utils.to_env(), utils.cd(path))
+            utils.to_env(self.base_path), utils.cd(path))
         return utils.run_command(command)
     ## DEF
 
     def create_superuser(self, path):
         LOG.info('Creating superuser ...')
         command = '{} && {} && {}'.format(
-            utils.to_env(),
+            utils.to_env(self.base_path),
             utils.cd(path),
             """
             echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@test.com', 'admin')" | python manage.py shell
@@ -137,7 +137,7 @@ class DjangoDeployer(BaseDeployer):
         LOG.info('Database: ' + attempt.database.name)
 
         LOG.info('Installing requirements ...')
-        packages = self.install_requirements(deploy_path, requirement_files)
+        packages = self.install_requirements(self.base_path, requirement_files)
         for package in packages:
             if len(package.split('==')) >= 2:
                 name, version = package.split('==')
@@ -167,7 +167,7 @@ class DjangoDeployer(BaseDeployer):
             match = re.search('pip install ([a-zA-Z\-_]+)', output[2].strip())
             if match:
                 package_name = match.group(1)
-                output = utils.pip_install_text(deploy_path, package_name)
+                output = utils.pip_install_text(self.base_path, package_name)
                 continue
                 # LOG.info('pip install output: {}'.format(output))
 
@@ -183,7 +183,7 @@ class DjangoDeployer(BaseDeployer):
                     if index < len(candidate_packages):
                         dependencies[-1] = (missing_module_name, candidate_packages, index)
                         LOG.info('pip install {}'.format(candidate_packages[index]))
-                        pip_output = utils.pip_install(deploy_path, [candidate_packages[index]], False)
+                        pip_output = utils.pip_install(self.base_path, [candidate_packages[index]], False)
                         LOG.info('pip install output: {}'.format(pip_output))
                     else:
                         LOG.info('No more possible packages!')
@@ -197,7 +197,7 @@ class DjangoDeployer(BaseDeployer):
                     
                     candidate_packages = Package.objects.filter(id__in=candidate_package_ids).order_by('-version', '-count', 'name')
                     LOG.info('pip install {}'.format(candidate_packages[0]))
-                    pip_output = utils.pip_install(deploy_path, [candidate_packages[0]], False, False)            
+                    pip_output = utils.pip_install(self.base_path, [candidate_packages[0]], False, False)            
                     LOG.info('pip install output: {}'.format(pip_output))
                     try:
                         version = re.search('Successfully installed .*-(.*)', pip_output[1]).group(1)
@@ -237,7 +237,7 @@ class DjangoDeployer(BaseDeployer):
     ## DEF
     
     def deploy_repo_attempt(self, attempt, deploy_path):
-        LOG.info(utils.configure_env(deploy_path))
+        LOG.info(utils.configure_env(self.base_path))
 
         setting_files = utils.search_file(deploy_path, 'settings.py')
         
