@@ -215,8 +215,13 @@ class BaseDeployer(object):
             self.save_attempt(attempt, attemptStatus)
             return -1
 
-        driver = Driver()
-        driverResult = driver.drive(self)
+        try:
+            driver = Driver()
+            driverResult = driver.drive(self)
+        except:
+            print traceback.print_exc()
+            driver_result = None
+    
         self.kill_server()
 
         self.save_attempt(attempt, attemptStatus, driverResult)
