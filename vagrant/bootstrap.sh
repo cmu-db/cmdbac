@@ -42,8 +42,8 @@ install 'Python' python-dev python-software-properties
 command curl -sSL https://rvm.io/mpapis.asc | gpg --import -
 curl -sSL https://get.rvm.io | bash -s stable
 source /usr/local/rvm/scripts/rvm
-rvm install 2.2.2
-rvm use 2.2.2 --default
+rvm install 1.9.3
+rvm use 1.9.3 --default
 gem install bundler
 gem install rails
 gem install bundle
