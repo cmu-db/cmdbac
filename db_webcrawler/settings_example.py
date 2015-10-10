@@ -65,7 +65,7 @@ DATABASES = {
         #'HOST': 'localhost',
         #'PORT': '3306',
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'new_crawler',
+        'NAME': 'crawler',
         'HOST': 'localhost',
         'PORT': '3306',
         'USER': 'root',
@@ -92,3 +92,5 @@ USE_L10N = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+HTTP_PROXY = 'http://proxy.pdl.cmu.edu:3128/'

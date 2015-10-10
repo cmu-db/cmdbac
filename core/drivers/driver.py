@@ -8,6 +8,7 @@ import re
 import copy
 
 from crawler.models import *
+from db_webcrawler import *
 import utils
 import extract
 import submit
@@ -54,7 +55,15 @@ class Driver(object):
     def save_screenshot(self, main_url, screenshot_path):
         try:
             from selenium import webdriver
-            br = webdriver.PhantomJS()
+            try:
+                service_args = [
+                    '--proxy=' + HTTP_PROXY,
+                    '--proxy-type=http',
+                ]
+            except:
+                service_args = None
+            br = webdriver.PhantomJS(service_args=service_args)
+            
             br.get(main_url)
             br.save_screenshot(screenshot_path)
             br.quit
@@ -67,7 +76,6 @@ class Driver(object):
     def drive(self, deployer):
         # get main page
         main_url = deployer.get_main_url()
-        print main_url
 
         # extract all the forms
         forms = extract.extract_all_forms(main_url)
