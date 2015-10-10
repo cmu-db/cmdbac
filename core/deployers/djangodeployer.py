@@ -45,7 +45,7 @@ REGISTRATION_CAPTCHA = False
 class DjangoDeployer(BaseDeployer):
     def __init__(self, repo, database, deploy_id):
         BaseDeployer.__init__(self, repo, database, deploy_id)
-        self.database_name = 'django_app'
+        self.database_name = 'django_app' + str(deploy_id)
     ## DEF
     
     def configure_settings(self):
