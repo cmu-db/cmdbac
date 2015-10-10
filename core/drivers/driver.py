@@ -8,7 +8,7 @@ import re
 import copy
 
 from crawler.models import *
-from db_webcrawler import *
+from db_webcrawler.settings import *
 import utils
 import extract
 import submit
