@@ -255,14 +255,14 @@ class DjangoDeployer(BaseDeployer):
             setting_files = utils.search_file(deploy_path, 'settings.py')
         
         if not setting_files:
-            return ATTEMPT_STATUS_NOT_AN_APPLICATION, None
+            return ATTEMPT_STATUS_NOT_AN_APPLICATION
 
         # LOG.info('settings.py: {}'.format(setting_files))
 
         manage_files = utils.search_file(deploy_path, 'manage.py')
         # LOG.info('manage.py: {}'.format(manage_files))
         if not manage_files:
-            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES, None
+            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
 
         requirement_files = utils.search_file(deploy_path, 'requirements.txt')
         # LOG.info('requirements.txt: {}'.format(requirement_files))
