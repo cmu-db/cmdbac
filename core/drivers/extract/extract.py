@@ -22,8 +22,8 @@ def extract_forms(url, follow = "false", cookie_jar = None):
 		with open(os.path.join(os.path.dirname(__file__), 'forms.json')) as json_forms:
 			forms = json.load(json_forms)
 	except:
-		print traceback.print_exc()
 		forms = []
+		# print traceback.print_exc()
 
 	return forms
 

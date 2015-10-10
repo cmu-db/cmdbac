@@ -43,7 +43,7 @@ def verify_email(deploy_path, form, matched_patterns):
 def register(deploy_path, forms):
 	register_form = get_register_form(forms)
 	if register_form == None:
-		return None
+		return None, None, None
 	
 	matched_patterns, inputs, response, br = fill_form(register_form)
 
