@@ -93,4 +93,4 @@ USE_L10N = True
 
 STATIC_URL = '/static/'
 
-HTTP_PROXY = 'http://proxy.pdl.cmu.edu:3128/'
+HTTP_PROXY = ''
