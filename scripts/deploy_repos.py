@@ -13,13 +13,16 @@ from crawler.models import *
 import utils
 
 def main():
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         return
     deploy_id = int(sys.argv[1])
+    total_deployer = int(sys.argv[2])
     database = Database.objects.get(name='MySQL')
 
-    for repo in Repository.objects.all:
+    for repo in Repository.objects.all():
         if repo.latest_attempt != None:
+            continue
+        if repo.id % total_deployer != deploy_id - 1:
             continue
         print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
         try:
