@@ -106,7 +106,8 @@ class RoRDeployer(BaseDeployer):
         # LOG.info('Database: ' + attempt.database.name)
 
         ruby_versions = utils.get_ruby_versions()
-        ruby_versions = ruby_versions[::-1]
+        # temporarily use one version to allow for parallel
+        ruby_versions = ruby_versions[:1] 
 
         for version_index in range(len(ruby_versions)):
             ruby_version = ruby_versions[version_index]
