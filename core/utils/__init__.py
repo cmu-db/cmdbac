@@ -4,3 +4,4 @@ from file import search_file, search_file_regex,  make_dir, rm_dir, unzip, cd, r
 from pip import configure_env, to_env, pip_install, pip_install_text, pip_freeze
 from data import add_module, add_repo, delete_repo, deploy_repo
 from vagrant import vagrant_setup, vagrant_clear, vagrant_deploy
+from rvm import get_ruby_versions, use_ruby_version

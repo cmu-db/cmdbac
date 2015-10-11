@@ -104,27 +104,43 @@ class RoRDeployer(BaseDeployer):
 
         attempt.database = self.get_database(os.path.join(self.setting_path, 'config/database.yml'))
         # LOG.info('Database: ' + attempt.database.name)
-        
-        LOG.info('Installing requirements ...')
-        out = self.install_requirements(deploy_path)
-        if not 'complete!' in out:
-            LOG.info(out)
-            return ATTEMPT_STATUS_MISSING_DEPENDENCIES
-        packages = out.split('\n')
-        for package in packages:
-            s = re.search('Using (.*) (.*)', package)
-            if s:
-                name, version = s.group(1), s.group(2)
-                try:
-                    pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
-                    self.packages_from_file.append(pkg)
-                except:
-                    print traceback.print_exc()
 
-        out = self.sync_server(deploy_path)
-        LOG.info(out)
-        if "rake aborted!" in out[1]:
-            return ATTEMPT_STATUS_RUNNING_ERROR
+        ruby_versions = utils.get_ruby_versions()
+        ruby_versions = ruby_versions[::-1]
+
+        for version_index in range(len(ruby_versions)):
+            ruby_version = ruby_versions[version_index]
+            LOG.info('Using Ruby {} ...'.format(ruby_version))
+            utils.use_ruby_version(ruby_version)
+        
+            LOG.info('Installing requirements ...')
+            out = self.install_requirements(deploy_path)
+            if not 'complete!' in out:
+                LOG.info(out)
+                if version_index == len(ruby_versions) - 1:
+                    return ATTEMPT_STATUS_MISSING_DEPENDENCIES
+                else:
+                    continue
+            packages = out.split('\n')
+            for package in packages:
+                s = re.search('Using (.*) (.*)', package)
+                if s:
+                    name, version = s.group(1), s.group(2)
+                    try:
+                        pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
+                        self.packages_from_file.append(pkg)
+                    except:
+                        print traceback.print_exc()
+
+            out = self.sync_server(deploy_path)
+            if 'rake aborted!' in out[1]:
+                LOG.info(out)
+                if version_index == len(ruby_versions) - 1:
+                    return ATTEMPT_STATUS_RUNNING_ERROR
+                else:
+                    continue
+            else:
+                break
         
         LOG.info(self.run_server(deploy_path))
 
