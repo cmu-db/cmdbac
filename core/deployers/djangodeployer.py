@@ -275,8 +275,11 @@ class DjangoDeployer(BaseDeployer):
         
         base_dir = next(name for name in manage_paths)
         
-        manage_path = next(name for name in manage_paths if name.startswith(base_dir))
-        setting_file = next(name for name in setting_files if name.startswith(base_dir))
+        try:
+            manage_path = next(name for name in manage_paths if name.startswith(base_dir))
+            setting_file = next(name for name in setting_files if name.startswith(base_dir))
+        except:
+            return ATTEMPT_STATUS_NOT_AN_APPLICATION
         
         self.setting_path = setting_file
 
