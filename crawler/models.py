@@ -253,6 +253,12 @@ class Attempt(models.Model):
 
     def __unicode__(self):
         return unicode(self.id)
+    def num_forms(self):
+        return Form.objects.filter(attempt = self).count()
+    def num_success_forms(self):
+        return Form.objects.filter(attempt = self).count()
+    def num_queries(self):
+        return Query.objects.filter(form__attempt = self).count()
 
 ## CLASS
 

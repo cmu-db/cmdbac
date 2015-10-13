@@ -62,8 +62,10 @@ Repositories &raquo; Database Application Crawler
                 <th>Source</th>
                 <th><a href="?order_by={% if order_by == "repo_type__name" %}-{% endif %}repo_type__name&amp;{{ queries_no_page_order.urlencode }}">Type</th>
                 <th><a href="?order_by={% if order_by != "-commits_count" %}-{% endif %}commits_count&amp;{{ queries_no_page_order.urlencode }}"># of Commits</th>
-                <th><a href="?order_by={% if order_by != "-attempts_count" %}-{% endif %}attempts_count&;{{queries_no_page_order.urlencode }}"> # of Attempts</th>
+                <th><a href="?order_by={% if order_by != "-attempts_count" %}-{% endif %}attempts_count&;{{queries_no_page_order.urlencode }}"># of Attempts</th>
                 <th><a href="?order_by={% if order_by == "latest_attempt__result__name" %}-{% endif %}latest_attempt__result__name&amp;{{ queries_no_page_order.urlencode }}">Last Result</th>
+                <th><a href="?order_by={% if order_by != "-num_forms" %}-{% endif %}num_forms&;{{queries_no_page_order.urlencode }}"># of Forms</th>
+                <th><a href="?order_by={% if order_by != "-num_queries" %}-{% endif %}num_queries&;{{queries_no_page_order.urlencode }}"># of Queries</th>
                 <th><a href="?order_by={% if order_by != "-updated_date" %}-{% endif %}updated_date&;{{queries_no_page_order.urlencode }}">Updated</th>
             </tr>
         </thead>
@@ -87,6 +89,22 @@ Repositories &raquo; Database Application Crawler
                     {% else %}
                         <a id="{{repository.latest_attempt.id}}" href="{% url 'attempt' repository.latest_attempt.id %}?{{ queries.urlencode }}" class="label label-{{ repository.latest_attempt.result_label }}">{{repository.latest_attempt.result_name}}</a>
                         <a href="#" data-toggle="modal" data-target="#statusModal">?</a>
+                    {% endif %}
+                    </td>
+
+                    <td>
+                    {% if repository.latest_attempt %}
+                        {{ repository.latest_attempt.num_forms }}
+                    {% else %}
+                        0
+                    {% endif %}
+                    </td>
+
+                    <td>
+                    {% if repository.latest_attempt %}
+                        {{ repository.latest_attempt.num_queries }}
+                    {% else %}
+                        0
                     {% endif %}
                     </td>
                     
