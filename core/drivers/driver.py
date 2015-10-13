@@ -151,7 +151,5 @@ class Driver(object):
         print 'Saving Screenshot ...'
         screenshot_path = self.save_screenshot(main_url, os.path.join(deployer.base_path, 'screenshot.png'))
 
-
-
         return {'register': register_result, 'login': login_result, 
                 'user':info, 'forms': ret_forms, 'screenshot': screenshot_path}

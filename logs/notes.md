@@ -1,4 +1,3 @@
-# total forms, succ forms, total queries(repo, attempt)
 # add runtime version
 # clear the dirs after deploying
 # add ubuntu to mysql group
