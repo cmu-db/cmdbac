@@ -156,7 +156,6 @@ class GitHubCrawler(BaseCrawler):
             repo.branches_count = webpage_data['branches_count']
             repo.releases_count = webpage_data['releases_count']
             repo.contributors_count = webpage_data['contributors_count']
-            repo.attempts_count = 0
             repo.setup_scripts = setup_scripts
             repo.save()
             LOG.info("Successfully created new repository '%s' [%d]" % (repo, repo.id))

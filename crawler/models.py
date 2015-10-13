@@ -159,7 +159,6 @@ class Repository(models.Model):
     branches_count = models.IntegerField()
     releases_count = models.IntegerField()
     contributors_count = models.IntegerField()
-    attempts_count = models.IntegerField()
     crawler_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
     setup_scripts = models.TextField(null=True)
@@ -172,7 +171,9 @@ class Repository(models.Model):
         return self.name.split('/')[1]
     def repo_url(self):
         return self.source.get_url(self.name)
-    
+    def attempts_count(self):
+        return Attempt.objects.filter(repo = self).count()
+
     class Meta:
         verbose_name_plural = "repositories"
 ## CLASS
