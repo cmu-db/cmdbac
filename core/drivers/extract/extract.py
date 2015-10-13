@@ -3,7 +3,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 
 import utils
 import json
-import traceback
 
 def extract_forms(url, follow = "false", cookie_jar = None):
 	utils.remove_file(os.path.join(os.path.dirname(__file__), 'forms.json'))

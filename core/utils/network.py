@@ -2,16 +2,10 @@ import os
 from string import Template
 import json
 import time
-import traceback
 import requests
 import logging
 
 from run import run_command
-
-## =====================================================================
-## LOGGING CONFIGURATION
-## =====================================================================
-LOG = logging.getLogger()
 
 with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
     auth = json.load(auth_file)
@@ -36,11 +30,7 @@ GITHUB_API_COMMITS_URL = Template('https://api.github.com/repos/${name}/commits'
 
 def get_latest_sha(repo):
     url = GITHUB_API_COMMITS_URL.substitute(name=repo.name)
-    try:
-        response = query(url)
-    except:
-        LOG.info(traceback.print_exc())
-        return
+    response = query(url)
     data = response.json()
     time.sleep(1) 
     return data[0]['sha']

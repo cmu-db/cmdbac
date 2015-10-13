@@ -7,7 +7,6 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 import django
 django.setup()
 
-import traceback
 import json
 import logging
 
@@ -45,11 +44,7 @@ def add_repo(repo_name, crawler_status_id, repo_setup_scripts):
         klass = getattr(moduleHandle, repo_source.crawler_class)
         crawler = klass(cs, auth)
 
-        try:
-            crawler.add_repository(repo_name, repo_setup_scripts)
-        except Exception, e:
-            LOG.info(traceback.print_exc())
-            raise e
+        crawler.add_repository(repo_name, repo_setup_scripts)
 
 def deploy_repo(repo_name):
     database = Database.objects.get(name='MySQL')
@@ -59,15 +54,10 @@ def deploy_repo(repo_name):
         try:
             result = utils.vagrant_deploy(repo, database.name, 0)
         except Exception, e:
-            LOG.info(traceback.print_exc())
+            LOG.exception(e)
             raise e
-        print result
         return result
 
 def delete_repo(repo_name):
     for repo in Repository.objects.filter(name=repo_name):
-        try:
-            repo.delete()
-        except Exception, e:
-            LOG.info(traceback.print_exc())
-            raise e
+        repo.delete()

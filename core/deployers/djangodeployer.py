@@ -5,7 +5,6 @@ import logging
 import re
 import time
 import importlib
-import traceback
 import MySQLdb
 import urlparse
 
@@ -154,8 +153,8 @@ class DjangoDeployer(BaseDeployer):
             try:
                 pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
                 self.packages_from_file.append(pkg)
-            except:
-                LOG.info(traceback.print_exc())
+            except Exception, e:
+                LOG.exception(e)
         ## FOR
 
         threshold = 20
@@ -223,8 +222,8 @@ class DjangoDeployer(BaseDeployer):
                             module.package = latest_package
                             module.save()
                             candidate_packages = list([latest_package]) + list(candidate_packages)
-                    except:
-                        LOG.info(traceback.print_exc())
+                    except Exception, e:
+                        LOG.exception(e)
                     dependencies.append((missing_module_name, candidate_packages, 0))
             else:
                 return ATTEMPT_STATUS_RUNNING_ERROR

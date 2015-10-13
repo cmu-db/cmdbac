@@ -3,7 +3,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
 import logging
 import socket
-import traceback
 import urlparse
 from StringIO import StringIO
 from string import Template
@@ -68,8 +67,8 @@ class BaseDeployer(object):
             conn.commit()
             cur.close()
             conn.close()
-        except:
-            LOG.info(traceback.print_exc())
+        except Exception, e:
+            LOG.exception(e)
     ## DEF
     
     def extract_database_info(self):
@@ -78,8 +77,8 @@ class BaseDeployer(object):
             cur = conn.cursor()
             cur.close()
             conn.close()
-        except:
-            LOG.info(traceback.print_exc())
+        except Exception, e:
+            LOG.exception(e)
     ## DEF
 
     def get_main_url(self):
@@ -183,24 +182,24 @@ class BaseDeployer(object):
         LOG.info('Validating ...')
         try:
             attempt.sha = utils.get_latest_sha(self.repo)
-        except:
-            LOG.info(traceback.print_exc())
+        except Exception, e:
+            LOG.exception(e)
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return -1
 
         LOG.info('Downloading at {} ...'.format(attempt.sha))
         try:
             utils.download_repo(attempt, self.zip_file)
-        except:
-            LOG.info(traceback.print_exc())
+        except Exception, e:
+            LOG.exception(e)
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return -1
         
         try:
             utils.make_dir(self.base_path)
             utils.unzip(self.zip_file, self.base_path)
-        except:
-            LOG.info(traceback.print_exc())
+        except Exception, e:
+            LOG.exception(e)
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return -1
 
@@ -208,8 +207,8 @@ class BaseDeployer(object):
         
         try:
             attemptStatus = self.deploy_repo_attempt(attempt, self.base_path)
-        except:
-            LOG.info(traceback.print_exc())
+        except Exception, e:
+            LOG.exception(e)
             self.save_attempt(attempt, ATTEMPT_STATUS_RUNNING_ERROR)
             return -1
            
@@ -220,8 +219,8 @@ class BaseDeployer(object):
         try:
             driver = Driver()
             driverResult = driver.drive(self)
-        except:
-            LOG.info(traceback.print_exc())
+        except Exception, e:
+            LOG.exception(e)
             driverResult = {}
 
         self.kill_server()

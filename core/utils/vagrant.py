@@ -3,8 +3,6 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 
-import traceback
-# TODO : Do not directly use shutil
 import shutil
 
 from run import run_command

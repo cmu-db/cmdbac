@@ -4,7 +4,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 
 import time
-import traceback
 import logging
 logging.basicConfig(filename='repo_crawler.log',level=logging.DEBUG)
 import json

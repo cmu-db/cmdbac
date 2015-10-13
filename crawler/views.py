@@ -71,8 +71,8 @@ def repositories(request):
             utils.add_module(module_name, package_name, project_type_map[package_type], package_version)
             messages.success(request, 'Successfully added new module {}'.format(module_name))
         except:
-            print traceback.print_exc()
             messages.error(request, 'Failed to add new module {}'.format(repo_name))
+            traceback.print_exc()
         finally:
             return redirect('repositories')
 
@@ -87,6 +87,7 @@ def repositories(request):
             messages.success(request, 'Successfully added new repository {}'.format(repo_name))
         except:
             messages.error(request, 'Failed to add new repository {}'.format(repo_name))
+            traceback.print_exc()
         finally:
             return redirect('repositories')
 
@@ -99,8 +100,8 @@ def repositories(request):
             # thread.join()
             messages.success(request, 'Deploying repository {}'.format(repo_name))
         except:
-            print traceback.print_exc()
             messages.error(request, 'Failed to deploy repository {}'.format(repo_name))
+            traceback.print_exc()
         finally:
             return redirect('repositories')
 
@@ -112,6 +113,7 @@ def repositories(request):
             messages.success(request, 'Successfully deleted repository {}'.format(repo_name))
         except:
             messages.error(request, 'Failed to delete repository {}'.format(repo_name))
+            traceback.print_exc()
         finally:
             return redirect('repositories')
 

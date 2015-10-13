@@ -2,7 +2,6 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
 import logging
-import traceback
 import requests
 import re
 import copy
@@ -67,8 +66,8 @@ class Driver(object):
             br.save_screenshot(screenshot_path)
             br.quit
             return screenshot_path
-        except:
-            LOG.info(traceback.print_exc())
+        except Exception, e:
+            LOG.exception(e)
             return None
 
 
@@ -79,9 +78,9 @@ class Driver(object):
         # extract all the forms
         try:
             forms = extract.extract_all_forms(main_url)
-        except:
+        except Exception, e:
             forms = []
-            LOG.info(traceback.print_exc())
+            LOG.exception(e)
         ret_forms = []
 
         # register
@@ -89,9 +88,9 @@ class Driver(object):
         last_line_no = self.check_log()
         try:
             register_form, info, inputs = submit.register(deployer.base_path, forms)
-        except:
+        except Exception, e:
             register_form = info = inputs = None
-            LOG.info(traceback.print_exc())
+            LOG.exception(e)
 
         if register_form == None or info == None or inputs == None:
             LOG.info('Fail to register ...')
@@ -112,9 +111,9 @@ class Driver(object):
         last_line_no = self.check_log()
         try:
             login_form, br = submit.login(forms, info)
-        except:
+        except Exception, e:
             login_form = br = None
-            LOG.info(traceback.print_exc())
+            LOG.exception(e)
         if login_form == None or br == None:
             LOG.info('Fail to login ...')
             login_result = USER_STATUS_FAIL

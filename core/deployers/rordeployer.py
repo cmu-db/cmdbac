@@ -2,7 +2,6 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
 import logging
-import traceback
 import MySQLdb
 import re
 
@@ -135,8 +134,8 @@ class RoRDeployer(BaseDeployer):
                     try:
                         pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
                         self.packages_from_file.append(pkg)
-                    except:
-                        LOG.info(traceback.print_exc())
+                    except Exception, e:
+                        LOG.exception(e)
 
             out = self.sync_server(deploy_path)
             if 'rake aborted!' in out[1]:
