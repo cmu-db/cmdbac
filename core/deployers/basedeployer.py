@@ -44,6 +44,7 @@ class BaseDeployer(object):
         self.base_path = self.TMP_DEPLOY_PATH + str(self.deploy_id)
         self.setting_path = None
         self.port = int(self.repo.project_type.default_port) + int(self.deploy_id)
+        self.runtime = None
 
         # Create a buffer so that we can capture all log commands to include in the database for this attempt
         self.log = logging.getLogger()

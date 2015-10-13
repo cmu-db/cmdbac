@@ -96,11 +96,16 @@ class RoRDeployer(BaseDeployer):
         return utils.run_command(command)
     ## DEF
 
+    def get_runtime(self):
+        return utils.run_command('ruby -v')[1]
+    ## DEF
+
     def try_deploy(self, attempt, deploy_path):
         LOG.info('Configuring settings ...')
         self.kill_server()
         self.clear_database()
         self.configure_settings()
+        self.runtime = self.get_runtime()
 
         attempt.database = self.get_database(os.path.join(self.setting_path, 'config/database.yml'))
         # LOG.info('Database: ' + attempt.database.name)

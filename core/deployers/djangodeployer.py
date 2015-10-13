@@ -128,11 +128,16 @@ class DjangoDeployer(BaseDeployer):
         return utils.run_command_async(command)
     ## DEF
 
+    def get_runtime(self):
+        return utils.run_command('python --version')[1]
+    ## DEF
+
     def try_deploy(self, attempt, deploy_path, requirement_files):
         LOG.info('Configuring settings ...')
         self.kill_server()
         self.clear_database()
         self.configure_settings()
+        self.runtime = self.get_runtime()
 
         attempt.database = self.get_database(self.setting_path)
         LOG.info('Database: ' + attempt.database.name)
@@ -236,7 +241,7 @@ class DjangoDeployer(BaseDeployer):
 
         return attemptStatus
     ## DEF
-    
+
     def deploy_repo_attempt(self, attempt, deploy_path):
         LOG.info(utils.configure_env(self.base_path))
 
