@@ -140,6 +140,8 @@ class Driver(object):
                 part_inputs = None
             if part_inputs == None:
                 print 'Fill in Form on {} Failed ...'.format(form['url'])
+                form['queries'] = []
+                ret_forms.append(form)
                 continue
             form['queries'] = self.match_query(self.check_log(last_line_no), part_inputs)
             ret_forms.append(form)
