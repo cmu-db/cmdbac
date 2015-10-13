@@ -99,7 +99,7 @@ def repositories(request):
             # thread.join()
             messages.success(request, 'Deploying repository {}'.format(repo_name))
         except:
-            # print traceback.print_exc()
+            print traceback.print_exc()
             messages.error(request, 'Failed to deploy repository {}'.format(repo_name))
         finally:
             return redirect('repositories')

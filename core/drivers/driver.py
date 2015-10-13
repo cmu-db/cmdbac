@@ -16,7 +16,7 @@ import submit
 ## =====================================================================
 ## LOGGING CONFIGURATION
 ## =====================================================================
-
+LOG = logging.getLogger()
 
 ## MYSQL General Log Configuration
 MYSQL_GENERAL_LOG_FILE = '/var/log/mysql/mysql.log'
@@ -63,13 +63,12 @@ class Driver(object):
             except:
                 service_args = None
             br = webdriver.PhantomJS(service_args=service_args)
-            
             br.get(main_url)
             br.save_screenshot(screenshot_path)
             br.quit
             return screenshot_path
         except:
-            print traceback.print_exc()
+            LOG.info(traceback.print_exc())
             return None
 
 
@@ -78,7 +77,11 @@ class Driver(object):
         main_url = deployer.get_main_url()
 
         # extract all the forms
-        forms = extract.extract_all_forms(main_url)
+        try:
+            forms = extract.extract_all_forms(main_url)
+        except:
+            forms = []
+            LOG.info(traceback.print_exc())
         ret_forms = []
 
         # register
@@ -88,13 +91,13 @@ class Driver(object):
             register_form, info, inputs = submit.register(deployer.base_path, forms)
         except:
             register_form = info = inputs = None
-            print traceback.print_exc()
+            LOG.info(traceback.print_exc())
 
         if register_form == None or info == None or inputs == None:
-            print 'Fail to register ...'
+            LOG.info('Fail to register ...')
             register_result = USER_STATUS_FAIL
         else:
-            print 'Register Successfully ...'
+            LOG.info('Register Successfully ...')
             register_result = USER_STATUS_SUCCESS
             register_form['queries'] = self.match_query(self.check_log(last_line_no), inputs)
         if register_form != None:
@@ -111,12 +114,12 @@ class Driver(object):
             login_form, br = submit.login(forms, info)
         except:
             login_form = br = None
-            print traceback.print_exc()
+            LOG.info(traceback.print_exc())
         if login_form == None or br == None:
-            print 'Fail to login ...'
+            LOG.info('Fail to login ...')
             login_result = USER_STATUS_FAIL
         else:
-            print 'Login Successfully ...'
+            LOG.info('Login Successfully ...')
             login_result = USER_STATUS_SUCCESS
             login_form['queries'] = self.match_query(self.check_log(last_line_no), inputs)
         if login_form != None:
@@ -139,7 +142,7 @@ class Driver(object):
             except:
                 part_inputs = None
             if part_inputs == None:
-                print 'Fill in Form on {} Failed ...'.format(form['url'])
+                LOG.info('Fill in Form on {} Failed ...'.format(form['url']))
                 form['queries'] = []
                 ret_forms.append(form)
                 continue
@@ -148,7 +151,7 @@ class Driver(object):
             for i in range(5):
                 submit.fill_form_random(form, br)
 
-        print 'Saving Screenshot ...'
+        LOG.info('Saving Screenshot ...')
         screenshot_path = self.save_screenshot(main_url, os.path.join(deployer.base_path, 'screenshot.png'))
 
         return {'register': register_result, 'login': login_result, 

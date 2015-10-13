@@ -18,13 +18,9 @@ def extract_forms(url, follow = "false", cookie_jar = None):
 			utils.cd(os.path.dirname(os.path.abspath(__file__))),
 			'scrapy crawl form_with_cookie -o forms.json -a start_url="{}" -a cookie_jar={}'.format(url, cookie_jar_path)))
 		
-	try:
-		with open(os.path.join(os.path.dirname(__file__), 'forms.json')) as json_forms:
-			forms = json.load(json_forms)
-	except:
-		forms = []
-		# print traceback.print_exc()
-
+	with open(os.path.join(os.path.dirname(__file__), 'forms.json')) as json_forms:
+		forms = json.load(json_forms)
+		
 	return forms
 
 def extract_all_forms(url):

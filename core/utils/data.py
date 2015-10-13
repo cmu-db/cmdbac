@@ -9,13 +9,19 @@ django.setup()
 
 import traceback
 import json
+import logging
 
 import crawlers
 from crawler.models import *
 import utils
 
+## =====================================================================
+## LOGGING CONFIGURATION
+## =====================================================================
+LOG = logging.getLogger()
+
 with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
-        auth = json.load(auth_file)
+    auth = json.load(auth_file)
 
 def add_module(module_name, package_name, package_type_id, package_version):
     for project_type in ProjectType.objects.filter(id=package_type_id):
@@ -42,7 +48,7 @@ def add_repo(repo_name, crawler_status_id, repo_setup_scripts):
         try:
             crawler.add_repository(repo_name, repo_setup_scripts)
         except Exception, e:
-            # print traceback.print_exc()
+            LOG.info(traceback.print_exc())
             raise e
 
 def deploy_repo(repo_name):
@@ -53,7 +59,7 @@ def deploy_repo(repo_name):
         try:
             result = utils.vagrant_deploy(repo, database.name, 0)
         except Exception, e:
-            # print traceback.print_exc()
+            LOG.info(traceback.print_exc())
             raise e
         print result
         return result
@@ -63,5 +69,5 @@ def delete_repo(repo_name):
         try:
             repo.delete()
         except Exception, e:
-            # print traceback.print_exc()
+            LOG.info(traceback.print_exc())
             raise e

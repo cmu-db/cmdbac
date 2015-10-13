@@ -4,8 +4,14 @@ import json
 import time
 import traceback
 import requests
+import logging
 
 from run import run_command
+
+## =====================================================================
+## LOGGING CONFIGURATION
+## =====================================================================
+LOG = logging.getLogger()
 
 with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
     auth = json.load(auth_file)
@@ -33,7 +39,7 @@ def get_latest_sha(repo):
     try:
         response = query(url)
     except:
-        # print traceback.print_exc()
+        LOG.info(traceback.print_exc())
         return
     data = response.json()
     time.sleep(1) 

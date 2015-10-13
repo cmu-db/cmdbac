@@ -136,7 +136,7 @@ class RoRDeployer(BaseDeployer):
                         pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
                         self.packages_from_file.append(pkg)
                     except:
-                        print traceback.print_exc()
+                        LOG.info(traceback.print_exc())
 
             out = self.sync_server(deploy_path)
             if 'rake aborted!' in out[1]:

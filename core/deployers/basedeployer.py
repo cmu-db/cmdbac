@@ -69,7 +69,7 @@ class BaseDeployer(object):
             cur.close()
             conn.close()
         except:
-            print traceback.print_exc()
+            LOG.info(traceback.print_exc())
     ## DEF
     
     def extract_database_info(self):
@@ -79,7 +79,7 @@ class BaseDeployer(object):
             cur.close()
             conn.close()
         except:
-            print traceback.print_exc()
+            LOG.info(traceback.print_exc())
     ## DEF
 
     def get_main_url(self):
@@ -184,7 +184,7 @@ class BaseDeployer(object):
         try:
             attempt.sha = utils.get_latest_sha(self.repo)
         except:
-            print traceback.print_exc()
+            LOG.info(traceback.print_exc())
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return -1
 
@@ -192,7 +192,7 @@ class BaseDeployer(object):
         try:
             utils.download_repo(attempt, self.zip_file)
         except:
-            print traceback.print_exc()
+            LOG.info(traceback.print_exc())
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return -1
         
@@ -200,7 +200,7 @@ class BaseDeployer(object):
             utils.make_dir(self.base_path)
             utils.unzip(self.zip_file, self.base_path)
         except:
-            print traceback.print_exc()
+            LOG.info(traceback.print_exc())
             self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return -1
 
@@ -209,7 +209,7 @@ class BaseDeployer(object):
         try:
             attemptStatus = self.deploy_repo_attempt(attempt, self.base_path)
         except:
-            print traceback.print_exc()
+            LOG.info(traceback.print_exc())
             self.save_attempt(attempt, ATTEMPT_STATUS_RUNNING_ERROR)
             return -1
            
@@ -221,7 +221,7 @@ class BaseDeployer(object):
             driver = Driver()
             driverResult = driver.drive(self)
         except:
-            print traceback.print_exc()
+            LOG.info(traceback.print_exc())
             driverResult = {}
 
         self.kill_server()
