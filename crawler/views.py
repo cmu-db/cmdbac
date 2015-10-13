@@ -37,11 +37,7 @@ def home(request):
         num_suc = repos.filter(latest_attempt__result=ATTEMPT_STATUS_SUCCESS).count()
         # num_pkg = Package.objects.filter(project_type=t).count()
         num_deploy = repos.exclude(latest_attempt=None).count()
-        num_valid_deploy = 0
-        for repo in repos.exclude(latest_attempt=None).all():
-            if repo.latest_attempt.result in ['MR', 'NA']:
-                continue
-            num_valid_deploy += 1
+        num_valid_deploy = repos.filter(valid_project=True).count()
         stat = Statistic(repo_type, num_repo, num_suc, num_deploy, num_valid_deploy)
         stats.append(stat)
     context['stats'] = stats

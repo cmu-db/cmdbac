@@ -163,8 +163,10 @@ class BaseDeployer(object):
         ## FOR
 
         # Make sure we update the repo to point to this latest attempt
-        if self.repo.valid_project != ATTEMPT_STATUS_SUCCESS:
-            self.repo.valid_project = (attempt_result == ATTEMPT_STATUS_SUCCESS)
+        if attempt_result in [ATTEMPT_STATUS_MISSING_REQUIRED_FILES, ATTEMPT_STATUS_NOT_AN_APPLICATION]:
+            self.repo.valid_project = False
+        else:
+            self.repo.valid_project = True
         self.repo.latest_attempt = attempt
         self.repo.attempts_count = self.repo.attempts_count + 1
         self.repo.save()
