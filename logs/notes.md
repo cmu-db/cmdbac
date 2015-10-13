@@ -4,4 +4,3 @@
 # submit file 
 # click to show the screenshot
 # django-wiki and LinkurApp
-# fix the attempt_counts
