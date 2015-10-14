@@ -277,8 +277,6 @@ class DjangoDeployer(BaseDeployer):
         requirement_files = utils.search_file(deploy_path, 'requirements.txt')
         if requirement_files:
             LOG.info('requirements.txt path: {}'.format(requirement_files))
-
-        return ATTEMPT_STATUS_NOT_AN_APPLICATION
         
         return self.try_deploy(attempt, manage_path, requirement_files)
     ## DEF
