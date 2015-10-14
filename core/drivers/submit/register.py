@@ -13,6 +13,8 @@ def get_register_form(forms):
 	for form in forms:
 		if match_any_pattern(form['action'], register_patterns):
 			return form
+		if form['action'] != '':
+			continue
 		if match_any_pattern(form['url'], register_patterns):
 			return form
 	return None
