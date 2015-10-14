@@ -41,7 +41,7 @@ def home(request):
         stat = Statistic(repo_type, num_repo, num_suc, num_deploy, num_valid_deploy)
         stats.append(stat)
     context['stats'] = stats
-    context['attempts'] = Attempt.objects.exclude(result=ATTEMPT_STATUS_NOT_AN_APPLICATION).order_by('-start_time')[:5]
+    context['attempts'] = Attempt.objects.exclude(result=ATTEMPT_STATUS_MISSING_REQUIRED_FILES).order_by('-start_time')[:5]
     return render(request, 'index.html', context)
 
 def repositories(request):

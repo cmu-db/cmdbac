@@ -26,7 +26,6 @@ ATTEMPT_STATUS = (
     ('DR', 'Duplicate Required Files', 'warning'),
     ('MD', 'Missing Dependencies', 'danger'),
     ('MR', 'Missing Required Files', 'danger'),
-    ('NA', 'Not an Application', 'warning'),
     ('RE', 'Running Error', 'danger'),
     ('OK', 'Success', 'success'),
     ('UN', 'Unknown', 'warning'),
