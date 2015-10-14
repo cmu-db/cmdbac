@@ -46,6 +46,7 @@ def register(deploy_path, forms):
 	register_form = get_register_form(forms)
 	if register_form == None:
 		return None, None, None
+	print register_form
 	
 	matched_patterns, inputs, response, br = fill_form(register_form)
 

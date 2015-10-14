@@ -22,4 +22,5 @@ class InputItem(scrapy.Item):
 class FormItem(scrapy.Item):
 	action = scrapy.Field()
 	url = scrapy.Field()
+	method = scrapy.Field()
 	inputs = scrapy.Field()
