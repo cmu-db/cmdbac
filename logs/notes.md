@@ -3,5 +3,6 @@
 # add ubuntu to mysql group
 # submit file 
 # click to show the screenshot
-# django-wiki and LinkurApp
+# LinkurApp
+# fix driver for django-wiki
 # merge Not An Application and Missing Required Files
