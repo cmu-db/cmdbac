@@ -40,16 +40,14 @@ class FormWithCookieSpider(CrawlSpider):
                 formItem['action'] = sel.xpath('@action').extract()[0]
             except:
                 pass
-            if formItem['action'] == '':
-                try:
-                    formItem['action'] = sel.xpath('@actions').extract()[0]
-                except:
-                    pass
+
             formItem['url'] = response.url
+
+            formItem['method'] = ''
             try:
                 formItem['method'] = sel.xpath('@method').extract()[0].lower()
             except:
-                formItem['method'] = ''
+                pass
 
             formItem['inputs'] = []
             for ip in sel.xpath('//input[@type="text" or @type="password" or @type="email"]|//textarea'):

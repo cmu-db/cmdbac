@@ -31,11 +31,14 @@ class FormSpider(CrawlSpider):
                 formItem['action'] = sel.xpath('@action').extract()[0]
             except:
                 pass
+
             formItem['url'] = response.url
+
+            formItem['method'] = ''
             try:
                 formItem['method'] = sel.xpath('@method').extract()[0].lower()
             except:
-                formItem['method'] = ''
+                pass
 
             formItem['inputs'] = []
             for ip in sel.xpath('//input[@type="text" or @type="password" or @type="email"]|//textarea'):
@@ -44,13 +47,16 @@ class FormSpider(CrawlSpider):
                 except:
                     id = ''
                 name = ip.xpath('@name').extract()[0]
-                type = ip.xpath('@type').extract()[0]
+                try:
+                    type = ip.xpath('@type').extract()[0]
+                except:
+                    type = ''
                 inputItem = InputItem()
                 inputItem['id'] = id
                 inputItem['name'] = name
                 inputItem['type'] = type
                 inputItem['value'] = ''
-                formItem['inputs'] = [inputItem]
+                formItem['inputs'].append(inputItem)
 
             yield formItem
             
