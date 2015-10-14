@@ -12,10 +12,10 @@ import extract
 def get_form_index(br, form):
 	index = 0
         for f in br.forms():
-                if str(f.attrs.get('action', '')) == form['action']:
-			break
-		if str(f.attrs.get('method', '')).lower() == form['method']:
-			break
+            if str(f.attrs.get('action', '')) == form['action']:
+				break
+			if str(f.attrs.get('method', '')).lower() == form['method']:
+				break
 		index = index + 1
 	return index
 
