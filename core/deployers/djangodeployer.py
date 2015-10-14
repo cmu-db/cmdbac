@@ -244,50 +244,41 @@ class DjangoDeployer(BaseDeployer):
     def deploy_repo_attempt(self, attempt, deploy_path):
         LOG.info(utils.configure_env(self.base_path))
 
-        setting_files = utils.search_file(deploy_path, 'settings.py')
-        
-        if not setting_files:
-            for candidate_setting_files in utils.search_file(deploy_path, 'settings_example.py'):
-                utils.copy_file(candidate_setting_files, os.path.join(os.path.dirname(candidate_setting_files), "settings.py"))
-                break
-            setting_files = utils.search_file(deploy_path, 'settings.py')
-        
-        if not setting_files:
-            for candidate_setting_files in utils.search_file_regex(deploy_path, '^settings.*\.py$'):
-                utils.copy_file(candidate_setting_files, os.path.join(os.path.dirname(candidate_setting_files), "settings.py"))
-                break
-            setting_files = utils.search_file(deploy_path, 'settings.py')
-        
-        if not setting_files:
-            return ATTEMPT_STATUS_NOT_AN_APPLICATION
-
-        # LOG.info('settings.py: {}'.format(setting_files))
-
         manage_files = utils.search_file(deploy_path, 'manage.py')
-        # LOG.info('manage.py: {}'.format(manage_files))
         if not manage_files:
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
+        manage_paths = [os.path.dirname(manage_file) for manage_file in manage_files]
+        base_dir = next(name for name in manage_paths)
+        manage_path = next(name for name in manage_paths if name.startswith(base_dir))
+        LOG.info('manage.py path: {}'.format(manage_path))
+
+        with open(os.path.join(manage_path, 'manage.py'), 'r') as manage_file:
+            s = re.search('os.environ.setdefault\("DJANGO_SETTINGS_MODULE", "(.*)"\)', manage_file.read())
+            if s:
+                setting_path = s.group(1)
+            else:
+                return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
+
+        setting_path = setting_path.replace('.', '/')
+        if os.path.isfile(os.path.join(manage_path, setting_path + '.py')):
+            setting_path = os.path.join(manage_path, setting_path + '.py')
+            self.setting_path = setting_path
+        elif os.path.isdir(os.path.join(manage_path, setting_path)):
+            setting_path = os.path.join(manage_path, setting_path)
+            for setting_file in sorted(os.listdir(setting_path)):
+                if os.path.isfile(os.path.join(setting_path, setting_file)):
+                    setting_path = os.path.join(setting_path, setting_file)
+                    break
+            self.setting_path = setting_path
+        else:
+            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
+        LOG.info('setting.py path: {}'.format(setting_path))
 
         requirement_files = utils.search_file(deploy_path, 'requirements.txt')
-        # LOG.info('requirements.txt: {}'.format(requirement_files))
-        
-        manage_paths = [os.path.dirname(manage_file) for manage_file in manage_files]
-        
-        base_dir = next(name for name in manage_paths)
-        
-        try:
-            manage_path = next(name for name in manage_paths if name.startswith(base_dir))
-            setting_file = next(name for name in setting_files if name.startswith(base_dir))
-        except:
-            return ATTEMPT_STATUS_NOT_AN_APPLICATION
-        
-        self.setting_path = setting_file
+        if requirement_files:
+            LOG.info('requirements.txt path: {}'.format(requirement_files))
 
-        attempt.base_dir = base_dir.split('/', 1)[1]
-        # LOG.info('BASE_DIR: ' + attempt.base_dir)
-        
-        attempt.setting_dir = os.path.basename(os.path.dirname(setting_file))
-        # LOG.info('SETTING_DIR: ' + attempt.setting_dir)
+        return ATTEMPT_STATUS_NOT_AN_APPLICATION
         
         return self.try_deploy(attempt, manage_path, requirement_files)
     ## DEF
