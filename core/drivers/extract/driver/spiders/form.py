@@ -37,6 +37,10 @@ class FormSpider(CrawlSpider):
                 except:
                     pass
             formItem['url'] = response.url
+            try:
+                formItem['method'] = sel.xpath('@method').extract()[0].lower()
+            except:
+                formItem['method'] = ''
 
             for ip in sel.xpath('//input[@type="text" or @type="password" or @type="email"]|//textarea'):
                 try:
