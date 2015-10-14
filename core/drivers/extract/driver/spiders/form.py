@@ -31,11 +31,6 @@ class FormSpider(CrawlSpider):
                 formItem['action'] = sel.xpath('@action').extract()[0]
             except:
                 pass
-            if formItem['action'] == '':
-                try:
-                    formItem['action'] = sel.xpath('@actions').extract()[0]
-                except:
-                    pass
             formItem['url'] = response.url
             try:
                 formItem['method'] = sel.xpath('@method').extract()[0].lower()
