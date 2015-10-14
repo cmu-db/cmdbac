@@ -51,6 +51,7 @@ class FormWithCookieSpider(CrawlSpider):
             except:
                 formItem['method'] = ''
 
+            formItem['inputs'] = []
             for ip in sel.xpath('//input[@type="text" or @type="password" or @type="email"]|//textarea'):
                 try:
                     id = ip.xpath('@id').extract()[0]
@@ -66,10 +67,7 @@ class FormWithCookieSpider(CrawlSpider):
                 inputItem['name'] = name
                 inputItem['type'] = type
                 inputItem['value'] = ''
-                if 'inputs' in formItem:
-                    formItem['inputs'].append(inputItem)
-                else:
-                    formItem['inputs'] = [inputItem]
-
+                formItem['inputs'].append(inputItem)
+                
             yield formItem
             
