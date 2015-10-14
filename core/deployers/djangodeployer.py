@@ -200,7 +200,7 @@ class DjangoDeployer(BaseDeployer):
                         LOG.info('No possible packages!')
                         return ATTEMPT_STATUS_MISSING_DEPENDENCIES
                     
-                    candidate_packages = Package.objects.filter(id__in=candidate_package_ids).order_by('-version', '-count', 'name')
+                    candidate_packages = Package.objects.filter(id__in=candidate_package_ids).order_by('-count', '-version', 'name')
                     LOG.info('pip install {}'.format(candidate_packages[0]))
                     pip_output = utils.pip_install(self.base_path, [candidate_packages[0]], False, False)            
                     LOG.info('pip install output: {}'.format(pip_output))
