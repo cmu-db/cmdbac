@@ -2,5 +2,3 @@
 # clear the dirs after deploying
 # submit file 
 # click to show the screenshot
-# fix driver for LinkurApp
-# fix driver for django-wiki
