@@ -118,6 +118,13 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
     </table>
 </div>
 
+<h2 class="sub-header">Screenshot</h2>
+<a href="#" id="screenshot-show" class="showLink" onclick="showHide('screenshot');return false;">More.</a></p>
+<div id="screenshot" class="more">
+    <p><a href="#" id="screenshot-hide" class="hideLink" onclick="showHide('screenshot');return false;">Hide.</a></p>
+    <img src="{{ screenshot }}" class="img-responsive">
+</div>
+
 <h2 class="sub-header">Forms</h2>
 <a href="#" id="forms-show" class="showLink" onclick="showHide('forms');return false;">More.</a></p>
 <div id="forms" class="table-responsive more">

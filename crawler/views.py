@@ -192,13 +192,16 @@ def attempt(request, id):
             'fields': fields,
             'queries': queries
         })
-
+    
     try:
         image = Image.objects.get(attempt=attempt)
-        screenshot = open(os.path.join(os.path.dirname(__file__), 'static', 'screenshot.png'), 'wb')
+        screenshot_filename = 'screenshot_{}.png'.format(attempt.id)
+        screenshot = open(os.path.join(os.path.dirname(__file__), 'static', screenshot_filename), 'wb')
         screenshot.write(image.data)
         screenshot.close()
+        context['screenshot'] = '/static/' + screenshot_filename
     except:
-        pass
+        context['screenshot'] = None
+
 
     return render(request, 'attempt.html', context)
