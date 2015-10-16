@@ -60,15 +60,33 @@ Repositories &raquo; Database Application Crawler
     <table class="table table-striped">
         <thead>
             <tr>
-                <th><a href="?order_by={% if order_by == "name" %}-{% endif %}name&amp;{{ queries_no_page_order.urlencode }}">Full Name</th>
-                <th>Source</th>
-                <th><a href="?order_by={% if order_by == "repo_type__name" %}-{% endif %}repo_type__name&amp;{{ queries_no_page_order.urlencode }}">Type</th>
-                <th><a href="?order_by={% if order_by != "-commits_count" %}-{% endif %}commits_count&amp;{{ queries_no_page_order.urlencode }}"># of Commits</th>
-                <th><a href="?order_by={% if order_by != "-attempts_count" %}-{% endif %}attempts_count&;{{queries_no_page_order.urlencode }}"># of Attempts</th>
-                <th><a href="?order_by={% if order_by == "latest_attempt__result__name" %}-{% endif %}latest_attempt__result__name&amp;{{ queries_no_page_order.urlencode }}">Last Result</th>
-                <th><a href="?order_by={% if order_by != "-num_forms" %}-{% endif %}num_forms&;{{queries_no_page_order.urlencode }}"># of Forms</th>
-                <th><a href="?order_by={% if order_by != "-num_queries" %}-{% endif %}num_queries&;{{queries_no_page_order.urlencode }}"># of Queries</th>
-                <th><a href="?order_by={% if order_by != "-updated_date" %}-{% endif %}updated_date&;{{queries_no_page_order.urlencode }}">Updated</th>
+                <th class="col-md-3">
+                    <a href="?order_by={% if order_by == "name" %}-{% endif %}name&amp;{{ queries_no_page_order.urlencode }}">Full Name
+                </th>
+                <th class="col-md-1">
+                    Source
+                </th>
+                <th class="col-md-1">
+                    <a href="?order_by={% if order_by == "repo_type__name" %}-{% endif %}repo_type__name&amp;{{ queries_no_page_order.urlencode }}">Type
+                </th>
+                <th class="col-md-1">
+                    <a href="?order_by={% if order_by != "-commits_count" %}-{% endif %}commits_count&amp;{{ queries_no_page_order.urlencode }}"># of Commits
+                </th>
+                <th class="col-md-1">
+                    <a href="?order_by={% if order_by != "-attempts_count" %}-{% endif %}attempts_count&;{{queries_no_page_order.urlencode }}"># of Attempts
+                </th>
+                <th class="col-md-2">
+                    <a href="?order_by={% if order_by == "latest_attempt__result__name" %}-{% endif %}latest_attempt__result__name&amp;{{ queries_no_page_order.urlencode }}">Last Result
+                </th>
+                <th class="col-md-1">
+                    <a href="?order_by={% if order_by != "-num_forms" %}-{% endif %}num_forms&;{{queries_no_page_order.urlencode }}"># of Forms
+                </th>
+                <th class="col-md-1">
+                    <a href="?order_by={% if order_by != "-num_queries" %}-{% endif %}num_queries&;{{queries_no_page_order.urlencode }}"># of Queries
+                </th>
+                <th class="col-md-3">
+                    <a href="?order_by={% if order_by != "-updated_date" %}-{% endif %}updated_date&;{{queries_no_page_order.urlencode }}">Updated
+                </th>
             </tr>
         </thead>
         <tbody>
