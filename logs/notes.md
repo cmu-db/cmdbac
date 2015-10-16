@@ -1,4 +1,3 @@
-# add runtime version
 # submit file 
 # fix the django-wiki
 # fix the sci-war
