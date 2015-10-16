@@ -131,7 +131,12 @@ def repositories(request):
     if type_list:
         repositories = repositories.filter(project_type__name__in=type_list)
     order_by = request.GET.get('order_by', 'crawler_date')
-    repositories = repositories.order_by(order_by)
+    if order_by == 'attempts_count':
+        repositories = sorted(repositories, key=lambda x: x.attempts_count)
+    elif order_by == '-attempts_count':
+        repositories = sorted(repositories, key=lambda x: x.attempts_count, reverse=True)
+    else:
+        repositories = repositories.order_by(order_by)
 
     paginator = Paginator(repositories, 50) # Show 50 repos per page
     page = request.GET.get('page')
