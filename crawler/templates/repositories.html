@@ -44,6 +44,7 @@ Repositories &raquo; Database Application Crawler
     </div>
 </form>
 
+{% if user.is_staff %}
 <div style="float:right">
     <div style="margin: 20px">
         <a class="btn btn-primary btn-lg" style="" href="#" data-toggle="modal" data-target="#addModuleModal">Add Module</a>
@@ -53,6 +54,7 @@ Repositories &raquo; Database Application Crawler
         <a class="btn btn-primary btn-lg" style="" href="#" data-toggle="modal" data-target="#addRepositoryModal">Add Repository</a>
     </div>
 </div>
+{% endif %}
 
 <div class="table-responsive" style="clear:both;">
     <table class="table table-striped">
