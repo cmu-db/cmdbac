@@ -132,8 +132,12 @@ def repositories(request):
     if type_list:
         repositories = repositories.filter(project_type__name__in=type_list)
     order_by = request.GET.get('order_by', 'crawler_date')
-    if order_by in ['attempts_count', '-attempts_count']:
+    if 'attempts_count' in order_by:
         repositories.annotate(attempts_count=Count('attempt')).order_by(order_by)
+    elif 'num_forms' in order_by:
+        repositories.annotate(attempts_count=Count('latest_attempt__form')).order_by(order_by)
+    elif 'num_queries' in order_by:
+        repositories.annotate(attempts_count=Count('latest_attempt__form__query')).order_by(order_by)
     else:
         repositories = repositories.order_by(order_by)
 
