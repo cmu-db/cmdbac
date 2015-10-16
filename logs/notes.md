@@ -6,6 +6,5 @@
 # fix the django-wiki
 # fix the sci-war
 # sort the forms
-# fix the show
 # rest API to get data(attempt)
 # Django Res
