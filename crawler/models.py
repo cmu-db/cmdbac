@@ -249,7 +249,7 @@ class Attempt(models.Model):
     login_label = property(loginLabel)
     login_name = property(loginName)
     
-    runtime = models.ForeignKey('Runtime')
+    runtime = models.ForeignKey('Runtime', default=None)
 
     def __unicode__(self):
         return unicode(self.id)

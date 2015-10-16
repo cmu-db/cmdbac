@@ -267,17 +267,23 @@ class DjangoDeployer(BaseDeployer):
                 return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
 
         setting_path = setting_path.replace('.', '/')
-        if os.path.isfile(os.path.join(manage_path, setting_path + '.py')):
-            setting_path = os.path.join(manage_path, setting_path + '.py')
-            self.setting_path = setting_path
-        elif os.path.isdir(os.path.join(manage_path, setting_path)):
+        if os.path.isdir(os.path.join(manage_path, setting_path)):
             setting_path = os.path.join(manage_path, setting_path)
             for setting_file in sorted(os.listdir(setting_path)):
                 if os.path.isfile(os.path.join(setting_path, setting_file)):
                     setting_path = os.path.join(setting_path, setting_file)
                     break
             self.setting_path = setting_path
+        elif os.path.isfile(os.path.join(manage_path, setting_path + '.py')):
+            setting_path = os.path.join(manage_path, setting_path + '.py')
+            self.setting_path = setting_path
         else:
+            for candidate_setting_files in utils.search_file_regex(deploy_path, '^settings.*\.py$'):
+                setting_path = os.path.join(manage_path, setting_path + '.py')
+                utils.copy_file(candidate_setting_files, setting_path)
+                self.setting_path = setting_path
+                break
+        if self.setting_path == None:
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
         LOG.info('setting.py path: {}'.format(setting_path))
 
