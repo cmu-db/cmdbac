@@ -44,7 +44,7 @@ Repositories &raquo; Database Application Crawler
     </div>
 </form>
 
-{% if user.is_staff %}
+{% if user.is_staff %}  
 <div style="float:right">
     <div style="margin: 20px">
         <a class="btn btn-primary btn-lg" style="" href="#" data-toggle="modal" data-target="#addModuleModal">Add Module</a>
@@ -112,6 +112,7 @@ Repositories &raquo; Database Application Crawler
                     
                     <td>{{repository.updated_date|date:'Y-m-d H:i:s' }}</td>
                     
+                    {% if user.is_staff %}  
                     <td>
                         <div class="row">
                             <div class="col-xs-3">
@@ -135,6 +136,8 @@ Repositories &raquo; Database Application Crawler
                             </div>
                         </div>
                     </td>
+                    {% endif %}
+                    
                 </tr>
                 {% endfor %}
             {% endif %}
