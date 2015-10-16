@@ -95,8 +95,9 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
 </div>
 
 <h2 class="sub-header">Dependencies</h2>
-
-<div class="table-responsive">
+<a href="#" id="dependencies-show" class="showLink" onclick="showHide('dependencies');return false;">More.</a></p>
+<div id="dependencies" class="table-responsive more">
+    <p><a href="#" id="dependencies-hide" class="hideLink" onclick="showHide('dependencies');return false;">Hide.</a></p>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -118,7 +119,9 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
 </div>
 
 <h2 class="sub-header">Forms</h2>
-<div class="table-responsive">
+<a href="#" id="forms-show" class="showLink" onclick="showHide('forms');return false;">More.</a></p>
+<div id="forms" class="table-responsive more">
+    <p><a href="#" id="forms-hide" class="hideLink" onclick="showHide('forms');return false;">Hide.</a></p>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -171,9 +174,9 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
 </div>
 
 <h2 class="sub-header">Log</h2>
-<a href="#" id="attempt-log-show" class="showLink" onclick="showHide('attempt-log');return false;">See more.</a></p>
+<a href="#" id="attempt-log-show" class="showLink" onclick="showHide('attempt-log');return false;">More.</a></p>
 <div id="attempt-log" class="more">
-    <p><a href="#" id="attempt-log-hide" class="hideLink" onclick="showHide('attempt-log');return false;">Hide this content.</a></p>
+    <p><a href="#" id="attempt-log-hide" class="hideLink" onclick="showHide('attempt-log');return false;">Hide.</a></p>
     <pre>{{ attempt.log }}</pre>
 </div>
 {% endblock %}
