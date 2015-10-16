@@ -132,6 +132,10 @@ class Repository(models.Model):
     source = models.ForeignKey('RepositorySource')
     latest_attempt = models.ForeignKey('Attempt', null=True)
     valid_project = models.NullBooleanField(default=None)
+    crawler_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+    setup_scripts = models.TextField(null=True)
+
     private = models.BooleanField(default=False)
     description = models.TextField(null=True)
     fork = models.BooleanField(default=False)
@@ -156,9 +160,6 @@ class Repository(models.Model):
     branches_count = models.IntegerField()
     releases_count = models.IntegerField()
     contributors_count = models.IntegerField()
-    crawler_date = models.DateTimeField(auto_now_add=True)
-    updated_date = models.DateTimeField(auto_now=True)
-    setup_scripts = models.TextField(null=True)
 
     def __unicode__(self):
         return self.name

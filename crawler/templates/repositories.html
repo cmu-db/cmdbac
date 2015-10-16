@@ -76,13 +76,13 @@ Repositories &raquo; Database Application Crawler
                     <a href="?order_by={% if order_by != "-attempts_count" %}-{% endif %}attempts_count&amp;{{queries_no_page_order.urlencode }}">Attempts
                 </th>
                 <th class="col-md-2">
-                    <a href="?order_by={% if order_by == "latest_attempt__result__name" %}-{% endif %}latest_attempt__result__name&amp;{{ queries_no_page_order.urlencode }}">Last Result
+                    <a href="?order_by={% if order_by != "-latest_attempt__result" %}-{% endif %}latest_attempt__result&amp;{{ queries_no_page_order.urlencode }}">Last Result
                 </th>
                 <th class="col-md-1">
-                    <a href="?order_by={% if order_by != "-num_forms" %}-{% endif %}num_forms&amp;{{queries_no_page_order.urlencode }}">Forms
+                    <a href="?order_by={% if order_by != "-latest_attempt__num_forms" %}-{% endif %}latest_attempt__num_forms&amp;{{queries_no_page_order.urlencode }}">Forms
                 </th>
                 <th class="col-md-1">
-                    <a href="?order_by={% if order_by != "-num_queries" %}-{% endif %}num_queries&amp;{{queries_no_page_order.urlencode }}">Queries
+                    <a href="?order_by={% if order_by != "-latest_attempt__num_queries" %}-{% endif %}latest_attempt__num_queries&amp;{{queries_no_page_order.urlencode }}">Queries
                 </th>
                 <th class="col-md-2">
                     <a href="?order_by={% if order_by != "-updated_date" %}-{% endif %}updated_date&amp;{{queries_no_page_order.urlencode }}">Updated

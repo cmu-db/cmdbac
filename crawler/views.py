@@ -11,6 +11,7 @@ from forms import *
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.shortcuts import redirect
+from django.db.models import Count
 
 import utils
 import crawlers
@@ -131,10 +132,8 @@ def repositories(request):
     if type_list:
         repositories = repositories.filter(project_type__name__in=type_list)
     order_by = request.GET.get('order_by', 'crawler_date')
-    if order_by == 'attempts_count':
-        repositories = sorted(repositories, key=lambda x: x.attempts_count)
-    elif order_by == '-attempts_count':
-        repositories = sorted(repositories, key=lambda x: x.attempts_count, reverse=True)
+    if order_by in ['attempts_count', '-attempts_count']:
+        repositories.annotate(attempts_count=Count('attempt')).order_by(order_by)
     else:
         repositories = repositories.order_by(order_by)
 
