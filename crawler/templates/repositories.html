@@ -57,10 +57,10 @@ Repositories &raquo; Database Application Crawler
 {% endif %}
 
 <div class="table-responsive" style="clear:both;">
-    <table class="table table-striped">
+    <table class="table table-striped" style="word-break:break-all">
         <thead>
             <tr>
-                <th class="col-md-3">
+                <th class="col-md-2">
                     <a href="?order_by={% if order_by == "name" %}-{% endif %}name&amp;{{ queries_no_page_order.urlencode }}">Full Name
                 </th>
                 <th class="col-md-1">
@@ -84,7 +84,7 @@ Repositories &raquo; Database Application Crawler
                 <th class="col-md-1">
                     <a href="?order_by={% if order_by != "-num_queries" %}-{% endif %}num_queries&;{{queries_no_page_order.urlencode }}"># of Queries
                 </th>
-                <th class="col-md-3">
+                <th class="col-md-2">
                     <a href="?order_by={% if order_by != "-updated_date" %}-{% endif %}updated_date&;{{queries_no_page_order.urlencode }}">Updated
                 </th>
             </tr>
