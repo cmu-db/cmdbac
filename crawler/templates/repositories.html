@@ -70,22 +70,22 @@ Repositories &raquo; Database Application Crawler
                     <a href="?order_by={% if order_by == "repo_type__name" %}-{% endif %}repo_type__name&amp;{{ queries_no_page_order.urlencode }}">Type
                 </th>
                 <th class="col-md-1">
-                    <a href="?order_by={% if order_by != "-commits_count" %}-{% endif %}commits_count&amp;{{ queries_no_page_order.urlencode }}"># of Commits
+                    <a href="?order_by={% if order_by != "-commits_count" %}-{% endif %}commits_count&amp;{{ queries_no_page_order.urlencode }}">Commits
                 </th>
                 <th class="col-md-1">
-                    <a href="?order_by={% if order_by != "-attempts_count" %}-{% endif %}attempts_count&;{{queries_no_page_order.urlencode }}"># of Attempts
+                    <a href="?order_by={% if order_by != "-attempts_count" %}-{% endif %}attempts_count&amp;{{queries_no_page_order.urlencode }}">Attempts
                 </th>
                 <th class="col-md-2">
                     <a href="?order_by={% if order_by == "latest_attempt__result__name" %}-{% endif %}latest_attempt__result__name&amp;{{ queries_no_page_order.urlencode }}">Last Result
                 </th>
                 <th class="col-md-1">
-                    <a href="?order_by={% if order_by != "-num_forms" %}-{% endif %}num_forms&;{{queries_no_page_order.urlencode }}"># of Forms
+                    <a href="?order_by={% if order_by != "-num_forms" %}-{% endif %}num_forms&amp;{{queries_no_page_order.urlencode }}">Forms
                 </th>
                 <th class="col-md-1">
-                    <a href="?order_by={% if order_by != "-num_queries" %}-{% endif %}num_queries&;{{queries_no_page_order.urlencode }}"># of Queries
+                    <a href="?order_by={% if order_by != "-num_queries" %}-{% endif %}num_queries&amp;{{queries_no_page_order.urlencode }}">Queries
                 </th>
                 <th class="col-md-2">
-                    <a href="?order_by={% if order_by != "-updated_date" %}-{% endif %}updated_date&;{{queries_no_page_order.urlencode }}">Updated
+                    <a href="?order_by={% if order_by != "-updated_date" %}-{% endif %}updated_date&amp;{{queries_no_page_order.urlencode }}">Updated
                 </th>
             </tr>
         </thead>
