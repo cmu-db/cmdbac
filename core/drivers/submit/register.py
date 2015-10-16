@@ -11,10 +11,10 @@ from submit import fill_form
 def get_register_form(forms):
 	register_patterns = ['register', 'signup', 'sign-up', 'sign_up']
 	for form in forms:
+		if 'method' in form and form['method'] != 'post':
+			continue
 		if match_any_pattern(form['action'], register_patterns):
 			return form
-		if form['action'] != '':
-			continue
 		if match_any_pattern(form['url'], register_patterns):
 			return form
 	return None

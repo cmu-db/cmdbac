@@ -17,6 +17,7 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
 </ul>
 
 <h2 class="sub-header">Attempt #{{attempt.id}}</h2>
+<div class="row">
 <div class="col-xs-6">
     <div class="table-responsive">
         <table class="table table-bordered table-striped">
@@ -91,10 +92,12 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
         </table>
     </div>
 </div>
-
+</div>
 
 <h2 class="sub-header">Dependencies</h2>
-<div class="table-responsive">
+<a href="#" id="dependencies-show" class="showLink" onclick="showHide('dependencies');return false;">More.</a></p>
+<div id="dependencies" class="table-responsive more">
+    <p><a href="#" id="dependencies-hide" class="hideLink" onclick="showHide('dependencies');return false;">Hide.</a></p>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -115,8 +118,17 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
     </table>
 </div>
 
+<h2 class="sub-header">Screenshot</h2>
+<a href="#" id="screenshot-show" class="showLink" onclick="showHide('screenshot');return false;">More.</a></p>
+<div id="screenshot" class="more">
+    <p><a href="#" id="screenshot-hide" class="hideLink" onclick="showHide('screenshot');return false;">Hide.</a></p>
+    <img src="{{ screenshot }}" class="img-responsive">
+</div>
+
 <h2 class="sub-header">Forms</h2>
-<div class="table-responsive">
+<a href="#" id="forms-show" class="showLink" onclick="showHide('forms');return false;">More.</a></p>
+<div id="forms" class="table-responsive more">
+    <p><a href="#" id="forms-hide" class="hideLink" onclick="showHide('forms');return false;">Hide.</a></p>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -169,9 +181,9 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
 </div>
 
 <h2 class="sub-header">Log</h2>
-<a href="#" id="attempt-log-show" class="showLink" onclick="showHide('attempt-log');return false;">See more.</a></p>
+<a href="#" id="attempt-log-show" class="showLink" onclick="showHide('attempt-log');return false;">More.</a></p>
 <div id="attempt-log" class="more">
-    <p><a href="#" id="attempt-log-hide" class="hideLink" onclick="showHide('attempt-log');return false;">Hide this content.</a></p>
+    <p><a href="#" id="attempt-log-hide" class="hideLink" onclick="showHide('attempt-log');return false;">Hide.</a></p>
     <pre>{{ attempt.log }}</pre>
 </div>
 {% endblock %}
