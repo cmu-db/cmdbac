@@ -85,13 +85,13 @@ class Driver(object):
 
         # register
         register_result = USER_STATUS_UNKNOWN
+        register_form_raw = None
         last_line_no = self.check_log()
         try:
             register_form, info, inputs = submit.register(deployer.base_path, forms)
         except Exception, e:
             register_form = info = inputs = None
             LOG.exception(e)
-
         if register_form == None or info == None or inputs == None:
             LOG.info('Fail to register ...')
             register_result = USER_STATUS_FAIL
@@ -103,30 +103,30 @@ class Driver(object):
             ret_forms.append(register_form)
             register_form_raw = copy.deepcopy(register_form)
             del register_form_raw['queries']
-        else:
-            register_form_raw = None
             
         # login
         login_result = USER_STATUS_UNKNOWN
-        last_line_no = self.check_log()
-        try:
-            login_form, br = submit.login(forms, info)
-        except Exception, e:
-            login_form = br = None
-            LOG.exception(e)
-        if login_form == None or br == None:
-            LOG.info('Fail to login ...')
-            login_result = USER_STATUS_FAIL
-        else:
-            LOG.info('Login Successfully ...')
-            login_result = USER_STATUS_SUCCESS
-            login_form['queries'] = self.match_query(self.check_log(last_line_no), inputs)
-        if login_form != None:
-            ret_forms.append(login_form)
-            login_form_raw = copy.deepcopy(login_form)
-            del login_form_raw['queries']
-        else:
-            login_form_raw = None
+        login_form_raw = None
+        br = None
+        if register_result == USER_STATUS_SUCCESS:
+            last_line_no = self.check_log()
+            try:
+                login_form, br = submit.login(forms, info)
+            except Exception, e:
+                login_form = br = None
+                LOG.exception(e)
+            if login_form == None or br == None:
+                LOG.info('Fail to login ...')
+                login_result = USER_STATUS_FAIL
+            else:
+                LOG.info('Login Successfully ...')
+                login_result = USER_STATUS_SUCCESS
+                login_form['queries'] = self.match_query(self.check_log(last_line_no), inputs)
+            if login_form != None:
+                ret_forms.append(login_form)
+                login_form_raw = copy.deepcopy(login_form)
+                del login_form_raw['queries']
+        
         
         # submit other forms
         if br != None:
