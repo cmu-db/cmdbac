@@ -249,6 +249,7 @@ class Attempt(models.Model):
     login_label = property(loginLabel)
     login_name = property(loginName)
     
+    runtime = models.ForeignKey('Runtime')
 
     def __unicode__(self):
         return unicode(self.id)
@@ -283,6 +284,7 @@ class Field(models.Model):
 class Query(models.Model):
     content = models.TextField()
     form = models.ForeignKey('Form')
+## CLASS
 
 class Image(models.Model):
     def set_data(self, data):
@@ -293,5 +295,9 @@ class Image(models.Model):
     _data = models.TextField(db_column='data', blank=True)
     data = property(get_data, set_data)
     attempt = models.ForeignKey('Attempt')
+## CLASS
 
-    
+class Runtime(models.Model):
+    executable = models.CharField(max_length = 200)
+    version = models.CharField(max_length = 200)
+## CLASS
