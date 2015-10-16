@@ -79,10 +79,10 @@ Repositories &raquo; Database Application Crawler
                     <a href="?order_by={% if order_by != "-latest_attempt__result" %}-{% endif %}latest_attempt__result&amp;{{ queries_no_page_order.urlencode }}">Last Result
                 </th>
                 <th class="col-md-1">
-                    <a href="?order_by={% if order_by != "-latest_attempt__num_forms" %}-{% endif %}latest_attempt__num_forms&amp;{{queries_no_page_order.urlencode }}">Forms
+                    <a href="?order_by={% if order_by != "-latest_attempt__forms_count" %}-{% endif %}latest_attempt__forms_count&amp;{{queries_no_page_order.urlencode }}">Forms
                 </th>
                 <th class="col-md-1">
-                    <a href="?order_by={% if order_by != "-latest_attempt__num_queries" %}-{% endif %}latest_attempt__num_queries&amp;{{queries_no_page_order.urlencode }}">Queries
+                    <a href="?order_by={% if order_by != "-latest_attempt__queries_count" %}-{% endif %}latest_attempt__queries_count&amp;{{queries_no_page_order.urlencode }}">Queries
                 </th>
                 <th class="col-md-2">
                     <a href="?order_by={% if order_by != "-updated_date" %}-{% endif %}updated_date&amp;{{queries_no_page_order.urlencode }}">Updated
@@ -114,7 +114,7 @@ Repositories &raquo; Database Application Crawler
 
                     <td>
                     {% if repository.latest_attempt %}
-                        {{ repository.latest_attempt.num_forms }}
+                        {{ repository.latest_attempt.forms_count }}
                     {% else %}
                         0
                     {% endif %}
@@ -122,7 +122,7 @@ Repositories &raquo; Database Application Crawler
 
                     <td>
                     {% if repository.latest_attempt %}
-                        {{ repository.latest_attempt.num_queries }}
+                        {{ repository.latest_attempt.queries_count }}
                     {% else %}
                         0
                     {% endif %}
