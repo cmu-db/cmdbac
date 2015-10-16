@@ -5,6 +5,5 @@
 # fix dependency typos
 # fix the django-wiki
 # fix the sci-war
-# sort the forms
 # rest API to get data(attempt)
 # Django Res
