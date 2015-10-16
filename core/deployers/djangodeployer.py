@@ -128,7 +128,11 @@ class DjangoDeployer(BaseDeployer):
     ## DEF
 
     def get_runtime(self):
-        return utils.run_command('python --version')[1]
+        out = utils.run_command('python --version')[1].split(' ')
+        return {
+            'executable': out[0],
+            'version': out[1]
+        }
     ## DEF
 
     def try_deploy(self, attempt, deploy_path, requirement_files):

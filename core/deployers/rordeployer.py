@@ -96,7 +96,11 @@ class RoRDeployer(BaseDeployer):
     ## DEF
 
     def get_runtime(self):
-        return utils.run_command('ruby -v')[1]
+        out = utils.run_command('ruby -v')[1].split(' ')
+        return {
+            'executable': out[0],
+            'version': out[1]
+        }
     ## DEF
 
     def try_deploy(self, attempt, deploy_path):

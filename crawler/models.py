@@ -300,4 +300,6 @@ class Image(models.Model):
 class Runtime(models.Model):
     executable = models.CharField(max_length = 200)
     version = models.CharField(max_length = 200)
+    class Meta:
+        unique_together = ('executable', 'version')
 ## CLASS

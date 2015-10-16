@@ -46,7 +46,6 @@ def home(request):
     return render(request, 'index.html', context)
 
 def repositories(request):
-    #print request.GET
     context = {}
     context['queries'] = request.GET.copy()
     queries_no_page = request.GET.copy()
@@ -132,7 +131,6 @@ def repositories(request):
     if type_list:
         repositories = repositories.filter(project_type__name__in=type_list)
     order_by = request.GET.get('order_by', 'crawler_date')
-    print order_by
     if 'attempts_count' in order_by:
         repositories = repositories.annotate(attempts_count=Count('attempt')).order_by(order_by)
     elif 'forms_count' in order_by:

@@ -104,10 +104,14 @@ class BaseDeployer(object):
         forms = driver_result.get('forms', None)
         screenshot_path = driver_result.get('screenshot', None)
 
-        # Stop capturing the log
+        # stop capturing the log
         self.log.removeHandler(self.logHandler)
         self.logHandler.flush()
         self.buffer.flush()
+
+        # get runtime
+        Runtime.objects.get_or_create(executable = self.runtime['executable'], version = self.runtime['version'])
+        runtime = Runtime.objects.get(executable = self.runtime['executable'], version = self.runtime['version'])
 
         # save attempt
         attempt.result = attempt_result
@@ -116,6 +120,7 @@ class BaseDeployer(object):
         attempt.log = self.buffer.getvalue()
         attempt.stop_time = datetime.now()
         attempt.size = utils.get_size(self.base_path)
+        attempt.runtime = runtime
         attempt.save()
 
         # save forms
@@ -148,9 +153,9 @@ class BaseDeployer(object):
 
         LOG.info("Saved Attempt #%s for %s" % (attempt, attempt.repo))
         
-        # Populate packages
+        # populate packages
         for pkg in self.packages_from_file:
-            dep = Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_FILE)
+            Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_FILE)
             pkg.count = pkg.count + 1
             pkg.save()  
         ## FOR
@@ -161,7 +166,7 @@ class BaseDeployer(object):
                 pkg.save()
         ## FOR
 
-        # Make sure we update the repo to point to this latest attempt
+        # make sure we update the repo to point to this latest attempt
         if attempt_result in [ATTEMPT_STATUS_MISSING_REQUIRED_FILES]:
             self.repo.valid_project = False
         else:
