@@ -110,8 +110,11 @@ class BaseDeployer(object):
         self.buffer.flush()
 
         # get runtime
-        Runtime.objects.get_or_create(executable = self.runtime['executable'], version = self.runtime['version'])
-        runtime = Runtime.objects.get(executable = self.runtime['executable'], version = self.runtime['version'])
+        if self.runtime != None:
+            Runtime.objects.get_or_create(executable = self.runtime['executable'], version = self.runtime['version'])
+            runtime = Runtime.objects.get(executable = self.runtime['executable'], version = self.runtime['version'])
+        else:
+            runtime = None
 
         # save attempt
         attempt.result = attempt_result
