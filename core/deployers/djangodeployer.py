@@ -128,7 +128,7 @@ class DjangoDeployer(BaseDeployer):
     ## DEF
 
     def get_runtime(self):
-        out = utils.run_command('python --version')[1].split(' ')
+        out = utils.run_command('python --version')[2].split(' ')
         return {
             'executable': out[0],
             'version': out[1]

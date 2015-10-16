@@ -98,6 +98,10 @@ class BaseDeployer(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
 
+    def get_runtime(self):
+        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
+    ## DEF
+
     def save_attempt(self, attempt, attempt_result, driver_result = {}):
         register_result = driver_result.get('register', USER_STATUS_UNKNOWN)
         login_result = driver_result.get('login', USER_STATUS_UNKNOWN)
@@ -110,11 +114,11 @@ class BaseDeployer(object):
         self.buffer.flush()
 
         # get runtime
-        if self.runtime != None:
-            Runtime.objects.get_or_create(executable = self.runtime['executable'], version = self.runtime['version'])
-            runtime = Runtime.objects.get(executable = self.runtime['executable'], version = self.runtime['version'])
-        else:
-            runtime = None
+        if self.runtime == None:
+            self.runtime = self.get_runtime()
+        Runtime.objects.get_or_create(executable = self.runtime['executable'], version = self.runtime['version'])
+        runtime = Runtime.objects.get(executable = self.runtime['executable'], version = self.runtime['version'])
+
 
         # save attempt
         attempt.result = attempt_result
