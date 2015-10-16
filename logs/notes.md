@@ -7,6 +7,5 @@
 # fix the sci-war
 # sort the forms
 # fix the show
-# add About 
 # rest API to get data(attempt)
-# Django Rest
+# Django Res
