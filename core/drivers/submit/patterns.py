@@ -1,8 +1,8 @@
 # Patterns
 email_patterns = ['email']
-email_values = ['test@gmail.com']
+email_values = ['testuser@gmail.com']
 username_patterns = ['username']
-username_values = ['test']
+username_values = ['testuser']
 password_patterns = ['password']
 password_values = ['Test1234--']
 patterns = {

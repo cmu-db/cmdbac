@@ -101,6 +101,9 @@ pip install virtualenv
 pip install hurry.filesize
 pip install selenium
 install 'phantomjs' phantomjs
+install 'firefox' firefox
+install 'xvfb' xvfb
+pip install pyvirtualdisplay
 
 # Fix Dependencies
 apt-get -f -y install >/dev/null 2>&1

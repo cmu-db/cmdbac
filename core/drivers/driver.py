@@ -61,7 +61,11 @@ class Driver(object):
                 ]
             except:
                 service_args = None
-            br = webdriver.PhantomJS(service_args=service_args)
+            # br = webdriver.PhantomJS(service_args=service_args)
+            from pyvirtualdisplay import Display
+            display = Display(visible=0, size=(1024, 768))
+            display.start()
+            br = webdriver.Firefox()
             br.get(main_url)
             br.save_screenshot(screenshot_path)
             br.quit
