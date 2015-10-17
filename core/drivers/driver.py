@@ -53,19 +53,19 @@ class Driver(object):
 
     def save_screenshot(self, main_url, screenshot_path):
         try:
-            from selenium import webdriver
-            try:
-                service_args = [
-                    '--proxy=' + HTTP_PROXY,
-                    '--proxy-type=http',
-                ]
-            except:
-                service_args = None
-            # br = webdriver.PhantomJS(service_args=service_args)
             from pyvirtualdisplay import Display
             display = Display(visible=0, size=(1024, 768))
             display.start()
-            br = webdriver.Firefox()
+            from selenium import webdriver
+            try:
+                from selenium.webdriver.common.proxy import *
+                proxy = Proxy({
+                    'proxyType': ProxyType.MANUAL,
+                    'httpProxy': HTTP_PROXY
+                })
+                br = webdriver.Firefox(proxy=proxy)
+            except:
+                br = webdriver.Firefox()
             br.get(main_url)
             br.save_screenshot(screenshot_path)
             br.quit
