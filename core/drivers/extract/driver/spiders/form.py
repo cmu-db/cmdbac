@@ -34,8 +34,8 @@ class FormSpider(CrawlSpider):
 
  
     def parse_form(self, response):
-        self.browser.get(response.url)
         for sel in response.xpath('//form'):
+            self.browser.get(response.url)
             formItem = FormItem()
 
             formItem['action'] = ''
