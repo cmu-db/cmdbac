@@ -116,7 +116,10 @@ class Driver(object):
             form['queries'] = self.match_query(self.check_log(last_line_no), part_inputs)
             ret_forms.append(form)
             for i in range(5):
-                submit.fill_form_random(form, br)
+                try:
+                    submit.fill_form_random(form, br)
+                except:
+                    pass
 
         return ret_forms
 
@@ -197,7 +200,10 @@ class Driver(object):
             form['queries'] = self.match_query(self.check_log(last_line_no), part_inputs)
             ret_forms.append(form)
             for i in range(5):
-                submit.fill_form_random(form, br)
+                try:
+                    submit.fill_form_random(form, br)
+                except:
+                    pass
 
         LOG.info('Saving Screenshot ...')
         screenshot_path = self.save_screenshot(main_url, os.path.join(deployer.base_path, 'screenshot.png'))
