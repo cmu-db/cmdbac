@@ -5,6 +5,8 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 
 from driver.items import InputItem, FormItem
+from selenium import webdriver
+from db_webcrawler.settings import *
 
 class FormSpider(CrawlSpider):
     name = "form"
@@ -21,8 +23,18 @@ class FormSpider(CrawlSpider):
         )
         super(FormSpider, self)._compile_rules()
 
+        try:
+            service_args = [
+                '--proxy=' + HTTP_PROXY,
+                '--proxy-type=http',
+            ]
+        except:
+            service_args = None
+        self.browser = webdriver.PhantomJS(service_args=service_args)
+
  
     def parse_form(self, response):
+        self.browser.get(response.url)
         for sel in response.xpath('//form'):
             formItem = FormItem()
 
@@ -46,6 +58,10 @@ class FormSpider(CrawlSpider):
                     id = ip.xpath('@id').extract()[0]
                 except:
                     id = ''
+                if id != '':
+                    input_element = self.browser.find_element_by_id(id)
+                    if not input_element.is_displayed():
+                        continue
                 name = ip.xpath('@name').extract()[0]
                 try:
                     type = ip.xpath('@type').extract()[0]
