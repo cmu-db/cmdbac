@@ -3,13 +3,19 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 
 import utils
 import json
+from db_webcrawler.settings import *
 
 def extract_forms(url, follow = "false", cookie_jar = None):
 	utils.remove_file(os.path.join(os.path.dirname(__file__), 'forms.json'))
 	if cookie_jar == None:
-		out = utils.run_command('{} && {}'.format(
-			utils.cd(os.path.dirname(os.path.abspath(__file__))),
-			'scrapy crawl form -o forms.json -a start_url="{}" -a follow={}'.format(url, follow)))
+		try:
+			out = utils.run_command('{} && {}'.format(
+				utils.cd(os.path.dirname(os.path.abspath(__file__))),
+				'scrapy crawl form -o forms.json -a start_url="{}" -a follow={} -a proxy={}'.format(url, follow, HTTP_PROXY)))
+		except:
+			out = utils.run_command('{} && {}'.format(
+				utils.cd(os.path.dirname(os.path.abspath(__file__))),
+				'scrapy crawl form -o forms.json -a start_url="{}" -a follow={}'.format(url, follow)))
 	else:
 		cookie_jar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cookie_jar.txt")
 		cookie_jar.save(cookie_jar_path)

@@ -6,7 +6,6 @@ from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 
 from driver.items import InputItem, FormItem
 from selenium import webdriver
-from db_webcrawler.settings import *
 
 class FormSpider(CrawlSpider):
     name = "form"
@@ -24,8 +23,9 @@ class FormSpider(CrawlSpider):
         super(FormSpider, self)._compile_rules()
 
         try:
+            proxy = kwargs.get('proxy')
             service_args = [
-                '--proxy=' + HTTP_PROXY,
+                '--proxy=' + proxy,
                 '--proxy-type=http',
             ]
         except:
