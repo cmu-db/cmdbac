@@ -108,7 +108,7 @@ class DjangoDeployer(BaseDeployer):
 
     def create_superuser(self, path):
         LOG.info('Creating superuser ...')
-        command = '{} && {} && {}'.format(
+        command = '{} && {} && unset DJANGO_SETTINGS_MODULE && {}'.format(
             utils.to_env(self.base_path),
             utils.cd(path),
             """
