@@ -74,8 +74,7 @@ class Driver(object):
             LOG.exception(e)
             return None
 
-
-    def drive(self, deployer):
+    def admin_drive(self, deployer):
         # get main page
         main_url = deployer.get_main_url()
 
@@ -87,7 +86,54 @@ class Driver(object):
             LOG.exception(e)
         ret_forms = []
 
-        # register
+        # login as admin
+        br = None
+        info = {
+            'username': 'admin',
+            'password': 'admin'
+        }
+        try:
+            login_form, br = submit.login(forms, info)
+        except Exception, e:
+            login_form = br = None
+            LOG.exception(e)
+        # submit other forms as admin
+        if br != None:
+            forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar)
+        else:
+            forms = []
+        for form in forms:
+            last_line_no = self.check_log()
+            try:
+                part_inputs = submit.fill_form_random(form, br)
+            except:
+                part_inputs = None
+            if part_inputs == None:
+                form['queries'] = []
+                ret_forms.append(form)
+                continue
+            LOG.info('Admin: Fill in Form on {} Successfully ...'.format(form['url']))
+            form['queries'] = self.match_query(self.check_log(last_line_no), part_inputs)
+            ret_forms.append(form)
+            for i in range(5):
+                submit.fill_form_random(form, br)
+
+        return ret_forms
+
+
+    def normal_drive(self, deployer):
+        # get main page
+        main_url = deployer.get_main_url()
+
+        # extract all the forms
+        try:
+            forms = extract.extract_all_forms(main_url)
+        except Exception, e:
+            forms = []
+            LOG.exception(e)
+        ret_forms = []
+
+        # register as normal user
         register_result = USER_STATUS_UNKNOWN
         register_form_raw = None
         last_line_no = self.check_log()
@@ -107,8 +153,8 @@ class Driver(object):
             ret_forms.append(register_form)
             register_form_raw = copy.deepcopy(register_form)
             del register_form_raw['queries']
-            
-        # login
+
+        # login as normal user
         login_result = USER_STATUS_UNKNOWN
         login_form_raw = None
         br = None
@@ -130,9 +176,8 @@ class Driver(object):
                 ret_forms.append(login_form)
                 login_form_raw = copy.deepcopy(login_form)
                 del login_form_raw['queries']
-        
-        
-        # submit other forms
+
+        # submit other forms as normal user(or do not login)
         if br != None:
             forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar)
             other_forms = filter(lambda form: form not in [register_form_raw, login_form_raw], forms)
@@ -145,10 +190,10 @@ class Driver(object):
             except:
                 part_inputs = None
             if part_inputs == None:
-                LOG.info('Fill in Form on {} Failed ...'.format(form['url']))
                 form['queries'] = []
                 ret_forms.append(form)
                 continue
+            LOG.info('Normal: Fill in Form on {} Successfully ...'.format(form['url']))
             form['queries'] = self.match_query(self.check_log(last_line_no), part_inputs)
             ret_forms.append(form)
             for i in range(5):
@@ -159,3 +204,9 @@ class Driver(object):
 
         return {'register': register_result, 'login': login_result, 
                 'user':info, 'forms': ret_forms, 'screenshot': screenshot_path}
+
+    def drive(self, deployer):
+        admin_forms = self.admin_drive(deployer)
+        driver_results = self.normal_drive(deployer)
+        driver_results['forms'] += admin_forms
+        return driver_results
