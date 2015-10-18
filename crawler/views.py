@@ -8,6 +8,8 @@ from threading import Thread
 from django.shortcuts import render
 from models import *
 from forms import *
+from rest_framework import viewsets
+from serializers import AttemptSerializer
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.shortcuts import redirect
@@ -203,3 +205,10 @@ def attempt(request, id):
 
 
     return render(request, 'attempt.html', context)
+
+class AttemptViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows attempts to be viewed.
+    """
+    queryset = Attempt.objects.filter(id = 1)
+    serializer_class = AttemptSerializer
