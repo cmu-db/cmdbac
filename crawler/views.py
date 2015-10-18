@@ -9,6 +9,7 @@ from django.shortcuts import render
 from models import *
 from forms import *
 from rest_framework import viewsets
+from rest_framework import filters
 from serializers import AttemptSerializer
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
@@ -210,5 +211,7 @@ class AttemptViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows attempts to be viewed.
     """
-    queryset = Attempt.objects.filter(id = 1)
+    queryset = Attempt.objects.all()
     serializer_class = AttemptSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id',)
