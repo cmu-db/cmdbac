@@ -112,8 +112,10 @@ class Driver(object):
                 form['queries'] = []
                 ret_forms.append(form)
                 continue
-            LOG.info('Admin: Fill in Form on {} Successfully ...'.format(form['url']))
             form['queries'] = self.match_query(self.check_log(last_line_no), part_inputs)
+            if len(form['queries']) == 0:
+                continue
+            LOG.info('Admin: Fill in Form on {} Successfully ...'.format(form['url']))
             ret_forms.append(form)
             for i in range(5):
                 try:
@@ -196,8 +198,10 @@ class Driver(object):
                 form['queries'] = []
                 ret_forms.append(form)
                 continue
-            LOG.info('Normal: Fill in Form on {} Successfully ...'.format(form['url']))
             form['queries'] = self.match_query(self.check_log(last_line_no), part_inputs)
+            if len(form['queries']) == 0:
+                continue
+            LOG.info('Normal: Fill in Form on {} Successfully ...'.format(form['url']))
             ret_forms.append(form)
             for i in range(5):
                 try:
