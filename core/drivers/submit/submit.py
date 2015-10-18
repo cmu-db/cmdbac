@@ -68,7 +68,7 @@ def fill_form(form, matched_patterns = {}, br = None):
 def fill_form_random(deploy_path, form, br):
     inputs = {}
     for input in form['inputs']:
-        if inputs['type'] == 'file':
+        if input['type'] == 'file':
             filename = os.path.join(deploy_path, gen_random_value())
             with open(filename, 'w') as f:
                 f.write(gen_random_value(length = 1000))
