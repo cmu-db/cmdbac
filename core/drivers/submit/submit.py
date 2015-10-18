@@ -30,14 +30,20 @@ def submit_form(form, inputs, br = None):
 
     for input in form['inputs']:
         if input['name'] in inputs:
-            br[input['name']] = inputs[input['name']]
+            if input['type'] == 'file':
+                filename = inputs[input['name']]
+                br.form.add(open(filename), 'text/plain', filename)
+                br.form.set_all_readonly(False)
+            else:
+                br[input['name']] = inputs[input['name']]
 
     response = br.submit().read()
 
     return response, br
 
-def gen_random_value(chars = string.ascii_letters + string.digits):
-    length = random.choice(range(8, 21))
+def gen_random_value(chars = string.ascii_letters + string.digits, length = 0):
+    if length == 0:
+        length = random.choice(range(8, 21))
     return ''.join(random.choice(chars) for x in range(length))
 
 def fill_form(form, matched_patterns = {}, br = None):
@@ -45,24 +51,31 @@ def fill_form(form, matched_patterns = {}, br = None):
     for input in form['inputs']:
         for pattern_name in patterns:
             pattern, value = patterns[pattern_name]
-            if match_any_pattern(input['name'], pattern):
+            if match_any_pattern(input['name'], pattern) or match_any_pattern(input['type'], pattern):
                 if pattern_name in matched_patterns:
                     inputs[input['name']] = matched_patterns[pattern_name]
                 else:
                     inputs[input['name']] = value[0]
                     matched_patterns[pattern_name] = value[0]
                 break
-            else:
+            else :
                 inputs[input['name']] = gen_random_value()
 
     response, br = submit_form(form, inputs, br)
 
     return matched_patterns, inputs, response, br
 
-def fill_form_random(form, br):
+def fill_form_random(deploy_path, form, br):
     inputs = {}
     for input in form['inputs']:
-        inputs[input['name']] = gen_random_value()
+        if inputs['type'] == 'file':
+            filename = os.path.join(deploy_path, gen_random_value())
+            with open(filename, 'w') as f:
+                f.write(gen_random_value(length = 1000))
+            f.close()
+            inputs[input['name']] = filename
+        else:
+            inputs[input['name']] = gen_random_value()
 
     response, br = submit_form(form, inputs, br)
 

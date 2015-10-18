@@ -105,7 +105,7 @@ class Driver(object):
         for form in forms:
             last_line_no = self.check_log()
             try:
-                part_inputs = submit.fill_form_random(form, br)
+                part_inputs = submit.fill_form_random(deployer.base_path, form, br)
             except:
                 part_inputs = None
             if part_inputs == None:
@@ -117,7 +117,7 @@ class Driver(object):
             ret_forms.append(form)
             for i in range(5):
                 try:
-                    submit.fill_form_random(form, br)
+                    submit.fill_form_random(deployer.base_path, form, br)
                 except:
                     pass
 
@@ -189,7 +189,7 @@ class Driver(object):
         for form in other_forms:
             last_line_no = self.check_log()
             try:
-                part_inputs = submit.fill_form_random(form, br)
+                part_inputs = submit.fill_form_random(deployer.base_path, form, br)
             except:
                 part_inputs = None
             if part_inputs == None:
@@ -201,7 +201,7 @@ class Driver(object):
             ret_forms.append(form)
             for i in range(5):
                 try:
-                    submit.fill_form_random(form, br)
+                    submit.fill_form_random(deployer.base_path, form, br)
                 except:
                     pass
 
