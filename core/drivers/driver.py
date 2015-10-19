@@ -65,14 +65,18 @@ class Driver(object):
                     'httpProxy': HTTP_PROXY
                 })
                 br = webdriver.Firefox(proxy=proxy)
-            except:
+            except Exception, e:
+                LOG.exception(e)
                 br = webdriver.Firefox()
             br.get(main_url)
             br.save_screenshot(screenshot_path)
-            br.quit
+            br.quit()
+            display.stop()
             return screenshot_path
         except Exception, e:
             LOG.exception(e)
+            br.quit()
+            display.stop()
             return None
 
     def admin_drive(self, deployer):
@@ -221,5 +225,4 @@ class Driver(object):
         admin_forms = self.admin_drive(deployer)
         driver_results = self.normal_drive(deployer)
         driver_results['forms'] += admin_forms
-        raw_input()
         return driver_results
