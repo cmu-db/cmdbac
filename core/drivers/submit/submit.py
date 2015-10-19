@@ -5,6 +5,7 @@ import mechanize
 import cookielib
 import string
 import random
+import traceback
 
 from patterns import patterns, match_any_pattern
 import extract
@@ -35,15 +36,20 @@ def submit_form(form, inputs, br = None):
 
     for input in form['inputs']:
         if input['name'] in inputs:
-            if input['type'] == 'file':
-                flag = True
-                filename = inputs[input['name']]
-                br.form.add_file(open(filename), 'text/plain', filename)
-                br.form.set_all_readonly(False)
-            else:
-                if input['name'] in br.form:
-                    br.form[input['name']] = inputs[input['name']]
-
+            try:
+                if input['type'] == 'file':
+                    filename = inputs[input['name']]
+                    br.form.add_file(open(filename), 'text/plain', os.path.basename(filename))
+                    br.form.set_all_readonly(False)
+                else:
+                    if input['name'] in br.form:
+                        br.form[input['name']] = inputs[input['name']]
+            except:
+                traceback.print_exc()
+                print form
+                print br.form
+                print input
+       
     response = br.submit().read()
 
     return response, br
@@ -76,7 +82,7 @@ def fill_form_random(deploy_path, form, br):
     inputs = {}
     for input in form['inputs']:
         if input['type'] == 'file':
-            filename = os.path.join(deploy_path, gen_random_value())
+            filename = os.path.join(deploy_path, gen_random_value() + '.txt')
             with open(filename, 'w') as f:
                 f.write(gen_random_value(length = 1000))
             f.close()
