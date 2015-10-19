@@ -12,6 +12,11 @@ import extract
 def get_form_index(br, form):
     index = 0
     for f in br.forms():
+        if str(f.attrs.get('name', '')) != '':
+            if str(f.attrs.get('name', '')) == form['name']:
+                break
+            else:
+                continue
         if str(f.attrs.get('action', '')) == form['action']:
             break
         if str(f.attrs.get('method', '')).lower() == form['method']:
@@ -34,10 +39,12 @@ def submit_form(form, inputs, br = None):
             if input['type'] == 'file':
                 flag = True
                 filename = inputs[input['name']]
-                br.form.add(open(filename), 'text/plain', filename)
+                print br.form
+                br.form.add_file(open(filename), 'text/plain', filename)
                 br.form.set_all_readonly(False)
             else:
-                br[input['name']] = inputs[input['name']]
+                if input['name'] in br.form:
+                    br.form[input['name']] = inputs[input['name']]
 
     response = br.submit().read()
 
