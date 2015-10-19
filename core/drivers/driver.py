@@ -5,6 +5,7 @@ import logging
 import requests
 import re
 import copy
+import traceback
 
 from crawler.models import *
 from db_webcrawler.settings import *
@@ -193,6 +194,7 @@ class Driver(object):
             try:
                 part_inputs = submit.fill_form_random(deployer.base_path, form, br)
             except:
+                traceback.print_exc()
                 part_inputs = None
             if part_inputs == None:
                 form['queries'] = []
@@ -219,4 +221,5 @@ class Driver(object):
         admin_forms = self.admin_drive(deployer)
         driver_results = self.normal_drive(deployer)
         driver_results['forms'] += admin_forms
+        raw_input()
         return driver_results
