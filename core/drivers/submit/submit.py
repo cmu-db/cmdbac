@@ -33,13 +33,11 @@ def submit_form(form, inputs, br = None):
     br.open(form['url'])
     br.select_form(nr=get_form_index(br, form))
 
-    flag = False
     for input in form['inputs']:
         if input['name'] in inputs:
             if input['type'] == 'file':
                 flag = True
                 filename = inputs[input['name']]
-                print br.form
                 br.form.add_file(open(filename), 'text/plain', filename)
                 br.form.set_all_readonly(False)
             else:
@@ -47,9 +45,6 @@ def submit_form(form, inputs, br = None):
                     br.form[input['name']] = inputs[input['name']]
 
     response = br.submit().read()
-
-    if flag:
-        print response
 
     return response, br
 
