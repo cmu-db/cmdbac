@@ -50,7 +50,7 @@ class FormWithCookieSpider(CrawlSpider):
                 pass
 
             formItem['inputs'] = []
-            for ip in sel.xpath('//input[@type="text" or @type="password" or @type="email" or @type="file"]|//textarea'):
+            for ip in sel.xpath('.//input[@type="text" or @type="password" or @type="email" or @type="file"]|//textarea'):
                 try:
                     id = ip.xpath('@id').extract()[0]
                 except:
