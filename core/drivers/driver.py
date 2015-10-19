@@ -119,6 +119,7 @@ class Driver(object):
                 continue
             form['queries'] = self.match_query(self.check_log(last_line_no), part_inputs)
             if len(form['queries']) == 0:
+                ret_forms.append(form)
                 continue
             LOG.info('Admin: Fill in Form on {} Successfully ...'.format(form['url']))
             ret_forms.append(form)
@@ -190,9 +191,7 @@ class Driver(object):
         # submit other forms as normal user(or do not login)
         if br != None:
             forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar)
-            other_forms = filter(lambda form: form not in [register_form_raw, login_form_raw], forms)
-        else:
-            other_forms = filter(lambda form: form not in [register_form_raw, login_form_raw], forms)
+        other_forms = filter(lambda form: form not in [register_form_raw, login_form_raw], forms)
         for form in other_forms:
             last_line_no = self.check_log()
             try:
@@ -206,6 +205,7 @@ class Driver(object):
                 continue
             form['queries'] = self.match_query(self.check_log(last_line_no), part_inputs)
             if len(form['queries']) == 0:
+                ret_forms.append(form)
                 continue
             LOG.info('Normal: Fill in Form on {} Successfully ...'.format(form['url']))
             ret_forms.append(form)
