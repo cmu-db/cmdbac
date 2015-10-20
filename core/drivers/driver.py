@@ -83,9 +83,12 @@ class Driver(object):
         # get main page
         main_url = deployer.get_main_url()
 
+        # set json filename
+        json_filename = 'forms{}.json'.format(deployer.deploy_id)
+
         # extract all the forms
         try:
-            forms = extract.extract_all_forms(main_url)
+            forms = extract.extract_all_forms(main_url, json_filename)
         except Exception, e:
             forms = []
             LOG.exception(e)
@@ -104,7 +107,7 @@ class Driver(object):
             LOG.exception(e)
         # submit other forms as admin
         if br != None:
-            forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar)
+            forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
         else:
             forms = []
         for form in forms:
@@ -136,9 +139,12 @@ class Driver(object):
         # get main page
         main_url = deployer.get_main_url()
 
+        # set json filename
+        json_filename = 'forms{}.json'.format(deployer.deploy_id)
+
         # extract all the forms
         try:
-            forms = extract.extract_all_forms(main_url)
+            forms = extract.extract_all_forms(main_url, json_filename)
         except Exception, e:
             forms = []
             LOG.exception(e)
@@ -190,7 +196,7 @@ class Driver(object):
 
         # submit other forms as normal user(or do not login)
         if br != None:
-            forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar)
+            forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
         other_forms = filter(lambda form: form not in [register_form_raw, login_form_raw], forms)
         for form in other_forms:
             last_line_no = self.check_log()
