@@ -255,7 +255,7 @@ class DjangoDeployer(BaseDeployer):
         if not manage_files:
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
         manage_paths = [os.path.dirname(manage_file) for manage_file in manage_files]
-        base_dir = next(name for name in manage_paths)
+        base_dir = next(name for name in manage_paths if 'lib/python2.7/site-packages/' not in name)
         manage_path = next(name for name in manage_paths if name.startswith(base_dir))
         LOG.info('manage.py path: {}'.format(manage_path))
 
