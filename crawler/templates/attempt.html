@@ -75,20 +75,6 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
                     <td>Size</td>
                     <td>{{ attempt.readable_size }}</td>
                 </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-
-<div class="col-xs-6">
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-            <colgroup>
-                <col class="col-xs-2">
-                <col class="col-xs-6">
-            </colgroup>
-            <tbody>
                 <tr>
                     <td>Runtime</td>
                     <td>{{ attempt.runtime.executable }} {{ attempt.runtime.version }}</td>
@@ -109,6 +95,19 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
                     <td>Login Form</td>
                     <td><span class="label label-{{ attempt.login_label }}">{{attempt.login_name}}</span></td>
                 </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<div class="col-xs-6">
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <a href="#" data-toggle="modal" data-target="#screenshotModal">
+                    <img src="{{ screenshot }}" class="img-thumbnail">
+                </a>
             </tbody>
         </table>
     </div>
@@ -139,12 +138,7 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
     </table>
 </div>
 
-<h2 class="sub-header">Screenshot</h2>
-<a href="#" id="screenshot-show" class="showLink" onclick="showHide('screenshot');return false;">More.</a></p>
-<div id="screenshot" class="more">
-    <p><a href="#" id="screenshot-hide" class="hideLink" onclick="showHide('screenshot');return false;">Hide.</a></p>
-    <a href="#" data-toggle="modal" data-target="#screenshotModal">?</a>
-</div>
+
 
 <h2 class="sub-header">Forms</h2>
 <a href="#" id="forms-show" class="showLink" onclick="showHide('forms');return false;">More.</a></p>
