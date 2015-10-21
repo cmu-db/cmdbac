@@ -108,19 +108,31 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
                 </td>
 
                 <td>
-                    <script>
-                        function fixHeight() {
-                           var height = document.getElementById('attempt-info').offsetHeight;
-                           document.getElementById('screenshot').setAttribute("height", height);
-                        }
-                    </script>
-                    {% if screenshot %}
-                        <a href="#" data-toggle="modal" data-target="#screenshotModal">
-                            <img src="{{ screenshot }}" id="screenshot" height="1" width="100%" onload="fixHeight()">
-                        </a>
-                    {% else %}
-                        <img src="{{STATIC_URL}}img/no_image.gif" id="screenshot" height="1" width="100%" onload="fixHeight()">
-                    {% endif %}
+                    <div id="screenshot-div" class="screenshot-div">
+                        {% if screenshot %}
+                            <script>
+                                function fixHeight() {
+                                   var height = document.getElementById('attempt-info').offsetHeight;
+                                   $('.screenshot-div').css('height', height);
+                                   $('.screenshot-div').css('overflow', 'hidden');
+                                   // document.getElementById('screenshot-div').style.overflow = "hidden";
+                                   // document.getElementById('screenshot-div').setAttribute("height", height);
+                                   document.getElementById('screenshot').setAttribute("height", height);
+                                }
+                            </script>
+                            <a href="#" data-toggle="modal" data-target="#screenshotModal">
+                                <img src="{{ screenshot }}" id="screenshot" height="1" width="100%" onload="fixHeight()">
+                            </a>
+                        {% else %}
+                            <script>
+                                function fixHeight() {
+                                   var height = document.getElementById('attempt-info').offsetHeight;
+                                   document.getElementById('screenshot').setAttribute("height", height);
+                                }
+                            </script>
+                            <img src="{{STATIC_URL}}img/no_image.gif" id="screenshot" height="1" width="100%" onload="fixHeight()">
+                        {% endif %}
+                    </div>
                 </td>
             </tr>
         </tbody>
