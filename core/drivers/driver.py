@@ -79,6 +79,16 @@ class Driver(object):
             display.stop()
             return None
 
+    def equal_form(self, form1, form2):
+        for name, value in form1.iteritems():
+            if name in ['class', 'queries', 'url']:
+                continue
+            if name not in form2:
+                return False
+            if value != form2[name]:
+                return False
+        return True
+
     def admin_drive(self, deployer):
         # get main page
         main_url = deployer.get_main_url()
@@ -133,16 +143,6 @@ class Driver(object):
                     pass
 
         return ret_forms
-
-    def equal_form(self, form1, form2):
-        for name, value in form1.iteritems():
-            if name in ['class', 'queries']:
-                continue
-            if name not in form2:
-                return False
-            if value != form2[name]:
-                return False
-        return True
 
     def normal_drive(self, deployer):
         # get main page
