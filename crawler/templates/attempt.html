@@ -34,84 +34,97 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
 </ul>
 
 <h2 class="sub-header">Attempt #{{attempt.id}}</h2>
-<div class="row">
-<div class="col-xs-6">
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-            <colgroup>
-                <col class="col-xs-2">
-                <col class="col-xs-6">
-            </colgroup>
-            <tbody>
-                <tr>
-                    <td>Commit</td>
-                    <td><a href="{{ attempt.commit_url}}">{{attempt.sha}}</a></td>
-                </tr>
-                <tr>
-                    <td>Deployment Host</td>
-                    <td>{{attempt.hostname}}</td>
-                </tr>
-                <tr>
-                    <td>Start Time</td>
-                    <td>
-                    {% if attempt.start_time %}
-                        {{ attempt.start_time|date:'Y-m-d H:i:s' }}</td>
-                    {% else %}
-                        &mdash;
-                    {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <td>Duration</td>
-                    <td>
-                    {% if attempt.duration %}
-                        {{ attempt.duration|floatformat }}s
-                    {% else %}
-                        &mdash;
-                    {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <td>Size</td>
-                    <td>{{ attempt.readable_size }}</td>
-                </tr>
-                <tr>
-                    <td>Runtime</td>
-                    <td>{{ attempt.runtime.executable }} {{ attempt.runtime.version }}</td>
-                </tr>
-                <tr>
-                    <td>Tested Database</td>
-                    <td>{{attempt.database.name}}</td>
-                </tr>
-                <tr>
-                    <td>Attempt Result</td>
-                    <td><span class="label label-{{ attempt.result_label }}">{{attempt.result_name}}</span></td>
-                </tr>
-                <tr>
-                    <td>Registration Form </td>
-                    <td><span class="label label-{{ attempt.register_label }}">{{attempt.register_name}}</span></td>
-                </tr>
-                <tr>
-                    <td>Login Form</td>
-                    <td><span class="label label-{{ attempt.login_label }}">{{attempt.login_name}}</span></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+<div class="table-responsive">
+    <table class="table table-bordered table-striped">
+        <colgroup>
+            <col class="col-xs-6">
+            <col class="col-xs-6">
+        </colgroup>
+        <tbody>
+            <tr>
+                <td>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <colgroup>
+                                <col class="col-xs-2">
+                                <col class="col-xs-6">
+                            </colgroup>
+                            <tbody id="attempt-info">
+                                <tr>
+                                    <td>Commit</td>
+                                    <td><a href="{{ attempt.commit_url}}">{{attempt.sha}}</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Deployment Host</td>
+                                    <td>{{attempt.hostname}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Start Time</td>
+                                    <td>
+                                    {% if attempt.start_time %}
+                                        {{ attempt.start_time|date:'Y-m-d H:i:s' }}</td>
+                                    {% else %}
+                                        &mdash;
+                                    {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Duration</td>
+                                    <td>
+                                    {% if attempt.duration %}
+                                        {{ attempt.duration|floatformat }}s
+                                    {% else %}
+                                        &mdash;
+                                    {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Size</td>
+                                    <td>{{ attempt.readable_size }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Runtime</td>
+                                    <td>{{ attempt.runtime.executable }} {{ attempt.runtime.version }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Tested Database</td>
+                                    <td>{{attempt.database.name}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Attempt Result</td>
+                                    <td><span class="label label-{{ attempt.result_label }}">{{attempt.result_name}}</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Registration Form </td>
+                                    <td><span class="label label-{{ attempt.register_label }}">{{attempt.register_name}}</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Login Form</td>
+                                    <td><span class="label label-{{ attempt.login_label }}">{{attempt.login_name}}</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
 
-
-<div class="col-xs-6">
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-            <tbody>
-                <a href="#" data-toggle="modal" data-target="#screenshotModal">
-                    <img src="{{ screenshot }}" class="img-thumbnail">
-                </a>
-            </tbody>
-        </table>
-    </div>
-</div>
+                <td>
+                    <script>
+                        function fixHeight() {
+                           var height = document.getElementById('attempt-info').offsetHeight;
+                           document.getElementById('screenshot').setAttribute("height", height);
+                        }
+                    </script>
+                    {% if screenshot %}
+                        <a href="#" data-toggle="modal" data-target="#screenshotModal">
+                            <img src="{{ screenshot }}" id="screenshot" height="1" width="100%" onload="fixHeight()">
+                        </a>
+                    {% else %}
+                        <img src="{{STATIC_URL}}img/no_image.gif" id="screenshot" height="1" width="100%" onload="fixHeight()">
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 <h2 class="sub-header">Dependencies</h2>

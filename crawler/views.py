@@ -202,8 +202,7 @@ def attempt(request, id):
         screenshot.close()
         context['screenshot'] = '/static/' + screenshot_filename
     except:
-        context['screenshot'] = None
-
+        pass
 
     return render(request, 'attempt.html', context)
 
