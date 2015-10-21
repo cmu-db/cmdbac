@@ -1,4 +1,3 @@
-# remove duplicate forms
 # query show (subquery)
 # screenshot (border, click modal)
 # fix the bfndr
