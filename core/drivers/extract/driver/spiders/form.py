@@ -53,7 +53,7 @@ class FormSpider(CrawlSpider):
                 pass
 
             formItem['inputs'] = []
-            for ip in sel.xpath('.//input[not(@type="hidden")]|.//textarea'):
+            for ip in sel.xpath('.//input[not(@type="hidden") and not(@type="submit") and not(@type="checkbox")]|.//textarea'):
                 try:
                     _id = ip.xpath('@id').extract()[0]
                 except:

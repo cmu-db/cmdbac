@@ -108,9 +108,9 @@ class Driver(object):
         # submit other forms as admin
         if br != None:
             forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
-        else:
-            forms = []
         for form in forms:
+            if any(self.equal_form(form, ret_form) for ret_form in ret_forms):
+                continue
             last_line_no = self.check_log()
             try:
                 part_inputs = submit.fill_form_random(deployer.base_path, form, br)
@@ -134,6 +134,15 @@ class Driver(object):
 
         return ret_forms
 
+    def equal_form(self, form1, form2):
+        for name, value in form1.iteritems():
+            if name in ['class', 'queries']:
+                continue
+            if name not in form2:
+                return False
+            if value != form2[name]:
+                return False
+        return True
 
     def normal_drive(self, deployer):
         # get main page
@@ -197,8 +206,9 @@ class Driver(object):
         # submit other forms as normal user(or do not login)
         if br != None:
             forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
-        other_forms = filter(lambda form: form not in [register_form_raw, login_form_raw], forms)
-        for form in other_forms:
+        for form in forms:
+            if any(self.equal_form(form, ret_form) for ret_form in ret_forms):
+                continue
             last_line_no = self.check_log()
             try:
                 part_inputs = submit.fill_form_random(deployer.base_path, form, br)
@@ -231,4 +241,10 @@ class Driver(object):
         admin_forms = self.admin_drive(deployer)
         driver_results = self.normal_drive(deployer)
         driver_results['forms'] += admin_forms
+        filtered_forms = []
+        for form in driver_results['forms']:
+            if any(self.equal_form(form, filtered_form) for filtered_form in filtered_forms):
+                continue
+            filtered_forms.append(form)
+        driver_results['forms'] = filtered_forms
         return driver_results
