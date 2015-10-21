@@ -53,7 +53,7 @@ class FormSpider(CrawlSpider):
                 pass
 
             formItem['inputs'] = []
-            for ip in sel.xpath('.//input[@type="text" or @type="password" or @type="email" or @type="file"]|//textarea'):
+            for ip in sel.xpath('.//input[not(@type="hidden")]|.//textarea'):
                 try:
                     _id = ip.xpath('@id').extract()[0]
                 except:
@@ -66,7 +66,7 @@ class FormSpider(CrawlSpider):
                 try:
                     _type = ip.xpath('@type').extract()[0]
                 except:
-                    _type = ''
+                    _type = 'textarea'
                 inputItem = InputItem()
                 inputItem['id'] = _id
                 inputItem['name'] = name

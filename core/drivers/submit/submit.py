@@ -37,18 +37,24 @@ def submit_form(form, inputs, br = None):
     for input in form['inputs']:
         if input['name'] in inputs:
             try:
+                if br.find_control(name = input['name']) == None:
+                    continue
                 if input['type'] == 'file':
                     filename = inputs[input['name']]
-                    br.form.add_file(open(filename), 'text/plain', os.path.basename(filename))
+                    br.form.add_file(open(filename), 'text/plain', os.path.basename(filename), name = input['name'])
                     br.form.set_all_readonly(False)
                 else:
-                    if input['name'] in br.form:
-                        br.form[input['name']] = inputs[input['name']]
+                    if br.find_control(name = input['name']).readonly:
+                        continue
+                    br[input['name']] = inputs[input['name']]
             except:
                 traceback.print_exc()
                 print form
                 print br.form
                 print input
+                for control in br.form.controls:
+                    print control.name
+                    print control
        
     response = br.submit().read()
 
