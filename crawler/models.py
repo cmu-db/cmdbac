@@ -41,7 +41,7 @@ globals()['ATTEMPT_STATUS_CODES'] = ATTEMPT_STATUS_CODES
 
 # Login or Regsiter Status
 USER_STATUS = (
-    ('OK', 'Success', 'info'),
+    ('OK', 'Success', 'success'),
     ('ER', 'Fail', 'danger'),
     ('NF', 'Not found', 'warning'),
     ('UN', 'Unknown', 'default'),
