@@ -149,6 +149,8 @@ class DjangoDeployer(BaseDeployer):
         packages = self.install_requirements(self.base_path, requirement_files)
         for package in packages:
             package = package.strip()
+            if len(package) == 0:
+                continue
             if package[0] == '#':
                 continue
             if len(package.split('==')) >= 2:
