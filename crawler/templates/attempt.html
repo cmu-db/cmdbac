@@ -6,6 +6,23 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
 {% endblock %}
 
 {% block main %}
+<div class="modal fade" id="screenshotModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Screenshot</h4>
+            </div>
+            <div class="modal-body">
+                <img src="{{ screenshot }}" class="img-responsive">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <ul class="breadcrumb">
     <li>
         <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{attempt.repo.name}}">Repositories</a>
@@ -126,7 +143,7 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
 <a href="#" id="screenshot-show" class="showLink" onclick="showHide('screenshot');return false;">More.</a></p>
 <div id="screenshot" class="more">
     <p><a href="#" id="screenshot-hide" class="hideLink" onclick="showHide('screenshot');return false;">Hide.</a></p>
-    <img src="{{ screenshot }}" class="img-responsive">
+    <a href="#" data-toggle="modal" data-target="#screenshotModal">?</a>
 </div>
 
 <h2 class="sub-header">Forms</h2>
