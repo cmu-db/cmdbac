@@ -214,6 +214,7 @@ class Driver(object):
                 part_inputs = submit.fill_form_random(deployer.base_path, form, br)
             except:
                 traceback.print_exc()
+                print form
                 part_inputs = None
             if part_inputs == None:
                 form['queries'] = []

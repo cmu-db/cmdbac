@@ -37,14 +37,16 @@ def submit_form(form, inputs, br = None):
     for input in form['inputs']:
         if input['name'] in inputs:
             try:
-                if br.form.find_control(name = input['name']) == None:
+                if br.find_control(name = input['name'], type = input['type']) == None:
                     continue
                 if input['type'] == 'file':
                     filename = inputs[input['name']]
                     br.form.add_file(open(filename), 'text/plain', os.path.basename(filename), name = input['name'])
                     br.form.set_all_readonly(False)
+                elif input['type'] == 'checkbox':
+                    br.find_control(name = input['name'], type = input['type']).selected = True
                 else:
-                    if br.find_control(name = input['name']).readonly:
+                    if br.find_control(name = input['name'], type = input['type']).readonly:
                         continue
                     br[input['name']] = inputs[input['name']]
             except:
