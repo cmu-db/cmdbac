@@ -150,4 +150,18 @@
         </tbody>
     </table>
 </div>
+
+<ul id="pagination" class="pagination-sm"></ul>
+
+<script type='text/javascript'>
+    $('#pagination').twbsPagination({
+        totalPages: {{ attempts.paginator.num_pages }},
+        visiblePages: 10,
+        href: '?page={% templatetag openvariable %}number{% templatetag closevariable %}&{{ queries_no_page.urlencode }}',
+        onPageClick: function (event, page) {
+            $('#page-content').text('Page ' + page);
+        }
+    });
+</script>
+
 {% endblock %}

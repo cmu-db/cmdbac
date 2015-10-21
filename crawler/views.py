@@ -159,6 +159,7 @@ def repositories(request):
     context['type_form'] = ProjectTypeForm(request.GET)
     context["repositories"] = repositories
     context['search'] = search
+
     return render(request, 'repositories.html', context)
 
 def repository(request, user_name, repo_name):
@@ -166,9 +167,21 @@ def repository(request, user_name, repo_name):
     context['queries'] = request.GET.copy()
     
     repository = Repository.objects.get(name=user_name + '/' + repo_name)
-    attempts = Attempt.objects.filter(repo=repository).order_by("-id")
     context['repository'] = repository
+
+    attempts = Attempt.objects.filter(repo=repository).order_by("-id")
+    paginator = Paginator(attempts, 50) # Show 50 repos per page
+    page = request.GET.get('page')
+    try:
+        attempts = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        attempts = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        attempts = paginator.page(paginator.num_pages)
     context['attempts'] = attempts
+    
     return render(request, 'repository.html', context)
 
 def attempt(request, id):
