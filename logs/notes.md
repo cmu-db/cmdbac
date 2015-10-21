@@ -1,5 +1,5 @@
 # remove duplicate forms
-# query show (subquery, line)
+# query show (subquery)
 # screenshot (border, click modal)
 # fix the bfndr
 # fix the form color
