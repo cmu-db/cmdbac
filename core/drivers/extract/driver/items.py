@@ -24,3 +24,6 @@ class FormItem(scrapy.Item):
 	url = scrapy.Field()
 	method = scrapy.Field()
 	inputs = scrapy.Field()
+	id = scrapy.Field()
+	clazz = scrapy.Field()
+	enctype = scrapy.Field()

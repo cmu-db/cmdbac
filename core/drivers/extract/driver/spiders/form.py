@@ -55,24 +55,40 @@ class FormSpider(CrawlSpider):
             formItem['inputs'] = []
             for ip in sel.xpath('.//input[@type="text" or @type="password" or @type="email" or @type="file"]|//textarea'):
                 try:
-                    id = ip.xpath('@id').extract()[0]
+                    _id = ip.xpath('@id').extract()[0]
                 except:
-                    id = ''
-                if id != '':
-                    input_element = self.browser.find_element_by_id(id)
+                    _id = ''
+                if _id != '':
+                    input_element = self.browser.find_element_by_id(_id)
                     if not input_element.is_displayed():
                         continue
                 name = ip.xpath('@name').extract()[0]
                 try:
-                    type = ip.xpath('@type').extract()[0]
+                    _type = ip.xpath('@type').extract()[0]
                 except:
-                    type = ''
+                    _type = ''
                 inputItem = InputItem()
-                inputItem['id'] = id
+                inputItem['id'] = _id
                 inputItem['name'] = name
-                inputItem['type'] = type
+                inputItem['type'] = _type
                 inputItem['value'] = ''
                 formItem['inputs'].append(inputItem)
+
+            try:
+                _id = sel.xpath('@id').extract()[0]
+            except:
+                _id = ''
+            try:
+                _class = sel.xpath('@class').extract()[0]
+            except:
+                _class = ''
+            try:
+                enctype = sel.xpath('@enctype').extract()[0]
+            except:
+                enctype = ''
+            formItem['id'] = _id
+            formItem['clazz'] = _class
+            formItem['enctype'] = enctype
 
             yield formItem
             
