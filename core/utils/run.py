@@ -15,7 +15,11 @@ def run(args, cwd = None, shell = True, env = None):
     stdout, stderr = p.communicate()
     return p.returncode, stdout, stderr
 
-def run_command(command, timeout=1000):
+def run_command(command, timeout=0):
+    if timeout > 0:
+        commands = command.split('&&')
+        commands[-1] = 'timeout {} {}'.format(timeout, commands[-1])
+        command = '&& '.join(commands)
     return run(command)
 
 def run_command_async(command, timeout=1000):
