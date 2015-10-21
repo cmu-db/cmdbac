@@ -163,10 +163,10 @@ Repositories &raquo; Database Application Crawler
     </table>
 </div>
 
-<ul id="pagination-demo" class="pagination-sm"></ul>
+<ul id="pagination" class="pagination-sm"></ul>
 
 <script type='text/javascript'>
-    $('#pagination-demo').twbsPagination({
+    $('#pagination').twbsPagination({
         totalPages: {{ repositories.paginator.num_pages }},
         visiblePages: 10,
         href: '?page={% templatetag openvariable %}number{% templatetag closevariable %}&{{ queries_no_page.urlencode }}',
