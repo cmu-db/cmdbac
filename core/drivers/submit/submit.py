@@ -17,7 +17,7 @@ def get_form_index(br, form):
         form['class'] = form['clazz']
         for name, value in form.iteritems():
             if name in f.attrs:
-                if str(f.attrs[name]) != str(value):
+                if str(f.attrs[name]).lower() != str(value).lower():
                     equal = False
                     break
         if equal:
