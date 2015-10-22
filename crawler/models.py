@@ -161,6 +161,8 @@ class Repository(models.Model):
     releases_count = models.IntegerField()
     contributors_count = models.IntegerField()
 
+    attempts_count = models.IntegerField(default = 0)
+
     def __unicode__(self):
         return self.name
     def user_name(self):
@@ -169,8 +171,6 @@ class Repository(models.Model):
         return self.name.split('/')[1]
     def repo_url(self):
         return self.source.get_url(self.name)
-    def attempts_count(self):
-        return Attempt.objects.filter(repo = self).count()
 
     class Meta:
         verbose_name_plural = "repositories"
