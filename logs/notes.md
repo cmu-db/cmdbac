@@ -3,6 +3,4 @@
 # wrap the query
 # count the query
 # show all query
-# add attribute for counts
-# move the screenshot
 # add count attribute for form

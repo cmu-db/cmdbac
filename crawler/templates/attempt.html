@@ -37,8 +37,8 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
 <div class="table-responsive">
     <table class="table table-bordered table-striped">
         <colgroup>
-            <col class="col-xs-6">
-            <col class="col-xs-6">
+            <col class="col-xs-9">
+            <col class="col-xs-3">
         </colgroup>
         <tbody>
             <tr>
@@ -46,7 +46,7 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
                             <colgroup>
-                                <col class="col-xs-2">
+                                <col class="col-xs-3">
                                 <col class="col-xs-6">
                             </colgroup>
                             <tbody id="attempt-info">
@@ -90,6 +90,19 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
                                     <td>Tested Database</td>
                                     <td>{{attempt.database.name}}</td>
                                 </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+
+                <td>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <colgroup>
+                                <col class="col-xs-2">
+                                <col class="col-xs-1">
+                            </colgroup>
+                            <tbody id="attempt-result">
                                 <tr>
                                     <td>Attempt Result</td>
                                     <td><span class="label label-{{ attempt.result_label }}">{{attempt.result_name}}</span></td>
@@ -105,14 +118,14 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
                             </tbody>
                         </table>
                     </div>
-                </td>
-
-                <td>
                     <div id="screenshot-div" class="screenshot-div">
+                        
                         {% if screenshot %}
                             <script>
                                 function fixHeight() {
-                                   var height = document.getElementById('attempt-info').offsetHeight;
+                                   var height1 = document.getElementById('attempt-info').offsetHeight;
+                                   var height2 = document.getElementById('attempt-result').offsetHeight;
+                                   var height = height1 - height2;
                                    $('.screenshot-div').css('height', height);
                                    $('.screenshot-div').css('overflow', 'hidden');
                                    // document.getElementById('screenshot-div').style.overflow = "hidden";
