@@ -6,4 +6,3 @@
 # add attribute for counts
 # move the screenshot
 # add count attribute for form
-# add count attribute for repo
