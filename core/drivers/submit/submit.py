@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
@@ -43,7 +45,8 @@ def submit_form(form, inputs, br = None):
                     filename = inputs[input['name']]['filename']
                     upload_filename = os.path.basename(filename)
                     mime_type = inputs[input['name']]['mime_type']
-                    br.form.add_file(open(filename), mime_type, upload_filename, name = input['name'])
+                    print filename
+                    br.form.add_file(open(filename), 'text/plain', upload_filename, name = input['name'])
                     br.form.set_all_readonly(False)
                 elif input['type'] == 'checkbox':
                     br.find_control(name = input['name'], type = input['type']).selected = inputs[input['name']]
@@ -54,7 +57,7 @@ def submit_form(form, inputs, br = None):
             except:
                 traceback.print_exc()
        
-    response = br.submit().read()
+    response = br.submit()
 
     return response, br
 
@@ -66,7 +69,7 @@ def gen_random_value(chars = string.ascii_letters + string.digits, length = 0):
 def gen_random_true_false():
     return random.choice([True, False])
 
-def gen_file(input):
+def gen_file(deploy_path, input):
     if input['name'] != '' and 'image' in input['name']:
         filename = os.path.join(os.path.dirname(__file__), os.pardir, "files", "image.jpg")
         mime_type = 'image/jpeg'
@@ -90,13 +93,6 @@ def fill_form(form, matched_patterns = {}, br = None):
                     inputs[input['name']] = value[0]
                     matched_patterns[pattern_name] = value[0]
                 break
-            elif input['type'] == 'file':
-                filename = os.path.join(deploy_path, gen_random_value())
-                with open(filename, 'w') as f:
-                    f.write(gen_random_value(length = 1000))
-                f.close()
-                inputs[input['name']]['filename'] = filename
-                inputs[input['name']]['mime_type'] = 'text/plain'
             elif input['type'] == 'checkbox':
                 inputs[input['name']] = True
             else:
@@ -110,9 +106,11 @@ def fill_form_random(deploy_path, form, br):
     inputs = {}
     for input in form['inputs']:
         if input['type'] == 'file':
-            filename, mime_type = gen_file(input)
-            inputs[input['name']]['filename'] = filename
-            inputs[input['name']]['mime_type'] = mime_type
+            filename, mime_type = gen_file(deploy_path, input)
+            inputs[input['name']] = {
+                    'filename' : filename,
+                    'mime_type': mime_type
+            }
         elif input['type'] == 'checkbox':
             inputs[input['name']] = gen_random_true_false()
         else:
