@@ -246,5 +246,4 @@ class Driver(object):
                 continue
             filtered_forms.append(form)
         driver_results['forms'] = filtered_forms
-        raw_input()
         return driver_results
