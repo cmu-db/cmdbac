@@ -42,10 +42,6 @@ def submit_form(form, inputs, br = None):
                 if input['type'] == 'file':
                     filename = inputs[input['name']]
                     upload_filename = os.path.basename(filename)
-                    if input['name'] != '' and 'image' in input['name']:
-                        upload_filename += '.png'
-                    else:
-                        upload_filename += '.txt'
                     br.form.add_file(open(filename), 'text/plain', upload_filename, name = input['name'])
                     br.form.set_all_readonly(False)
                 elif input['type'] == 'checkbox':
@@ -100,10 +96,13 @@ def fill_form_random(deploy_path, form, br):
     inputs = {}
     for input in form['inputs']:
         if input['type'] == 'file':
-            filename = os.path.join(deploy_path, gen_random_value())
-            with open(filename, 'w') as f:
-                f.write(gen_random_value(length = 1000))
-            f.close()
+            if input['name'] != '' and 'image' in input['name']:
+                filename = os.path.join(os.path.dirname(__file__), os.pardir, "files", "image.jpg")
+            else:
+                filename = os.path.join(deploy_path, gen_random_value() + '.txt')
+                with open(filename, 'w') as f:
+                    f.write(gen_random_value(length = 1000))
+                f.close()
             inputs[input['name']] = filename
         elif input['type'] == 'checkbox':
             inputs[input['name']] = gen_random_true_false()
