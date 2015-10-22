@@ -128,6 +128,9 @@ class BaseDeployer(object):
         attempt.stop_time = datetime.now()
         attempt.size = utils.get_size(self.base_path)
         attempt.runtime = runtime
+        if forms != None:
+            attempt.forms_count = len(forms)
+            attempt.queries_count = sum(len(form['queries']) for form in forms)
         attempt.save()
 
         # save forms
@@ -180,6 +183,7 @@ class BaseDeployer(object):
         else:
             self.repo.valid_project = True
         self.repo.latest_attempt = attempt
+        self.repo.attempts_count = self.repo.attempts_count + 1
         self.repo.save()
     ## DEF
     

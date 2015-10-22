@@ -251,15 +251,11 @@ class Attempt(models.Model):
     
     runtime = models.ForeignKey('Runtime', default=None)
 
+    forms_count = models.IntegerField(default = 0)
+    queries_count = models.IntegerField(default = 0)
+
     def __unicode__(self):
         return unicode(self.id)
-    def forms_count(self):
-        return Form.objects.filter(attempt = self).count()
-    def success_forms_count(self):
-        return Form.objects.filter(attempt = self).count()
-    def queries_count(self):
-        return Query.objects.filter(form__attempt = self).count()
-
 ## CLASS
 
 class Module(models.Model):
