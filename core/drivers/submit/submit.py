@@ -44,7 +44,7 @@ def submit_form(form, inputs, br = None):
                     br.form.add_file(open(filename), 'text/plain', os.path.basename(filename), name = input['name'])
                     br.form.set_all_readonly(False)
                 elif input['type'] == 'checkbox':
-                    br.find_control(name = input['name'], type = input['type']).selected = True
+                    br.find_control(name = input['name'], type = input['type']).selected = inputs[input['name']]
                 else:
                     if br.find_control(name = input['name'], type = input['type']).readonly:
                         continue
@@ -61,6 +61,9 @@ def gen_random_value(chars = string.ascii_letters + string.digits, length = 0):
         length = random.choice(range(8, 21))
     return ''.join(random.choice(chars) for x in range(length))
 
+def gen_random_true_false():
+    return random.choice([True, False])
+
 def fill_form(form, matched_patterns = {}, br = None):
     inputs = {}
     for input in form['inputs']:
@@ -73,7 +76,15 @@ def fill_form(form, matched_patterns = {}, br = None):
                     inputs[input['name']] = value[0]
                     matched_patterns[pattern_name] = value[0]
                 break
-            else :
+            elif input['type'] == 'file':
+                filename = os.path.join(deploy_path, gen_random_value() + '.txt')
+                with open(filename, 'w') as f:
+                    f.write(gen_random_value(length = 1000))
+                f.close()
+                inputs[input['name']] = filename
+            elif input['type'] == 'checkbox':
+                inputs[input['name']] = True
+            else:
                 inputs[input['name']] = gen_random_value()
 
     response, br = submit_form(form, inputs, br)
@@ -89,6 +100,8 @@ def fill_form_random(deploy_path, form, br):
                 f.write(gen_random_value(length = 1000))
             f.close()
             inputs[input['name']] = filename
+        elif input['type'] == 'checkbox':
+            inputs[input['name']] = gen_random_true_false()
         else:
             inputs[input['name']] = gen_random_value()
 

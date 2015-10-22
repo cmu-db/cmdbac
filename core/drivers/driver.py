@@ -44,8 +44,8 @@ class Driver(object):
             if query == None:
                 continue
             query = query.group(1)
-            for name, value in sorted(inputs.items(), key=lambda (x, y): len(y), reverse=True):
-                if value in query:
+            for name, value in sorted(inputs.items(), key=lambda (x, y): len(str(y)), reverse=True):
+                if str(value) in query:
                     query = query.replace(value, '<span style="color:red">{}</span>'.format(name))
                     matched = True
             if matched == True:
