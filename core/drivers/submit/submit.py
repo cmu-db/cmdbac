@@ -41,7 +41,12 @@ def submit_form(form, inputs, br = None):
                     continue
                 if input['type'] == 'file':
                     filename = inputs[input['name']]
-                    br.form.add_file(open(filename), 'text/plain', os.path.basename(filename), name = input['name'])
+                    upload_filename = os.path.basename(filename)
+                    if input['name'] != '' and 'image' in input['name']:
+                        upload_filename += '.png'
+                    else:
+                        upload_filename += '.txt'
+                    br.form.add_file(open(filename), 'text/plain', upload_filename, name = input['name'])
                     br.form.set_all_readonly(False)
                 elif input['type'] == 'checkbox':
                     br.find_control(name = input['name'], type = input['type']).selected = inputs[input['name']]
@@ -77,7 +82,7 @@ def fill_form(form, matched_patterns = {}, br = None):
                     matched_patterns[pattern_name] = value[0]
                 break
             elif input['type'] == 'file':
-                filename = os.path.join(deploy_path, gen_random_value() + '.txt')
+                filename = os.path.join(deploy_path, gen_random_value())
                 with open(filename, 'w') as f:
                     f.write(gen_random_value(length = 1000))
                 f.close()
@@ -95,7 +100,7 @@ def fill_form_random(deploy_path, form, br):
     inputs = {}
     for input in form['inputs']:
         if input['type'] == 'file':
-            filename = os.path.join(deploy_path, gen_random_value() + '.txt')
+            filename = os.path.join(deploy_path, gen_random_value())
             with open(filename, 'w') as f:
                 f.write(gen_random_value(length = 1000))
             f.close()
