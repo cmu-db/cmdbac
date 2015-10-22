@@ -140,7 +140,8 @@ class BaseDeployer(object):
                 form.save()
                 for q in f['queries']:
                     query = Query()
-                    query.content = q
+                    query.content = q['content']
+                    query.matched = q['matched']
                     query.form = form
                     query.save()
                 for input in f['inputs']:

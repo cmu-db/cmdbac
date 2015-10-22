@@ -283,6 +283,7 @@ class Field(models.Model):
 
 class Query(models.Model):
     content = models.TextField()
+    matched = models.BooleanField(default=False)
     form = models.ForeignKey('Form')
 ## CLASS
 

@@ -47,7 +47,8 @@ class Driver(object):
             for name, value in sorted(inputs.items(), key=lambda (x, y): len(str(y)), reverse=True):
                 if str(value) in query:
                     query = query.replace(value, '<span style="color:red">{}</span>'.format(name))
-            ret_queries.append(query)
+                    matched = True
+            ret_queries.append({'content': query, 'matched': matched})
         return ret_queries
 
     def save_screenshot(self, main_url, screenshot_path):
@@ -159,7 +160,6 @@ class Driver(object):
 
         # register as normal user
         register_result = USER_STATUS_UNKNOWN
-        register_form_raw = None
         last_line_no = self.check_log()
         try:
             register_form, info, inputs = submit.register(deployer.base_path, forms)
@@ -175,12 +175,9 @@ class Driver(object):
             register_form['queries'] = self.match_query(self.check_log(last_line_no), inputs)
         if register_form != None:
             ret_forms.append(register_form)
-            register_form_raw = copy.deepcopy(register_form)
-            del register_form_raw['queries']
 
         # login as normal user
         login_result = USER_STATUS_UNKNOWN
-        login_form_raw = None
         br = None
         if register_result == USER_STATUS_SUCCESS:
             last_line_no = self.check_log()
@@ -198,8 +195,6 @@ class Driver(object):
                 login_form['queries'] = self.match_query(self.check_log(last_line_no), inputs)
             if login_form != None:
                 ret_forms.append(login_form)
-                login_form_raw = copy.deepcopy(login_form)
-                del login_form_raw['queries']
 
         # submit other forms as normal user(or do not login)
         if br != None:
