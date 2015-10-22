@@ -47,9 +47,7 @@ class Driver(object):
             for name, value in sorted(inputs.items(), key=lambda (x, y): len(str(y)), reverse=True):
                 if str(value) in query:
                     query = query.replace(value, '<span style="color:red">{}</span>'.format(name))
-                    matched = True
-            if matched == True:
-                ret_queries.append(query)
+            ret_queries.append(query)
         return ret_queries
 
     def save_screenshot(self, main_url, screenshot_path):
@@ -248,4 +246,5 @@ class Driver(object):
                 continue
             filtered_forms.append(form)
         driver_results['forms'] = filtered_forms
+        raw_input()
         return driver_results
