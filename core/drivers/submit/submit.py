@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
@@ -33,7 +31,7 @@ def submit_form(form, inputs, br = None):
         cj = cookielib.LWPCookieJar() 
         br.set_cookiejar(cj)
 
-    br.open(form['url'])
+    br.open(form['url'].encode("ascii","ignore"))
     br.select_form(nr=get_form_index(br, form))
 
     for input in form['inputs']:
@@ -45,8 +43,7 @@ def submit_form(form, inputs, br = None):
                     filename = inputs[input['name']]['filename']
                     upload_filename = os.path.basename(filename)
                     mime_type = inputs[input['name']]['mime_type']
-                    print filename
-                    br.form.add_file(open(filename), 'text/plain', upload_filename, name = input['name'])
+                    br.form.add_file(open(filename), mime_type, upload_filename, name = input['name'])
                     br.form.set_all_readonly(False)
                 elif input['type'] == 'checkbox':
                     br.find_control(name = input['name'], type = input['type']).selected = inputs[input['name']]
@@ -56,8 +53,8 @@ def submit_form(form, inputs, br = None):
                     br[input['name']] = inputs[input['name']]
             except:
                 traceback.print_exc()
-       
-    response = br.submit()
+
+    response = br.submit().read()
 
     return response, br
 
