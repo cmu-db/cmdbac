@@ -50,6 +50,8 @@ def submit_form(form, inputs, br = None):
                 else:
                     if br.find_control(name = input['name'], type = input['type']).readonly:
                         continue
+                    if input['type'] == 'radio':
+                        continue
                     br[input['name']] = inputs[input['name']]
             except:
                 traceback.print_exc()
