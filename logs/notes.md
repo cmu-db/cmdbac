@@ -1,5 +1,5 @@
 # fix the image upload
-# checking query
+# checking query(just UPDATE)
 # wrap the query
 # fix the width of forms table
 # count the query
