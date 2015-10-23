@@ -6,7 +6,6 @@ def count_query(queries):
 		ret[keyword] = 0
 	for query in queries:
 		for keyword in keywords:
-			if query.startswith(keyword):
+			if keyword in query:
 				ret[keyword] += 1
-				break
 	return ret
