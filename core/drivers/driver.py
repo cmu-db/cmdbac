@@ -12,6 +12,7 @@ from db_webcrawler.settings import *
 import utils
 import extract
 import submit
+import count
 
 ## =====================================================================
 ## LOGGING CONFIGURATION
@@ -36,7 +37,7 @@ class Driver(object):
         else:
             return sql_log_file.readlines()[last_line_no-1:]
 
-    def match_query(self, queries, inputs):
+    def process_query(self, queries, inputs):
         ret_queries = []
         for query in queries:
             matched = False
@@ -49,6 +50,7 @@ class Driver(object):
                     query = query.replace(value, '<span style="color:red">{}</span>'.format(name))
                     matched = True
             ret_queries.append({'content': query, 'matched': matched})
+        counter = count.count_query(queries)
         return ret_queries
 
     def save_screenshot(self, main_url, screenshot_path):
@@ -129,7 +131,7 @@ class Driver(object):
                 form['queries'] = []
                 ret_forms.append(form)
                 continue
-            form['queries'] = self.match_query(self.check_log(last_line_no), part_inputs)
+            form['queries'] = self.process_query(self.check_log(last_line_no), part_inputs)
             if len(form['queries']) == 0:
                 ret_forms.append(form)
                 continue
@@ -172,7 +174,7 @@ class Driver(object):
         else:
             LOG.info('Register Successfully ...')
             register_result = USER_STATUS_SUCCESS
-            register_form['queries'] = self.match_query(self.check_log(last_line_no), inputs)
+            register_form['queries'] = self.process_query(self.check_log(last_line_no), inputs)
         if register_form != None:
             ret_forms.append(register_form)
 
