@@ -1,4 +1,4 @@
-keywords = ['SET', 'INSERT', 'UPDATE', 'DELETE']
+keywords = ['SELECT', 'INSERT', 'UPDATE', 'DELETE']
 
 def count_query(queries):
 	ret = {}
