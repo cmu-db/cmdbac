@@ -82,7 +82,7 @@ class Driver(object):
 
     def equal_form(self, form1, form2):
         for name, value in form1.iteritems():
-            if name in ['class', 'queries', 'url']:
+            if name in ['class', 'queries', 'url', 'counter']:
                 continue
             if name not in form2:
                 return False
