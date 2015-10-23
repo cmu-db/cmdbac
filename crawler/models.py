@@ -277,6 +277,12 @@ class Field(models.Model):
     form = models.ForeignKey('Form')
 ## CLASS
 
+class Counter(models.Model):
+    description = models.CharField(max_length = 200)
+    count = models.IntegerField(default = 0)
+    form = models.ForeignKey('Form')
+## CLASS
+
 class Query(models.Model):
     content = models.TextField()
     matched = models.BooleanField(default=False)

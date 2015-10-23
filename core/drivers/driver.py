@@ -51,7 +51,7 @@ class Driver(object):
                     matched = True
             ret_queries.append({'content': query, 'matched': matched})
         counter = count.count_query(queries)
-        return ret_queries
+        return ret_queries, counter
 
     def save_screenshot(self, main_url, screenshot_path):
         try:
@@ -120,6 +120,8 @@ class Driver(object):
         if br != None:
             forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
         for form in forms:
+            form['queries'] = []
+            form['counter'] = {}
             if any(self.equal_form(form, ret_form) for ret_form in ret_forms):
                 continue
             last_line_no = self.check_log()
@@ -128,10 +130,9 @@ class Driver(object):
             except:
                 part_inputs = None
             if part_inputs == None:
-                form['queries'] = []
                 ret_forms.append(form)
                 continue
-            form['queries'] = self.process_query(self.check_log(last_line_no), part_inputs)
+            form['queries'], form['counter'] = self.process_query(self.check_log(last_line_no), part_inputs)
             if len(form['queries']) == 0:
                 ret_forms.append(form)
                 continue
@@ -174,7 +175,7 @@ class Driver(object):
         else:
             LOG.info('Register Successfully ...')
             register_result = USER_STATUS_SUCCESS
-            register_form['queries'] = self.process_query(self.check_log(last_line_no), inputs)
+            register_form['queries'], register_form['counter'] = self.process_query(self.check_log(last_line_no), inputs)
         if register_form != None:
             ret_forms.append(register_form)
 
@@ -194,7 +195,7 @@ class Driver(object):
             else:
                 LOG.info('Login Successfully ...')
                 login_result = USER_STATUS_SUCCESS
-                login_form['queries'] = self.match_query(self.check_log(last_line_no), inputs)
+                login_form['queries'], login_form['counter'] = self.process_query(self.check_log(last_line_no), inputs)
             if login_form != None:
                 ret_forms.append(login_form)
 
@@ -202,6 +203,8 @@ class Driver(object):
         if br != None:
             forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
         for form in forms:
+            form['queries'] = []
+            form['counter'] = {}
             if any(self.equal_form(form, ret_form) for ret_form in ret_forms):
                 continue
             last_line_no = self.check_log()
@@ -212,10 +215,9 @@ class Driver(object):
                 print form
                 part_inputs = None
             if part_inputs == None:
-                form['queries'] = []
                 ret_forms.append(form)
                 continue
-            form['queries'] = self.match_query(self.check_log(last_line_no), part_inputs)
+            form['queries'], form['counter'] = self.process_query(self.check_log(last_line_no), part_inputs)
             if len(form['queries']) == 0:
                 ret_forms.append(form)
                 continue

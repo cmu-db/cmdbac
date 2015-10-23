@@ -153,6 +153,12 @@ class BaseDeployer(object):
                     field.type = input['type']
                     field.form = form
                     field.save()
+                for description, count in f['counter'].iteritems():
+                    counter = Counter()
+                    counter.description = description
+                    counter.count = count
+                    counter.form = form
+                    counter.save()
 
         # save screenshot
         if screenshot_path != None:
