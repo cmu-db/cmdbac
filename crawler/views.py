@@ -192,12 +192,14 @@ def attempt(request, id):
     for form in forms:
         fields = Field.objects.filter(form=form)
         queries = Query.objects.filter(form=form)
+        counters = Counter.objects.filter(form=form)
         context['forms'].append({
             'id': form.id,
             'action': form.action,
             'url': form.url,
             'fields': fields,
-            'queries': queries
+            'queries': queries,
+            'counters': counters
         })
     
     try:

@@ -220,16 +220,21 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
                     {% endif %}
                 </td>
                 <td>
-                    {% if form.queries %}
+                    {% if form.counters %}
                     <div class="table-responsive">
                         <table class="table table-striped">
-                            <tbody>
-                                {% for query in form.queries %}
-                                {% if query.matched %}
+                            <thead>
                                 <tr>
-                                    <td><span>{{ query.content|safe }}</span><br/></td>
+                                    <th>Type</th>
+                                    <th>Count</th>
                                 </tr>
-                                {% endif %}
+                            </thead>
+                            <tbody>
+                                {% for counter in form.counters %}
+                                <tr>
+                                    <td>{{ counter.description }}</td>
+                                    <td>{{ counter.count }}</td>
+                                </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
