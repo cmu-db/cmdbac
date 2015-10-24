@@ -32,6 +32,8 @@ class FormSpider(CrawlSpider):
             service_args = None
         self.browser = webdriver.PhantomJS(service_args=service_args)
 
+    def closed(self, reason):
+        self.browser.quit()
  
     def parse_form(self, response):
         for sel in response.xpath('//form'):
