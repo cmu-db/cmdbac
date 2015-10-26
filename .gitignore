@@ -6,3 +6,4 @@
 *.json
 *.box
 screenshot*.png
+dump/
