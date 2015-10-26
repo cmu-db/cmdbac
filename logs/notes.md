@@ -8,4 +8,3 @@
 # REST API: dependencies, forms
 # improve success rate
 # Drupal, Flask, CodeIgniter, CakePHP
-# Count the real applications

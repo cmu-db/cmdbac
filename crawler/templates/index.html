@@ -20,7 +20,7 @@
         <thead>
             <tr>
                 <th>Project Type</th>
-                <th># of Repo</th>
+                <th><del># of Repo</del></th>
                 <th># of Deploy</th>
                 <th># of Valid</th>
                 <th># of Success</th>
@@ -32,7 +32,7 @@
                 {% for stat in stats %}
                 <tr>
                     <td><a href="{% url 'repositories' %}?types={{ stat.repo_type }}">{{ stat.repo_type }}</a></td>
-                    <td>{{ stat.num_repo }}</td>
+                    <td><del>{{ stat.num_repo }}</del></td>
                     <td>{{ stat.num_deploy }}</td>
                     <td>{{ stat.num_valid_deploy }}</td>
                     <td>{{ stat.num_suc }}</td>
