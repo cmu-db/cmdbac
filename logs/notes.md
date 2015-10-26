@@ -1,7 +1,6 @@
 # fix the image upload
 # fix the stuck problem
 # use AJAX to load queries
-# S, I, U, D, OTHER
 # admin form, normal form
 # more readable REST API
 # try another Ruby's version

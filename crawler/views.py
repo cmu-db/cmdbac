@@ -193,6 +193,13 @@ def attempt(request, id):
         fields = Field.objects.filter(form=form)
         queries = Query.objects.filter(form=form)
         counters = Counter.objects.filter(form=form)
+        keyword_order = {
+            'SELECT': 1,
+            'INSERT': 2,
+            'UPDATE': 3,
+            'DELETE': 4
+        }
+        counters = sorted(counters, key = lambda x: keyword_order.get(x.description, 10))
         context['forms'].append({
             'id': form.id,
             'action': form.action,
