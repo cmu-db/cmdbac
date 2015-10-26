@@ -3,7 +3,6 @@
 # use AJAX to load queries
 # S, I, U, D, OTHER
 # admin form, normal form
-# fix the details
 # more readable REST API
 # try another Ruby's version
 # command line tool (attempt id, database, website)

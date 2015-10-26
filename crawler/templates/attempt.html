@@ -241,9 +241,9 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
                     </div>
                     {% endif%}
                     {% if form.queries %}
-                    <p><a href="#" id="queries-show" class="showLink" onclick="showHide('queries');return false;">Details.</a></p>
-                    <div id="queries" class="table-responsive more">
-                        <p><a href="#" id="queries-hide" class="hideLink" onclick="showHide('queries');return false;">Hide.</a></p>
+                    <p><a href="#" id="queries-{{ form.id }}-show" class="showLink" onclick="showHide('queries-{{ form.id }}');return false;">Details.</a></p>
+                    <div id="queries-{{ form.id }}" class="table-responsive more">
+                        <p><a href="#" id="queries-{{ form.id }}-hide" class="hideLink" onclick="showHide('queries-{{ form.id }}');return false;">Hide.</a></p>
                         <table class="table table-striped">
                             <tbody>
                                 {% for query in form.queries %}
