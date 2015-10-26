@@ -222,9 +222,6 @@ def attempt(request, id):
     return render(request, 'attempt.html', context)
 
 class AttemptViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows attempts to be viewed.
-    """
     queryset = Attempt.objects.all()
     serializer_class = AttemptSerializer
     filter_backends = (filters.DjangoFilterBackend,)

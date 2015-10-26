@@ -268,13 +268,13 @@ class Module(models.Model):
 class Form(models.Model):
     action = models.CharField(max_length = 200)
     url = models.CharField(max_length = 200)
-    attempt = models.ForeignKey('Attempt')
+    attempt = models.ForeignKey('Attempt', related_name='forms')
 ## CLASS
 
 class Field(models.Model):
     name = models.CharField(max_length = 200)
     type = models.CharField(max_length = 200)
-    form = models.ForeignKey('Form')
+    form = models.ForeignKey('Form', related_name='fields')
 ## CLASS
 
 class Counter(models.Model):
@@ -286,7 +286,7 @@ class Counter(models.Model):
 class Query(models.Model):
     content = models.TextField()
     matched = models.BooleanField(default=False)
-    form = models.ForeignKey('Form')
+    form = models.ForeignKey('Form', related_name='queries')
 ## CLASS
 
 class Image(models.Model):
