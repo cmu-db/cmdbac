@@ -4,6 +4,5 @@
 # admin form, normal form
 # try another Ruby's version
 # command line tool (attempt id, database, website)
-# REST API: dependencies, forms
 # improve success rate
 # Drupal, Flask, CodeIgniter, CakePHP
