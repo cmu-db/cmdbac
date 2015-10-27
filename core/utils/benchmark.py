@@ -19,23 +19,11 @@ import utils
 LOG = logging.getLogger()
 
 def run_benchmark(attempt_id, database, benchmark):
-	# get the infomation of database
-    db_url = database['url']
-    db_name = database['name']
-    db_username = database['username']
-    db_password = database['password']
-
-    # get the args of benchmark
-    num_threads = int(benchmark['num_threads'])
-    deploy_id = int(benchmark['deploy_id'])
-
 	# run the benchmark
     attempt = Attempt.objects.get(id=attempt_id)
     repo = attempt.repo
     print 'Running benchmark for attempt {} using {} ...'.format(attempt.id, repo.project_type.deployer_class)
     try:
-        utils.vagrant_benchmark(repo, database)
+        utils.vagrant_benchmark(repo, database, benchmark)
     except Exception, e:
         LOG.exception(e)
-    
-
