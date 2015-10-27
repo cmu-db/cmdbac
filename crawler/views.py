@@ -179,6 +179,7 @@ def repository(request, user_name, repo_name):
 
 def attempt(request, id):
     context = {}
+    
     context['queries'] = request.GET.copy()
 
     attempt = Attempt.objects.get(id=id)
@@ -191,7 +192,6 @@ def attempt(request, id):
     context['forms'] = []
     for form in forms:
         fields = Field.objects.filter(form=form)
-        queries = Query.objects.filter(form=form)
         counters = Counter.objects.filter(form=form)
         keyword_order = {
             'SELECT': 1,
@@ -205,7 +205,6 @@ def attempt(request, id):
             'action': form.action,
             'url': form.url,
             'fields': fields,
-            'queries': queries,
             'counters': counters
         })
     
@@ -220,6 +219,19 @@ def attempt(request, id):
         pass
 
     return render(request, 'attempt.html', context)
+
+def queries(request, id):
+    if request.is_ajax():
+        context = {}
+
+        form = Form.objects.get(id=id)
+        queries = Query.objects.filter(form=form)
+        context['form'] = {
+            'id': form.id,
+            'queries': queries
+        }
+        
+        return render(request, 'queries.html', context)
 
 class AttemptViewSet(viewsets.ModelViewSet):
     queryset = Attempt.objects.all()
