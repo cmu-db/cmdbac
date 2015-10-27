@@ -20,21 +20,22 @@ LOG = logging.getLogger()
 
 def run_benchmark(attempt_id, database, benchmark):
 	# get the infomation of database
-	database = Database.objects.get(name='MySQL')
-	db_url = database['url']
-	db_name = database['name']
-	db_username = database['username']
-	db_password = database['password']
+    db_url = database['url']
+    db_name = database['name']
+    db_username = database['username']
+    db_password = database['password']
 
-	# get the args of benchmark
-	num_threads = int(benchmark['num_threads'])
+    # get the args of benchmark
+    num_threads = int(benchmark['num_threads'])
+    deploy_id = int(benchmark['deploy_id'])
 
 	# run the benchmark
-    for repo in Attempt.objects.get(id=attempt_id):
-        print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
-        try:
-            result = utils.vagrant_deploy(repo, database.name, 0)
-        except Exception, e:
-            LOG.exception(e)
-            raise e
-        return result
+    attempt = Attempt.objects.get(id=attempt_id)
+    repo = attempt.repo
+    print 'Running benchmark for attempt {} using {} ...'.format(attempt.id, repo.project_type.deployer_class)
+    try:
+        utils.vagrant_benchmark(repo, database)
+    except Exception, e:
+        LOG.exception(e)
+    
+

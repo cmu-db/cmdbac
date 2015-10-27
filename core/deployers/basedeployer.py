@@ -11,7 +11,6 @@ import MySQLdb
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 from crawler.models import *
-from drivers import *
 import utils
 
 ## =====================================================================
@@ -102,7 +101,7 @@ class BaseDeployer(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
 
-    def save_attempt(self, attempt, attempt_result, driver_result = {}):
+    def save_attempt(self, attempt_result, driver_result = {}):
         register_result = driver_result.get('register', USER_STATUS_UNKNOWN)
         login_result = driver_result.get('login', USER_STATUS_UNKNOWN)
         forms = driver_result.get('forms', None)
@@ -121,17 +120,17 @@ class BaseDeployer(object):
 
 
         # save attempt
-        attempt.result = attempt_result
-        attempt.login = login_result
-        attempt.register = register_result
-        attempt.log = self.buffer.getvalue()
-        attempt.stop_time = datetime.now()
-        attempt.size = utils.get_size(self.base_path)
-        attempt.runtime = runtime
+        self.attempt.result = attempt_result
+        self.attempt.login = login_result
+        self.attempt.register = register_result
+        self.attempt.log = self.buffer.getvalue()
+        self.attempt.stop_time = datetime.now()
+        self.attempt.size = utils.get_size(self.base_path)
+        self.attempt.runtime = runtime
         if forms != None:
-            attempt.forms_count = len(forms)
-            attempt.queries_count = sum(len(form['queries']) for form in forms)
-        attempt.save()
+            self.attempt.forms_count = len(forms)
+            self.attempt.queries_count = sum(len(form['queries']) for form in forms)
+        self.attempt.save()
 
         # save forms
         if forms != None:
@@ -139,7 +138,7 @@ class BaseDeployer(object):
                 form = Form()
                 form.action = f['action']
                 form.url = f['url']
-                form.attempt = attempt
+                form.attempt = self.attempt
                 form.save()
                 for q in f['queries']:
                     query = Query()
@@ -165,19 +164,19 @@ class BaseDeployer(object):
             screenshot = open(screenshot_path, 'rb')
             image = Image()
             image.data = screenshot.read()
-            image.attempt = attempt
+            image.attempt = self.attempt
             image.save()
 
-        LOG.info("Saved Attempt #%s for %s" % (attempt, attempt.repo))
+        LOG.info("Saved Attempt #%s for %s" % (self.attempt, self.attempt.repo))
         
         # populate packages
         for pkg in self.packages_from_file:
-            Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_FILE)
+            Dependency.objects.get_or_create(attempt=self.attempt, package=pkg, source=PACKAGE_SOURCE_FILE)
             pkg.count = pkg.count + 1
             pkg.save()  
         ## FOR
         for pkg in self.packages_from_database:
-            Dependency.objects.get_or_create(attempt=attempt, package=pkg, source=PACKAGE_SOURCE_DATABASE)
+            Dependency.objects.get_or_create(attempt=self.attempt, package=pkg, source=PACKAGE_SOURCE_DATABASE)
             if pkg.version != '':
                 pkg.count = pkg.count + 1
                 pkg.save()
@@ -188,7 +187,7 @@ class BaseDeployer(object):
             self.repo.valid_project = False
         else:
             self.repo.valid_project = True
-        self.repo.latest_attempt = attempt
+        self.repo.latest_attempt = self.attempt
         self.repo.attempts_count = self.repo.attempts_count + 1
         self.repo.save()
     ## DEF
@@ -196,26 +195,26 @@ class BaseDeployer(object):
     def deploy(self):
         LOG.info('Deploying repo: {} ...'.format(self.repo.name))
         
-        attempt = Attempt()
-        attempt.repo = self.repo
-        attempt.database = self.database
-        attempt.result = ATTEMPT_STATUS_DEPLOYING
-        attempt.start_time = datetime.now()
-        attempt.hostname = socket.gethostname()
+        self.attempt = Attempt()
+        self.attempt.repo = self.repo
+        self.attempt.database = self.database
+        self.attempt.result = ATTEMPT_STATUS_DEPLOYING
+        self.attempt.start_time = datetime.now()
+        self.attempt.hostname = socket.gethostname()
         LOG.info('Validating ...')
         try:
-            attempt.sha = utils.get_latest_sha(self.repo)
+            self.attempt.sha = utils.get_latest_sha(self.repo)
         except Exception, e:
             LOG.exception(e)
-            self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
+            self.save_attempt(ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return -1
 
-        LOG.info('Downloading at {} ...'.format(attempt.sha))
+        LOG.info('Downloading at {} ...'.format(self.attempt.sha))
         try:
-            utils.download_repo(attempt, self.zip_file)
+            utils.download_repo(self.attempt, self.zip_file)
         except Exception, e:
             LOG.exception(e)
-            self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
+            self.save_attempt(ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return -1
         
         try:
@@ -223,32 +222,21 @@ class BaseDeployer(object):
             utils.unzip(self.zip_file, self.base_path)
         except Exception, e:
             LOG.exception(e)
-            self.save_attempt(attempt, ATTEMPT_STATUS_DOWNLOAD_ERROR)
+            self.save_attempt(ATTEMPT_STATUS_DOWNLOAD_ERROR)
             return -1
 
         LOG.info('Deploying at {} ...'.format(self.base_path))
         
         try:
-            attemptStatus = self.deploy_repo_attempt(attempt, self.base_path)
+            attemptStatus = self.deploy_repo_attempt(self.base_path)
         except Exception, e:
             LOG.exception(e)
-            self.save_attempt(attempt, ATTEMPT_STATUS_RUNNING_ERROR)
+            self.save_attempt(ATTEMPT_STATUS_RUNNING_ERROR)
             return -1
            
         if attemptStatus != ATTEMPT_STATUS_SUCCESS:
-            self.save_attempt(attempt, attemptStatus)
+            self.save_attempt(attemptStatus)
             return -1
-
-        try:
-            driver = Driver()
-            driverResult = driver.drive(self)
-        except Exception, e:
-            LOG.exception(e)
-            driverResult = {}
-
-        self.kill_server()
-
-        self.save_attempt(attempt, attemptStatus, driverResult)
         
         return 0
     ## DEF

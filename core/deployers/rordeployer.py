@@ -103,15 +103,15 @@ class RoRDeployer(BaseDeployer):
         }
     ## DEF
 
-    def try_deploy(self, attempt, deploy_path):
+    def try_deploy(self, deploy_path):
         LOG.info('Configuring settings ...')
         self.kill_server()
         self.clear_database()
         self.configure_settings()
         self.runtime = self.get_runtime()
 
-        attempt.database = self.get_database(os.path.join(self.setting_path, 'config/database.yml'))
-        # LOG.info('Database: ' + attempt.database.name)
+        self.attempt.database = self.get_database(os.path.join(self.setting_path, 'config/database.yml'))
+        LOG.info('Database: ' + self.attempt.database.name)
 
         ruby_versions = utils.get_ruby_versions()
         # temporarily use one version to allow for parallel
@@ -158,7 +158,7 @@ class RoRDeployer(BaseDeployer):
         return attemptStatus
     ## DEF
     
-    def deploy_repo_attempt(self, attempt, deploy_path):
+    def deploy_repo_attempt(self, deploy_path):
         rakefiles = utils.search_file(deploy_path, 'Rakefile')
         if not rakefiles:
             LOG.error('No rakefile found!')
@@ -186,10 +186,7 @@ class RoRDeployer(BaseDeployer):
 
         self.setting_path = base_dir
 
-        attempt.base_dir = base_dir.split('/', 1)[1]
-        # LOG.info('BASE_DIR: ' + attempt.base_dir)
-
-        return self.try_deploy(attempt, base_dir)
+        return self.try_deploy(base_dir)
     ## DEF
     
 ## CLASS

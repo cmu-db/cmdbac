@@ -135,15 +135,15 @@ class DjangoDeployer(BaseDeployer):
         }
     ## DEF
 
-    def try_deploy(self, attempt, deploy_path, requirement_files):
+    def try_deploy(self, deploy_path, requirement_files):
         LOG.info('Configuring settings ...')
         self.kill_server()
         self.clear_database()
         self.configure_settings()
         self.runtime = self.get_runtime()
 
-        attempt.database = self.get_database(self.setting_path)
-        LOG.info('Database: ' + attempt.database.name)
+        self.attempt.database = self.get_database(self.setting_path)
+        LOG.info('Database: ' + self.attempt.database.name)
 
         LOG.info('Installing requirements ...')
         packages = self.install_requirements(self.base_path, requirement_files)
@@ -250,7 +250,7 @@ class DjangoDeployer(BaseDeployer):
         return attemptStatus
     ## DEF
 
-    def deploy_repo_attempt(self, attempt, deploy_path):
+    def deploy_repo_attempt(self, deploy_path):
         LOG.info(utils.configure_env(self.base_path))
 
         manage_files = utils.search_file(deploy_path, 'manage.py')
@@ -293,7 +293,7 @@ class DjangoDeployer(BaseDeployer):
         if requirement_files:
             LOG.info('requirements.txt path: {}'.format(requirement_files))
         
-        return self.try_deploy(attempt, manage_path, requirement_files)
+        return self.try_deploy(manage_path, requirement_files)
     ## DEF
     
 ## CLASS
