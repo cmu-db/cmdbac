@@ -20,7 +20,7 @@ LOG = logging.getLogger()
 DATABASE_SETTINGS = """
 development:
   adapter: mysql2
-  database: {database}
+  database: {name}
   pool: 5
   timeout: 5000
   username: {username}
@@ -30,7 +30,7 @@ development:
 
 test:
   adapter: mysql2
-  database: {database}
+  database: {name}
   pool: 5
   timeout: 5000
   username: {username}
@@ -40,7 +40,7 @@ test:
 
 production:
   adapter: mysql2
-  database: {database}
+  database: {name}
   pool: 5
   timeout: 5000
   username: {username}
@@ -65,7 +65,7 @@ class RoRDeployer(BaseDeployer):
     
     def configure_settings(self):
         with open(os.path.join(self.setting_path, 'config/database.yml'), "w") as my_file:
-            my_file.write(DATABASE_SETTINGS.format(database=self.database_config['name'], 
+            my_file.write(DATABASE_SETTINGS.format(name=self.database_config['name'], 
                 username=self.database_config['username'], password=self.database_config['password'],
                 port=self.database_config['port'], host=self.database_config['host']))
         ## WITH

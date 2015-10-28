@@ -62,23 +62,31 @@ def vagrant_deploy(repo, deploy_id):
 
     return out
 
-def vagrant_benchmark(repo, database, benchmark):
+def vagrant_benchmark(repo, deploy_id, database, benchmark):
     # get the infomation of database
-    db_url = database['url']
+    db_host = database['host']
+    db_port = database['port']
     db_name = database['name']
     db_username = database['username']
     db_password = database['password']
 
-    # get the args of benchmark
+    # get the arguments of benchmark
     num_threads = int(benchmark['num_threads'])
-    deploy_id = int(benchmark['deploy_id'])
 
     # run the benchmark
     set_vagrant_database()
-    out = os.system('{} && {}'.format(
-        cd(vagrant_dir),
-        'vagrant ssh -c "{}"'.format(
-            'python /vagrant/core/scripts/vagrant_benchmark.py {} {}'.format(repo, deploy_id))))
+    command = '{} && {}'.format(
+            cd(vagrant_dir),
+            'vagrant ssh -c "{}"'.format(
+                'python /vagrant/core/scripts/vagrant_benchmark.py --repo={repo} --deploy_id={deploy_id} {database} {benchmark}'
+                .format(repo=repo, deploy_id=deploy_id,
+                        database=' '.join('--{}={}'.format(key, value) for key, value in database.iteritems()), 
+                        benchmark=' '.join('--{}={}'.format(key, value) for key, value in benchmark.iteritems())
+                )
+            )
+        )
+    out = os.system(command)
     unset_vagrant_database()
 
+    print out
     return out

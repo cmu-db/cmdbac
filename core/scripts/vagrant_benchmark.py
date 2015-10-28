@@ -3,22 +3,33 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 
-import utils
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 import django
 django.setup()
 
+import argparse
+
 from crawler.models import *
 from deployers import *
 from drivers import *
+import utils
 
 def main():
-    if len(sys.argv) != 3:
-        return
-    repo_name = sys.argv[1]
-    deploy_id = sys.argv[2]
-    database_name = 'MySQL'
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--repo', type=str)
+    parser.add_argument('--deploy_id', type=int)
+    parser.add_argument('--host', type=str)
+    parser.add_argument('--port', type=int)
+    parser.add_argument('--name', type=str)
+    parser.add_argument('--username', type=str)
+    parser.add_argument('--password', type=str)
+    parser.add_argument('--num_threads', type=int)
+
+    args = parser.parse_args()
+
+    print args
+
+    sys.exit(0)
 
     repo = Repository.objects.get(name=repo_name)
     database = Database.objects.get(name=database_name)

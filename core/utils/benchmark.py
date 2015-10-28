@@ -7,23 +7,19 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 import django
 django.setup()
 
-import logging
+import traceback
 
 import crawlers
 from crawler.models import *
 import utils
 
-## =====================================================================
-## LOGGING CONFIGURATION
-## =====================================================================
-LOG = logging.getLogger()
-
 def run_benchmark(attempt_id, database, benchmark):
 	# run the benchmark
     attempt = Attempt.objects.get(id=attempt_id)
     repo = attempt.repo
+    deploy_id = 1
     print 'Running benchmark for attempt {} using {} ...'.format(attempt.id, repo.project_type.deployer_class)
     try:
-        utils.vagrant_benchmark(repo, database, benchmark)
+        utils.vagrant_benchmark(repo, deploy_id, database, benchmark)
     except Exception, e:
-        LOG.exception(e)
+        traceback.print_exc()

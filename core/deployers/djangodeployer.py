@@ -26,7 +26,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 DATABASES = {{
     'default': {{
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': '{database}',
+        'NAME': '{name}',
         'HOST': '{host}',
         'PORT': '{port}',
         'USER': '{username}',
@@ -49,7 +49,7 @@ class DjangoDeployer(BaseDeployer):
     
     def configure_settings(self):
         with open(self.setting_path, "a") as my_setting_file:
-            my_setting_file.write(DJANGO_SETTINGS.format(database=self.database_config['name'], 
+            my_setting_file.write(DJANGO_SETTINGS.format(name=self.database_config['name'], 
                 host=self.database_config['host'], port=self.database_config['port'], 
                 username=self.database_config['username'], password=self.database_config['password'],
                 path=self.base_path))
