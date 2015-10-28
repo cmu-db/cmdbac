@@ -8,11 +8,20 @@ import django
 django.setup()
 
 import argparse
+import threading
 
 from crawler.models import *
 from deployers import *
 from drivers import *
 import utils
+
+def run_driver(deployer):
+    try:
+        driver = Driver()
+        driverResult = driver.drive(deployer)
+    except Exception, e:
+        LOG.exception(e)
+        driverResult = {}
 
 def main():
     # parse args
@@ -40,23 +49,34 @@ def main():
     }
     num_threads = args.num_threads
 
+    # run deployer
     repo = Repository.objects.get(name=repo_name)
     database = Database.objects.get(name=database_name)
-    
     moduleName = "deployers.%s" % (repo.project_type.deployer_class.lower())
     moduleHandle = __import__(moduleName, globals(), locals(), [repo.project_type.deployer_class])
     klass = getattr(moduleHandle, repo.project_type.deployer_class)
     deployer = klass(repo, database, deploy_id, database_config)
-    if deployer.deploy() != 0:
+    result = deployer.deploy()
+    if result != 0:
         deployer.kill_server()
         sys.exit(-1)
-    # TODO : use num_threads
+
+    # run driver
+    threads = []
+    for _ in range(num_threads - 1):
+        thread = threading.Thread(target = run_driver, args = (deployer, ))
+        thread.start()
+        threads.append(thread)
     try:
         driver = Driver()
         driverResult = driver.drive(deployer)
     except Exception, e:
         LOG.exception(e)
         driverResult = {}
+    for thread in threads:
+        thread.join()
+
+    # finish up
     deployer.kill_server()
     deployer.save_attempt(ATTEMPT_STATUS_SUCCESS, driverResult)
     # deployer.extract_database_info()

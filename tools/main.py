@@ -44,6 +44,7 @@ def get_attempt_info():
     return response.json()
 
 def run_benchmark():
+    attempt_id = 4
     database = {
         'host': '127.0.0.1',
         'port': '3306',
@@ -52,9 +53,10 @@ def run_benchmark():
         'password': 'root'
     }
     benchmark = {
-        'num_threads': 1
+        'num_threads': 2
     }
-    utils.run_benchmark(4, database, benchmark)
+    utils.run_benchmark(attempt_id, database, benchmark)
 
 if __name__ == "__main__":
-    parse_args()
+    # parse_args()
+    run_benchmark()
