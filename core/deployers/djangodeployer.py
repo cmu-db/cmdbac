@@ -248,6 +248,7 @@ class DjangoDeployer(BaseDeployer):
 
         self.run_server(deploy_path)
         time.sleep(5)
+        
         attemptStatus = self.check_server()
 
         return attemptStatus

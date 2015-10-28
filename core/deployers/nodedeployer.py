@@ -2,8 +2,8 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
 import logging
-import MySQLdb
 import re
+import time
 
 from basedeployer import BaseDeployer
 from crawler.models import *
@@ -27,6 +27,7 @@ class NodeDeployer(BaseDeployer):
         BaseDeployer.__init__(self, repo, database, deploy_id, database_config)
         if database_config == None:
             self.database_config['name'] = 'node_app' + str(deploy_id)
+        self.main_filename = None
     ## DEF
     
     def configure_settings(self):
@@ -37,7 +38,10 @@ class NodeDeployer(BaseDeployer):
         if path:
             command = '{} && npm install'.format(utils.cd(path))
             out = utils.run_command(command)
-            return out[1]
+            if out[1] == '':
+                return out[2]
+            else:
+                return out[1]
         return ''
     ## DEF
     
@@ -52,17 +56,16 @@ class NodeDeployer(BaseDeployer):
     def run_server(self, path):
         self.configure_network()
         LOG.info('Running server ...')
-        command = '{} && node main'.format(
-            utils.cd(path))
-        return utils.run_command(command)
+        command = '{} && node {}'.format(
+            utils.cd(path), self.main_filename)
+        return utils.run_command_async(command)
     ## DEF
 
     def get_runtime(self):
-        out = utils.run_command('ruby -v')
-        print out
+        out = utils.run_command('node -v')
         return {
             'executable': 'node',
-            'version': '1'
+            'version': out[1][1:]
         }
     ## DEF
 
@@ -72,6 +75,7 @@ class NodeDeployer(BaseDeployer):
         self.clear_database()
         self.configure_settings()
         self.runtime = self.get_runtime()
+        LOG.info(self.runtime)
 
         self.attempt.database = self.get_database('')
         LOG.info('Database: ' + self.attempt.database.name)
@@ -80,7 +84,8 @@ class NodeDeployer(BaseDeployer):
         out = self.install_requirements(deploy_path)
         packages = out.split('\n')
         for package in packages:
-            s = re.search('├── (.*)@(.*)', package)
+            print package
+            s = re.search(' (.*?)@([1-9\.]+)', package)
             if s:
                 name, version = s.group(1), s.group(2)
                 print name, version
@@ -91,8 +96,9 @@ class NodeDeployer(BaseDeployer):
                 except Exception, e:
                     LOG.exception(e)
 
-        LOG.info(self.run_server(deploy_path))
-
+        self.run_server(deploy_path)
+        time.sleep(5)
+        
         attemptStatus = self.check_server()
 
         return attemptStatus
@@ -103,7 +109,15 @@ class NodeDeployer(BaseDeployer):
         if not package_jsons:
             LOG.error('No package.json found!')
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
-        base_dir = next([os.path.dirname(package_json) for package_json in package_jsons])
+        base_dir = sorted([os.path.dirname(package_json) for package_json in package_jsons])[0]
+
+        for main_filename in ['server.js', 'app.js', 'main.js']:
+            if utils.search_file_norecur(base_dir, main_filename):
+                self.main_filename = main_filename
+                break
+        if self.main_filename == None:
+            LOG.error('No main file found!')
+            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
 
         self.setting_path = base_dir
 

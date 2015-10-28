@@ -24,6 +24,12 @@ def search_file_regex(directory_name, file_name_pattern):
                     result.append(path)
     return result
 
+def search_file_norecur(directory_name, file_name):
+    for file in os.listdir(directory_name):
+        if os.path.isfile(os.path.join(directory_name, file)) and file == file_name:
+            return True
+    return False
+
 def unzip(zip_name, dir_name):
     command = 'unzip -o -qq ' + zip_name + ' -d ' + dir_name
     out = run_command(command)
