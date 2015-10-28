@@ -143,6 +143,7 @@ class DjangoDeployer(BaseDeployer):
         self.clear_database()
         self.configure_settings()
         self.runtime = self.get_runtime()
+        LOG.info(self.runtime)
 
         self.attempt.database = self.get_database(self.setting_path)
         LOG.info('Database: ' + self.attempt.database.name)
