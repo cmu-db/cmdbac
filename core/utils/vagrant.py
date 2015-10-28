@@ -88,5 +88,4 @@ def vagrant_benchmark(repo, deploy_id, database, benchmark):
     out = os.system(command)
     unset_vagrant_database()
 
-    print out
     return out

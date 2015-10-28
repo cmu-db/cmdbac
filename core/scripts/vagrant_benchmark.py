@@ -15,6 +15,7 @@ from drivers import *
 import utils
 
 def main():
+    # parse args
     parser = argparse.ArgumentParser()
     parser.add_argument('--repo', type=str)
     parser.add_argument('--deploy_id', type=int)
@@ -24,12 +25,20 @@ def main():
     parser.add_argument('--username', type=str)
     parser.add_argument('--password', type=str)
     parser.add_argument('--num_threads', type=int)
-
     args = parser.parse_args()
 
-    print args
-
-    sys.exit(0)
+    # get args
+    repo_name = args.repo
+    deploy_id = args.deploy_id
+    database_name = 'MySQL'
+    database_config = {
+        'host': args.host,
+        'port': args.port,
+        'name': args.name,
+        'username': args.username,
+        'password': args.password
+    }
+    num_threads = args.num_threads
 
     repo = Repository.objects.get(name=repo_name)
     database = Database.objects.get(name=database_name)
@@ -37,10 +46,11 @@ def main():
     moduleName = "deployers.%s" % (repo.project_type.deployer_class.lower())
     moduleHandle = __import__(moduleName, globals(), locals(), [repo.project_type.deployer_class])
     klass = getattr(moduleHandle, repo.project_type.deployer_class)
-    deployer = klass(repo, database, deploy_id)
+    deployer = klass(repo, database, deploy_id, database_config)
     if deployer.deploy() != 0:
         deployer.kill_server()
         sys.exit(-1)
+    # TODO : use num_threads
     try:
         driver = Driver()
         driverResult = driver.drive(deployer)

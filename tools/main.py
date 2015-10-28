@@ -24,7 +24,7 @@ def run_benchmark():
 	database = {
 		'host': '127.0.0.1',
 		'port': '3306',
-		'name': 'crawler',
+		'name': 'crawler0',
 		'username': 'root',
 		'password': 'root'
 	}
