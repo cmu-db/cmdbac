@@ -82,19 +82,21 @@ class NodeDeployer(BaseDeployer):
 
         LOG.info('Installing requirements ...')
         out = self.install_requirements(deploy_path)
-        packages = out.split('\n')
-        for package in packages:
-            print package
-            s = re.search(' (.*?)@([1-9\.]+)', package)
+        lines = out.split('\n')
+        packages = {}
+        for line in lines:
+            s = re.search('(.+?)@([0-9\.]+)', line)
             if s:
                 name, version = s.group(1), s.group(2)
-                print name, version
-                continue
-                try:
-                    pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
-                    self.packages_from_file.append(pkg)
-                except Exception, e:
-                    LOG.exception(e)
+                name = name.split(' ')[-1]
+                packages[name] = version
+
+        for name, version in packages.iteritems():
+            try:
+                pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
+                self.packages_from_file.append(pkg)
+            except Exception, e:
+                LOG.exception(e)
 
         self.run_server(deploy_path)
         time.sleep(5)
