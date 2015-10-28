@@ -25,6 +25,7 @@ development:
   timeout: 5000
   username: {username}
   password: {password}
+  port: {port}
   shost: {host}
 
 test:
@@ -34,6 +35,7 @@ test:
   timeout: 5000
   username: {username}
   password: {password}
+  port: {port}
   shost: {host}
 
 production:
@@ -43,6 +45,7 @@ production:
   timeout: 5000
   username: {username}
   password: {password}
+  port: {port}
   shost: {host}
 """
 
@@ -64,7 +67,7 @@ class RoRDeployer(BaseDeployer):
         with open(os.path.join(self.setting_path, 'config/database.yml'), "w") as my_file:
             my_file.write(DATABASE_SETTINGS.format(database=self.database_config['name'], 
                 username=self.database_config['username'], password=self.database_config['password'],
-                host=self.database_config['host']))
+                port=self.database_config['port'], host=self.database_config['host']))
         ## WITH
         with open(os.path.join(self.setting_path, 'Gemfile'), "a") as my_file:
             my_file.write(GEMFILE_SETTINGS)
