@@ -26,30 +26,33 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 DATABASES = {{
     'default': {{
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': '{}',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'USER': 'root',
-        'PASSWORD': 'root'
+        'NAME': '{database}',
+        'HOST': '{host}',
+        'PORT': '{port}',
+        'USER': '{username}',
+        'PASSWORD': '{passoword}'
     }}
 }}
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = '{}'
-REGISTRATION_CAPTCHA = False
+EMAIL_FILE_PATH = '{path}'
 """
 
 ## =====================================================================
 ## DJANGO DEPLOYER
 ## =====================================================================
 class DjangoDeployer(BaseDeployer):
-    def __init__(self, repo, database, deploy_id):
-        BaseDeployer.__init__(self, repo, database, deploy_id)
-        self.database_name = 'django_app' + str(deploy_id)
+    def __init__(self, repo, database, deploy_id, database_config = None):
+        BaseDeployer.__init__(self, repo, database, deploy_id, database_config)
+        if database_config == None:
+            self.database_config['name'] = 'django_app' + str(deploy_id)
     ## DEF
     
     def configure_settings(self):
         with open(self.setting_path, "a") as my_setting_file:
-            my_setting_file.write(DJANGO_SETTINGS.format(self.database_name, self.base_path))
+            my_setting_file.write(DJANGO_SETTINGS.format(database=self.database_config['name'], 
+                host=self.database_config['host'], port=self.database_config['port'], 
+                username=self.database_config['username'], password=self.database_config['password'],
+                path=self.base_path))
         ## WITH
     ## DEF
     

@@ -20,30 +20,30 @@ LOG = logging.getLogger()
 DATABASE_SETTINGS = """
 development:
   adapter: mysql2
-  database: {}
+  database: {database}
   pool: 5
   timeout: 5000
-  username: root
-  password: root
-  shost: localhost
+  username: {username}
+  password: {password}
+  shost: {host}
 
 test:
   adapter: mysql2
-  database: {}
+  database: {database}
   pool: 5
   timeout: 5000
-  username: root
-  password: root
-  shost: localhost
+  username: {username}
+  password: {password}
+  shost: {host}
 
 production:
   adapter: mysql2
-  database: {}
+  database: {database}
   pool: 5
   timeout: 5000
-  username: root
-  password: root
-  shost: localhost
+  username: {username}
+  password: {password}
+  shost: {host}
 """
 
 GEMFILE_SETTINGS = """
@@ -54,14 +54,17 @@ gem 'mysql2'
 ## RUBY ON RAILS DEPLOYER
 ## =====================================================================
 class RoRDeployer(BaseDeployer):
-    def __init__(self, repo, database, deploy_id):
-        BaseDeployer.__init__(self, repo, database, deploy_id)
-        self.database_name = 'ror_app' + str(deploy_id)
+    def __init__(self, repo, database, deploy_id, database_config = None):
+        BaseDeployer.__init__(self, repo, database, deploy_id, database_config)
+        if database_config == None:
+            self.database_config['name'] = 'ror_app' + str(deploy_id)
     ## DEF
     
     def configure_settings(self):
         with open(os.path.join(self.setting_path, 'config/database.yml'), "w") as my_file:
-            my_file.write(DATABASE_SETTINGS.format(self.database_name, self.database_name, self.database_name))
+            my_file.write(DATABASE_SETTINGS.format(database=self.database_config['name'], 
+                username=self.database_config['username'], password=self.database_config['password'],
+                host=self.database_config['host']))
         ## WITH
         with open(os.path.join(self.setting_path, 'Gemfile'), "a") as my_file:
             my_file.write(GEMFILE_SETTINGS)

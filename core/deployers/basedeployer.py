@@ -31,7 +31,7 @@ class BaseDeployer(object):
     TMP_ZIP_FILE = "tmp.zip"
     TMP_DEPLOY_PATH = "/tmp/crawler"
     
-    def __init__(self, repo, database, deploy_id):
+    def __init__(self, repo, database, deploy_id, database_config = None):
         self.repo = repo
         self.database = database
         self.requirement_files = None
@@ -43,6 +43,16 @@ class BaseDeployer(object):
         self.setting_path = None
         self.port = int(self.repo.project_type.default_port) + int(self.deploy_id)
         self.runtime = None
+
+        if database_config == None:
+            self.database_config = {
+                'host': '127.0.0.1',
+                'port': '3306',
+                'username': 'root',
+                'password': 'root'
+            }
+        else:
+            self.database_config = database_config
 
         # Create a buffer so that we can capture all log commands to include in the database for this attempt
         self.log = logging.getLogger()
@@ -61,8 +71,8 @@ class BaseDeployer(object):
         try:
             conn = MySQLdb.connect(host='localhost',user='root',passwd='root',port=3306)
             cur = conn.cursor()
-            cur.execute('drop database if exists {}'.format(self.database_name))
-            cur.execute('create database {}'.format(self.database_name))
+            cur.execute('drop database if exists {}'.format(self.database_config['name']))
+            cur.execute('create database {}'.format(self.database_config['name']))
             conn.commit()
             cur.close()
             conn.close()
