@@ -5,7 +5,6 @@ import logging
 import re
 import time
 import importlib
-import MySQLdb
 import urlparse
 
 from basedeployer import BaseDeployer

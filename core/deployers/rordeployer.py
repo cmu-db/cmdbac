@@ -2,7 +2,6 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
 import logging
-import MySQLdb
 import re
 
 from basedeployer import BaseDeployer
@@ -116,47 +115,10 @@ class RoRDeployer(BaseDeployer):
         self.configure_settings()
         self.runtime = self.get_runtime()
 
-        self.attempt.database = self.get_database(os.path.join(self.setting_path, 'config/database.yml'))
+        self.attempt.database = self.get_database('')
         LOG.info('Database: ' + self.attempt.database.name)
 
-        ruby_versions = utils.get_ruby_versions()
-        # temporarily use one version to allow for parallel
-        ruby_versions = ruby_versions[:1] 
-
-        for version_index in range(len(ruby_versions)):
-            ruby_version = ruby_versions[version_index]
-            LOG.info('Using Ruby {} ...'.format(ruby_version))
-            utils.use_ruby_version(ruby_version)
-        
-            LOG.info('Installing requirements ...')
-            out = self.install_requirements(deploy_path)
-            if not 'complete!' in out:
-                LOG.info(out)
-                if version_index == len(ruby_versions) - 1:
-                    return ATTEMPT_STATUS_MISSING_DEPENDENCIES
-                else:
-                    continue
-            packages = out.split('\n')
-            for package in packages:
-                s = re.search('Using (.*) (.*)', package)
-                if s:
-                    name, version = s.group(1), s.group(2)
-                    try:
-                        pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
-                        self.packages_from_file.append(pkg)
-                    except Exception, e:
-                        LOG.exception(e)
-
-            out = self.sync_server(deploy_path)
-            if 'rake aborted!' in out[1]:
-                LOG.info(out)
-                if version_index == len(ruby_versions) - 1:
-                    return ATTEMPT_STATUS_RUNNING_ERROR
-                else:
-                    continue
-            else:
-                break
-        
+        # TODO: deploy the repo
         LOG.info(self.run_server(deploy_path))
 
         attemptStatus = self.check_server()
