@@ -32,7 +32,7 @@ function install {
 
 echo updating package information
 install 'apt-repository' software-properties-common python-software-properties
-add-apt-repository ppa:chris-lea/node.js
+curl --silent --location https://deb.nodesource.com/setup_4.x | sudo bash -
 apt-get -y update >/dev/null 2>&1
 
 install 'development tools' build-essential unzip curl openssl libssl-dev libcurl4-openssl-dev zlib1g zlib1g-dev 
