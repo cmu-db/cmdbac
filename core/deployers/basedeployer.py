@@ -149,6 +149,8 @@ class BaseDeployer(object):
                 form.action = f['action']
                 form.url = f['url']
                 form.attempt = self.attempt
+                if 'admin' in f:
+                    form.admin = True
                 form.save()
                 for q in f['queries']:
                     query = Query()

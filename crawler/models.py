@@ -269,6 +269,7 @@ class Module(models.Model):
 class Form(models.Model):
     action = models.CharField(max_length = 200)
     url = models.CharField(max_length = 200)
+    admin = models.BooleanField(default=False)
     attempt = models.ForeignKey('Attempt', related_name='forms')
 ## CLASS
 
