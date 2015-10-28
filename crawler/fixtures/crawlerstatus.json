@@ -9,7 +9,8 @@
     "next_url": "",
     "min_size": 100,
     "cur_size": 100,
-    "max_size": 20000
+    "max_size": 20000,
+    "query": "django"
   }
 },
 {
@@ -22,7 +23,22 @@
     "next_url": "",
     "min_size": 100,
     "cur_size": 100, 
-    "max_size": 10000
+    "max_size": 10000,
+    "query": ""
+  }
+},
+{
+  "pk": 3, 
+  "model": "crawler.crawlerstatus", 
+  "fields": {
+    "last_crawler_time": "2015-01-16T15:58:19", 
+    "source": 1, 
+    "project_type": 3, 
+    "next_url": "",
+    "min_size": 100,
+    "cur_size": 100, 
+    "max_size": 10000,
+    "query": "mysql"
   }
 }
 ]

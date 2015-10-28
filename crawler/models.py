@@ -109,6 +109,7 @@ class CrawlerStatus(models.Model):
     cur_size = models.IntegerField()
     max_size = models.IntegerField()
     next_url = models.URLField(null=True)
+    query = models.CharField(max_length=128, null=True)
     last_crawler_time = models.DateTimeField(auto_now=True)
     
     class Meta:
