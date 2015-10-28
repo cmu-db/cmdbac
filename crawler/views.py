@@ -78,7 +78,7 @@ def repositories(request):
                 messages.error(request, 'Failed to add new module {}'.format(repo_name))
                 traceback.print_exc()
             finally:
-                return redirect('repositories')
+                return redirect(request.META['HTTP_REFERER'])
 
         if request.GET.__contains__('repo') and request.GET.__contains__('type'):
             repo_name = request.GET['repo']
@@ -93,7 +93,7 @@ def repositories(request):
                 messages.error(request, 'Failed to add new repository {}'.format(repo_name))
                 traceback.print_exc()
             finally:
-                return redirect('repositories')
+                return redirect(request.META['HTTP_REFERER'])
 
         if request.GET.__contains__('deploy'):
             repo_name = request.GET['deploy']
@@ -107,7 +107,7 @@ def repositories(request):
                 messages.error(request, 'Failed to deploy repository {}'.format(repo_name))
                 traceback.print_exc()
             finally:
-                return redirect('repositories')
+                return redirect(request.META['HTTP_REFERER'])
 
         if request.GET.__contains__('delete'):
             repo_name = request.GET['delete']
@@ -119,7 +119,7 @@ def repositories(request):
                 messages.error(request, 'Failed to delete repository {}'.format(repo_name))
                 traceback.print_exc()
             finally:
-                return redirect('repositories')
+                return redirect(request.META['HTTP_REFERER'])
 
     repositories = Repository.objects.all()
     if request.GET.__contains__('search'):
