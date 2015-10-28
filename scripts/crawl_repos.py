@@ -20,7 +20,7 @@ if __name__ == '__main__':
         auth = json.load(auth_file)
 
     while True:
-        for cs in CrawlerStatus.objects.all():
+        for cs in CrawlerStatus.objects.filter(id = 3):
             repo_source = cs.source
             project_type = cs.project_type
 
