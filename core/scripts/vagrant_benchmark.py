@@ -62,23 +62,28 @@ def main():
         sys.exit(-1)
 
     # run driver
-    threads = []
-    for _ in range(num_threads - 1):
-        thread = threading.Thread(target = run_driver, args = (deployer, ))
-        thread.start()
-        threads.append(thread)
     try:
-        driver = Driver()
-        driverResult = driver.drive(deployer)
+        driver = BenchmarkDriver()
+        driver.bootstrap(deployer)
+        driver.initialize(deployer)
+
+        # multi-threading
+        threads = []
+        for _ in range(num_threads - 1):
+            thread = threading.Thread(target = run_driver, args = (driver, ))
+            thread.start()
+            threads.append(thread)
+
+        # wait for all the threads
+        driver.submit_forms(deployer)
+        for thread in threads:
+        thread.join()
     except Exception, e:
         LOG.exception(e)
-        driverResult = {}
-    for thread in threads:
-        thread.join()
-
+    
     # finish up
     deployer.kill_server()
-    deployer.save_attempt(ATTEMPT_STATUS_SUCCESS, driverResult)
+    # deployer.save_attempt(ATTEMPT_STATUS_SUCCESS)
     # deployer.extract_database_info()
 
 if __name__ == "__main__":

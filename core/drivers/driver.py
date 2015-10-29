@@ -27,8 +27,8 @@ MYSQL_GENERAL_LOG_FILE = '/var/log/mysql/mysql.log'
 ## =====================================================================
 class Driver(object):
     
-    def __init__(self):
-        pass
+    def __init__(self, deployer):
+        self.deployer = deployer
 
     def check_log(self, last_line_no = None):
         sql_log_file = open(MYSQL_GENERAL_LOG_FILE, 'r')
@@ -90,12 +90,12 @@ class Driver(object):
                 return False
         return True
 
-    def bootstrap(self, deployer):
+    def bootstrap(self):
         # get main page
-        main_url = deployer.get_main_url()
+        main_url = self.deployer.get_main_url()
 
         # set json filename
-        json_filename = 'forms{}.json'.format(deployer.deploy_id)
+        json_filename = 'forms{}.json'.format(self.deployer.deploy_id)
 
         # extract all the forms
         try:
@@ -126,7 +126,7 @@ class Driver(object):
                 continue
             last_line_no = self.check_log()
             try:
-                part_inputs = submit.fill_form_random(deployer.base_path, form, br)
+                part_inputs = submit.fill_form_random(self.deployer.base_path, form, br)
             except:
                 part_inputs = None
             form['admin'] = True
@@ -141,18 +141,18 @@ class Driver(object):
             ret_forms.append(form)
             for i in range(5):
                 try:
-                    submit.fill_form_random(deployer.base_path, form, br)
+                    submit.fill_form_random(self.deployer.base_path, form, br)
                 except:
                     pass
 
         return ret_forms
 
-    def initialize(self, deployer):
+    def initialize(self):
         # get main page
-        main_url = deployer.get_main_url()
+        main_url = self.deployer.get_main_url()
 
         # set json filename
-        json_filename = 'forms{}.json'.format(deployer.deploy_id)
+        json_filename = 'forms{}.json'.format(self.deployer.deploy_id)
 
         # extract all the forms
         try:
@@ -166,7 +166,7 @@ class Driver(object):
         register_result = USER_STATUS_UNKNOWN
         last_line_no = self.check_log()
         try:
-            register_form, info, inputs = submit.register(deployer.base_path, forms)
+            register_form, info, inputs = submit.register(self.deployer.base_path, forms)
         except Exception, e:
             register_form = info = inputs = None
             LOG.exception(e)
@@ -209,9 +209,9 @@ class Driver(object):
 
         return {'register': register_result, 'login': login_result, 'forms': ret_forms}
 
-    def submit_forms(self, deployer):
+    def submit_forms(self):
         # get main page
-        main_url = deployer.get_main_url()
+        main_url = self.deployer.get_main_url()
 
         ret_forms = []
 
@@ -222,7 +222,7 @@ class Driver(object):
                 continue
             last_line_no = self.check_log()
             try:
-                part_inputs = submit.fill_form_random(deployer.base_path, form, self.browser)
+                part_inputs = submit.fill_form_random(self.deployer.base_path, form, self.browser)
             except:
                 traceback.print_exc()
                 print form
@@ -238,21 +238,21 @@ class Driver(object):
             ret_forms.append(form)
             for i in range(5):
                 try:
-                    submit.fill_form_random(deployer.base_path, form, self.browser)
+                    submit.fill_form_random(self.deployer.base_path, form, self.browser)
                 except:
                     pass
 
         return ret_forms
 
-    def drive(self, deployer):
+    def drive(self):
         # get main page
-        main_url = deployer.get_main_url()
+        main_url = self.deployer.get_main_url()
 
-        admin_forms = self.bootstrap(deployer)
+        admin_forms = self.bootstrap()
         
-        driver_results = self.initialize(deployer)
+        driver_results = self.initialize()
 
-        normal_forms = self.submit_forms(deployer)
+        normal_forms = self.submit_forms()
 
         # filter forms
         driver_results['forms'] += sorted(normal_forms + admin_forms, key=lambda x: len(x['queries']), reverse=True)
@@ -264,7 +264,7 @@ class Driver(object):
         driver_results['forms'] = filtered_forms
 
         LOG.info('Saving Screenshot ...')
-        screenshot_path = self.save_screenshot(main_url, os.path.join(deployer.base_path, 'screenshot.png'))
+        screenshot_path = self.save_screenshot(main_url, os.path.join(self.deployer.base_path, 'screenshot.png'))
         driver_results['screenshot'] = screenshot_path
 
         return driver_results
