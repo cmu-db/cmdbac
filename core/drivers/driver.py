@@ -90,7 +90,7 @@ class Driver(object):
                 return False
         return True
 
-    def admin_drive(self, deployer):
+    def initialize(self, deployer):
         # get main page
         main_url = deployer.get_main_url()
 
@@ -116,9 +116,11 @@ class Driver(object):
         except Exception, e:
             login_form = br = None
             LOG.exception(e)
+
         # submit other forms as admin
         if br != None:
             forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
+    
         for form in forms:
             form['queries'] = []
             form['counter'] = {}
@@ -237,7 +239,7 @@ class Driver(object):
                 'user':info, 'forms': ret_forms, 'screenshot': screenshot_path}
 
     def drive(self, deployer):
-        admin_forms = self.admin_drive(deployer)
+        admin_forms = self.initialize(deployer)
         driver_results = self.normal_drive(deployer)
         driver_results['forms'] += admin_forms
         filtered_forms = []
