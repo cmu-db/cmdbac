@@ -82,7 +82,7 @@ class Driver(object):
 
     def equal_form(self, form1, form2):
         for name, value in form1.iteritems():
-            if name in ['class', 'queries', 'url', 'counter']:
+            if name in ['class', 'queries', 'url', 'counter', 'admin']:
                 continue
             if name not in form2:
                 return False
@@ -90,7 +90,7 @@ class Driver(object):
                 return False
         return True
 
-    def initialize(self, deployer):
+    def bootstrap(self, deployer):
         # get main page
         main_url = deployer.get_main_url()
 
@@ -122,8 +122,6 @@ class Driver(object):
             forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
     
         for form in forms:
-            form['queries'] = []
-            form['counter'] = {}
             if any(self.equal_form(form, ret_form) for ret_form in ret_forms):
                 continue
             last_line_no = self.check_log()
@@ -149,7 +147,7 @@ class Driver(object):
 
         return ret_forms
 
-    def normal_drive(self, deployer):
+    def initialize(self, deployer):
         # get main page
         main_url = deployer.get_main_url()
 
@@ -202,17 +200,29 @@ class Driver(object):
             if login_form != None:
                 ret_forms.append(login_form)
 
-        # submit other forms as normal user(or do not login)
         if br != None:
             forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
-        for form in forms:
+
+        # save browser and forms
+        self.browser = br
+        self.forms = forms
+
+        return {'register': register_result, 'login': login_result, 'forms': ret_forms}
+
+    def submit_forms(self, deployer):
+        # get main page
+        main_url = deployer.get_main_url()
+
+        ret_forms = []
+
+        for form in self.forms:
             form['queries'] = []
             form['counter'] = {}
             if any(self.equal_form(form, ret_form) for ret_form in ret_forms):
                 continue
             last_line_no = self.check_log()
             try:
-                part_inputs = submit.fill_form_random(deployer.base_path, form, br)
+                part_inputs = submit.fill_form_random(deployer.base_path, form, self.browser)
             except:
                 traceback.print_exc()
                 print form
@@ -228,24 +238,33 @@ class Driver(object):
             ret_forms.append(form)
             for i in range(5):
                 try:
-                    submit.fill_form_random(deployer.base_path, form, br)
+                    submit.fill_form_random(deployer.base_path, form, self.browser)
                 except:
                     pass
 
-        LOG.info('Saving Screenshot ...')
-        screenshot_path = self.save_screenshot(main_url, os.path.join(deployer.base_path, 'screenshot.png'))
-
-        return {'register': register_result, 'login': login_result, 
-                'user':info, 'forms': ret_forms, 'screenshot': screenshot_path}
+        return ret_forms
 
     def drive(self, deployer):
-        admin_forms = self.initialize(deployer)
-        driver_results = self.normal_drive(deployer)
-        driver_results['forms'] += admin_forms
+        # get main page
+        main_url = deployer.get_main_url()
+
+        admin_forms = self.bootstrap(deployer)
+        
+        driver_results = self.initialize(deployer)
+
+        normal_forms = self.submit_forms(deployer)
+
+        # filter forms
+        driver_results['forms'] += sorted(normal_forms + admin_forms, key=lambda x: len(x['queries']), reverse=True)
         filtered_forms = []
         for form in driver_results['forms']:
             if any(self.equal_form(form, filtered_form) for filtered_form in filtered_forms):
                 continue
             filtered_forms.append(form)
         driver_results['forms'] = filtered_forms
+
+        LOG.info('Saving Screenshot ...')
+        screenshot_path = self.save_screenshot(main_url, os.path.join(deployer.base_path, 'screenshot.png'))
+        driver_results['screenshot'] = screenshot_path
+
         return driver_results
