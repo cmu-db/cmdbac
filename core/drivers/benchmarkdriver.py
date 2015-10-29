@@ -13,6 +13,7 @@ import utils
 import extract
 import submit
 import count
+from driver import Driver
 
 ## =====================================================================
 ## LOGGING CONFIGURATION
@@ -24,19 +25,14 @@ LOG = logging.getLogger()
 ## =====================================================================
 class BenchmarkDriver(Driver):
     
-    def __init__(self):
-        pass
+    def __init__(self, deployer):
+        Driver.__init__(self, deployer)
 
-    def submit_forms(self, deployer):
-        # get main page
-        main_url = deployer.get_main_url()
-
+    def submit_forms(self):
         for form in self.forms:
             try:
-                part_inputs = submit.fill_form_random(deployer.base_path, form, self.browser)
+                part_inputs = submit.fill_form_random(self.deployer.base_path, form, self.browser)
             except:
                 traceback.print_exc()
                 part_inputs = None
-            if part_inputs == None or if len(form['queries']) == 0:
-                continue
             # LOG.info('Normal: Fill in Form on {} Successfully ...'.format(form['url']))

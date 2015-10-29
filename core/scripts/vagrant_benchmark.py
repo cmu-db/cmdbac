@@ -15,10 +15,9 @@ from deployers import *
 from drivers import *
 import utils
 
-def run_driver(deployer):
+def run_driver(driver):
     try:
-        driver = Driver()
-        driverResult = driver.drive(deployer)
+        driverResult = driver.submit_forms()
     except Exception, e:
         LOG.exception(e)
         driverResult = {}
@@ -63,9 +62,9 @@ def main():
 
     # run driver
     try:
-        driver = BenchmarkDriver()
-        driver.bootstrap(deployer)
-        driver.initialize(deployer)
+        driver = BenchmarkDriver(deployer)
+        driver.bootstrap()
+        driver.initialize()
 
         # multi-threading
         threads = []
@@ -75,9 +74,9 @@ def main():
             threads.append(thread)
 
         # wait for all the threads
-        driver.submit_forms(deployer)
+        driver.submit_forms()
         for thread in threads:
-        thread.join()
+            thread.join()
     except Exception, e:
         LOG.exception(e)
     

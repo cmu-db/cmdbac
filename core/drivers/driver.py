@@ -203,9 +203,20 @@ class Driver(object):
         if br != None:
             forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
 
-        # save browser and forms
+        # save browser
         self.browser = br
-        self.forms = forms
+
+        # save forms
+        self.forms = []
+        for form in self.forms:
+            try:
+                part_inputs = submit.fill_form_random(deployer.base_path, form, self.browser)
+            except:
+                traceback.print_exc()
+                part_inputs = None
+            if part_inputs == None or len(form['queries']) == 0:
+                continue
+            self.forms.append(form)
 
         return {'register': register_result, 'login': login_result, 'forms': ret_forms}
 
