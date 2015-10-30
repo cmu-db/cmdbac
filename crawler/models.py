@@ -348,3 +348,14 @@ class Benchmark(models.Model):
     result = models.CharField(max_length=2, choices=BENCHMARK_STATUS, default=None, null=True)
     result_label = property(resultLabel)
     result_name = property(resultName)
+
+    # database info
+    db_host = models.CharField(max_length=200)
+    db_port = models.IntegerField()
+    db_name = models.CharField(max_length=200)
+    db_username = models.CharField(max_length=200)
+    db_password = models.CharField(max_length=200)
+    
+
+    # benchmark info
+    num_threads = models.IntegerField()

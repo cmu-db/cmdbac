@@ -24,7 +24,7 @@ def parse_args():
     parser_info.add_argument("-id", "--id", type=int)
 
     parser_benchmark = subparsers.add_parser('benchmark')
-    parser_benchmark.add_argument('-repo', '--repo', type=str)
+    parser_benchmark.add_argument('-attempt', '--attempt', type=int)
     parser_benchmark.add_argument('-deploy_id', '--deploy_id', type=int)
     parser_benchmark.add_argument('-host', '--host', type=str)
     parser_benchmark.add_argument('-port', '--port', type=int)

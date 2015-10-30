@@ -62,7 +62,7 @@ def vagrant_deploy(repo, deploy_id):
 
     return out
 
-def vagrant_benchmark(repo, deploy_id, database, benchmark):
+def vagrant_benchmark(attempt_id, deploy_id, database, benchmark):
     # get the infomation of database
     db_host = database['host']
     db_port = database['port']
@@ -78,8 +78,8 @@ def vagrant_benchmark(repo, deploy_id, database, benchmark):
     command = '{} && {}'.format(
             cd(vagrant_dir),
             'vagrant ssh -c "{}"'.format(
-                'python /vagrant/core/scripts/vagrant_benchmark.py --repo={repo} --deploy_id={deploy_id} {database} {benchmark}'
-                .format(repo=repo, deploy_id=deploy_id,
+                'python /vagrant/core/scripts/vagrant_benchmark.py --attempt={attempt_id} --deploy_id={deploy_id} {database} {benchmark}'
+                .format(attempt_id=attempt_id, deploy_id=deploy_id,
                         database=' '.join('--{}={}'.format(key, value) for key, value in database.iteritems()), 
                         benchmark=' '.join('--{}={}'.format(key, value) for key, value in benchmark.iteritems())
                 )

@@ -15,11 +15,9 @@ import utils
 
 def run_benchmark(attempt_id, database, benchmark):
 	# run the benchmark
-    attempt = Attempt.objects.get(id=attempt_id)
-    repo = attempt.repo
     deploy_id = 1
-    print 'Running benchmark for attempt {} using {} ...'.format(attempt.id, repo.project_type.deployer_class)
+    print 'Running benchmark for attempt {}'.format(attempt_id)
     try:
-        utils.vagrant_benchmark(repo, deploy_id, database, benchmark)
+        utils.vagrant_benchmark(attempt_id, deploy_id, database, benchmark)
     except Exception, e:
         traceback.print_exc()

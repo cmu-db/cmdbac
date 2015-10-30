@@ -25,7 +25,7 @@ def run_driver(driver):
 def main():
     # parse args
     parser = argparse.ArgumentParser()
-    parser.add_argument('--repo', type=str)
+    parser.add_argument('--attempt', type=int)
     parser.add_argument('--deploy_id', type=int)
     parser.add_argument('--host', type=str)
     parser.add_argument('--port', type=int)
@@ -36,7 +36,7 @@ def main():
     args = parser.parse_args()
 
     # get args
-    repo_name = args.repo
+    attempt_id = args.attempt
     deploy_id = args.deploy_id
     database_name = 'MySQL'
     database_config = {
@@ -49,7 +49,7 @@ def main():
     num_threads = args.num_threads
 
     # run deployer
-    repo = Repository.objects.get(name=repo_name)
+    repo = Attempt.objects.get(id=attempt_id).repo
     database = Database.objects.get(name=database_name)
     moduleName = "deployers.%s" % (repo.project_type.deployer_class.lower())
     moduleHandle = __import__(moduleName, globals(), locals(), [repo.project_type.deployer_class])
