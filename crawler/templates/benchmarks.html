@@ -6,7 +6,7 @@ Benchmarks &raquo; Database Application Crawler
 {% endblock %}
 
 {% block main %}
-{% include "status_codes.html" %}
+{% include "benchmark_status_codes.html" %}
 
 <h2 class="page-header">Benchmarks</h2>
 
@@ -56,7 +56,7 @@ Benchmarks &raquo; Database Application Crawler
 
                     <td>
                         <a href="{% url 'benchmark' benchmark.id %}?{{ queries.urlencode }}" class="label label-{{ benchmark.result_label }}">{{ benchmark.result_name}}</a>
-                        <a href="#" data-toggle="modal" data-target="#statusModal">?</a>
+                        <a href="#" data-toggle="modal" data-target="#benchmarkStatusModal">?</a>
                     </td>
                     
                     <td>{{ benchmark.stop_time|date:'Y-m-d H:i:s' }}</td>

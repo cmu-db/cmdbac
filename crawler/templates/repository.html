@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block main %}
-{% include "status_codes.html" %}
+{% include "attempt_status_codes.html" %}
 <ul class="breadcrumb">
     <li>
         <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{repository.name}}">Repositories</a>
@@ -139,7 +139,7 @@
                     
                     <td>
                         <a id="{{attempt.id}}" href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}" class="label label-{{ attempt.result_label }}">{{attempt.result_name}}</a>
-                        <a href="#" data-toggle="modal" data-target="#statusModal">?</a>
+                        <a href="#" data-toggle="modal" data-target="#attemptStatusModal">?</a>
                     </td>
 
                     <td>{{ attempt.forms_count }}</td>

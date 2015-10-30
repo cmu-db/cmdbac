@@ -6,7 +6,7 @@ Repositories &raquo; Database Application Crawler
 {% endblock %}
 
 {% block main %}
-{% include "status_codes.html" %}
+{% include "attempt_status_codes.html" %}
 {% include "add_module.html" %}
 {% include "add_repository.html" %}
 
@@ -108,7 +108,7 @@ Repositories &raquo; Database Application Crawler
                         -
                     {% else %}
                         <a id="{{repository.latest_attempt.id}}" href="{% url 'attempt' repository.latest_attempt.id %}?{{ queries.urlencode }}" class="label label-{{ repository.latest_attempt.result_label }}">{{repository.latest_attempt.result_name}}</a>
-                        <a href="#" data-toggle="modal" data-target="#statusModal">?</a>
+                        <a href="#" data-toggle="modal" data-target="#attemptStatusModal">?</a>
                     {% endif %}
                     </td>
 
