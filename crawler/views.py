@@ -285,6 +285,16 @@ def benchmarks(request):
 
     return render(request, 'benchmarks.html', context)
 
+def benchmark(request, id):
+    context = {}
+    
+    context['queries'] = request.GET.copy()
+
+    benchmark = Benchmark.objects.get(id=id)
+    context['benchmark'] = benchmark
+
+    return render(request, 'benchmark.html', context)
+
 class AttemptViewSet(viewsets.ModelViewSet):
     queryset = Attempt.objects.all()
     serializer_class = AttemptSerializer
