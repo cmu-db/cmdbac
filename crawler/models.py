@@ -57,6 +57,26 @@ for x, y, z in USER_STATUS:
 USER_STATUS = temp
 globals()['USER_STATUS_CODES'] = USER_STATUS_CODES
 
+# Benchmark Status
+BENCHMARK_STATUS = (
+    ('RI', 'Running Benchmark', 'info'),
+    ('DE', 'Download Error', 'danger'),
+    ('MD', 'Missing Dependencies', 'danger'),
+    ('MR', 'Missing Required Files', 'danger'),
+    ('RE', 'Running Error', 'danger'),
+    ('OK', 'Success', 'success')
+)
+BENCHMARK_STATUS_CODES = {}
+BENCHMARK_STATUS_NAMES = {}
+temp = []
+for x, y, z in BENCHMARK_STATUS:
+    globals()['BENCHMARK_STATUS_' + y.replace(" ", "_").upper()] = x
+    BENCHMARK_STATUS_CODES[x] = z
+    BENCHMARK_STATUS_NAMES[x] = y
+    temp.append((x,y))
+BENCHMARK_STATUS = temp
+globals()['BENCHMARK_STATUS_CODES'] = BENCHMARK_STATUS_CODES
+
 # ----------------------------------------------------------------------------
 
 class ProjectType(models.Model):
@@ -308,3 +328,23 @@ class Runtime(models.Model):
     class Meta:
         unique_together = ('executable', 'version')
 ## CLASS
+
+class Benchmark(models.Model):
+    def duration(self):
+        return (self.stop_time - self.start_time).total_seconds()
+    def resultLabel(self):
+        return BENCHMARK_STATUS_CODES[self.result]
+    def resultName(self):
+        return BENCHMARK_STATUS_NAMES[self.result]
+
+    start_time = models.DateTimeField()
+    stop_time = models.DateTimeField(default=None, null=True)
+    duration = property(duration)
+
+    attempt = models.ForeignKey('Attempt')
+    log = models.TextField(default='')
+    hostname = models.CharField(max_length=200)
+
+    result = models.CharField(max_length=2, choices=BENCHMARK_STATUS, default=None, null=True)
+    result_label = property(resultLabel)
+    result_name = property(resultName)
