@@ -36,7 +36,7 @@ Benchmarks &raquo; Database Application Crawler
                     <a href="?order_by={% if order_by == "attempt__id" %}-{% endif %}attempt__id&amp;{{ queries_no_page_order.urlencode }}">Attempt
                 </th>
                 <th class="col-md-2">
-                    <a href="?order_by={% if order_by == "repo_type__name" %}-{% endif %}repo_type__name&amp;{{ queries_no_page_order.urlencode }}">Type
+                    <a href="?order_by={% if order_by == "attempt__repo__project_type__name" %}-{% endif %}attempt__repo__project_type__name&amp;{{ queries_no_page_order.urlencode }}">Type
                 </th>
                 <th class="col-md-4">
                     <a href="?order_by={% if order_by != "-result" %}-{% endif %}result&amp;{{ queries_no_page_order.urlencode }}">Result
@@ -55,7 +55,7 @@ Benchmarks &raquo; Database Application Crawler
                     <td><img src="{% static benchmark.attempt.repo.project_type.logo %}" alt="{{ benchmark.attempt.repo.project_type.name }}" title="{{ benchmark.attempt.repo.project_type.name }}" class="projecttype-logo" /></td>
 
                     <td>
-                        <a href="{% url 'attempt' benchmark.id %}?{{ queries.urlencode }}" class="label label-{{ benchmark.result_label }}">{{ benchmark.result_name}}</a>
+                        <a href="{% url 'benchmark' benchmark.id %}?{{ queries.urlencode }}" class="label label-{{ benchmark.result_label }}">{{ benchmark.result_name}}</a>
                         <a href="#" data-toggle="modal" data-target="#statusModal">?</a>
                     </td>
                     
