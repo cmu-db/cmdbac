@@ -55,7 +55,7 @@ Benchmarks &raquo; Database Application Crawler
                     <td><img src="{% static benchmark.attempt.repo.project_type.logo %}" alt="{{ benchmark.attempt.repo.project_type.name }}" title="{{ benchmark.attempt.repo.project_type.name }}" class="projecttype-logo" /></td>
 
                     <td>
-                        <a href="{% url 'benchmark' benchmark.id %}?{{ queries.urlencode }}" class="label label-{{ benchmark.result_label }}">{{ benchmark.result_name}}</a>
+                        <a href="{% url 'attempt' benchmark.id %}?{{ queries.urlencode }}" class="label label-{{ benchmark.result_label }}">{{ benchmark.result_name}}</a>
                         <a href="#" data-toggle="modal" data-target="#statusModal">?</a>
                     </td>
                     

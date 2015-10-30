@@ -130,9 +130,11 @@ def repositories(request):
     result_list = request.GET.getlist('results')
     if result_list:
         repositories = repositories.filter(latest_attempt__result__in=result_list)
+
     type_list = request.GET.getlist('types')
     if type_list:
         repositories = repositories.filter(project_type__name__in=type_list)
+
     order_by = request.GET.get('order_by', 'crawler_date')
     repositories = repositories.order_by(order_by)
 
@@ -232,6 +234,56 @@ def queries(request, id):
         }
         
         return render(request, 'queries.html', context)
+
+def benchmarks(request):
+    context = {}
+    context['queries'] = request.GET.copy()
+    queries_no_page = request.GET.copy()
+    if queries_no_page.__contains__('page'):
+        del queries_no_page['page']
+    context['queries_no_page'] = queries_no_page
+    queries_no_page_order = queries_no_page.copy() 
+    if queries_no_page_order.__contains__('order_by'):
+        context['order_by'] = request.GET.get('order_by')
+        del queries_no_page_order['order_by']
+    context['queries_no_page_order'] = queries_no_page_order
+
+    benchmarks = Benchmark.objects.all()
+    if 0:
+        if request.GET.__contains__('search'):
+            benchmark_id = request.GET['search']
+            print 'search: ' + repo_name
+            benchmarks = benchmarks.filter(id=benchmark_id)
+
+    result_list = request.GET.getlist('results')
+    if result_list:
+        benchmarks = benchmarks.filter(result__in=result_list)
+
+    type_list = request.GET.getlist('types')
+    if type_list:
+        benchmarks = benchmarks.filter(attempt__repo__project_type__name__in=type_list)
+
+    order_by = request.GET.get('order_by', 'stop_time')
+    benchmarks = benchmarks.order_by(order_by)
+
+    paginator = Paginator(benchmarks, 50) # Show 50 repos per page
+    page = request.GET.get('page')
+    try:
+        benchmarks = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        benchmarks = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        benchmarks = paginator.page(paginator.num_pages)
+        
+    search = request.GET.get('search', '')
+    context["result_form"] = ResultForm(request.GET)
+    context['type_form'] = ProjectTypeForm(request.GET)
+    context["benchmarks"] = benchmarks
+    context['search'] = search
+
+    return render(request, 'benchmarks.html', context)
 
 class AttemptViewSet(viewsets.ModelViewSet):
     queryset = Attempt.objects.all()
