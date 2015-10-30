@@ -105,6 +105,7 @@ def main():
     deployer.kill_server()
     deployer.flush_log()
     benchmark.log = deployer.attempt.log
+    benchmark.stop_time = datetime.now()
     benchmark.result = BENCHMARK_STATUS_SUCCESS
     benchmark.save()
     # deployer.save_attempt(ATTEMPT_STATUS_SUCCESS)
