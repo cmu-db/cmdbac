@@ -9,6 +9,8 @@ django.setup()
 
 import argparse
 import threading
+import datetime
+import socket
 
 from crawler.models import *
 from deployers import *
@@ -38,7 +40,6 @@ def main():
     # get args
     attempt_id = args.attempt
     deploy_id = args.deploy_id
-    database_name = 'MySQL'
     database_config = {
         'host': args.host,
         'port': args.port,
@@ -48,16 +49,36 @@ def main():
     }
     num_threads = args.num_threads
 
-    # run deployer
-    repo = Attempt.objects.get(id=attempt_id).repo
-    database = Database.objects.get(name=database_name)
+    # get deployer
+    attempt = Attempt.objects.get(id=attempt_id)
+    repo = attempt.repo
+    database = attempt.database
     moduleName = "deployers.%s" % (repo.project_type.deployer_class.lower())
     moduleHandle = __import__(moduleName, globals(), locals(), [repo.project_type.deployer_class])
     klass = getattr(moduleHandle, repo.project_type.deployer_class)
     deployer = klass(repo, database, deploy_id, database_config)
+
+    # set benchmark basic info
+    benchmark = Benchmark()
+    benchmark.start_time = datetime.now()
+    benchmark.attempt = attempt
+    benchmark.hostname = socket.gethostname()
+    benchmark.result = BENCHMARK_STATUS_RUNNING
+    # set benchmark database info
+    benchmark.db_host = database_config['host']
+    benchmark.db_port = database_config['port']
+    benchmark.db_name = database_config['name']
+    benchmark.db_username = database_config['username']
+    benchmark.db_password = database_config['password']
+    # set benchmark args
+    benchmark.num_threads = num_threads
+    # save benchmark
+    benchmark.save()
+
     result = deployer.deploy()
     if result != 0:
         deployer.kill_server()
+        benchmark.delete()
         sys.exit(-1)
 
     # run driver
@@ -82,6 +103,10 @@ def main():
     
     # finish up
     deployer.kill_server()
+    deployer.flush_log()
+    benchmark.log = deployer.attempt.log
+    benchmark.result = BENCHMARK_STATUS_SUCCESS
+    benchmark.save()
     # deployer.save_attempt(ATTEMPT_STATUS_SUCCESS)
     # deployer.extract_database_info()
 

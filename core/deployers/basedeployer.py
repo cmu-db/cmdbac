@@ -111,16 +111,23 @@ class BaseDeployer(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF
 
-    def save_attempt(self, attempt_result, driver_result = {}):
-        register_result = driver_result.get('register', USER_STATUS_UNKNOWN)
-        login_result = driver_result.get('login', USER_STATUS_UNKNOWN)
-        forms = driver_result.get('forms', None)
-        screenshot_path = driver_result.get('screenshot', None)
-
+    def flush_log(self):
         # stop capturing the log
         self.log.removeHandler(self.logHandler)
         self.logHandler.flush()
         self.buffer.flush()
+        self.attempt.log = self.buffer.getvalue()
+
+
+    def save_attempt(self, attempt_result, driver_result = {}):
+        # flush log
+        self.flush_log()
+
+        # get info
+        register_result = driver_result.get('register', USER_STATUS_UNKNOWN)
+        login_result = driver_result.get('login', USER_STATUS_UNKNOWN)
+        forms = driver_result.get('forms', None)
+        screenshot_path = driver_result.get('screenshot', None)
 
         # get runtime
         if self.runtime == None:
@@ -133,7 +140,6 @@ class BaseDeployer(object):
         self.attempt.result = attempt_result
         self.attempt.login = login_result
         self.attempt.register = register_result
-        self.attempt.log = self.buffer.getvalue()
         self.attempt.stop_time = datetime.now()
         self.attempt.size = utils.get_size(self.base_path)
         self.attempt.runtime = runtime

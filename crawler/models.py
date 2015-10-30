@@ -59,7 +59,7 @@ globals()['USER_STATUS_CODES'] = USER_STATUS_CODES
 
 # Benchmark Status
 BENCHMARK_STATUS = (
-    ('RI', 'Running Benchmark', 'info'),
+    ('RI', 'Running', 'info'),
     ('DE', 'Download Error', 'danger'),
     ('MD', 'Missing Dependencies', 'danger'),
     ('MR', 'Missing Required Files', 'danger'),
@@ -355,7 +355,6 @@ class Benchmark(models.Model):
     db_name = models.CharField(max_length=200)
     db_username = models.CharField(max_length=200)
     db_password = models.CharField(max_length=200)
-    
 
     # benchmark info
     num_threads = models.IntegerField()
