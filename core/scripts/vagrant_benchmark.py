@@ -19,10 +19,9 @@ import utils
 
 def run_driver(driver):
     try:
-        driverResult = driver.submit_forms()
+        driver.submit_forms()
     except Exception, e:
         LOG.exception(e)
-        driverResult = {}
 
 def main():
     # parse args
@@ -35,6 +34,7 @@ def main():
     parser.add_argument('--username', type=str)
     parser.add_argument('--password', type=str)
     parser.add_argument('--num_threads', type=int)
+    parser.add_argument('--time', type=int)
     args = parser.parse_args()
 
     # get args
@@ -48,6 +48,7 @@ def main():
         'password': args.password
     }
     num_threads = args.num_threads
+    time = args.time
 
     # get deployer
     attempt = Attempt.objects.get(id=attempt_id)
@@ -72,6 +73,7 @@ def main():
     benchmark.db_password = database_config['password']
     # set benchmark args
     benchmark.num_threads = num_threads
+    benchmark.time = time
     # save benchmark
     benchmark.save()
 
@@ -81,25 +83,25 @@ def main():
         benchmark.delete()
         sys.exit(-1)
 
-    # run driver
     try:
-        driver = BenchmarkDriver(deployer)
-        driver.bootstrap()
-        driver.initialize()
+        with utils.timeout(seconds = time):
+            driver = BenchmarkDriver(deployer)
+            driver.bootstrap()
+            driver.initialize()
 
-        # multi-threading
-        threads = []
-        for _ in range(num_threads - 1):
-            thread = threading.Thread(target = run_driver, args = (driver, ))
-            thread.start()
-            threads.append(thread)
+            # multi-threading
+            threads = []
+            for _ in range(num_threads - 1):
+                thread = threading.Thread(target = run_driver, args = (driver, ))
+                thread.start()
+                threads.append(thread)
 
-        # wait for all the threads
-        driver.submit_forms()
-        for thread in threads:
-            thread.join()
-    except Exception, e:
-        LOG.exception(e)
+            # wait for all the threads
+            driver.submit_forms()
+            for thread in threads:
+                thread.join()
+    except:
+        pass
     
     # finish up
     deployer.kill_server()

@@ -6,3 +6,4 @@ from data import add_module, add_repo, delete_repo, deploy_repo
 from vagrant import vagrant_setup, vagrant_clear, vagrant_deploy, vagrant_benchmark
 from rvm import get_ruby_versions, use_ruby_version
 from benchmark import run_benchmark
+from timeout import timeout

@@ -63,16 +63,6 @@ def vagrant_deploy(repo, deploy_id):
     return out
 
 def vagrant_benchmark(attempt_id, deploy_id, database, benchmark):
-    # get the infomation of database
-    db_host = database['host']
-    db_port = database['port']
-    db_name = database['name']
-    db_username = database['username']
-    db_password = database['password']
-
-    # get the arguments of benchmark
-    num_threads = int(benchmark['num_threads'])
-
     # run the benchmark
     set_vagrant_database()
     command = '{} && {}'.format(

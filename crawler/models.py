@@ -358,3 +358,4 @@ class Benchmark(models.Model):
 
     # benchmark info
     num_threads = models.IntegerField()
+    time = models.IntegerField()
