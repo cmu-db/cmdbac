@@ -51,17 +51,23 @@ def home(request):
 def repositories(request):
     context = {}
     context['queries'] = request.GET.copy()
+
     queries_no_page = request.GET.copy()
     if queries_no_page.__contains__('page'):
         del queries_no_page['page']
+    if queries_no_page.__contains__('search') and queries_no_page['search'] == '':
+        del queries_no_page['search']
     context['queries_no_page'] = queries_no_page
+
     queries_no_page_order = queries_no_page.copy() 
     if queries_no_page_order.__contains__('order_by'):
         context['order_by'] = request.GET.get('order_by')
         del queries_no_page_order['order_by']
     context['queries_no_page_order'] = queries_no_page_order
 
-    # repositories = Repository.objects.filter(valid_project=True)
+    context["result_form"] = ResultForm(request.GET)
+    context['type_form'] = ProjectTypeForm(request.GET)
+
 
     if request.user.is_superuser:
         if request.GET.__contains__('module') and request.GET.__contains__('package') and request.GET.__contains__('type') and request.GET.__contains__('version'):
@@ -122,9 +128,10 @@ def repositories(request):
                 return redirect(request.META['HTTP_REFERER'])
 
     repositories = Repository.objects.all()
-    if request.GET.__contains__('search'):
+    if request.GET.get('search', '') != '':
         repo_name = request.GET['search']
         print 'search: ' + repo_name
+        context['search'] = repo_name
         repositories = repositories.filter(name__contains=repo_name)
 
     result_list = request.GET.getlist('results')
@@ -149,11 +156,7 @@ def repositories(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         repositories = paginator.page(paginator.num_pages)
         
-    search = request.GET.get('search', '')
-    context["result_form"] = ResultForm(request.GET)
-    context['type_form'] = ProjectTypeForm(request.GET)
     context["repositories"] = repositories
-    context['search'] = search
 
     return render(request, 'repositories.html', context)
 
@@ -238,22 +241,30 @@ def queries(request, id):
 def benchmarks(request):
     context = {}
     context['queries'] = request.GET.copy()
+
     queries_no_page = request.GET.copy()
     if queries_no_page.__contains__('page'):
         del queries_no_page['page']
+    if queries_no_page.__contains__('search') and queries_no_page['search'] == '':
+        del queries_no_page['search']
     context['queries_no_page'] = queries_no_page
+
     queries_no_page_order = queries_no_page.copy() 
     if queries_no_page_order.__contains__('order_by'):
         context['order_by'] = request.GET.get('order_by')
         del queries_no_page_order['order_by']
     context['queries_no_page_order'] = queries_no_page_order
 
+    context["result_form"] = ResultForm(request.GET)
+    context['type_form'] = ProjectTypeForm(request.GET)
+
     benchmarks = Benchmark.objects.all()
     if 0:
-        if request.GET.__contains__('search'):
-            benchmark_id = request.GET['search']
+        if request.GET.get('search', '') != '':
+            repo_name = request.GET['search']
             print 'search: ' + repo_name
-            benchmarks = benchmarks.filter(id=benchmark_id)
+            context['search'] = repo_name
+            repositories = repositories.filter(name__contains=repo_name)
 
     result_list = request.GET.getlist('results')
     if result_list:
@@ -277,11 +288,7 @@ def benchmarks(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         benchmarks = paginator.page(paginator.num_pages)
         
-    search = request.GET.get('search', '')
-    context["result_form"] = ResultForm(request.GET)
-    context['type_form'] = ProjectTypeForm(request.GET)
-    context["benchmarks"] = benchmarks
-    context['search'] = search
+    context['benchmarks'] = benchmarks
 
     return render(request, 'benchmarks.html', context)
 

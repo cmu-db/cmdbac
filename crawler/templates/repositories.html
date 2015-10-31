@@ -26,6 +26,8 @@ Repositories &raquo; Database Application Crawler
 
 <h2 class="page-header">Repositories</h2>
 
+<ul id="pagination1" class="sync-pagination pagination-sm pagination"></ul>
+
 <form action="{% url 'repositories' %}" method="get">
     <div style="float:left">
     {{ result_form }}
@@ -163,10 +165,18 @@ Repositories &raquo; Database Application Crawler
     </table>
 </div>
 
-<ul id="pagination" class="pagination-sm"></ul>
+<ul id="pagination2" class="sync-pagination pagination-sm pagination"></ul>
 
 <script type='text/javascript'>
-    $('#pagination').twbsPagination({
+    $('#pagination1').twbsPagination({
+        totalPages: {{ repositories.paginator.num_pages }},
+        visiblePages: 10,
+        href: '?page={% templatetag openvariable %}number{% templatetag closevariable %}&{{ queries_no_page.urlencode }}',
+        onPageClick: function (event, page) {
+            $('#page-content').text('Page ' + page);
+        }
+    });
+    $('#pagination2').twbsPagination({
         totalPages: {{ repositories.paginator.num_pages }},
         visiblePages: 10,
         href: '?page={% templatetag openvariable %}number{% templatetag closevariable %}&{{ queries_no_page.urlencode }}',
