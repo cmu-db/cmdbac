@@ -17,7 +17,7 @@ def to_env(path):
     return '{} && {}'.format(cd(path), 'source bin/activate')
 
 def pip_install(path, names, is_file, has_version = True):
-    command = '{} && pip install'.format(to_env(path))
+    command = '{} && pip --no-cache-dir install'.format(to_env(path))
     
     proxy = os.environ.get('http_proxy')
     if proxy:
@@ -36,7 +36,7 @@ def pip_install(path, names, is_file, has_version = True):
     return out
 
 def pip_install_text(path, name):
-    command = '{} && pip install'.format(to_env(path))
+    command = '{} && pip --no-cache-dir install'.format(to_env(path))
     
     proxy = os.environ.get('http_proxy')
     if proxy:
