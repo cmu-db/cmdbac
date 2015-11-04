@@ -44,7 +44,7 @@ def get_attempt_info():
     return response.json()
 
 def run_benchmark():
-    attempt_id = 4
+    attempt_id = 20564
     database = {
         'host': '127.0.0.1',
         'port': '3306',
