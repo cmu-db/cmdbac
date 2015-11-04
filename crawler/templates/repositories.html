@@ -171,7 +171,7 @@ Repositories &raquo; Database Application Crawler
     $('#pagination1').twbsPagination({
         totalPages: {{ repositories.paginator.num_pages }},
         visiblePages: 10,
-        href: '?page={% templatetag openvariable %}number{% templatetag closevariable %}&{{ queries_no_page.urlencode }}',
+        href: '?page={% templatetag openvariable %}number{% templatetag closevariable %}&{{ queries_no_page.urlencode|safe}}',
         onPageClick: function (event, page) {
             $('#page-content').text('Page ' + page);
         }
@@ -179,7 +179,7 @@ Repositories &raquo; Database Application Crawler
     $('#pagination2').twbsPagination({
         totalPages: {{ repositories.paginator.num_pages }},
         visiblePages: 10,
-        href: '?page={% templatetag openvariable %}number{% templatetag closevariable %}&{{ queries_no_page.urlencode }}',
+        href: '?page={% templatetag openvariable %}number{% templatetag closevariable %}&{{ queries_no_page.urlencode|safe  }}',
         onPageClick: function (event, page) {
             $('#page-content').text('Page ' + page);
         }
