@@ -32,18 +32,18 @@ def parse_args():
     parser_benchmark.add_argument('-username', '--username', type=str)
     parser_benchmark.add_argument('-password', '--password', type=str)
     parser_benchmark.add_argument('-num_threads', '--num_threads', type=int)
+    parser_benchmark.add_argument('-time', '--time', type=int)
 
     args = parser.parse_args()
 
     return args
 
-
-def get_attempt_info():
-    data = json.dumps({'id': '4'})
+def get_attempt_info(attempt_id):
+    data = json.dumps({'id': attempt_id})
     response = requests.get(ATTEMPT_URL, data)
     return response.json()
 
-def run_benchmark():
+def run_benchmark(atempt_id, database, benchmark):
     attempt_id = 20564
     database = {
         'host': '127.0.0.1',
@@ -59,5 +59,21 @@ def run_benchmark():
     utils.run_benchmark(attempt_id, database, benchmark)
 
 if __name__ == "__main__":
-    # parse_args()
-    run_benchmark()
+    args = parse_args()
+    if 'id' in args:
+        attempt_id = args.id
+        get_attempt_info(attempt_id)
+    else:
+        attempt_id = args.attempt_id
+        database = {
+            'host': args.host,
+            'port': args.port,
+            'name': args.name,
+            'username': args.username,
+            'password': args.password
+        }
+        benchmark = {
+            'num_threads': args.num_threads,
+            'time:', args.time
+        }
+        run_benchmark(attempt_id, database, benchmark)
