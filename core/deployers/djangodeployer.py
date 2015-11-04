@@ -29,7 +29,7 @@ DATABASES = {{
         'HOST': '{host}',
         'PORT': '{port}',
         'USER': '{username}',
-        'PASSWORD': '{passoword}'
+        'PASSWORD': '{password}'
     }}
 }}
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
