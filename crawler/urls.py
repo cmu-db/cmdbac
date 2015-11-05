@@ -12,7 +12,6 @@ urlpatterns = patterns('',
     url(r'^repository/(?P<user_name>.+)/(?P<repo_name>.+)/', 'crawler.views.repository', name='repository'),
     url(r'^attempt/(?P<id>\d+)/', 'crawler.views.attempt', name='attempt'),
     url(r'^queries/(?P<id>\d+)/', 'crawler.views.queries', name='queries'),
-    url(r'^benchmarks/$', 'crawler.views.benchmarks', name='benchmarks'),
-    url(r'^benchmark/(?P<id>\d+)/', 'crawler.views.benchmark', name='benchmark'),
+    url(r'^about/$', 'crawler.views.about', name='about'),
     #url(r'^search/$', 'crawler.views.search', name='search'),
 )
