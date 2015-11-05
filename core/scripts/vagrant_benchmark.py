@@ -59,24 +59,6 @@ def main():
     klass = getattr(moduleHandle, repo.project_type.deployer_class)
     deployer = klass(repo, database, deploy_id, database_config)
 
-    # set benchmark basic info
-    benchmark = Benchmark()
-    benchmark.start_time = datetime.now()
-    benchmark.attempt = attempt
-    benchmark.hostname = socket.gethostname()
-    benchmark.result = BENCHMARK_STATUS_RUNNING
-    # set benchmark database info
-    benchmark.db_host = database_config['host']
-    benchmark.db_port = database_config['port']
-    benchmark.db_name = database_config['name']
-    benchmark.db_username = database_config['username']
-    benchmark.db_password = database_config['password']
-    # set benchmark args
-    benchmark.num_threads = num_threads
-    benchmark.time = time
-    # save benchmark
-    benchmark.save()
-
     result = deployer.deploy()
     if result != 0:
         deployer.kill_server()
@@ -105,11 +87,6 @@ def main():
     
     # finish up
     deployer.kill_server()
-    deployer.flush_log()
-    benchmark.log = deployer.attempt.log
-    benchmark.stop_time = datetime.now()
-    benchmark.result = BENCHMARK_STATUS_SUCCESS
-    benchmark.save()
     # deployer.save_attempt(ATTEMPT_STATUS_SUCCESS)
     # deployer.extract_database_info()
 

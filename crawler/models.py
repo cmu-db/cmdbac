@@ -328,34 +328,3 @@ class Runtime(models.Model):
     class Meta:
         unique_together = ('executable', 'version')
 ## CLASS
-
-class Benchmark(models.Model):
-    def duration(self):
-        return (self.stop_time - self.start_time).total_seconds()
-    def resultLabel(self):
-        return BENCHMARK_STATUS_CODES[self.result]
-    def resultName(self):
-        return BENCHMARK_STATUS_NAMES[self.result]
-
-    start_time = models.DateTimeField()
-    stop_time = models.DateTimeField(default=None, null=True)
-    duration = property(duration)
-
-    attempt = models.ForeignKey('Attempt')
-    log = models.TextField(default='')
-    hostname = models.CharField(max_length=200)
-
-    result = models.CharField(max_length=2, choices=BENCHMARK_STATUS, default=None, null=True)
-    result_label = property(resultLabel)
-    result_name = property(resultName)
-
-    # database info
-    db_host = models.CharField(max_length=200)
-    db_port = models.IntegerField()
-    db_name = models.CharField(max_length=200)
-    db_username = models.CharField(max_length=200)
-    db_password = models.CharField(max_length=200)
-
-    # benchmark info
-    num_threads = models.IntegerField()
-    time = models.IntegerField()
