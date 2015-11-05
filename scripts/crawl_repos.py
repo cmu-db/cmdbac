@@ -7,6 +7,7 @@ import time
 import logging
 logging.basicConfig(filename='repo_crawler.log',level=logging.DEBUG)
 import json
+import traceback
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
 import django
