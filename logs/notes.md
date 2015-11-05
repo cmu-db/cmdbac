@@ -6,3 +6,4 @@
 # add documentation for the whole project
 # redeploy error django repos
 # try new ruby version
+# choose version when running ruby
