@@ -1,6 +1,6 @@
 # backend of benchmark: returned result
 # improve the success rate
-# add the help page
+# add the tools page
 # use other databases
-# add analyze queries
-# add documentations
+# analyze queries
+# add documentation for the whole project
