@@ -44,7 +44,7 @@ def get_attempt_info(attempt_id):
     return response.json()
 
 def run_benchmark(atempt_id, database, benchmark):
-    attempt_id = 20564
+    attempt_id = 4
     database = {
         'host': '127.0.0.1',
         'port': '3306',
@@ -60,6 +60,8 @@ def run_benchmark(atempt_id, database, benchmark):
 
 if __name__ == "__main__":
     args = parse_args()
+    run_benchmark(1, 1, 1)
+    sys.exit(0)
     if 'id' in args:
         attempt_id = args.id
         get_attempt_info(attempt_id)
@@ -74,6 +76,6 @@ if __name__ == "__main__":
         }
         benchmark = {
             'num_threads': args.num_threads,
-            'time:', args.time
+            'time': args.time
         }
         run_benchmark(attempt_id, database, benchmark)

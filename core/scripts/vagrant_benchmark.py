@@ -59,7 +59,7 @@ def main():
     klass = getattr(moduleHandle, repo.project_type.deployer_class)
     deployer = klass(repo, database, deploy_id, database_config)
 
-    result = deployer.deploy()
+    result = deployer.deploy(False)
     if result != 0:
         deployer.kill_server()
         benchmark.delete()

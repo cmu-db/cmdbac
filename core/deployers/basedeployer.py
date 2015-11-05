@@ -210,7 +210,7 @@ class BaseDeployer(object):
         self.repo.save()
     ## DEF
     
-    def deploy(self):
+    def deploy(self, save = True):
         LOG.info('Deploying repo: {} ...'.format(self.repo.name))
         
         self.attempt = Attempt()
@@ -224,7 +224,10 @@ class BaseDeployer(object):
             self.attempt.sha = utils.get_latest_sha(self.repo)
         except Exception, e:
             LOG.exception(e)
-            self.save_attempt(ATTEMPT_STATUS_DOWNLOAD_ERROR)
+            if save:
+                self.save_attempt(ATTEMPT_STATUS_DOWNLOAD_ERROR)
+            else:
+                LOG.error('Download Error..')
             return -1
 
         LOG.info('Downloading at {} ...'.format(self.attempt.sha))
@@ -232,7 +235,10 @@ class BaseDeployer(object):
             utils.download_repo(self.attempt, self.zip_file)
         except Exception, e:
             LOG.exception(e)
-            self.save_attempt(ATTEMPT_STATUS_DOWNLOAD_ERROR)
+            if save:
+                self.save_attempt(ATTEMPT_STATUS_DOWNLOAD_ERROR)
+            else:
+                LOG.error('Download Error..')
             return -1
         
         try:
@@ -240,7 +246,10 @@ class BaseDeployer(object):
             utils.unzip(self.zip_file, self.base_path)
         except Exception, e:
             LOG.exception(e)
-            self.save_attempt(ATTEMPT_STATUS_DOWNLOAD_ERROR)
+            if save:
+                self.save_attempt(ATTEMPT_STATUS_DOWNLOAD_ERROR)
+            else:
+                LOG.error('Download Error..')
             return -1
 
         LOG.info('Deploying at {} ...'.format(self.base_path))
@@ -249,11 +258,15 @@ class BaseDeployer(object):
             attemptStatus = self.deploy_repo_attempt(self.base_path)
         except Exception, e:
             LOG.exception(e)
-            self.save_attempt(ATTEMPT_STATUS_RUNNING_ERROR)
+            if save:
+                self.save_attempt(ATTEMPT_STATUS_RUNNING_ERROR)
+            else:
+                LOG.error('Running Error...')
             return -1
            
         if attemptStatus != ATTEMPT_STATUS_SUCCESS:
-            self.save_attempt(attemptStatus)
+            if save:
+                self.save_attempt(attemptStatus)
             return -1
         
         return 0
