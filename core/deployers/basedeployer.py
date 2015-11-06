@@ -222,7 +222,6 @@ class BaseDeployer(object):
         self.attempt = Attempt()
         self.attempt.repo = self.repo
         self.attempt.database = self.database
-        self.attempt.result = ATTEMPT_STATUS_DEPLOYING
         self.attempt.start_time = datetime.now()
         self.attempt.hostname = socket.gethostname()
         LOG.info('Validating ...')
