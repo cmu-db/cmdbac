@@ -29,10 +29,12 @@ class BenchmarkDriver(Driver):
         Driver.__init__(self, deployer)
 
     def submit_forms(self):
-        for form in self.forms:
-            try:
+        forms_cnt = 0
+        for form, browser_index in self.forms:
+            if browser_index == 0:
                 part_inputs = submit.fill_form_random(self.deployer.base_path, form, self.browser)
-            except:
-                traceback.print_exc()
-                part_inputs = None
+            else:
+                part_inputs = submit.fill_form_random(self.deployer.base_path, form, None)
+            forms_cnt += 1
             # LOG.info('Normal: Fill in Form on {} Successfully ...'.format(form['url']))
+        return forms_cnt

@@ -227,11 +227,11 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
                             </tbody>
                         </table>
                     </div>
-                    <div id="queries-details">
+                    <div id="queries-details-{{form.id}}">
                     </div>
                     <script>
                         $(document).ready(function() {
-                            $('#queries-details').load("{% url 'queries' form.id %}");
+                            $('#queries-details-{{form.id}}').load("{% url 'queries' form.id %}");
                         });
                     </script>
                     {% endif%}

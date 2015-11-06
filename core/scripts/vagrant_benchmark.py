@@ -11,17 +11,24 @@ import argparse
 import threading
 import datetime
 import socket
+import traceback
+import time
 
 from crawler.models import *
 from deployers import *
 from drivers import *
 import utils
 
-def run_driver(driver):
+forms_cnts = []
+
+def run_driver(driver, index):
+    global forms_cnts
+    forms_cnts[index] = 0
     try:
-        driver.submit_forms()
+        while True:
+            forms_cnts[index] += driver.submit_forms()
     except Exception, e:
-        LOG.exception(e)
+        pass
 
 def main():
     # parse args
@@ -34,7 +41,7 @@ def main():
     parser.add_argument('--username', type=str)
     parser.add_argument('--password', type=str)
     parser.add_argument('--num_threads', type=int)
-    parser.add_argument('--time', type=int)
+    parser.add_argument('--timeout', type=int)
     args = parser.parse_args()
 
     # get args
@@ -48,7 +55,7 @@ def main():
         'password': args.password
     }
     num_threads = args.num_threads
-    time = args.time
+    timeout = args.timeout
 
     # get deployer
     attempt = Attempt.objects.get(id=attempt_id)
@@ -62,29 +69,37 @@ def main():
     result = deployer.deploy(False)
     if result != 0:
         deployer.kill_server()
-        benchmark.delete()
         sys.exit(-1)
 
+    driver = BenchmarkDriver(deployer)
     try:
-        with utils.timeout(seconds = time):
-            driver = BenchmarkDriver(deployer)
-            driver.bootstrap()
-            driver.initialize()
+        driver.bootstrap()
+        driver.initialize()
+    except Exception, e:
+        pass
 
+    global forms_cnts
+    forms_cnts = [-1] * num_threads
+    threads = []
+    try:
+        with utils.timeout(seconds = timeout):
             # multi-threading
-            threads = []
-            for _ in range(num_threads - 1):
-                thread = threading.Thread(target = run_driver, args = (driver, ))
+            for thread_index in range(num_threads):
+                thread = threading.Thread(target = run_driver, args = (driver, thread_index, ))
                 thread.start()
                 threads.append(thread)
-
-            # wait for all the threads
-            driver.submit_forms()
-            for thread in threads:
-                thread.join()
-    except:
+    except Exception, e:
         pass
+
+    try:
+        # wait for all the threads
+        for thread in threads:
+            thread.join(timeout = timeout)
+    except Exception, e:
+        print e
     
+    print 'The number of forms submitted : {}'.format(sum(forms_cnts))
+
     # finish up
     deployer.kill_server()
     # deployer.save_attempt(ATTEMPT_STATUS_SUCCESS)

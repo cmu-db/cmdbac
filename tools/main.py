@@ -32,7 +32,7 @@ def parse_args():
     parser_benchmark.add_argument('-username', '--username', type=str)
     parser_benchmark.add_argument('-password', '--password', type=str)
     parser_benchmark.add_argument('-num_threads', '--num_threads', type=int)
-    parser_benchmark.add_argument('-time', '--time', type=int)
+    parser_benchmark.add_argument('-timeout', '--timeout', type=int)
 
     args = parser.parse_args()
 
@@ -54,7 +54,7 @@ def run_benchmark(atempt_id, database, benchmark):
     }
     benchmark = {
         'num_threads': 2,
-        'time': 5
+        'timeout': 5
     }
     utils.run_benchmark(attempt_id, database, benchmark)
 
@@ -76,6 +76,6 @@ if __name__ == "__main__":
         }
         benchmark = {
             'num_threads': args.num_threads,
-            'time': args.time
+            'timeout': args.timeout
         }
         run_benchmark(attempt_id, database, benchmark)

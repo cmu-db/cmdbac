@@ -208,16 +208,26 @@ class Driver(object):
 
         # save forms
         self.forms = []
-        for form in self.forms:
+        for form in forms:
+            last_line_no = self.check_log()
+            browser_index = 0
             try:
-                part_inputs = submit.fill_form_random(deployer.base_path, form, self.browser)
+                part_inputs = submit.fill_form_random(self.deployer.base_path, form, self.browser)
             except:
-                traceback.print_exc()
                 part_inputs = None
-            if part_inputs == None or len(form['queries']) == 0:
+            if part_inputs == None:
+                browser_index = 1
+                try:
+                    part_inputs = submit.fill_form_random(self.deployer.base_path, form, None)
+                except:
+                    part_inputs = None
+            if part_inputs == None:
                 continue
-            self.forms.append(form)
-
+            form['queries'], form['counter'] = self.process_query(self.check_log(last_line_no), part_inputs)
+            if len(form['queries']) == 0:
+                continue
+            self.forms.append((form, browser_index))
+    
         return {'register': register_result, 'login': login_result, 'forms': ret_forms}
 
     def submit_forms(self):
@@ -226,17 +236,19 @@ class Driver(object):
 
         ret_forms = []
 
-        for form in self.forms:
+        for form, browser_index in self.forms:
             form['queries'] = []
             form['counter'] = {}
             if any(self.equal_form(form, ret_form) for ret_form in ret_forms):
                 continue
             last_line_no = self.check_log()
             try:
-                part_inputs = submit.fill_form_random(self.deployer.base_path, form, self.browser)
+                if browser_index == 0:
+                    part_inputs = submit.fill_form_random(self.deployer.base_path, form, self.browser)
+                else:
+                    part_inputs = submit.fill_form_random(self.deployer.base_path, form, None)
             except:
                 traceback.print_exc()
-                print form
                 part_inputs = None
             if part_inputs == None:
                 ret_forms.append(form)
@@ -266,7 +278,7 @@ class Driver(object):
         normal_forms = self.submit_forms()
 
         # filter forms
-        driver_results['forms'] += sorted(normal_forms + admin_forms, key=lambda x: len(x['queries']), reverse=True)
+        driver_results['forms'] += sorted(normal_forms, key=lambda x: len(x['queries']), reverse=True)
         filtered_forms = []
         for form in driver_results['forms']:
             if any(self.equal_form(form, filtered_form) for filtered_form in filtered_forms):
