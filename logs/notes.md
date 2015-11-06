@@ -1,4 +1,3 @@
-# backend of benchmark: returned result
 # improve the success rate
 # add the tools page
 # use other databases
