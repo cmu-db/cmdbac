@@ -21,7 +21,6 @@ globals()['PACKAGE_SOURCE_CODES'] = PACKAGE_SOURCE_CODES
 
 # Deployment Attempt Status
 ATTEMPT_STATUS = (
-    ('DP', 'Deploying', 'info'),
     ('DE', 'Download Error', 'danger'),
     ('MR', 'Missing Required Files', 'danger'),
     ('MD', 'Missing Dependencies', 'danger'),
