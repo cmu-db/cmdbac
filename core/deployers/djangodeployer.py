@@ -34,11 +34,6 @@ DATABASES = {{
 }}
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = '{path}'
-import os.path
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'templates'),
-)
 """
 
 ## =====================================================================
