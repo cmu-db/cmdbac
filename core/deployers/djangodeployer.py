@@ -218,7 +218,7 @@ class DjangoDeployer(BaseDeployer):
                     LOG.info('pip install output: {}'.format(pip_output))
                     try:
                         version = re.search('Successfully installed .*-(.*)', pip_output[1]).group(1)
-                        if any(package.version == version for package in candidate_packages):
+                        if version and any(package.version == version for package in candidate_packages):
                             for package_index in range(len(candidate_packages)):
                                 if candidate_packages[package_index].version == version:
                                     candidate_packages = [candidate_packages[package_index]] + candidate_packages[:package_index] + candidate_packages[package_index + 1:]

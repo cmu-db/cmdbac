@@ -149,7 +149,7 @@ class RoRDeployer(BaseDeployer):
             if 'rake aborted!' in out[1]:
                 LOG.info(out)
                 if version_index == len(ruby_versions) - 1:
-                    return ATTEMPT_STATUS_RUNNING_ERROR
+                    return ATTEMPT_STATUS_SYNCING_ERROR
                 else:
                     continue
             else:
