@@ -5,3 +5,4 @@
 # add documentation for the whole project
 # try new ruby version
 # choose version when running ruby
+# handle internal error
