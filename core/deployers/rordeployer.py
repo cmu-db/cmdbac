@@ -119,7 +119,7 @@ class RoRDeployer(BaseDeployer):
 
         ruby_versions = utils.get_ruby_versions()
         # temporarily use one version to allow for parallel
-        ruby_versions = ruby_versions[:1] 
+        ruby_versions = ruby_versions[1:] 
 
         for version_index in range(len(ruby_versions)):
             ruby_version = ruby_versions[version_index]
