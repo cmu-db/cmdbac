@@ -64,7 +64,7 @@ class GitHubCrawler(BaseCrawler):
 
         if self.crawlerStatus.cur_size == self.crawlerStatus.max_size:
             args["size"] = '>'+str(self.crawlerStatus.cur_size)
-            self.crawlerStatus.cur_size = self.min_size
+            self.crawlerStatus.cur_size = self.crawlerStatus.min_size
         else:
             args["size"] = self.crawlerStatus.cur_size
             self.crawlerStatus.cur_size = self.crawlerStatus.cur_size + 1
