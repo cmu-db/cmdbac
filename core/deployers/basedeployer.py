@@ -207,7 +207,7 @@ class BaseDeployer(object):
         ## FOR
 
         # make sure we update the repo to point to this latest attempt
-        if attempt_result in [ATTEMPT_STATUS_MISSING_REQUIRED_FILES, ATTEMPT_STATUS_RUNNING_ERROR]:
+        if attempt_result in [ATTEMPT_STATUS_MISSING_REQUIRED_FILES, ATTEMPT_STATUS_RUNNING_ERROR, ATTEMPT_STATUS_DOWNLOAD_ERROR]:
             self.repo.valid_project = False
         else:
             self.repo.valid_project = True
