@@ -35,7 +35,7 @@ install 'apt-repository' software-properties-common python-software-properties
 curl --silent --location https://deb.nodesource.com/setup_4.x | sudo bash -
 apt-get -y update >/dev/null 2>&1
 
-install 'development tools' build-essential unzip curl openssl libssl-dev libcurl4-openssl-dev zlib1g zlib1g-dev 
+install 'development tools' build-essential unzip curl openssl libssl-dev libcurl4-openssl-dev zlib1g zlib1g-dev libgmp-dev
 install 'Python' python-dev python-software-properties
 
 # install Ruby
@@ -45,6 +45,10 @@ source /usr/local/rvm/scripts/rvm
 rvm install 1.9.3
 rvm install 2.2.2
 rvm use 1.9.3 --default
+gem install bundler
+gem install rails
+gem install bundle
+rvm use 2.2.2 --default
 gem install bundler
 gem install rails
 gem install bundle
