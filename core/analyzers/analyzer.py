@@ -12,7 +12,7 @@ LOG = logging.getLogger()
 class Analyzer(object):
 	
 	def __init__(self):
-		pass
+		self.stats = {}
 
 	def count_transaction(self, queries):
 		cnt = 0
@@ -22,6 +22,4 @@ class Analyzer(object):
 		return cnt
 
 	def analyze(self, queries):
-		cnts = {}
-		cnts['transaction'] = self.count_transaction(queries)
-		return cnts
+		self.stats['transaction'] = cnts.get('transaction', 0) + self.count_transaction(queries)

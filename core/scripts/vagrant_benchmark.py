@@ -17,6 +17,7 @@ import time
 from crawler.models import *
 from deployers import *
 from drivers import *
+from analyzers import *
 import utils
 
 forms_cnts = []
@@ -101,10 +102,16 @@ def main():
     
     print 'The number of forms submitted : {}'.format(sum(forms_cnts))
 
-    # finish up
+    # kill server
     deployer.kill_server()
-    # deployer.save_attempt(ATTEMPT_STATUS_SUCCESS)
-    # deployer.extract_database_info()
+
+    # analyze
+    analyzer = Analyzer()
+    for form in driver.forms:
+        analyzer.analyze(form['queries'])
+
+    # extract database info
+        # deployer.extract_database_info()
 
 if __name__ == "__main__":
     main()
