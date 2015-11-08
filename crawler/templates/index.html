@@ -21,7 +21,7 @@
             <tr>
                 <th>Project Type</th>
                 <th><del># of Repo</del></th>
-                <th># of Deploy</th>
+                <th><del># of Deploy</del></th>
                 <th># of Valid</th>
                 <th># of Success</th>
                 <th>Success Rate</th>
@@ -33,7 +33,7 @@
                 <tr>
                     <td><a href="{% url 'repositories' %}?types={{ stat.repo_type }}">{{ stat.repo_type }}</a></td>
                     <td><del>{{ stat.num_repo }}</del></td>
-                    <td>{{ stat.num_deploy }}</td>
+                    <td><del>{{ stat.num_deploy }}</del></td>
                     <td>{{ stat.num_valid_deploy }}</td>
                     <td>{{ stat.num_suc }}</td>
                     <td>{{ stat.suc_rate }}%</td>
