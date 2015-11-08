@@ -29,6 +29,7 @@ class Driver(object):
     
     def __init__(self, deployer):
         self.deployer = deployer
+        self.forms = []
 
     def check_log(self, last_line_no = None):
         sql_log_file = open(MYSQL_GENERAL_LOG_FILE, 'r')
@@ -207,7 +208,6 @@ class Driver(object):
         self.browser = br
 
         # save forms
-        self.forms = []
         for form in forms:
             last_line_no = self.check_log()
             browser_index = 0

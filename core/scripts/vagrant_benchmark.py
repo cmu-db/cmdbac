@@ -73,6 +73,7 @@ def main():
         deployer.kill_server()
         sys.exit(-1)
 
+    print 'Running driver ...'
     driver = BenchmarkDriver(deployer)
     try:
         driver.bootstrap()
@@ -106,12 +107,16 @@ def main():
     deployer.kill_server()
 
     # analyze
+    print 'Analyzing queries ...'
     analyzer = Analyzer()
     for form in driver.forms:
         analyzer.analyze(form['queries'])
 
+    print 'Extracting database info ...'
     # extract database info
-        # deployer.extract_database_info()
+    deployer.extract_database_info()
+
+    print 'Finishing ...'
 
 if __name__ == "__main__":
     main()

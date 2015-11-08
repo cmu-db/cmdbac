@@ -75,7 +75,6 @@ def vagrant_benchmark(attempt_id, deploy_id, database, benchmark):
                 )
             )
         )
-    print command
     out = os.system(command)
     unset_vagrant_database()
 

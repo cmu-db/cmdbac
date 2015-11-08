@@ -47,7 +47,7 @@ class BaseDeployer(object):
         if database_config == None:
             self.database_config = {
                 'host': '127.0.0.1',
-                'port': '3306',
+                'port': 3306,
                 'username': 'root',
                 'password': 'root'
             }
@@ -69,7 +69,10 @@ class BaseDeployer(object):
     
     def clear_database(self):
         try:
-            conn = MySQLdb.connect(host='localhost',user='root',passwd='root',port=3306)
+            conn = MySQLdb.connect(host=self.database_config['host'],
+                                   user=self.database_config['username'],
+                                   passwd=self.database_config['password'],
+                                   port=self.database_config['port'])
             cur = conn.cursor()
             cur.execute('drop database if exists {}'.format(self.database_config['name']))
             cur.execute('create database {}'.format(self.database_config['name']))
@@ -82,8 +85,15 @@ class BaseDeployer(object):
     
     def extract_database_info(self):
         try:
-            conn = MySQLdb.connect(host='localhost',user='root',passwd='root',db=self.database_name, port=3306)
+            conn = MySQLdb.connect(host=self.database_config['host'],
+                                   user=self.database_config['username'],
+                                   passwd=self.database_config['password'],
+                                   port=self.database_config['port'])
             cur = conn.cursor()
+            cur.execute("SELECT DISTINCT TABLE_NAME, INDEX_NAME FROM INFORMATION_SCHEMA.STATISTICS")
+            rows = cur.fetchall()
+            for row in rows:
+                print row
             cur.close()
             conn.close()
         except Exception, e:
