@@ -61,6 +61,7 @@ def main():
     attempt = Attempt.objects.get(id=attempt_id)
     repo = attempt.repo
     database = attempt.database
+    runtime = attempt.runtime
     moduleName = "deployers.%s" % (repo.project_type.deployer_class.lower())
     moduleHandle = __import__(moduleName, globals(), locals(), [repo.project_type.deployer_class])
     klass = getattr(moduleHandle, repo.project_type.deployer_class)

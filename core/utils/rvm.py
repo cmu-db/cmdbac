@@ -5,7 +5,7 @@ from run import run_command
 from file import cd
 
 def get_ruby_versions():
-    command = 'rvm list'
+    command = 'source /usr/local/rvm/scripts/rvm && rvm list'
     output = run_command(command)
     versions = []
     for line in output[1].split('\n'):
@@ -15,5 +15,5 @@ def get_ruby_versions():
     return versions
 
 def use_ruby_version(version):
-    command = 'rvm use {}'.format(version)
+    command = 'source /usr/local/rvm/scripts/rvm && rvm --default use {}'.format(version)
     return run_command(command)

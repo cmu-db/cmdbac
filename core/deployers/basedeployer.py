@@ -31,7 +31,7 @@ class BaseDeployer(object):
     TMP_ZIP_FILE = "tmp.zip"
     TMP_DEPLOY_PATH = "/tmp/crawler"
     
-    def __init__(self, repo, database, deploy_id, database_config = None):
+    def __init__(self, repo, database, deploy_id, database_config = None, runtime = None):
         self.repo = repo
         self.database = database
         self.requirement_files = None

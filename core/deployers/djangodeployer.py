@@ -40,8 +40,8 @@ EMAIL_FILE_PATH = '{path}'
 ## DJANGO DEPLOYER
 ## =====================================================================
 class DjangoDeployer(BaseDeployer):
-    def __init__(self, repo, database, deploy_id, database_config = None):
-        BaseDeployer.__init__(self, repo, database, deploy_id, database_config)
+    def __init__(self, repo, database, deploy_id, database_config = None, runtime = None):
+        BaseDeployer.__init__(self, repo, database, deploy_id, database_config, runtime)
         if database_config == None:
             self.database_config['name'] = 'django_app' + str(deploy_id)
     ## DEF

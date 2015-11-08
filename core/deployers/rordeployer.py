@@ -54,10 +54,11 @@ gem 'mysql2'
 ## RUBY ON RAILS DEPLOYER
 ## =====================================================================
 class RoRDeployer(BaseDeployer):
-    def __init__(self, repo, database, deploy_id, database_config = None):
+    def __init__(self, repo, database, deploy_id, database_config = None, runtime = None):
         BaseDeployer.__init__(self, repo, database, deploy_id, database_config)
         if database_config == None:
             self.database_config['name'] = 'ror_app' + str(deploy_id)
+        self.runtime = runtime
     ## DEF
     
     def configure_settings(self):
@@ -75,6 +76,7 @@ class RoRDeployer(BaseDeployer):
         if path:
             command = '{} && bundle install'.format(utils.cd(path))
             out = utils.run_command(command)
+            print out
             return out[1]
         return ''
     ## DEF
@@ -99,11 +101,17 @@ class RoRDeployer(BaseDeployer):
     ## DEF
 
     def get_runtime(self):
-        out = utils.run_command('ruby -v')[1].split(' ')
-        return {
-            'executable': out[0],
-            'version': out[1]
-        }
+        if self.runtime == None:
+            out = utils.run_command('ruby -v')[1].split(' ')
+            return {
+                'executable': out[0],
+                'version': out[1]
+            }
+        else:
+            return {
+                'executable': self.runtime.executable,
+                'version': self.runtime.version
+            }
     ## DEF
 
     def try_deploy(self, deploy_path):
@@ -118,42 +126,35 @@ class RoRDeployer(BaseDeployer):
         LOG.info('Database: ' + self.attempt.database.name)
 
         ruby_versions = utils.get_ruby_versions()
-        # temporarily use one version to allow for parallel
-        ruby_versions = ruby_versions[1:] 
+        ruby_version = filter(lambda version: version[:5] in self.runtime['version'], ruby_versions)
+        if len(ruby_version) != 1:
+            return ATTEMPT_STATUS_SYNCING_ERROR
+        else:
+            ruby_version = ruby_version[0]
 
-        for version_index in range(len(ruby_versions)):
-            ruby_version = ruby_versions[version_index]
-            LOG.info('Using Ruby {} ...'.format(ruby_version))
-            utils.use_ruby_version(ruby_version)
-        
-            LOG.info('Installing requirements ...')
-            out = self.install_requirements(deploy_path)
-            if not 'complete!' in out:
-                LOG.info(out)
-                if version_index == len(ruby_versions) - 1:
-                    return ATTEMPT_STATUS_MISSING_DEPENDENCIES
-                else:
-                    continue
-            packages = out.split('\n')
-            for package in packages:
-                s = re.search('Using (.*) (.*)', package)
-                if s:
-                    name, version = s.group(1), s.group(2)
-                    try:
-                        pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
-                        self.packages_from_file.append(pkg)
-                    except Exception, e:
-                        LOG.exception(e)
+        LOG.info('Using Ruby {} ...'.format(ruby_version))
+        utils.use_ruby_version(ruby_version)
+    
+        LOG.info('Installing requirements ...')
+        out = self.install_requirements(deploy_path)
+        if not 'complete!' in out:
+            LOG.info(out)
+            return ATTEMPT_STATUS_MISSING_DEPENDENCIES
+        packages = out.split('\n')
+        for package in packages:
+            s = re.search('Using (.*) (.*)', package)
+            if s:
+                name, version = s.group(1), s.group(2)
+                try:
+                    pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
+                    self.packages_from_file.append(pkg)
+                except Exception, e:
+                    LOG.exception(e)
 
-            out = self.sync_server(deploy_path)
-            if 'rake aborted!' in out[1]:
-                LOG.info(out)
-                if version_index == len(ruby_versions) - 1:
-                    return ATTEMPT_STATUS_SYNCING_ERROR
-                else:
-                    continue
-            else:
-                break
+        out = self.sync_server(deploy_path)
+        if 'rake aborted!' in out[1]:
+            LOG.info(out)
+            return ATTEMPT_STATUS_SYNCING_ERROR
         
         LOG.info(self.run_server(deploy_path))
 
