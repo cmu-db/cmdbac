@@ -18,10 +18,10 @@ class Analyzer(object):
 
 	def count_transaction(self, queries):
 		cnt = 0
-		for query in query:
-			if query.strip().lower() == 'commit':
+		for query in queries:
+			if query['content'].strip().lower() == 'commit':
 				cnt += 1
 		return cnt
 
 	def analyze(self, queries):
-		self.stats['transaction'] = cnts.get('transaction', 0) + self.count_transaction(queries)
+		self.stats['transaction'] = self.stats.get('transaction', 0) + self.count_transaction(queries)

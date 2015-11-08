@@ -79,6 +79,7 @@ def main():
         driver.bootstrap()
         driver.initialize()
     except Exception, e:
+        print e
         pass
 
     global forms_cnts
@@ -109,8 +110,9 @@ def main():
     # analyze
     print 'Analyzing queries ...'
     analyzer = Analyzer()
-    for form in driver.forms:
+    for form, _ in driver.forms:
         analyzer.analyze(form['queries'])
+    print analyzer.stats
 
     print 'Extracting database info ...'
     # extract database info
