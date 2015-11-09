@@ -1,0 +1,13 @@
+<p><a href="#" id="queries-{{ form.id }}-show" class="showLink" onclick="showHide('queries-{{ form.id }}');return false;">Details.</a></p>
+<div id="queries-{{ form.id }}" class="table-responsive more">
+    <p><a href="#" id="queries-{{ form.id }}-hide" class="hideLink" onclick="showHide('queries-{{ form.id }}');return false;">Hide.</a></p>
+    <table class="table table-striped">
+        <tbody>
+            {% for query in form.queries %}
+            <tr>
+                <td><span>{{ query.content|safe }}</span><br/></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

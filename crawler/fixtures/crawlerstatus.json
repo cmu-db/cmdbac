@@ -3,26 +3,42 @@
   "pk": 1, 
   "model": "crawler.crawlerstatus", 
   "fields": {
-    "cur_size": 368, 
     "last_crawler_time": "2015-01-16T15:59:45", 
-    "min_size": 60, 
     "source": 1, 
     "project_type": 1, 
-    "next_url": "https://github.com//search?p=3&q=models.py+in%3Apath+filename%3Amodels.py+size%3A367&ref=searchresults&type=Code&utf8=%E2%9C%93", 
-    "max_size": 55000
+    "next_url": "",
+    "min_size": 100,
+    "cur_size": 100,
+    "max_size": 20000,
+    "query": "django"
   }
 },
 {
   "pk": 2, 
   "model": "crawler.crawlerstatus", 
   "fields": {
-    "cur_size": 318, 
     "last_crawler_time": "2015-01-16T15:58:19", 
-    "min_size": 0, 
     "source": 1, 
     "project_type": 2, 
-    "next_url": "https://github.com//search?p=2&q=database.yml+in%3Apath+filename%3Adatabase.yml+size%3A317&ref=searchresults&type=Code&utf8=%E2%9C%93", 
-    "max_size": 2500
+    "next_url": "",
+    "min_size": 100,
+    "cur_size": 100, 
+    "max_size": 10000,
+    "query": ""
+  }
+},
+{
+  "pk": 3, 
+  "model": "crawler.crawlerstatus", 
+  "fields": {
+    "last_crawler_time": "2015-01-16T15:58:19", 
+    "source": 1, 
+    "project_type": 3, 
+    "next_url": "",
+    "min_size": 100,
+    "cur_size": 100, 
+    "max_size": 10000,
+    "query": "mysql"
   }
 }
 ]

@@ -6,87 +6,144 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
 {% endblock %}
 
 {% block main %}
+<div class="modal fade" id="screenshotModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Screenshot</h4>
+            </div>
+            <div class="modal-body">
+                <img src="{{ screenshot }}" class="img-responsive">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <ul class="breadcrumb">
     <li>
         <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{attempt.repo.name}}">Repositories</a>
         <span class="divider"></span>
     <li>
-        <a href="{% url 'repository' attempt.repo.get_user_name attempt.repo.get_repo_name %}?{{ queries.urlencode }}#{{ attempt.id }}">{{attempt.repo.name}}</a>
+        <a href="{% url 'repository' attempt.repo.user_name attempt.repo.repo_name %}?{{ queries.urlencode }}#{{ attempt.id }}">{{attempt.repo.name}}</a>
         <span class="divider"></span>
     <li>Attempt #{{attempt.id}}
 </ul>
 
 <h2 class="sub-header">Attempt #{{attempt.id}}</h2>
-<div class="col-xs-6">
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-            <colgroup>
-                <col class="col-xs-2">
-                <col class="col-xs-6">
-            </colgroup>
-            <tbody>
-                <tr>
-                    <td>Deployment Host</td>
-                    <td>{{attempt.hostname}}</td>
-                </tr>
-                <tr>
-                    <td>Start Time</td>
-                    <td>
-                    {% if attempt.start_time %}
-                        {{ attempt.start_time|date:'Y-m-d H:i:s' }}</td>
-                    {% else %}
-                        &mdash;
-                    {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <td>Duration</td>
-                    <td>
-                    {% if attempt.duration %}
-                        {{ attempt.duration|floatformat }}s
-                    {% else %}
-                        &mdash;
-                    {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <td>Result</td>
-                    <td><span class="label label-{{ attempt.result_label }}">{{attempt.result_name}}</span></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+<div class="table-responsive">
+    <table class="table table-bordered table-striped">
+        <colgroup>
+            <col class="col-xs-7">
+            <col class="col-xs-5">
+        </colgroup>
+        <tbody>
+            <tr>
+                <td>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <colgroup>
+                                <col class="col-xs-3">
+                                <col class="col-xs-4">
+                            </colgroup>
+                            <tbody id="attempt-info">
+                                <tr>
+                                    <td>Commit</td>
+                                    <td><a href="{{ attempt.commit_url}}">{{attempt.sha}}</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Deployment Host</td>
+                                    <td>{{attempt.hostname}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Start Time</td>
+                                    <td>
+                                    {% if attempt.start_time %}
+                                        {{ attempt.start_time|date:'Y-m-d H:i:s' }}</td>
+                                    {% else %}
+                                        &mdash;
+                                    {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Duration</td>
+                                    <td>
+                                    {% if attempt.duration %}
+                                        {{ attempt.duration|floatformat }}s
+                                    {% else %}
+                                        &mdash;
+                                    {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Size</td>
+                                    <td>{{ attempt.readable_size }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Runtime</td>
+                                    <td>{{ attempt.runtime.executable }} {{ attempt.runtime.version }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Tested Database</td>
+                                    <td>{{attempt.database.name}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Attempt Result</td>
+                                    <td><span class="label label-{{ attempt.result_label }}">{{attempt.result_name}}</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Registration Form </td>
+                                    <td><span class="label label-{{ attempt.register_label }}">{{attempt.register_name}}</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Login Form</td>
+                                    <td><span class="label label-{{ attempt.login_label }}">{{attempt.login_name}}</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+
+                <td>
+                    <div id="screenshot-div" class="screenshot-div">
+                        
+                        {% if screenshot %}
+                            <script>
+                                function fixHeight() {
+                                   var height = document.getElementById('attempt-info').offsetHeight;
+                                   $('.screenshot-div').css('height', height);
+                                   $('.screenshot-div').css('overflow', 'hidden');
+                                   // document.getElementById('screenshot-div').style.overflow = "hidden";
+                                   // document.getElementById('screenshot-div').setAttribute("height", height);
+                                   document.getElementById('screenshot').setAttribute("height", height);
+                                }
+                            </script>
+                            <a href="#" data-toggle="modal" data-target="#screenshotModal">
+                                <img src="{{ screenshot }}" id="screenshot" height="1" width="100%" onload="fixHeight()">
+                            </a>
+                        {% else %}
+                            <script>
+                                function fixHeight() {
+                                   var height = document.getElementById('attempt-info').offsetHeight;
+                                   document.getElementById('screenshot').setAttribute("height", height);
+                                }
+                            </script>
+                            <img src="{{STATIC_URL}}img/no_image.gif" id="screenshot" height="1" width="100%" onload="fixHeight()">
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>
-
-
-<div class="col-xs-6">
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-            <colgroup>
-                <col class="col-xs-2">
-                <col class="col-xs-6">
-            </colgroup>
-            <tbody>
-                <tr>
-                    <td>Commit</td>
-                    <td><a href="{{ attempt.commit_url}}">{{attempt.sha}}</a></td>
-                </tr>
-                <tr>
-                    <td>Tested Database</td>
-                    <td>{{attempt.database.name}}</td>
-                </tr>
-                <tr>
-                    <td>Base Directory</td>
-                    <td>{{attempt.base_dir}}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
 
 <h2 class="sub-header">Dependencies</h2>
-<div class="table-responsive">
+<p><a href="#" id="dependencies-show" class="showLink" onclick="showHide('dependencies');return false;">More.</a></p>
+<div id="dependencies" class="table-responsive more">
+    <p><a href="#" id="dependencies-hide" class="hideLink" onclick="showHide('dependencies');return false;">Hide.</a></p>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -98,8 +155,87 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
             {% if dependencies %}
             {% for dependency in dependencies %}
             <tr>
-                <td>{{ dependency.package.name }}=={{ dependency.package.version }}</td>
-                <td>{{ dependency.source.name }}</td>
+                <td>{{ dependency.package.name }} {{ dependency.package.version }}</td>
+                <td><span class="label label-{{ dependency.source_label }}">{{dependency.source_name}}</span></td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+
+
+<h2 class="sub-header">Forms</h2>
+<p><a href="#" id="forms-show" class="showLink" onclick="showHide('forms');return false;">More.</a></p>
+<div id="forms" class="table-responsive more">
+    <p><a href="#" id="forms-hide" class="hideLink" onclick="showHide('forms');return false;">Hide.</a></p>
+    <table class="table table-striped" style="word-break:break-all">
+        <thead>
+            <tr>
+                <th class="col-md-2">Action</th>
+                <th class="col-md-2">Url</th>
+                <th class="col-md-3">Fields</th>
+                <th class="col-md-5">Queries</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if forms %}
+            {% for form in forms %}
+            <tr>
+                <td>{{ form.action }}</td>
+                <td>{{ form.url }}</td>
+                <td>
+                    {% if form.fields %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for field in form.fields %}
+                                <tr>
+                                    <td>{{ field.name }}</td>
+                                    <td>{{ field.type }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if form.counters %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for counter in form.counters %}
+                                <tr>
+                                    <td>{{ counter.description }}</td>
+                                    <td>{{ counter.count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="queries-details-{{form.id}}">
+                    </div>
+                    <script>
+                        $(document).ready(function() {
+                            $('#queries-details-{{form.id}}').load("{% url 'queries' form.id %}");
+                        });
+                    </script>
+                    {% endif%}
+                </td>
             </tr>
             {% endfor %}
             {% endif %}
@@ -108,5 +244,9 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
 </div>
 
 <h2 class="sub-header">Log</h2>
-<pre>{{ attempt.log }}</pre>
+<p><a href="#" id="attempt-log-show" class="showLink" onclick="showHide('attempt-log');return false;">More.</a></p>
+<div id="attempt-log" class="more">
+    <p><a href="#" id="attempt-log-hide" class="hideLink" onclick="showHide('attempt-log');return false;">Hide.</a></p>
+    <pre>{{ attempt.log }}</pre>
+</div>
 {% endblock %}

@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block main %}
-{% include "status_codes.html" %}
+{% include "attempt_status_codes.html" %}
 <ul class="breadcrumb">
     <li>
         <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{repository.name}}">Repositories</a>
@@ -35,15 +35,15 @@
             <tbody>
             <tr>
                 <td>Full Name</td>
-                <td>{{repository.name}}</td>
+                <td><a href="{{ repository.repo_url }}">{{ repository.name }}</a></td>
             </tr>
             <tr>
                 <td>Project Type</td>
-                <td>{{repository.repo_type.name}}</td>
+                <td>{{repository.project_type.name}}</td>
             </tr>
             <tr>
                 <td>Language</td>
-                <td>{{repository.language.name}}</td>
+                <td>{{repository.language}}</td>
             </tr>
             <tr>
                 <td>Create Time</td>
@@ -109,6 +109,8 @@
                 <th>Duration</th>
                 <th>Deployment Host</th>
                 <th>Result</th>
+                <th># of Forms</th>
+                <th># of Queries</th>
             </tr>
         </thead>
         <tbody>
@@ -137,12 +139,29 @@
                     
                     <td>
                         <a id="{{attempt.id}}" href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}" class="label label-{{ attempt.result_label }}">{{attempt.result_name}}</a>
-                        <a href="#" data-toggle="modal" data-target="#statusModal">?</a>
+                        <a href="#" data-toggle="modal" data-target="#attemptStatusModal">?</a>
                     </td>
+
+                    <td>{{ attempt.forms_count }}</td>
+                    <td>{{ attempt.queries_count }}</td>
                 </tr>
                 {% endfor %}
                 {% endif %}
         </tbody>
     </table>
 </div>
+
+<ul id="pagination" class="pagination-sm"></ul>
+
+<script type='text/javascript'>
+    $('#pagination').twbsPagination({
+        totalPages: {{ attempts.paginator.num_pages }},
+        visiblePages: 10,
+        href: '?page={% templatetag openvariable %}number{% templatetag closevariable %}&{{ queries_no_page.urlencode }}',
+        onPageClick: function (event, page) {
+            $('#page-content').text('Page ' + page);
+        }
+    });
+</script>
+
 {% endblock %}

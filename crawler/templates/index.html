@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block main %}
-{% include "status_codes.html" %}
+{% include "attempt_status_codes.html" %}
 
 <h2 class="sub-header">Introduction</h2>
 <div>
@@ -20,9 +20,11 @@
         <thead>
             <tr>
                 <th>Project Type</th>
-                <th># of Repo</th>
-                <th># of Deploy</th>
+                <th><del># of Repo</del></th>
+                <th><del># of Deploy</del></th>
+                <th># of Valid</th>
                 <th># of Success</th>
+                <th>Success Rate</th>
             </tr>
         </thead>
         <tbody>
@@ -30,9 +32,11 @@
                 {% for stat in stats %}
                 <tr>
                     <td><a href="{% url 'repositories' %}?types={{ stat.repo_type }}">{{ stat.repo_type }}</a></td>
-                    <td>{{ stat.num_repo }}</td>
-                    <td>{{ stat.num_deploy }}
+                    <td><del>{{ stat.num_repo }}</del></td>
+                    <td><del>{{ stat.num_deploy }}</del></td>
+                    <td>{{ stat.num_valid_deploy }}</td>
                     <td>{{ stat.num_suc }}</td>
+                    <td>{{ stat.suc_rate }}%</td>
                 </tr>
                 {% endfor %}
                 {% endif %}
@@ -56,7 +60,7 @@
             {% if attempts %}
                 {% for attempt in attempts %}
             <tr>
-                    <td><a href="{% url 'repository' attempt.repo.get_user_name attempt.repo.get_repo_name %}">{{ attempt.repo.name }}</a></td>
+                    <td><a href="{% url 'repository' attempt.repo.user_name attempt.repo.repo_name %}">{{ attempt.repo.name }}</a></td>
                     {% if attempt.start_time %}
                         <td>{{ attempt.start_time|date:'Y-m-d H:i:s' }}</td>
                     {% else %}
@@ -72,7 +76,7 @@
                     <td>{{ attempt.hostname }}</td>
                     <td>
                         <a id="{{attempt.id}}" href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}" class="label label-{{ attempt.result_label }}">{{attempt.result_name}}</a>
-                        <a href="#" data-toggle="modal" data-target="#statusModal">?</a>
+                        <a href="#" data-toggle="modal" data-target="#attemptStatusModal">?</a>
                     </td>
                 </tr>
                 {% endfor %}

@@ -20,5 +20,16 @@
     "name": "Ruby on Rails", 
     "filename": "database.yml"
   }
+},
+{
+  "pk": 3,
+  "model": "crawler.projecttype", 
+  "fields": {
+    "logo": "img/nodejs.png", 
+    "deployer_class": "NodeDeployer", 
+    "default_port": 8080, 
+    "name": "Node.js", 
+    "filename": "package.json"
+  }
 }
 ]

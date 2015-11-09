@@ -1,5 +1,9 @@
+.vagrant/
+*.log
 *.pyc
 *.sqlite3
-log.txt
-.vagrant/*
 *.kate-swp
+*.json
+*.box
+screenshot*.png
+dump/

@@ -64,3 +64,6 @@ port 3000: for running ruby on rails apps
 port 8000: for running django apps                                              
 
 The log system needs improvement
+
+## Note:
+1. Add SQL General Log(my.cnf, chown sql.log file)

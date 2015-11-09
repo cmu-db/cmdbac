@@ -6,8 +6,27 @@ Repositories &raquo; Database Application Crawler
 {% endblock %}
 
 {% block main %}
-{% include "status_codes.html" %}
+{% include "attempt_status_codes.html" %}
+{% include "add_module.html" %}
+{% include "add_repository.html" %}
+
+{% if messages %}
+<div>
+<ul class="messages">
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <div class="alert alert-success" role="alert">{{message}}</div>
+        {% endif %}
+        {% if message.tags == 'error' %}
+            <div class="alert alert-danger" role="alert">{{message}}</div>
+        {% endif %}
+    {% endfor %}
+</ul>
+{% endif %}
+
 <h2 class="page-header">Repositories</h2>
+
+<ul id="pagination1" class="sync-pagination pagination-sm pagination"></ul>
 
 <form action="{% url 'repositories' %}" method="get">
     <div style="float:left">
@@ -18,40 +37,71 @@ Repositories &raquo; Database Application Crawler
     {{ type_form }}
     </div>
 
-    <div style="float:right">
-    <input class="btn btn-primary btn-lg" type="submit" value="Filter"/>
-    </div>
-    <div style="float:right">
+    <div style="float:left">
         <b>Name:</b>
-    <input type="Search" placeholder='Search by full name' value='{{ search }}' class="form-control" name='search'/>
+        <input type="Search" placeholder='Search by full name' value='{{ search }}' class="form-control" name='search'/>
+        <div style="margin: 20px">
+            <input class="btn btn-primary btn-lg" type="submit" value="Filter"/>
+        </div>
     </div>
 </form>
 
+{% if user.is_staff %}  
+<div style="float:right">
+    <div style="margin: 20px">
+        <a class="btn btn-primary btn-lg" style="" href="#" data-toggle="modal" data-target="#addModuleModal">Add Module</a>
+    </div>
+
+    <div style="margin: 20px">
+        <a class="btn btn-primary btn-lg" style="" href="#" data-toggle="modal" data-target="#addRepositoryModal">Add Repository</a>
+    </div>
+</div>
+{% endif %}
 
 <div class="table-responsive" style="clear:both;">
-    <table class="table table-striped">
+    <table class="table table-striped" style="word-break:break-all">
         <thead>
             <tr>
-                <th><a href="?order_by={% if order_by == "name" %}-{% endif %}name&amp;{{ queries_no_page_order.urlencode }}">Full Name</th>
-                <th>Source</th>
-                <th><a href="?order_by={% if order_by == "repo_type__name" %}-{% endif %}repo_type__name&amp;{{ queries_no_page_order.urlencode }}">Type</th>
-                <th><a href="?order_by={% if order_by != "-commits_count" %}-{% endif %}commits_count&amp;{{ queries_no_page_order.urlencode }}"># of Commits</th>
-                <th><a href="?order_by={% if order_by != "-attempts_count" %}-{% endif %}attempts_count&;{{queries_no_page_order.urlencode }}"> # of Attempts</th>
-                <th><a href="?order_by={% if order_by == "latest_attempt__result__name" %}-{% endif %}latest_attempt__result__name&amp;{{ queries_no_page_order.urlencode }}">Last Result</th>
-                <th><a href="?order_by={% if order_by != "-updated_date" %}-{% endif %}updated_date&;{{queries_no_page_order.urlencode }}">Updated</th>
+                <th class="col-md-2">
+                    <a href="?order_by={% if order_by == "name" %}-{% endif %}name&amp;{{ queries_no_page_order.urlencode }}">Full Name
+                </th>
+                <th class="col-md-1">
+                    Source
+                </th>
+                <th class="col-md-1">
+                    <a href="?order_by={% if order_by == "project_type__name" %}-{% endif %}project_type__name&amp;{{ queries_no_page_order.urlencode }}">Type
+                </th>
+                <th class="col-md-1">
+                    <a href="?order_by={% if order_by != "-commits_count" %}-{% endif %}commits_count&amp;{{ queries_no_page_order.urlencode }}">Commits
+                </th>
+                <th class="col-md-1">
+                    <a href="?order_by={% if order_by != "-attempts_count" %}-{% endif %}attempts_count&amp;{{queries_no_page_order.urlencode }}">Attempts
+                </th>
+                <th class="col-md-2">
+                    <a href="?order_by={% if order_by != "-latest_attempt__result" %}-{% endif %}latest_attempt__result&amp;{{ queries_no_page_order.urlencode }}">Last Result
+                </th>
+                <th class="col-md-1">
+                    <a href="?order_by={% if order_by != "-latest_attempt__forms_count" %}-{% endif %}latest_attempt__forms_count&amp;{{queries_no_page_order.urlencode }}">Forms
+                </th>
+                <th class="col-md-1">
+                    <a href="?order_by={% if order_by != "-latest_attempt__queries_count" %}-{% endif %}latest_attempt__queries_count&amp;{{queries_no_page_order.urlencode }}">Queries
+                </th>
+                <th class="col-md-2">
+                    <a href="?order_by={% if order_by != "-updated_date" %}-{% endif %}updated_date&amp;{{queries_no_page_order.urlencode }}">Updated
+                </th>
             </tr>
         </thead>
         <tbody>
             {% if repositories %}
                 {% for repository in repositories %}
                 <tr>
-                    <td><a id="{{ repository.name}}" href="{% url 'repository' repository.get_user_name repository.get_repo_name %}?{{ queries.urlencode }}">{{ repository.name }}</a></td>
+                    <td><a id="{{ repository.name}}" href="{% url 'repository' repository.user_name repository.repo_name %}?{{ queries.urlencode }}">{{repository.name}}</a></td>
                     
-                    <td><a href="{{ repository.get_url }}"><img src="{% static repository.source.logo %}" alt="{{ repository.source.name }}" title="View on {{ repository.source.name }}" class="source-logo" /></a></td>
+                    <td><a href="{{ repository.repo_url }}"><img src="{% static repository.source.logo %}" alt="{{ repository.source.name }}" title="View on {{ repository.source.name }}" class="source-logo" /></a></td>
                     
                     <td><img src="{% static repository.project_type.logo %}" alt="{{ repository.project_type.name }}" title="{{ repository.project_type.name }}" class="projecttype-logo" /></td>
 
-                    <td>{{ repository.commits_count }}</td>
+                    <td>{{repository.commits_count}}</td>
 
                     <td>{{repository.attempts_count}}</td>
 
@@ -60,11 +110,53 @@ Repositories &raquo; Database Application Crawler
                         -
                     {% else %}
                         <a id="{{repository.latest_attempt.id}}" href="{% url 'attempt' repository.latest_attempt.id %}?{{ queries.urlencode }}" class="label label-{{ repository.latest_attempt.result_label }}">{{repository.latest_attempt.result_name}}</a>
-                        <a href="#" data-toggle="modal" data-target="#statusModal">?</a>
+                        <a href="#" data-toggle="modal" data-target="#attemptStatusModal">?</a>
+                    {% endif %}
+                    </td>
+
+                    <td>
+                    {% if repository.latest_attempt %}
+                        {{ repository.latest_attempt.forms_count }}
+                    {% else %}
+                        0
+                    {% endif %}
+                    </td>
+
+                    <td>
+                    {% if repository.latest_attempt %}
+                        {{ repository.latest_attempt.queries_count }}
+                    {% else %}
+                        0
                     {% endif %}
                     </td>
                     
                     <td>{{repository.updated_date|date:'Y-m-d H:i:s' }}</td>
+                    
+                    {% if user.is_staff %}  
+                    <td>
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <form action="{% url 'repositories' %}" method="get">
+                                    <input type="hidden" value="{{repository.name}}" name="deploy"/>
+                                    <label for="deploy{{repository.id}}" class="btn">
+                                        <i class="glyphicon glyphicon-circle-arrow-down" title="deploy"></i>
+                                    </label>
+                                    <input id="deploy{{repository.id}}" class="hidden" type="submit"/> 
+                                </form>
+                                </div>
+
+                                <div class="col-xs-3">
+                                <form action="{% url 'repositories' %}" method="get">
+                                    <input type="hidden" value="{{repository.name}}" name="delete"/>
+                                    <label for="delete{{repository.id}}" class="btn">
+                                        <i class="glyphicon glyphicon-trash" title="delete"></i>
+                                    </label>
+                                    <input id="delete{{repository.id}}" class="hidden" type="submit"/> 
+                                </form>
+                            </div>
+                        </div>
+                    </td>
+                    {% endif %}
                     
                 </tr>
                 {% endfor %}
@@ -73,13 +165,21 @@ Repositories &raquo; Database Application Crawler
     </table>
 </div>
 
-<ul id="pagination-demo" class="pagination-sm"></ul>
+<ul id="pagination2" class="sync-pagination pagination-sm pagination"></ul>
 
 <script type='text/javascript'>
-    $('#pagination-demo').twbsPagination({
+    $('#pagination1').twbsPagination({
         totalPages: {{ repositories.paginator.num_pages }},
         visiblePages: 10,
-        href: '?page={% templatetag openvariable %}number{% templatetag closevariable %}&{{ queries_no_page.urlencode }}',
+        href: '?page={% templatetag openvariable %}number{% templatetag closevariable %}&{{ queries_no_page.urlencode|safe}}',
+        onPageClick: function (event, page) {
+            $('#page-content').text('Page ' + page);
+        }
+    });
+    $('#pagination2').twbsPagination({
+        totalPages: {{ repositories.paginator.num_pages }},
+        visiblePages: 10,
+        href: '?page={% templatetag openvariable %}number{% templatetag closevariable %}&{{ queries_no_page.urlencode|safe  }}',
         onPageClick: function (event, page) {
             $('#page-content').text('Page ' + page);
         }
