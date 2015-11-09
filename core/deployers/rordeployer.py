@@ -122,7 +122,7 @@ class RoRDeployer(BaseDeployer):
         self.runtime = self.get_runtime()
         LOG.info(self.runtime)
 
-        self.attempt.database = self.get_database(os.path.join(self.setting_path, 'config/database.yml'))
+        self.attempt.database = self.get_database()
         LOG.info('Database: ' + self.attempt.database.name)
 
         ruby_versions = utils.get_ruby_versions()

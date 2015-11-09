@@ -62,9 +62,8 @@ class BaseDeployer(object):
         self.log.addHandler(self.logHandler)    
     ## DEF
     
-    def get_database(self, settings_file):
-        db = Database.objects.get(name__iexact="MySQL")
-        return db
+    def get_database(self):
+        return self.database
     ## DEF
     
     def clear_database(self):

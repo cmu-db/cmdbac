@@ -77,7 +77,7 @@ class NodeDeployer(BaseDeployer):
         self.runtime = self.get_runtime()
         LOG.info(self.runtime)
 
-        self.attempt.database = self.get_database('')
+        self.attempt.database = self.get_database()
         LOG.info('Database: ' + self.attempt.database.name)
 
         LOG.info('Installing requirements ...')

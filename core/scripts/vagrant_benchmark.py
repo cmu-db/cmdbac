@@ -36,6 +36,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--attempt', type=int)
     parser.add_argument('--deploy_id', type=int)
+    parser.add_argument('--database', type=str)
     parser.add_argument('--host', type=str)
     parser.add_argument('--port', type=int)
     parser.add_argument('--name', type=str)
@@ -49,6 +50,7 @@ def main():
     attempt_id = args.attempt
     deploy_id = args.deploy_id
     database_config = {
+        'database': args.database,
         'host': args.host,
         'port': args.port,
         'name': args.name,
@@ -61,7 +63,7 @@ def main():
     # get deployer
     attempt = Attempt.objects.get(id=attempt_id)
     repo = attempt.repo
-    database = attempt.database
+    database = Database.objects.get(name__iexact=database_config['database'])
     runtime = attempt.runtime
     moduleName = "deployers.%s" % (repo.project_type.deployer_class.lower())
     moduleHandle = __import__(moduleName, globals(), locals(), [repo.project_type.deployer_class])

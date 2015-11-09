@@ -26,6 +26,7 @@ def parse_args():
     parser_benchmark = subparsers.add_parser('benchmark')
     parser_benchmark.add_argument('-attempt', '--attempt', type=int)
     parser_benchmark.add_argument('-deploy_id', '--deploy_id', type=int)
+    parser_benchmark.add_argument('-database', '--database', type=str)
     parser_benchmark.add_argument('-host', '--host', type=str)
     parser_benchmark.add_argument('-port', '--port', type=int)
     parser_benchmark.add_argument('-name', '--name', type=str)
@@ -46,6 +47,7 @@ def get_attempt_info(attempt_id):
 def run_benchmark(atempt_id, database, benchmark):
     attempt_id = 4
     database = {
+        'database': 'mysql',
         'host': '127.0.0.1',
         'port': '3306',
         'name': 'crawler0',
