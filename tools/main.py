@@ -21,7 +21,7 @@ def parse_args():
     subparsers = parser.add_subparsers()
 
     parser_info = subparsers.add_parser('info')
-    parser_info.add_argument("-atempt", "--attempt", type=int, help='the id of the attempt')
+    parser_info.add_argument("-attempt", "--attempt", type=int, help='the id of the attempt')
 
     parser_benchmark = subparsers.add_parser('benchmark')
     parser_benchmark.add_argument('-attempt', '--attempt', type=int, help='the id of the attempt')
