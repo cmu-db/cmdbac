@@ -13,5 +13,6 @@ urlpatterns = patterns('',
     url(r'^attempt/(?P<id>\d+)/', 'crawler.views.attempt', name='attempt'),
     url(r'^queries/(?P<id>\d+)/', 'crawler.views.queries', name='queries'),
     url(r'^about/$', 'crawler.views.about', name='about'),
+    url(r'^tools/$', 'crawler.views.tools', name='tools'),
     #url(r'^search/$', 'crawler.views.search', name='search'),
 )

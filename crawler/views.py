@@ -3,6 +3,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 
 import traceback
+import markdown
 from threading import Thread
  
 from django.shortcuts import render
@@ -240,6 +241,12 @@ def queries(request, id):
 
 def about(request):
     return render(request, 'about.html')
+
+def tools(request):
+    context = {}
+    content = open(os.path.join(os.path.dirname(__file__), 'static', 'md', 'tools.md'), 'r').read()
+    context['content'] = markdown.markdown(content, extensions = ['markdown.extensions.fenced_code'])
+    return render(request, 'tools.html', context)
 
 class AttemptViewSet(viewsets.ModelViewSet):
     queryset = Attempt.objects.all()
