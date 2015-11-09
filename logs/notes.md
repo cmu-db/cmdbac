@@ -1,2 +1,2 @@
-# add documentation for the whole project
 # add support for other databases
+# add outline of wiki on GitHub
