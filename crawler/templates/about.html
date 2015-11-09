@@ -7,9 +7,15 @@
 		<div class="entry">
 			<p id="top" /><a name="faculty"></a></p>
 			<h3>Faculty</h3>
-			<table class="faculty" style="background: none; border: none; margin-top: 0px;">
+			<table class="table">
+				<colgroup>
+            		<col class="col-xs-3">
+            		<col class="col-xs-3">
+            		<col class="col-xs-3">
+            		<col class="col-xs-3">
+        		</colgroup>
 				<tbody>
-					<tr valign="top">
+					<tr>
 						<td><a href="http://www.cs.cmu.edu/~pavlo/"><img src="{{STATIC_URL}}people/andypavlo.jpg" alt="Andy Pavlo" /><br />Andy Pavlo</a><br />
 							Carnegie Mellon University
 						</td>
@@ -18,11 +24,33 @@
 			</table>
 			<p><a name="students"></a></p>
 			<h3>Students</h3>
-			<table class="students" style="background: none; border: none; margin-top: 0px;">
+			<style type="text/css">
+				.table th, .table td { 
+				    border-top: none !important; 
+				}
+			</style>
+			<table class="table">
+				<colgroup>
+            		<col class="col-xs-3">
+            		<col class="col-xs-3">
+            		<col class="col-xs-3">
+            		<col class="col-xs-3">
+        		</colgroup>
 				<tbody>
 					<tr>
-						<td><a href="http://www.shangzeyuan.com"><img src="{{STATIC_URL}}people/zeyuanshang.jpg" alt="Zeyuan Shang" /><br />Zeyuan Shang</a><br />
-							Tsinghua University
+						<td><a href="http://www.shangzeyuan.com"><img src="{{STATIC_URL}}people/zeyuanshang.jpg" alt="Zeyuan Shang"/><br />
+						Zeyuan Shang</a><br />
+						Tsinghua University
+						</td>
+
+						<td><a href="http://www.cs.cmu.edu/~dvanaken/"><img src="{{STATIC_URL}}people/dana.jpg" alt="Dana Van Aken"/><br />Dana Van Aken</a><br />
+							Carnegie Mellon University
+						</td>
+
+						<td>
+						</td>
+
+						<td>
 						</td>
 					</tr>
 				</tbody>
