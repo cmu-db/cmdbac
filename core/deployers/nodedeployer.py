@@ -23,15 +23,25 @@ LOG = logging.getLogger()
 ## NODE.JS DEPLOYER
 ## =====================================================================
 class NodeDeployer(BaseDeployer):
-    def __init__(self, repo, database, deploy_id, database_config = None):
-        BaseDeployer.__init__(self, repo, database, deploy_id, database_config)
+    def __init__(self, repo, database, deploy_id, database_config = None, runtime = None):
+        BaseDeployer.__init__(self, repo, database, deploy_id, database_config, runtime)
         if database_config == None:
             self.database_config['name'] = 'node_app' + str(deploy_id)
         self.main_filename = None
     ## DEF
     
-    def configure_settings(self):
-        pass
+    def configure_settings(self, path):
+        utils.replace_file_regex(path, "mysql\.createConnection\({.*?}.*?\);", 
+            """mysql.createConnection({{
+                host     : '{host}',
+                port     : '{port}',
+                user     : '{user}',
+                password : '{password}',
+                database : '{database}'
+                }});
+            """.format(host=self.database_config['host'], port=self.database_config['port'], 
+                user=self.database_config['username'],password=self.database_config['password'],
+                database=self.database_config['name']))
     ## DEF
     
     def install_requirements(self, path):
@@ -73,7 +83,7 @@ class NodeDeployer(BaseDeployer):
         LOG.info('Configuring settings ...')
         self.kill_server()
         self.clear_database()
-        self.configure_settings()
+        self.configure_settings(deploy_path)
         self.runtime = self.get_runtime()
         LOG.info(self.runtime)
 

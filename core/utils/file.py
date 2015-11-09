@@ -30,6 +30,17 @@ def search_file_norecur(directory_name, file_name):
             return True
     return False
 
+def replace_file_regex(directory_name, string_pattern, string):
+    for root, dirs, files in os.walk(directory_name):
+        for file in files:
+            with open(os.path.join(root, file), "r+") as f:
+                s = f.read()
+                s = re.sub(string_pattern, string, s, flags=re.DOTALL)
+                f.seek(0)
+                f.write(s)
+                f.truncate()
+                f.close()
+
 def unzip(zip_name, dir_name):
     command = 'unzip -o -qq ' + zip_name + ' -d ' + dir_name
     out = run_command(command)
