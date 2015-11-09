@@ -74,9 +74,10 @@ class RoRDeployer(BaseDeployer):
     
     def install_requirements(self, path):
         if path:
-            command = '{} && bundle install'.format(utils.cd(path))
+            command = '{} && {} && bundle install'.format(
+                utils.cd(path),
+                utils.use_ruby_version(self.runtime['version']))
             out = utils.run_command(command)
-            print out
             return out[1]
         return ''
     ## DEF
@@ -87,15 +88,18 @@ class RoRDeployer(BaseDeployer):
 
     def sync_server(self, path):
         LOG.info('Syncing server ...')
-        command = '{} && bundle exec rake db:migrate'.format(utils.cd(path))
+        command = '{} && {} && bundle exec rake db:migrate'.format(
+            utils.cd(path),
+            utils.use_ruby_version(self.runtime['version']))
         return utils.run_command(command)
     ## DEF
 
     def run_server(self, path):
         self.configure_network()
         LOG.info('Running server ...')
-        command = '{} && bundle exec rails server -p {} -d'.format(
+        command = '{} && {} && bundle exec rails server -p {} -d'.format(
             utils.cd(path), 
+            utils.use_ruby_version(self.runtime['version']),
             self.port)
         return utils.run_command(command)
     ## DEF
@@ -121,6 +125,7 @@ class RoRDeployer(BaseDeployer):
         self.configure_settings()
         self.runtime = self.get_runtime()
         LOG.info(self.runtime)
+        print utils.run_command('{} && ruby -v'.format(utils.use_ruby_version(self.runtime['version'])))
 
         self.attempt.database = self.get_database()
         LOG.info('Database: ' + self.attempt.database.name)
@@ -133,7 +138,6 @@ class RoRDeployer(BaseDeployer):
             ruby_version = ruby_version[0]
 
         LOG.info('Using Ruby {} ...'.format(ruby_version))
-        utils.use_ruby_version(ruby_version)
     
         LOG.info('Installing requirements ...')
         out = self.install_requirements(deploy_path)

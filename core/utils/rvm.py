@@ -15,5 +15,5 @@ def get_ruby_versions():
     return versions
 
 def use_ruby_version(version):
-    command = 'source /usr/local/rvm/scripts/rvm && rvm --default use {}'.format(version)
-    return run_command(command)
+    command = 'source /usr/local/rvm/scripts/rvm && rvm use {}'.format(version[:5])
+    return command
