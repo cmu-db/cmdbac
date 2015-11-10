@@ -6,6 +6,7 @@ import requests
 import re
 import copy
 import traceback
+import mechanize
 
 from crawler.models import *
 from db_webcrawler.settings import *
@@ -102,15 +103,14 @@ class BenchmarkDriver(Driver):
                 except:
                     part_inputs = None
             else:
-                try:
-                    _, browser = submit.login(forms, info)
-                except:
-                    part_inputs = None
+                browser = mechanize.Browser()
+                browser.set_cookiejar(self.browser._ua_handlers['_cookies'].cookiejar)
             if part_inputs == None:
                 continue
             form['queries'], form['counter'] = self.process_query(self.check_log(last_line_no), part_inputs)
             if len(form['queries']) == 0:
                 continue
+            print browser
             self.forms.append((form, browser))
     
         return {'register': register_result, 'login': login_result, 'forms': ret_forms}
