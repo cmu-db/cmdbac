@@ -25,9 +25,10 @@ forms_cnts = []
 def run_driver(driver, index):
     global forms_cnts
     forms_cnts[index] = 0
+    new_driver = BenchmarkDriver(driver.deployer, driver)
     try:
         while True:
-            forms_cnts[index] += driver.submit_forms()
+            forms_cnts[index] += new_driver.submit_forms()
     except Exception, e:
         pass
 
@@ -118,7 +119,7 @@ def main():
 
     print 'Extracting database info ...'
     # extract database info
-    deployer.extract_database_info()
+    # deployer.extract_database_info()
 
     print 'Finishing ...'
 
