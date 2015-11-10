@@ -125,8 +125,7 @@ class RoRDeployer(BaseDeployer):
         self.configure_settings()
         self.runtime = self.get_runtime()
         LOG.info(self.runtime)
-        print utils.run_command('{} && ruby -v'.format(utils.use_ruby_version(self.runtime['version'])))
-
+        
         self.attempt.database = self.get_database()
         LOG.info('Database: ' + self.attempt.database.name)
 

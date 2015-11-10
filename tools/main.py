@@ -44,7 +44,7 @@ def get_attempt_info(attempt_id):
     return response.json()
 
 def run_benchmark(atempt_id, database, benchmark):
-    attempt_id = 4
+    attempt_id = 153
     database = {
         'database': 'mysql',
         'host': '127.0.0.1',
@@ -54,8 +54,8 @@ def run_benchmark(atempt_id, database, benchmark):
         'password': 'root'
     }
     benchmark = {
-        'num_threads': 2,
-        'timeout': 5
+        'num_threads': 5,
+        'timeout': 60
     }
     utils.run_benchmark(attempt_id, database, benchmark)
 
