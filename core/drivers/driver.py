@@ -122,6 +122,8 @@ class Driver(object):
         if br != None:
             forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
     
+        self.browser = br
+
         for form in forms:
             if any(self.equal_form(form, ret_form) for ret_form in ret_forms):
                 continue

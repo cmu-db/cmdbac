@@ -8,11 +8,12 @@ import django
 django.setup()
 
 import argparse
-import threading
 import datetime
 import socket
 import traceback
 import time
+import logging
+from multiprocessing import Process, Pool
 
 from crawler.models import *
 from deployers import *
@@ -20,17 +21,16 @@ from drivers import *
 from analyzers import *
 import utils
 
-forms_cnts = []
-
-def run_driver(driver, index):
-    global forms_cnts
-    forms_cnts[index] = 0
-    new_driver = BenchmarkDriver(driver.deployer, driver)
+def run_driver(driver, timeout):
+    forms_cnt = 0
+    start_time = time.time()
+    stop_time = start_time + timeout
     try:
-        while True:
-            forms_cnts[index] += new_driver.submit_forms()
+        while time.time() < stop_time:
+            forms_cnt += driver.submit_forms()
+        print forms_cnt
     except Exception, e:
-        pass
+        traceback.print_exc()
 
 def main():
     # parse args
@@ -78,32 +78,29 @@ def main():
 
     print 'Running driver ...'
     driver = BenchmarkDriver(deployer)
+    
     try:
         driver.bootstrap()
         driver.initialize()
     except Exception, e:
-        print e
-        pass
+        traceback.print_exc()
 
-    global forms_cnts
     forms_cnts = [-1] * num_threads
-    threads = []
+    processes = []
     try:
-        with utils.timeout(seconds = timeout):
-            # multi-threading
-            for thread_index in range(num_threads):
-                thread = threading.Thread(target = run_driver, args = (driver, thread_index, ))
-                thread.start()
-                threads.append(thread)
+        # disable logging of requests
+        logging.getLogger("requests").setLevel(logging.WARNING)
+        logging.getLogger("urllib3").setLevel(logging.WARNING)
+        # multi-processing
+        for _ in range(num_threads):
+            process = Process(target = run_driver, args = (driver, timeout))
+            processes.append(process)
+        for process in processes:
+            process.start()
+        for process in processes:
+            process.join()
     except Exception, e:
         pass
-
-    try:
-        # wait for all the threads
-        for thread in threads:
-            thread.join(timeout = timeout)
-    except Exception, e:
-        print e
     
     print 'The number of forms submitted : {}'.format(sum(forms_cnts))
 

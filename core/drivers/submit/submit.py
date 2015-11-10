@@ -6,6 +6,8 @@ import cookielib
 import string
 import random
 import traceback
+import requests
+import urlparse
 
 from patterns import patterns, match_any_pattern
 import extract
@@ -117,4 +119,37 @@ def fill_form_random(deploy_path, form, br):
 
     response, br = submit_form(form, inputs, br)
 
+    return inputs
+
+def submit_form_fast(form, inputs, br):
+    payload = {}
+    for input in form['inputs']:
+        if input['name'] in inputs:
+            payload[input['name']] = inputs[input['name']]
+    new_url = urlparse.urljoin(form['url'], form['action'])
+    if br == None:
+        response = requests.post(new_url, data = payload)
+    else:
+        cookies = {}
+        for cookie in br._ua_handlers['_cookies'].cookiejar:
+            cookies[cookie.name] = cookie.value
+        response = requests.post(new_url, data = payload, cookies = cookies)
+    return response
+
+def fill_form_random_fast(deploy_path, form, br):
+    inputs = {}
+    for input in form['inputs']:
+        if input['type'] == 'file':
+            filename, mime_type = gen_file(deploy_path, input)
+            inputs[input['name']] = {
+                    'filename' : filename,
+                    'mime_type': mime_type
+            }
+        elif input['type'] == 'checkbox':
+            inputs[input['name']] = gen_random_true_false()
+        else:
+            inputs[input['name']] = gen_random_value()
+
+    response = submit_form_fast(form, inputs, br)
+    
     return inputs
