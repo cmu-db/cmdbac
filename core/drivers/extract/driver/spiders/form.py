@@ -55,7 +55,7 @@ class FormSpider(CrawlSpider):
                 pass
 
             formItem['inputs'] = []
-            for ip in sel.xpath('.//input[not(@type="hidden") and not(@type="submit")]|.//textarea'):
+            for ip in sel.xpath('.//input|.//textarea'):
                 try:
                     _id = ip.xpath('@id').extract()[0]
                 except:
@@ -69,11 +69,15 @@ class FormSpider(CrawlSpider):
                     _type = ip.xpath('@type').extract()[0]
                 except:
                     _type = 'textarea'
+                try:
+                    value = ip.xpath('@value').extract()[0]
+                except:
+                    value = ''
                 inputItem = InputItem()
                 inputItem['id'] = _id
                 inputItem['name'] = name
                 inputItem['type'] = _type
-                inputItem['value'] = ''
+                inputItem['value'] = value
                 formItem['inputs'].append(inputItem)
 
             try:

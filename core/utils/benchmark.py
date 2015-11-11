@@ -15,7 +15,7 @@ import utils
 
 def run_benchmark(attempt_id, database, benchmark):
 	# run the benchmark
-    deploy_id = 1
+    deploy_id = 0
     print 'Running benchmark for attempt {}'.format(attempt_id)
     try:
         utils.vagrant_benchmark(attempt_id, deploy_id, database, benchmark)

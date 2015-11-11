@@ -85,6 +85,8 @@ def gen_file(deploy_path, input):
 def fill_form(form, matched_patterns = {}, br = None):
     inputs = {}
     for input in form['inputs']:
+        if input['value'] != '':
+            continue
         for pattern_name in patterns:
             pattern, value = patterns[pattern_name]
             if match_any_pattern(input['name'], pattern) or match_any_pattern(input['type'], pattern):
@@ -106,6 +108,8 @@ def fill_form(form, matched_patterns = {}, br = None):
 def fill_form_random(deploy_path, form, br):
     inputs = {}
     for input in form['inputs']:
+        if input['value'] != '':
+            continue
         if input['type'] == 'file':
             filename, mime_type = gen_file(deploy_path, input)
             inputs[input['name']] = {
@@ -122,23 +126,23 @@ def fill_form_random(deploy_path, form, br):
     return inputs
 
 def submit_form_fast(form, inputs, br):
-    payload = {}
-    for input in form['inputs']:
-        if input['name'] in inputs:
-            payload[input['name']] = inputs[input['name']]
     new_url = urlparse.urljoin(form['url'], form['action'])
     if br == None:
-        response = requests.post(new_url, data = payload)
+        response = requests.post(new_url, data = inputs)
     else:
         cookies = {}
         for cookie in br._ua_handlers['_cookies'].cookiejar:
             cookies[cookie.name] = cookie.value
-        response = requests.post(new_url, data = payload, cookies = cookies)
+        response = requests.post(new_url, data = inputs, cookies = cookies)
+    print response.text
     return response
 
 def fill_form_random_fast(deploy_path, form, br):
     inputs = {}
     for input in form['inputs']:
+        if input['value'] != '':
+            inputs[input['name']] = input['value']
+            continue
         if input['type'] == 'file':
             filename, mime_type = gen_file(deploy_path, input)
             inputs[input['name']] = {

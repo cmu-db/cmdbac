@@ -80,11 +80,11 @@ def main():
     driver = BenchmarkDriver(deployer)
     
     try:
-        driver.bootstrap()
+        # driver.bootstrap()
         driver.initialize()
     except Exception, e:
         traceback.print_exc()
-
+    
     forms_cnts = [-1] * num_threads
     processes = []
     try:
