@@ -25,9 +25,10 @@ def run_driver(driver, timeout):
     forms_cnt = 0
     start_time = time.time()
     stop_time = start_time + timeout
+    new_driver = BenchmarkDriver(driver)
     try:
         while time.time() < stop_time:
-            forms_cnt += driver.submit_forms()
+            forms_cnt += new_driver.submit_forms()
         print forms_cnt
     except Exception, e:
         traceback.print_exc()
@@ -77,10 +78,10 @@ def main():
         sys.exit(-1)
 
     print 'Running driver ...'
-    driver = BenchmarkDriver(deployer)
+    driver = Driver(deployer)
     
     try:
-        # driver.bootstrap()
+        driver.bootstrap()
         driver.initialize()
     except Exception, e:
         traceback.print_exc()
@@ -102,7 +103,7 @@ def main():
     except Exception, e:
         pass
     
-    print 'The number of forms submitted : {}'.format(sum(forms_cnts))
+    # print 'The number of forms submitted : {}'.format(sum(forms_cnts))
 
     # kill server
     deployer.kill_server()

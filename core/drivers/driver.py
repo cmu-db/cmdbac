@@ -122,6 +122,7 @@ class Driver(object):
         if br != None:
             forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
     
+        # save browser
         self.browser = br
 
         for form in forms:
@@ -213,14 +214,19 @@ class Driver(object):
             forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
 
         # save browser
-        self.browser = br
+        if self.deployer.repo.project_type.id == 1 and self.browser != None: # Django
+            pass
+        else:
+            self.browser = br
 
         # save forms
         for form in forms:
+            if any(self.equal_form(form, ret_form) for ret_form in self.forms):
+                continue
             last_line_no = self.check_log()
             browser_index = 0
             try:
-                part_inputs = submit.fill_form_random(self.deployer.base_path, form, self.browser)
+                part_inputs = submit.fill_form_random(self.deployer.base_path, form, br)
             except:
                 part_inputs = None
             if part_inputs == None:

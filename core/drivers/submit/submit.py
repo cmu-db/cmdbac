@@ -8,6 +8,7 @@ import random
 import traceback
 import requests
 import urlparse
+from bs4 import BeautifulSoup
 
 from patterns import patterns, match_any_pattern
 import extract
@@ -125,35 +126,36 @@ def fill_form_random(deploy_path, form, br):
 
     return inputs
 
-def submit_form_fast(form, inputs, br):
+def submit_form_fast(form, inputs, files, session):
     new_url = urlparse.urljoin(form['url'], form['action'])
-    if br == None:
-        response = requests.post(new_url, data = inputs)
+    if files == None:
+        response = session.post(new_url, data = inputs)
     else:
-        cookies = {}
-        for cookie in br._ua_handlers['_cookies'].cookiejar:
-            cookies[cookie.name] = cookie.value
-        response = requests.post(new_url, data = inputs, cookies = cookies)
-    print response.text
+        response = session.post(new_url, data = inputs, files = files)
     return response
 
-def fill_form_random_fast(deploy_path, form, br):
+def fill_form_random_fast(deploy_path, form, session):
     inputs = {}
+    files = None
+    response = session.get(form['url'])
+    soup = BeautifulSoup(response.text, "lxml")
     for input in form['inputs']:
         if input['value'] != '':
-            inputs[input['name']] = input['value']
+            i = soup.find('input', {"name":input['name']})
+            if i:
+                inputs[input['name']] = i['value']
             continue
         if input['type'] == 'file':
+            if files == None:
+                files = {}
             filename, mime_type = gen_file(deploy_path, input)
-            inputs[input['name']] = {
-                    'filename' : filename,
-                    'mime_type': mime_type
-            }
+            upload_filename = os.path.basename(filename)
+            files[input['name']] = (upload_filename, open(filename), mime_type)
         elif input['type'] == 'checkbox':
             inputs[input['name']] = gen_random_true_false()
         else:
             inputs[input['name']] = gen_random_value()
 
-    response = submit_form_fast(form, inputs, br)
+    response = submit_form_fast(form, inputs, files, session)
     
     return inputs
