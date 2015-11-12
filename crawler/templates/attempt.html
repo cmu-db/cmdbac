@@ -140,10 +140,13 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
     </table>
 </div>
 
-<h2 class="sub-header">Dependencies</h2>
-<p><a href="#" id="dependencies-show" class="showLink" onclick="showHide('dependencies');return false;">More.</a></p>
-<div id="dependencies" class="table-responsive more">
-    <p><a href="#" id="dependencies-hide" class="hideLink" onclick="showHide('dependencies');return false;">Hide.</a></p>
+<div>
+<h2 class="sub-header">Dependencies 
+    <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#dependencies" aria-expanded="false" aria-controls="dependencies">
+      <i class="glyphicon glyphicon-plus"></i>
+    </a>
+</h2>
+<div id="dependencies" class="collapse">
     <table class="table table-striped">
         <thead>
             <tr>
@@ -163,13 +166,16 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
         </tbody>
     </table>
 </div>
+</div>
 
 
-
-<h2 class="sub-header">Forms</h2>
-<p><a href="#" id="forms-show" class="showLink" onclick="showHide('forms');return false;">More.</a></p>
-<div id="forms" class="table-responsive more">
-    <p><a href="#" id="forms-hide" class="hideLink" onclick="showHide('forms');return false;">Hide.</a></p>
+<div>
+<h2 class="sub-header">Forms
+    <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#forms" aria-expanded="false" aria-controls="forms">
+      <i class="glyphicon glyphicon-plus"></i>
+    </a>
+</h2>
+<div id="forms" class="collapse">
     <table class="table table-striped" style="word-break:break-all">
         <thead>
             <tr>
@@ -227,7 +233,12 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
                             </tbody>
                         </table>
                     </div>
-                    <div id="queries-details-{{form.id}}">
+                    <div>
+                    <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#queries-details-{{form.id}}" aria-expanded="false" aria-controls="queries-details-{{form.id}}">
+                        Details
+                    </a>
+                    <div id="queries-details-{{form.id}}" class="collapse">
+                    </div>
                     </div>
                     <script>
                         $(document).ready(function() {
@@ -242,11 +253,16 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
         </tbody>
     </table>
 </div>
+</div>
 
-<h2 class="sub-header">Log</h2>
-<p><a href="#" id="attempt-log-show" class="showLink" onclick="showHide('attempt-log');return false;">More.</a></p>
-<div id="attempt-log" class="more">
-    <p><a href="#" id="attempt-log-hide" class="hideLink" onclick="showHide('attempt-log');return false;">Hide.</a></p>
+<div>
+<h2 class="sub-header">Log
+    <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#log" aria-expanded="false" aria-controls="log">
+      <i class="glyphicon glyphicon-plus"></i>
+    </a>
+</h2>
+<div id="log" class="collapse">
     <pre>{{ attempt.log }}</pre>
+</div>
 </div>
 {% endblock %}

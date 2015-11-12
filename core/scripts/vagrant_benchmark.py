@@ -13,7 +13,7 @@ import socket
 import traceback
 import time
 import logging
-from multiprocessing import Process, Pool
+from multiprocessing import Process
 
 from crawler.models import *
 from deployers import *
@@ -21,11 +21,11 @@ from drivers import *
 from analyzers import *
 import utils
 
-def run_driver(driver, timeout):
+def run_driver(driver, index, timeout):
     forms_cnt = 0
     start_time = time.time()
     stop_time = start_time + timeout
-    new_driver = BenchmarkDriver(driver)
+    new_driver = BenchmarkDriver(driver, index)
     try:
         while time.time() < stop_time:
             forms_cnt += new_driver.submit_forms()
@@ -72,7 +72,7 @@ def main():
     klass = getattr(moduleHandle, repo.project_type.deployer_class)
     deployer = klass(repo, database, deploy_id, database_config, runtime)
 
-    result = deployer.deploy(False)
+    result = deployer.deploy(False, num_threads)
     if result != 0:
         deployer.kill_server()
         sys.exit(-1)
@@ -93,15 +93,15 @@ def main():
         logging.getLogger("requests").setLevel(logging.WARNING)
         logging.getLogger("urllib3").setLevel(logging.WARNING)
         # multi-processing
-        for _ in range(num_threads):
-            process = Process(target = run_driver, args = (driver, timeout))
+        for index in range(num_threads):
+            process = Process(target = run_driver, args = (driver, index, timeout))
             processes.append(process)
         for process in processes:
             process.start()
         for process in processes:
             process.join()
     except Exception, e:
-        pass
+        traceback.print_exc()
     
     # print 'The number of forms submitted : {}'.format(sum(forms_cnts))
 
@@ -113,7 +113,7 @@ def main():
     analyzer = Analyzer()
     for form, _ in driver.forms:
         analyzer.analyze(form['queries'])
-    print analyzer.stats
+    # print analyzer.stats
 
     print 'Extracting database info ...'
     # extract database info

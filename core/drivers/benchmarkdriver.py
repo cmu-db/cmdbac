@@ -26,7 +26,7 @@ LOG = logging.getLogger()
 ## =====================================================================
 class BenchmarkDriver(Driver):
     
-    def __init__(self, driver):
+    def __init__(self, driver, index):
         Driver.__init__(self, driver.deployer)
         self.forms = driver.forms
         self.sessions = []
@@ -35,6 +35,8 @@ class BenchmarkDriver(Driver):
             session.cookies = driver.browser._ua_handlers['_cookies'].cookiejar
         self.sessions.append(session)
         self.sessions.append(requests.Session())
+        for i in xrange(len(self.forms)):
+            self.forms[i][0]['url'] = re.sub(':\d+', ':{}'.format(driver.deployer.port + index), self.forms[i][0]['url'])
 
     def submit_forms(self):
         forms_cnt = 0

@@ -94,13 +94,13 @@ class RoRDeployer(BaseDeployer):
         return utils.run_command(command)
     ## DEF
 
-    def run_server(self, path):
+    def run_server(self, path, port):
         self.configure_network()
         LOG.info('Running server ...')
         command = '{} && {} && bundle exec rails server -p {} -d'.format(
             utils.cd(path), 
             utils.use_ruby_version(self.runtime['version']),
-            self.port)
+            port)
         return utils.run_command(command)
     ## DEF
 
@@ -159,7 +159,8 @@ class RoRDeployer(BaseDeployer):
             LOG.info(out)
             return ATTEMPT_STATUS_SYNCING_ERROR
         
-        LOG.info(self.run_server(deploy_path))
+        for index in range(self.num_processes):
+            self.run_server(deploy_path, self.port + index)
 
         attemptStatus = self.check_server()
 

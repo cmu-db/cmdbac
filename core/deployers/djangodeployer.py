@@ -29,7 +29,8 @@ DATABASES = {{
         'HOST': '{host}',
         'PORT': '{port}',
         'USER': '{username}',
-        'PASSWORD': '{password}'
+        'PASSWORD': '{password}',
+        'CONN_MAX_AGE': 500
     }}
 }}
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
@@ -119,13 +120,13 @@ class DjangoDeployer(BaseDeployer):
         return utils.run_command(command)
     ## DEF
 
-    def run_server(self, path):
+    def run_server(self, path, port):
         self.configure_network()
         LOG.info('Running server ...')
         command = '{} && {} && unset DJANGO_SETTINGS_MODULE && python manage.py runserver 0.0.0.0:{}'.format(
             utils.to_env(self.base_path),
             utils.cd(path),
-            self.port)
+            port)
         return utils.run_command_async(command)
     ## DEF
 
@@ -246,7 +247,9 @@ class DjangoDeployer(BaseDeployer):
 
         self.create_superuser(deploy_path)
 
-        self.run_server(deploy_path)
+        for index in range(self.num_processes):
+            self.run_server(deploy_path, self.port + index)
+
         time.sleep(5)
         
         attemptStatus = self.check_server()
