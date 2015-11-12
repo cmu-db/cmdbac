@@ -175,15 +175,17 @@ class Driver(object):
             register_form = info = inputs = None
             LOG.exception(e)
         if register_form == None or info == None or inputs == None:
-            LOG.info('Fail to register ...')
             register_result = USER_STATUS_FAIL
         else:
             register_form['queries'], register_form['counter'] = self.process_query(self.check_log(last_line_no), inputs)
         if len(register_form['queries']) == 0:
-            LOG.info('Fail to register ...')
             register_result = USER_STATUS_FAIL
-        LOG.info('Register Successfully ...')
-        register_result = USER_STATUS_SUCCESS
+        else:
+            register_result = USER_STATUS_SUCCESS
+        if register_result == USER_STATUS_FAIL:
+            LOG.info('Fail to register ...')
+        else:
+            LOG.info('Register Successfully ...')
         if register_form != None:
             ret_forms.append(register_form)
 
@@ -198,15 +200,17 @@ class Driver(object):
                 login_form = br = None
                 LOG.exception(e)
             if login_form == None or br == None:
-                LOG.info('Fail to login ...')
                 login_result = USER_STATUS_FAIL
             else:
                 login_form['queries'], login_form['counter'] = self.process_query(self.check_log(last_line_no), inputs)
             if len(login_form['queries']) == 0:
-                LOG.info('Fail to login ...')
                 login_result = USER_STATUS_FAIL
-            LOG.info('Login Successfully ...')
-            login_result = USER_STATUS_SUCCESS
+            else:
+                login_result = USER_STATUS_SUCCESS
+            if login_result == USER_STATUS_FAIL:
+                LOG.info('Fail to login ...')
+            else:
+                LOG.info('Login Successfully ...')
             if login_form != None:
                 ret_forms.append(login_form)
 
