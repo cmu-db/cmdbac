@@ -178,10 +178,10 @@ class Driver(object):
             register_result = USER_STATUS_FAIL
         else:
             register_form['queries'], register_form['counter'] = self.process_query(self.check_log(last_line_no), inputs)
-        if len(register_form['queries']) == 0:
-            register_result = USER_STATUS_FAIL
-        else:
+        if register_form and len(register_form['queries']) > 0:
             register_result = USER_STATUS_SUCCESS
+        else:
+            register_result = USER_STATUS_FAIL
         if register_result == USER_STATUS_FAIL:
             LOG.info('Fail to register ...')
         else:
@@ -203,10 +203,10 @@ class Driver(object):
                 login_result = USER_STATUS_FAIL
             else:
                 login_form['queries'], login_form['counter'] = self.process_query(self.check_log(last_line_no), inputs)
-            if len(login_form['queries']) == 0:
-                login_result = USER_STATUS_FAIL
-            else:
+            if login_form and len(login_form['queries']) == 0:
                 login_result = USER_STATUS_SUCCESS
+            else:
+                login_result = USER_STATUS_FAIL
             if login_result == USER_STATUS_FAIL:
                 LOG.info('Fail to login ...')
             else:

@@ -59,7 +59,7 @@ def submit_form(form, inputs, br = None):
             except:
                 traceback.print_exc()
 
-    response = br.submit().read()
+    response = br.submit().code
 
     return response, br
 
