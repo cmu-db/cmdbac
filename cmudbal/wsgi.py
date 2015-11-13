@@ -1,5 +1,5 @@
 """
-WSGI config for db_webcrawler project.
+WSGI config for cmudbal project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -12,7 +12,7 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbal.settings")
 
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()

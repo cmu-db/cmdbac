@@ -7,8 +7,6 @@ import markdown
 from threading import Thread
  
 from django.shortcuts import render
-from models import *
-from forms import *
 from rest_framework import viewsets
 from rest_framework import filters
 from serializers import AttemptSerializer
@@ -16,9 +14,9 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.db.models import Count
-
+from models import *
+from forms import *
 import utils
-import crawlers
 
 class Statistic:
     def __init__(self, repo_type, num_repo, num_suc, num_deploy, num_valid_deploy):

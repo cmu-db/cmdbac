@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 
 from basecrawler import BaseCrawler
-from crawler.models import *
+from library.models import *
 
 ## =====================================================================
 ## LOGGING CONFIGURATION

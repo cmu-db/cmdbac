@@ -8,7 +8,7 @@ import importlib
 import urlparse
 
 from basedeployer import BaseDeployer
-from crawler.models import *
+from library.models import *
 import utils
 
 ## =====================================================================

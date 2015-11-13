@@ -4,7 +4,7 @@ import os, sys
 ############ to be deleted in the future
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbal.settings")
 import django
 django.setup()
 import utils

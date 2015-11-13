@@ -5,7 +5,7 @@ import logging
 import re
 
 from basedeployer import BaseDeployer
-from crawler.models import *
+from library.models import *
 import utils
 
 ## =====================================================================

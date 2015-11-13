@@ -3,10 +3,6 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
-import django
-django.setup()
-
 import argparse
 import datetime
 import socket
@@ -15,7 +11,10 @@ import time
 import logging
 from multiprocessing import Process
 
-from crawler.models import *
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbal.settings")
+import django
+django.setup()
+from library.models import *
 from deployers import *
 from drivers import *
 from analyzers import *

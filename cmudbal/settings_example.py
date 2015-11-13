@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 """
-Django settings for db_webcrawler project.
+Django settings for cmudbal project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.6/topics/settings/
@@ -37,7 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'crawler',
+    'library',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -49,9 +49,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'db_webcrawler.urls'
+ROOT_URLCONF = 'cmudbal.urls'
 
-WSGI_APPLICATION = 'db_webcrawler.wsgi.application'
+WSGI_APPLICATION = 'cmudbal.wsgi.application'
 
 
 # Database
@@ -59,12 +59,6 @@ WSGI_APPLICATION = 'db_webcrawler.wsgi.application'
 
 DATABASES = {
     'default': {
-        #'ENGINE': 'django.db.backends.mysql',
-        #'NAME': 'db_webcrawler',
-        #'USER': 'root',
-        #'PASSWORD': '',
-        #'HOST': 'localhost',
-        #'PORT': '3306',
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'crawler',
         'HOST': 'localhost',

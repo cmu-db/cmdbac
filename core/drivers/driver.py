@@ -7,8 +7,8 @@ import re
 import copy
 import traceback
 
-from crawler.models import *
-from db_webcrawler.settings import *
+from library.models import *
+from cmudbal.settings import *
 import utils
 import extract
 import submit

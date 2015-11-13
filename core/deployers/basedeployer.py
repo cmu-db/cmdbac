@@ -9,8 +9,7 @@ from string import Template
 from datetime import datetime
 import MySQLdb
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "db_webcrawler.settings")
-from crawler.models import *
+from library.models import *
 import utils
 
 ## =====================================================================

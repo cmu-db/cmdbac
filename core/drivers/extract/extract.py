@@ -3,7 +3,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 
 import utils
 import json
-from db_webcrawler.settings import *
+from cmudbal.settings import *
 
 def extract_forms(url, follow = "false", cookie_jar = None, filename = "forms.json"):
 	utils.remove_file(os.path.join(os.path.dirname(__file__), filename))

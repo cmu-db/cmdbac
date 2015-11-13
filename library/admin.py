@@ -1,5 +1,5 @@
 from django.contrib import admin
-from crawler.models import *
+from models import *
 
 class DependencyInline(admin.StackedInline):
     model = Dependency
