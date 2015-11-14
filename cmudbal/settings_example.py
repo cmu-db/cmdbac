@@ -118,6 +118,3 @@ REST_FRAMEWORK = {
 
 # Google Analytics
 GOOGLE_ANALYTICS_KEY = ''
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "context_processors.analytics",
-)
