@@ -1,0 +1,8 @@
+<item>
+    <title>{{ entry.title }}</title>
+    <link>http://{{ current_site.domain }}{{ entry.get_absolute_url }}</link>
+    <description>{{ entry.meta_description }}</description>
+    <pubDate>{{ entry.published|date:"D, d M Y H:i:s O" }}</pubDate>
+    <dc:creator>{{ entry.author.get_full_name }}</dc:creator>
+    <guid isPermaLink="true">http://{{ current_site.domain }}{{ entry.get_absolute_url }}</guid>
+</item>

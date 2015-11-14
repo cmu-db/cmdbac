@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block body_class %}blog{% endblock %}
+
+{% block main %}
+    <div class="row blog-container">
+        <div class="col-md-8 blog-content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}

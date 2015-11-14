@@ -1,0 +1,8 @@
+<p class="post_dateline">
+    {% if not post.stale %}
+        <span class="date">{% if post.published %}{{ post.published|date:"jS F Y" }}{% else %}Not published yet{% endif %}</span>
+        <br />
+    {% endif %}
+    by <span class="author"><a href="http://twitter.com/{{ post.author.username }}" title="@{{ post.author.username }}">{{ post.author.get_full_name }}</a></span> in
+    <a href="{% url "blog_section" post.slug %}"><span class="section">{{ post.get_section_display|capfirst }}</span></a>
+</p>
