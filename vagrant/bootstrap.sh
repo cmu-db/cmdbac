@@ -109,6 +109,8 @@ install 'firefox' firefox
 install 'xvfb' xvfb
 pip install pyvirtualdisplay
 pip install djangorestframework
+pip install pinax-blog
+pip install pytz
 
 # Fix Dependencies
 apt-get -f -y install >/dev/null 2>&1

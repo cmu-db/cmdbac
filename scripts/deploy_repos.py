@@ -7,7 +7,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbal.settings")
 import django
 django.setup()
 
-from crawler.models import *
+from library.models import *
 import utils
 
 def main():

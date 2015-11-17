@@ -14,7 +14,7 @@ import django
 django.setup()
 
 import crawlers
-from crawler.models import *
+from library.models import *
 
 if __name__ == '__main__':
     with open(os.path.join(os.path.dirname(__file__), os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
