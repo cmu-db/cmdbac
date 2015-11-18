@@ -24,7 +24,7 @@ def run_driver(driver, index, timeout):
     forms_cnt = 0
     start_time = time.time()
     stop_time = start_time + timeout
-    new_driver = BenchmarkDriver(driver, index)
+    new_driver = BenchmarkDriver(driver)
     try:
         while time.time() < stop_time:
             forms_cnt += new_driver.submit_forms()
@@ -109,7 +109,7 @@ def main():
 
     # analyze
     print 'Analyzing queries ...'
-    analyzer = Analyzer()
+    analyzer = Analyzer(deployer)
     for form, _ in driver.forms:
         analyzer.analyze(form['queries'])
     # print analyzer.stats

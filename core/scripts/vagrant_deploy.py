@@ -36,7 +36,6 @@ def main():
         driverResult = {}
     deployer.kill_server()
     deployer.save_attempt(ATTEMPT_STATUS_SUCCESS, driverResult)
-    # deployer.extract_database_info()
 
 if __name__ == "__main__":
     main()

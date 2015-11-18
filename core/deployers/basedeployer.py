@@ -81,19 +81,13 @@ class BaseDeployer(object):
             LOG.exception(e)
     ## DEF
     
-    def extract_database_info(self):
+    def get_database_connection(self):
         try:
             conn = MySQLdb.connect(host=self.database_config['host'],
                                    user=self.database_config['username'],
                                    passwd=self.database_config['password'],
                                    port=self.database_config['port'])
-            cur = conn.cursor()
-            cur.execute("SELECT DISTINCT TABLE_NAME, INDEX_NAME FROM INFORMATION_SCHEMA.STATISTICS")
-            rows = cur.fetchall()
-            for row in rows:
-                print row
-            cur.close()
-            conn.close()
+            return conn
         except Exception, e:
             LOG.exception(e)
     ## DEF

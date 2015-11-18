@@ -7,6 +7,7 @@ import re
 import copy
 import traceback
 import requests
+import mechanize
 
 from library.models import *
 from cmudbal.settings import *
@@ -26,22 +27,22 @@ LOG = logging.getLogger()
 ## =====================================================================
 class BenchmarkDriver(Driver):
     
-    def __init__(self, driver, index):
+    def __init__(self, driver):
         Driver.__init__(self, driver.deployer)
         self.forms = driver.forms
-        self.sessions = []
-        session = requests.Session()
-        if driver.browser != None:
-            session.cookies = driver.browser._ua_handlers['_cookies'].cookiejar
-        self.sessions.append(session)
-        self.sessions.append(requests.Session())
-        for i in xrange(len(self.forms)):
-            self.forms[i][0]['url'] = re.sub(':\d+', ':{}'.format(driver.deployer.port + index), self.forms[i][0]['url'])
+        self.browser = mechanize.Browser()
+        self.browser.set_cookiejar(driver.browser._ua_handlers['_cookies'].cookiejar)
 
     def submit_forms(self):
         forms_cnt = 0
-        for form, session_index in self.forms:
-            part_inputs = submit.fill_form_random_fast(self.deployer.base_path, form, self.sessions[session_index])
+        for form, browser_index in self.forms:
+            try:
+                if browser_index == 0:
+                    part_inputs = submit.fill_form_random(self.deployer.base_path, form, self.browser)
+                else:
+                    part_inputs = submit.fill_form_random(self.deployer.base_path, form, None)
+            except:
+                pass
             forms_cnt += 1
             # LOG.info('Normal: Fill in Form on {} Successfully ...'.format(form['url']))
         return forms_cnt

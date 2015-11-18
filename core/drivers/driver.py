@@ -203,7 +203,7 @@ class Driver(object):
                 login_result = USER_STATUS_FAIL
             else:
                 login_form['queries'], login_form['counter'] = self.process_query(self.check_log(last_line_no), inputs)
-            if login_form and len(login_form['queries']) == 0:
+            if login_form and len(login_form['queries']) > 0:
                 login_result = USER_STATUS_SUCCESS
             else:
                 login_result = USER_STATUS_FAIL
@@ -266,7 +266,7 @@ class Driver(object):
                 else:
                     part_inputs = submit.fill_form_random(self.deployer.base_path, form, None)
             except:
-                traceback.print_exc()
+                # traceback.print_exc()
                 part_inputs = None
             if part_inputs == None:
                 ret_forms.append(form)
