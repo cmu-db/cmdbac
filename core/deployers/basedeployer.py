@@ -89,7 +89,8 @@ class BaseDeployer(object):
             conn = MySQLdb.connect(host=self.database_config['host'],
                                    user=self.database_config['username'],
                                    passwd=self.database_config['password'],
-                                   port=self.database_config['port'])
+                                   port=self.database_config['port'],
+                                   db=self.database_config['name'])
             return conn
         except Exception, e:
             LOG.exception(e)

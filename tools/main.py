@@ -54,7 +54,7 @@ def run_benchmark(atempt_id, database, benchmark):
         'password': 'root'
     }
     benchmark = {
-        'num_threads': 0,
+        'num_threads': 1,
         'timeout': 60
     }
     utils.run_benchmark(attempt_id, database, benchmark)
