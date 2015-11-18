@@ -81,6 +81,9 @@ class BaseDeployer(object):
             LOG.exception(e)
     ## DEF
     
+    def get_database_name(self):
+        return self.database_config['name']
+
     def get_database_connection(self):
         try:
             conn = MySQLdb.connect(host=self.database_config['host'],

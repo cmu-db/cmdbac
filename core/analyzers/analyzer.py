@@ -14,7 +14,9 @@ LOG = logging.getLogger()
 class Analyzer(object):
     
     def __init__(self, deployer):
-        self.stats = {}
+        self.queries_stats = {}
+        self.database_stats = {}
+        self.deployer = deployer
 
     def count_transaction(self, queries):
         cnt = 0
@@ -23,17 +25,31 @@ class Analyzer(object):
                 cnt += 1
         return cnt
 
-    def analyze(self, queries):
-        self.stats['transaction'] = self.stats.get('transaction', 0) + self.count_transaction(queries)
+    def analyze_queries(self, queries):
+        self.queries_stats['transaction'] = self.queries_stats.get('transaction', 0) + self.count_transaction(queries)
 
-    def extract_database_info():
+    def analyze_database(self):
         try:
-            conn = deployer.get_database_connection()
+            conn = self.deployer.get_database_connection()
             cur = conn.cursor()
-            cur.execute("SELECT DISTINCT TABLE_NAME, INDEX_NAME FROM INFORMATION_SCHEMA.STATISTICS")
-            rows = cur.fetchall()
-            for row in rows:
-                print row
+            database = self.deployer.get_database_name()
+            
+            # the number of tables
+            cur.execute("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '{}';".format(database))
+            self.database_stats['num_tables'] = int(cur.fetchone()[0])
+
+            # the number of indexes
+            cur.execute("SELECT COUNT(DISTINCT table_name, index_name) FROM information_schema.statistics WHERE table_schema = '{}';".format(database))
+            self.database_stats['num_indexes'] = int(cur.fetchone()[0])
+
+            # the number of constraints
+            cur.execute("SELECT COUNT(*) FROM information_schema.table_constraints WHERE constraint_schema = '{}';".format(database))
+            self.database_stats['num_constraints'] = int(cur.fetchone()[0])
+
+            # the number of foreign keys
+            cur.execute("SELECT COUNT(*) FROM information_schema.referential_constraints WHERE constraint_schema = '{}';".format(database))
+            self.database_stats['num_foreignkeys'] = int(cur.fetchone()[0])
+
             cur.close()
             conn.close()
         except Exception, e:
