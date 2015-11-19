@@ -111,11 +111,15 @@ class BaseDeployer(object):
     def clear_database(self):
         try:
             conn = self.get_database_connection(False)
-            conn.set_isolation_level(0)
+            if self.database.name == 'PostgreSQL':
+                conn.set_isolation_level(0)
             cur = conn.cursor()
             cur.execute('drop database if exists {}'.format(self.database_config['name']))
             cur.execute('create database {}'.format(self.database_config['name']))
-            conn.set_isolation_level(1)
+            if self.database.name == 'PostgreSQL':
+                conn.set_isolation_level(1)
+            elif self.database.name == 'MySQL':
+                conn.commit()
             cur.close()
             conn.close()
         except Exception, e:
