@@ -6,6 +6,7 @@ import requests
 import re
 import copy
 import traceback
+import time
 
 from library.models import *
 from cmudbal.settings import *
@@ -19,9 +20,6 @@ import count
 ## =====================================================================
 LOG = logging.getLogger()
 
-## MYSQL General Log Configuration
-MYSQL_GENERAL_LOG_FILE = '/var/log/mysql/mysql.log'
-
 ## =====================================================================
 ## BASE DRIVER
 ## =====================================================================
@@ -29,10 +27,11 @@ class BaseDriver(object):
     
     def __init__(self, deployer):
         self.deployer = deployer
+        self.log_file = LOG_FILE_LOCATION[deployer.get_database().name.lower()]
         self.forms = []
 
     def check_log(self, last_line_no = None):
-        sql_log_file = open(MYSQL_GENERAL_LOG_FILE, 'r')
+        sql_log_file = open(self.log_file, 'r')
         if last_line_no == None:
             return len(sql_log_file.readlines())
         else:
@@ -42,10 +41,11 @@ class BaseDriver(object):
         ret_queries = []
         for query in queries:
             matched = False
-            query = re.search('Query.?(.+)', query)
-            if query == None:
-                continue
-            query = query.group(1)
+            if self.deployer.get_database().name == 'MySQL':
+                query = re.search('Query.?(.+)', query)
+                if query == None:
+                    continue
+                query = query.group(1)
             for name, value in sorted(inputs.items(), key=lambda (x, y): len(str(y)), reverse=True):
                 if str(value) in query:
                     query = query.replace(value, '<span style="color:red">{}</span>'.format(name))
@@ -140,6 +140,7 @@ class BaseDriver(object):
             form['queries'], form['counter'] = self.process_query(self.check_log(last_line_no), part_inputs)
             if len(form['queries']) == 0:
                 ret_forms.append(form)
+                LOG.info('Failed')
                 continue
             LOG.info('Admin: Fill in Form on {} Successfully ...'.format(form['url']))
             ret_forms.append(form)

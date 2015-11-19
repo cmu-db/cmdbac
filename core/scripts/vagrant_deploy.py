@@ -16,7 +16,7 @@ def main():
         return
     repo_name = sys.argv[1]
     deploy_id = sys.argv[2]
-    database_name = 'MySQL'
+    database_name = 'PostgreSQL'
 
     repo = Repository.objects.get(name=repo_name)
     database = Database.objects.get(name=database_name)

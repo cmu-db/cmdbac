@@ -8,6 +8,7 @@ from StringIO import StringIO
 from string import Template
 from datetime import datetime
 import MySQLdb
+import psycopg2
 
 from library.models import *
 import utils
@@ -44,12 +45,20 @@ class BaseDeployer(object):
         self.runtime = None
 
         if database_config == None:
-            self.database_config = {
-                'host': '127.0.0.1',
-                'port': 3306,
-                'username': 'root',
-                'password': 'root'
-            }
+            if self.database.name == 'MySQL':
+                self.database_config = {
+                    'host': '127.0.0.1',
+                    'port': 3306,
+                    'username': 'root',
+                    'password': 'root'
+                }
+            elif self.database.name == 'PostgreSQL':
+                self.database_config = {
+                    'host': '127.0.0.1',
+                    'port': 5432,
+                    'username': 'postgres',
+                    'password': 'postgres'
+                }
         else:
             self.database_config = database_config
 
@@ -64,34 +73,51 @@ class BaseDeployer(object):
     def get_database(self):
         return self.database
     ## DEF
-    
-    def clear_database(self):
+
+    def get_database_name(self):
+        return self.database_config['name']
+
+    def get_database_connection(self, specify_database = True):
         try:
-            conn = MySQLdb.connect(host=self.database_config['host'],
-                                   user=self.database_config['username'],
-                                   passwd=self.database_config['password'],
-                                   port=self.database_config['port'])
-            cur = conn.cursor()
-            cur.execute('drop database if exists {}'.format(self.database_config['name']))
-            cur.execute('create database {}'.format(self.database_config['name']))
-            conn.commit()
-            cur.close()
-            conn.close()
+            if self.database.name == 'MySQL':
+                if specify_database:
+                    conn = MySQLdb.connect(host=self.database_config['host'],
+                                           user=self.database_config['username'],
+                                           passwd=self.database_config['password'],
+                                           port=self.database_config['port'],
+                                           db=self.database_config['name'])
+                else:
+                    conn = MySQLdb.connect(host=self.database_config['host'],
+                                           user=self.database_config['username'],
+                                           passwd=self.database_config['password'],
+                                           port=self.database_config['port'])
+            elif self.database.name == 'PostgreSQL':
+                if specify_database:
+                    conn = psycopg2.connect(host=self.database_config['host'],
+                                           user=self.database_config['username'],
+                                           password=self.database_config['password'],
+                                           port=self.database_config['port'],
+                                           database=self.database_config['name'])
+                else:
+                    conn = psycopg2.connect(host=self.database_config['host'],
+                                            user=self.database_config['username'],
+                                            password=self.database_config['password'],
+                                            port=self.database_config['port'])
+            return conn
         except Exception, e:
             LOG.exception(e)
     ## DEF
     
-    def get_database_name(self):
-        return self.database_config['name']
-
-    def get_database_connection(self):
+    def clear_database(self):
         try:
-            conn = MySQLdb.connect(host=self.database_config['host'],
-                                   user=self.database_config['username'],
-                                   passwd=self.database_config['password'],
-                                   port=self.database_config['port'],
-                                   db=self.database_config['name'])
-            return conn
+            conn = self.get_database_connection(False)
+            conn.set_isolation_level(0)
+            cur = conn.cursor()
+            cur.execute('drop database if exists {}'.format(self.database_config['name']))
+            cur.execute('create database {}'.format(self.database_config['name']))
+            conn.set_isolation_level(1)
+            cur.close()
+            conn.close()
         except Exception, e:
             LOG.exception(e)
     ## DEF

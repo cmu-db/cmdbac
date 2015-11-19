@@ -24,7 +24,7 @@ SECRET_KEY = 'abcdefghijklmnopqrstuvwxyz'
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 DATABASES = {{
     'default': {{
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.{engine}',
         'NAME': '{name}',
         'HOST': '{host}',
         'PORT': '{port}',
@@ -49,10 +49,14 @@ class DjangoDeployer(BaseDeployer):
     
     def configure_settings(self):
         with open(self.setting_path, "a") as my_setting_file:
+            engine = {
+                'MySQL': 'mysql',
+                'PostgreSQL': 'postgresql_psycopg2'
+            }[self.database.name]
             my_setting_file.write(DJANGO_SETTINGS.format(name=self.database_config['name'], 
                 host=self.database_config['host'], port=self.database_config['port'], 
                 username=self.database_config['username'], password=self.database_config['password'],
-                path=self.base_path))
+                path=self.base_path, engine=engine))
         ## WITH
     ## DEF
     
