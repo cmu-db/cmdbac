@@ -23,9 +23,9 @@ LOG = logging.getLogger()
 MYSQL_GENERAL_LOG_FILE = '/var/log/mysql/mysql.log'
 
 ## =====================================================================
-## DRIVER
+## BASE DRIVER
 ## =====================================================================
-class Driver(object):
+class BaseDriver(object):
     
     def __init__(self, deployer):
         self.deployer = deployer

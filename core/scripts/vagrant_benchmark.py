@@ -77,7 +77,7 @@ def main():
         sys.exit(-1)
 
     print 'Running driver ...'
-    driver = Driver(deployer)
+    driver = BaseDriver(deployer)
     
     try:
         driver.bootstrap()
@@ -111,7 +111,7 @@ def main():
 
     # analyze
     print 'Analyzing queries ...'
-    analyzer = Analyzer(deployer)
+    analyzer = BaseAnalyzer(deployer)
     for form, _ in driver.forms:
         analyzer.analyze_queries(form['queries'])
     print analyzer.queries_stats

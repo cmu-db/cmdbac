@@ -15,7 +15,7 @@ import utils
 import extract
 import submit
 import count
-from driver import Driver
+from basedriver import BaseDriver
 
 ## =====================================================================
 ## LOGGING CONFIGURATION
@@ -23,9 +23,9 @@ from driver import Driver
 LOG = logging.getLogger()
 
 ## =====================================================================
-## DRIVER
+## BENCHMARK DRIVER
 ## =====================================================================
-class BenchmarkDriver(Driver):
+class BenchmarkDriver(BaseDriver):
     
     def __init__(self, driver):
         Driver.__init__(self, driver.deployer)

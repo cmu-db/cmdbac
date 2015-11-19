@@ -1,1 +1,1 @@
-from analyzer import *
+from baseanalyzer import *

@@ -9,9 +9,9 @@ import logging
 LOG = logging.getLogger()
 
 ## =====================================================================
-## ANALYZER
+## BASE ANALYZER
 ## =====================================================================
-class Analyzer(object):
+class BaseAnalyzer(object):
     
     def __init__(self, deployer):
         self.queries_stats = {}

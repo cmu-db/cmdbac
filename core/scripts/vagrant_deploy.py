@@ -29,7 +29,7 @@ def main():
         deployer.kill_server()
         sys.exit(-1)
     try:
-        driver = Driver(deployer)
+        driver = BaseDriver(deployer)
         driverResult = driver.drive()
     except Exception, e:
         LOG.exception(e)
