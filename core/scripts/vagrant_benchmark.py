@@ -111,7 +111,7 @@ def main():
 
     # analyze
     print 'Analyzing queries ...'
-    analyzer = BaseAnalyzer(deployer)
+    analyzer = MySQLAnalyzer(deployer)
     for form, _ in driver.forms:
         analyzer.analyze_queries(form['queries'])
     print analyzer.queries_stats
