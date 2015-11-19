@@ -86,6 +86,11 @@ DATABASES = {
     }
 }
 
+LOG_FILE_LOCATION = {
+    'mysql': '/var/log/mysql/mysql.log',
+    'postgresql': '/var/log/postgresql/postgresql-9.3-main.log'
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
