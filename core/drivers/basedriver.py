@@ -140,7 +140,6 @@ class BaseDriver(object):
             form['queries'], form['counter'] = self.process_query(self.check_log(last_line_no), part_inputs)
             if len(form['queries']) == 0:
                 ret_forms.append(form)
-                LOG.info('Failed')
                 continue
             LOG.info('Admin: Fill in Form on {} Successfully ...'.format(form['url']))
             ret_forms.append(form)

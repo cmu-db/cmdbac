@@ -18,36 +18,36 @@ LOG = logging.getLogger()
 ## =====================================================================
 DATABASE_SETTINGS = """
 development:
-  adapter: mysql2
+  adapter: {adapter}
   database: {name}
   pool: 5
   timeout: 5000
   username: {username}
   password: {password}
   port: {port}
-  shost: {host}
+  host: {host}
 test:
-  adapter: mysql2
+  adapter: {adapter}
   database: {name}
   pool: 5
   timeout: 5000
   username: {username}
   password: {password}
   port: {port}
-  shost: {host}
+  host: {host}
 production:
-  adapter: mysql2
+  adapter: {adapter}
   database: {name}
   pool: 5
   timeout: 5000
   username: {username}
   password: {password}
   port: {port}
-  shost: {host}
+  host: {host}
 """
 
 GEMFILE_SETTINGS = """
-gem 'mysql2'
+gem '{}'
 """
 
 ## =====================================================================
@@ -62,13 +62,17 @@ class RoRDeployer(BaseDeployer):
     ## DEF
     
     def configure_settings(self):
+        adapter = {
+            'MySQL': 'mysql2',
+            'PostgreSQL': 'postgresql'
+        }[self.database.name]
         with open(os.path.join(self.setting_path, 'config/database.yml'), "w") as my_file:
             my_file.write(DATABASE_SETTINGS.format(name=self.database_config['name'], 
                 username=self.database_config['username'], password=self.database_config['password'],
-                port=self.database_config['port'], host=self.database_config['host']))
+                port=self.database_config['port'], host=self.database_config['host'], adapter=adapter))
         ## WITH
         with open(os.path.join(self.setting_path, 'Gemfile'), "a") as my_file:
-            my_file.write(GEMFILE_SETTINGS)
+            my_file.write(GEMFILE_SETTINGS.format(adapter))
         ## WITH
     ## DEF
     

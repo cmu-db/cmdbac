@@ -48,11 +48,11 @@ class DjangoDeployer(BaseDeployer):
     ## DEF
     
     def configure_settings(self):
+        engine = {
+            'MySQL': 'mysql',
+            'PostgreSQL': 'postgresql_psycopg2'
+        }[self.database.name]
         with open(self.setting_path, "a") as my_setting_file:
-            engine = {
-                'MySQL': 'mysql',
-                'PostgreSQL': 'postgresql_psycopg2'
-            }[self.database.name]
             my_setting_file.write(DJANGO_SETTINGS.format(name=self.database_config['name'], 
                 host=self.database_config['host'], port=self.database_config['port'], 
                 username=self.database_config['username'], password=self.database_config['password'],
