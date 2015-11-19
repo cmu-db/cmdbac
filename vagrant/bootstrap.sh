@@ -83,6 +83,8 @@ install 'Git' git
 install 'SQLite' sqlite3 libsqlite3-dev
 
 install 'PostgreSQL' postgresql postgresql-contrib libpq-dev
+sudo -u postgres psql -U postgres -d postgres -c "alter user postgres with password 'postgres';"
+pip install psycopg2
 
 debconf-set-selections <<< "mysql-server mysql-server/root_password password root"
 debconf-set-selections <<< "mysql-server mysql-server/root_password_again password root"
