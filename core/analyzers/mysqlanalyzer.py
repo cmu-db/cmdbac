@@ -1,6 +1,8 @@
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
+from baseanalyzer import BaseAnalyzer
+
 import logging
 
 ## =====================================================================
@@ -11,10 +13,10 @@ LOG = logging.getLogger()
 ## =====================================================================
 ## MYSQL ANALYZER
 ## =====================================================================
-class MySQLAnalyzer(object):
+class MySQLAnalyzer(BaseAnalyzer):
     
     def __init__(self, deployer):
-        Driver.__init__(self, deployer)
+        BaseAnalyzer.__init__(self, deployer)
 
     def count_transaction(self, queries):
         cnt = 0

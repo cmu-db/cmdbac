@@ -28,7 +28,7 @@ LOG = logging.getLogger()
 class BenchmarkDriver(BaseDriver):
     
     def __init__(self, driver):
-        Driver.__init__(self, driver.deployer)
+        BaseDriver.__init__(self, driver.deployer)
         self.forms = driver.forms
         self.browser = mechanize.Browser()
         self.browser.set_cookiejar(driver.browser._ua_handlers['_cookies'].cookiejar)

@@ -46,7 +46,7 @@ def get_attempt_info(attempt_id):
 def run_benchmark(atempt_id, database, benchmark):
     attempt_id = 163
     database = {
-        'database': 'mysql',
+        'database': 'mysql', #'postgresql',
         'host': '127.0.0.1',
         'port': '3306',
         'name': 'crawler0',
