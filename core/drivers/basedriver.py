@@ -27,7 +27,10 @@ class BaseDriver(object):
     
     def __init__(self, deployer):
         self.deployer = deployer
-        self.log_file = LOG_FILE_LOCATION[deployer.get_database().name.lower()]
+        if deployer.log_file != None:
+            self.log_file = deployer.log_file
+        else:
+            self.log_file = LOG_FILE_LOCATION[deployer.get_database().name.lower()]
         self.forms = []
 
     def check_log(self, last_line_no = None):
@@ -48,7 +51,7 @@ class BaseDriver(object):
                 query = query.group(1)
             for name, value in sorted(inputs.items(), key=lambda (x, y): len(str(y)), reverse=True):
                 if str(value) in query:
-                    query = query.replace(value, '<span style="color:red">{}</span>'.format(name))
+                    query = query.replace(str(value), '<span style="color:red">{}</span>'.format(name))
                     matched = True
             ret_queries.append({'content': query, 'matched': matched})
         counter = count.count_query(queries)

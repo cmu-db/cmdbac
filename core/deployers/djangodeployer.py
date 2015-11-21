@@ -33,10 +33,25 @@ DATABASES = {{
         'CONN_MAX_AGE': 500
     }}
 }}
+LOGGING = {{
+    'version': 1,
+    'handlers': {{
+        'file': {{
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '{log_file}',
+        }}
+    }},
+    'loggers': {{
+        'django.db.backends': {{
+            'level': 'DEBUG',
+            'handlers': ['file']
+        }}
+    }}
+}}
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = '{path}'
 """
-
 ## =====================================================================
 ## DJANGO DEPLOYER
 ## =====================================================================
@@ -45,18 +60,21 @@ class DjangoDeployer(BaseDeployer):
         BaseDeployer.__init__(self, repo, database, deploy_id, database_config, runtime)
         if database_config == None:
             self.database_config['name'] = 'django_app' + str(deploy_id)
+            if self.database.name == 'SQLite3':
+                self.log_file = os.path.join(self.base_path, 'sql.log')
     ## DEF
     
     def configure_settings(self):
         engine = {
             'MySQL': 'mysql',
-            'PostgreSQL': 'postgresql_psycopg2'
+            'PostgreSQL': 'postgresql_psycopg2',
+            'SQLite3': 'sqlite3'
         }[self.database.name]
         with open(self.setting_path, "a") as my_setting_file:
             my_setting_file.write(DJANGO_SETTINGS.format(name=self.database_config['name'], 
                 host=self.database_config['host'], port=self.database_config['port'], 
                 username=self.database_config['username'], password=self.database_config['password'],
-                path=self.base_path, engine=engine))
+                path=self.base_path, engine=engine, log_file=self.log_file))
         ## WITH
     ## DEF
     

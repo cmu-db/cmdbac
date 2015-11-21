@@ -9,8 +9,10 @@ from string import Template
 from datetime import datetime
 import MySQLdb
 import psycopg2
+import sqlite3
 
 from library.models import *
+from cmudbal.settings import *
 import utils
 
 ## =====================================================================
@@ -43,6 +45,7 @@ class BaseDeployer(object):
         self.setting_path = None
         self.port = int(self.repo.project_type.default_port) + int(self.deploy_id)
         self.runtime = None
+        self.log_file = None
 
         if database_config == None:
             if self.database.name == 'MySQL':
@@ -58,6 +61,13 @@ class BaseDeployer(object):
                     'port': 5432,
                     'username': 'postgres',
                     'password': 'postgres'
+                }
+            elif self.database.name == 'SQLite3':
+                self.database_config = {
+                    'host': '127.0.0.1',
+                    'port': '',
+                    'username': '',
+                    'password': ''
                 }
         else:
             self.database_config = database_config
@@ -103,6 +113,11 @@ class BaseDeployer(object):
                                             user=self.database_config['username'],
                                             password=self.database_config['password'],
                                             port=self.database_config['port'])
+            elif self.database.name == 'SQLite3':
+                conn = sqlite3.connect(self.database_config['name'])
+                if not specify_database:
+                    sqlite3.enable_callback_tracebacks(True)
+                    sys.stderr = open(LOG_FILE_LOCATION[self.database.name.lower()], 'w')
             return conn
         except Exception, e:
             LOG.exception(e)
@@ -111,6 +126,9 @@ class BaseDeployer(object):
     def clear_database(self):
         try:
             conn = self.get_database_connection(False)
+            if self.database.name == 'SQLite3':
+                conn.close()
+                return
             if self.database.name == 'PostgreSQL':
                 conn.set_isolation_level(0)
             cur = conn.cursor()
