@@ -44,6 +44,8 @@ class MySQLAnalyzer(BaseAnalyzer):
                 except Exception, e:
                     LOG.exception(e)
 
+            cur.close()
+            conn.close()
         except Exception, e:
             LOG.exception(e)
 
