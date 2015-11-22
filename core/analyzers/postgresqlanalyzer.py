@@ -40,7 +40,7 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
                     if content == None:
                         continue
                     content = content.group(1)
-                    explain_query = 'explain {};'.format(content)
+                    explain_query = 'EXPLAIN ANALYZE {};'.format(content)
                     print explain_query
                     cur.execute(explain_query)
                     rows = cur.fetchall()
@@ -63,20 +63,12 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
             database = self.deployer.get_database_name()
             
             # the number of tables
-            cur.execute("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '{}';".format(database))
+            cur.execute("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';")
             self.database_stats['num_tables'] = int(cur.fetchone()[0])
 
             # the number of indexes
-            cur.execute("SELECT COUNT(DISTINCT table_name, index_name) FROM information_schema.statistics WHERE table_schema = '{}';".format(database))
+            cur.execute("SELECT COUNT(*) FROM pg_stat_all_indexes WHERE schemaname = 'public';")
             self.database_stats['num_indexes'] = int(cur.fetchone()[0])
-
-            # the number of constraints
-            cur.execute("SELECT COUNT(*) FROM information_schema.table_constraints WHERE constraint_schema = '{}';".format(database))
-            self.database_stats['num_constraints'] = int(cur.fetchone()[0])
-
-            # the number of foreign keys
-            cur.execute("SELECT COUNT(*) FROM information_schema.referential_constraints WHERE constraint_schema = '{}';".format(database))
-            self.database_stats['num_foreignkeys'] = int(cur.fetchone()[0])
 
             cur.close()
             conn.close()
