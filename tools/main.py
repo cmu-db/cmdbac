@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 import os, sys
 
+import argparse
+import requests
+import json
+
 ############ to be deleted in the future
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
@@ -9,10 +13,6 @@ import django
 django.setup()
 import utils
 ###########
-
-import argparse
-import requests
-import json
 
 ATTEMPT_URL = "http://127.0.0.1:8000/api/attempt"
 
@@ -45,13 +45,22 @@ def get_attempt_info(attempt_id):
 
 def run_benchmark(atempt_id, database, benchmark):
     attempt_id = 163
+    if 0:
+        database = {
+            'database': 'mysql',
+            'host': '127.0.0.1',
+            'port': '3306',
+            'name': 'crawler0',
+            'username': 'root',
+            'password': 'root'
+        }
     database = {
-        'database': 'mysql', #'postgresql',
+        'database': 'postgresql',
         'host': '127.0.0.1',
-        'port': '3306',
+        'port': '5432',
         'name': 'crawler0',
-        'username': 'root',
-        'password': 'root'
+        'username': 'postgres',
+        'password': 'postgres'
     }
     benchmark = {
         'num_threads': 1,
