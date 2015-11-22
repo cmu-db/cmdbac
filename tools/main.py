@@ -54,13 +54,21 @@ def run_benchmark(atempt_id, database, benchmark):
             'username': 'root',
             'password': 'root'
         }
+        database = {
+            'database': 'postgresql',
+            'host': '127.0.0.1',
+            'port': '5432',
+            'name': 'crawler0',
+            'username': 'postgres',
+            'password': 'postgres'
+        }
     database = {
-        'database': 'postgresql',
+        'database': 'sqlite3',
         'host': '127.0.0.1',
-        'port': '5432',
+        'port': '3306',
         'name': 'crawler0',
-        'username': 'postgres',
-        'password': 'postgres'
+        'username': 'root',
+        'password': 'root'
     }
     benchmark = {
         'num_threads': 1,

@@ -115,9 +115,6 @@ class BaseDeployer(object):
                                             port=self.database_config['port'])
             elif self.database.name == 'SQLite3':
                 conn = sqlite3.connect(self.database_config['name'])
-                if not specify_database:
-                    sqlite3.enable_callback_tracebacks(True)
-                    sys.stderr = open(LOG_FILE_LOCATION[self.database.name.lower()], 'w')
             return conn
         except Exception, e:
             LOG.exception(e)

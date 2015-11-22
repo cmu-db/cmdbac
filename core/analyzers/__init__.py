@@ -1,6 +1,7 @@
 from baseanalyzer import *
 from mysqlanalyzer import *
 from postgresqlanalyzer import *
+from sqlite3analyzer import *
 
 def get_analyzer(deployer):
 	if deployer.get_database().name == 'MySQL':

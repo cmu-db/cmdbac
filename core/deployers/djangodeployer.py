@@ -60,8 +60,8 @@ class DjangoDeployer(BaseDeployer):
         BaseDeployer.__init__(self, repo, database, deploy_id, database_config, runtime)
         if database_config == None:
             self.database_config['name'] = 'django_app' + str(deploy_id)
-            if self.database.name == 'SQLite3':
-                self.log_file = os.path.join(self.base_path, 'sql.log')
+        if self.database.name == 'SQLite3':
+            self.log_file = os.path.join(self.base_path, 'sql.log')
     ## DEF
     
     def configure_settings(self):

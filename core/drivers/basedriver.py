@@ -49,6 +49,16 @@ class BaseDriver(object):
                 if query == None:
                     continue
                 query = query.group(1)
+            elif self.deployer.get_database().name == 'PostgreSQL':
+                query = re.search('LOG:  statement: (.+)', query)
+                if query == None:
+                    continue
+                query = query.group(1)
+            elif self.deployer.get_database().name == 'SQLite3':
+                query = re.search("QUERY = u'(.+)'", query)
+                if query == None:
+                    continue
+                query = query.group(1)
             for name, value in sorted(inputs.items(), key=lambda (x, y): len(str(y)), reverse=True):
                 if str(value) in query:
                     query = query.replace(str(value), '<span style="color:red">{}</span>'.format(name))

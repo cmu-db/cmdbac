@@ -1,10 +1,9 @@
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
-import logging
-import re
-
 from baseanalyzer import BaseAnalyzer
+
+import logging
 
 ## =====================================================================
 ## LOGGING CONFIGURATION
@@ -12,9 +11,9 @@ from baseanalyzer import BaseAnalyzer
 LOG = logging.getLogger()
 
 ## =====================================================================
-## POSTGRESQL ANALYZER
+## SQLITE3 ANALYZER
 ## =====================================================================
-class PostgreSQLAnalyzer(BaseAnalyzer):
+class SQLite3Analyzer(BaseAnalyzer):
     
     def __init__(self, deployer):
         BaseAnalyzer.__init__(self, deployer)
@@ -29,12 +28,11 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
 
         try:
             conn = self.deployer.get_database_connection()
-            conn.set_isolation_level(0)
             cur = conn.cursor()
-            
+
             for query in queries:
                 try:
-                    explain_query = 'EXPLAIN ANALYZE {};'.format(query['content'])
+                    explain_query = 'explain {};'.format(query['content'])
                     print explain_query
                     cur.execute(explain_query)
                     rows = cur.fetchall()
@@ -44,7 +42,6 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
                 except Exception, e:
                     LOG.exception(e)
 
-            conn.set_isolation_level(1)
             cur.close()
             conn.close()
         except Exception, e:
@@ -57,11 +54,11 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
             database = self.deployer.get_database_name()
             
             # the number of tables
-            cur.execute("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';")
+            cur.execute("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table';")
             self.database_stats['num_tables'] = int(cur.fetchone()[0])
 
             # the number of indexes
-            cur.execute("SELECT COUNT(*) FROM pg_stat_all_indexes WHERE schemaname = 'public';")
+            cur.execute("SELECT COUNT(*) FROM sqlite_master WHERE type = 'index';")
             self.database_stats['num_indexes'] = int(cur.fetchone()[0])
 
             cur.close()
