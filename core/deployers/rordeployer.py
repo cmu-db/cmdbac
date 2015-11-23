@@ -64,7 +64,8 @@ class RoRDeployer(BaseDeployer):
     def configure_settings(self):
         adapter = {
             'MySQL': 'mysql2',
-            'PostgreSQL': 'postgresql'
+            'PostgreSQL': 'postgresql',
+            'SQLite3': 'sqlite3'
         }[self.database.name]
         with open(os.path.join(self.setting_path, 'config/database.yml'), "w") as my_file:
             my_file.write(DATABASE_SETTINGS.format(name=self.database_config['name'], 
