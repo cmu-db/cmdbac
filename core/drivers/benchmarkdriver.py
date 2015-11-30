@@ -10,7 +10,7 @@ import requests
 import mechanize
 
 from library.models import *
-from cmudbal.settings import *
+from cmudbac.settings import *
 import utils
 import extract
 import submit

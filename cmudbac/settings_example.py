@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 """
-Django settings for cmudbal project.
+Django settings for cmudbac project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.6/topics/settings/
@@ -49,9 +49,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'cmudbal.urls'
+ROOT_URLCONF = 'cmudbac.urls'
 
-WSGI_APPLICATION = 'cmudbal.wsgi.application'
+WSGI_APPLICATION = 'cmudbac.wsgi.application'
 
 TEMPLATES = [
     {

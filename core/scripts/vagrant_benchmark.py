@@ -11,7 +11,7 @@ import time
 import logging
 from multiprocessing import Process, Queue
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbal.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
 django.setup()
 from library.models import *

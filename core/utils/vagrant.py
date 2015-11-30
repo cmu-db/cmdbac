@@ -6,7 +6,7 @@ import shutil
 from run import run_command
 from file import cd
 
-copied_dir = ['cmudbal', 'library', 'blog', 'core', 'secrets']
+copied_dir = ['cmudbac', 'library', 'blog', 'core', 'secrets']
 vagrant_dir = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, 'vagrant')
 copied_files = []
 
@@ -31,7 +31,7 @@ def vagrant_clear():
     # run_command('{} && {}'.format(cd(vagrant_dir), 'vagrant halt'))
 
 def set_vagrant_database():
-    settings_file = os.path.join(vagrant_dir, "cmudbal", "settings.py")
+    settings_file = os.path.join(vagrant_dir, "cmudbac", "settings.py")
     settings = open(settings_file).read()
     if "'HOST': 'localhost'" in settings:
         settings = settings.replace("'HOST': 'localhost'", "'HOST': '10.0.2.2'")
@@ -41,7 +41,7 @@ def set_vagrant_database():
         fout.close()
 
 def unset_vagrant_database():
-    settings_file = os.path.join(vagrant_dir, "cmudbal", "settings.py")
+    settings_file = os.path.join(vagrant_dir, "cmudbac", "settings.py")
     settings = open(settings_file).read()
     if "'HOST': '10.0.2.2'" in settings:
         settings = settings.replace("'HOST': 'localhost'", "'HOST': 'localhost'")

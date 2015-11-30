@@ -12,7 +12,7 @@ import psycopg2
 import sqlite3
 
 from library.models import *
-from cmudbal.settings import *
+from cmudbac.settings import *
 import utils
 
 ## =====================================================================

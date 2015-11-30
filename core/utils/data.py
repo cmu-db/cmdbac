@@ -6,7 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 import json
 import logging
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbal.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
 django.setup()
 import library

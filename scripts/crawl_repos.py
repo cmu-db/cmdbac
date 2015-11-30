@@ -9,7 +9,7 @@ logging.basicConfig(filename='repo_crawler.log',level=logging.DEBUG)
 import json
 import traceback
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbal.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
 django.setup()
 
