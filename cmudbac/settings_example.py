@@ -82,7 +82,7 @@ DATABASES = {
         'PORT': '3306',
         'USER': 'root',
         'PASSWORD': '',
-        'STORAGE_ENGINE': 'MyISAM'
+        'STORAGE_ENGINE': 'InnoDB'
     }
 }
 
