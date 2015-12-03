@@ -121,3 +121,17 @@ a.hideLink {
 a.showLink:hover, a.hideLink:hover {
   border-bottom: 1px dotted #36f; 
 }
+
+/*
+ * News Posts
+ */
+.post-list h3 {
+    border-bottom: 2px solid #F5F5F5;
+    margin-bottom: 0px;
+}
+.post-dateline {
+    margin-top: 0px;
+    font-size: 90%;
+    font-style: italic;
+/*     border: 1px solid red; */
+}

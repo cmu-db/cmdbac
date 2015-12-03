@@ -1,6 +1,6 @@
 {% extends "blog_base.html" %}
 
-{% block head_title %}{{ post.title }} &mdash; {{ SITE_NAME }}{% endblock %}
+{% block head_title %}{{ post.title }} &raquo; {{ block.super }}{% endblock %}
 
 {% block extra_head %}
     <meta name="description" content="{{ post.teaser_html|striptags }}">
@@ -18,10 +18,6 @@
 
             <div class="content">{{ post.content_html|safe }}</div>
 
-            <div class="twitter-button">
-                <a href="https://twitter.com/share" class="twitter-share-button" data-via="">Tweet</a>
-                <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-            </div>
         </div>
     </div>
 {% endblock %}
