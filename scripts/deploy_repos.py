@@ -24,7 +24,7 @@ def main():
             continue
         print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
         try:
-            utils.vagrant_deploy(repo, deploy_id)
+            utils.vagrant_deploy(repo, deploy_id, database)
         except:
             pass
 

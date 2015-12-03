@@ -128,6 +128,10 @@ class DjangoDeployer(BaseDeployer):
         LOG.info('Syncing server ...')
         command = '{} && {} && unset DJANGO_SETTINGS_MODULE && python manage.py syncdb --noinput'.format(
             utils.to_env(self.base_path), utils.cd(path))
+        output = utils.run_command(command)
+        if 'Unknown command' in output[2]:
+            command = '{} && {} && unset DJANGO_SETTINGS_MODULE && python manage.py migrate --noinput'.format(
+            utils.to_env(self.base_path), utils.cd(path))
         return utils.run_command(command)
     ## DEF
 

@@ -45,11 +45,11 @@ def add_repo(repo_name, crawler_status_id, repo_setup_scripts):
 
         crawler.add_repository(repo_name, repo_setup_scripts)
 
-def deploy_repo(repo_name):
+def deploy_repo(repo_name, database = 'MySQL'):
     repo = Repository.objects.get(name=repo_name)
     print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
     try:
-        result = utils.vagrant_deploy(repo, 0)
+        result = utils.vagrant_deploy(repo, 0, database)
     except Exception, e:
         LOG.exception(e)
         raise e
