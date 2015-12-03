@@ -1,9 +1,9 @@
 {% extends "blog_base.html" %}
 
-{% block head_title %}{{ SITE_NAME }}{% endblock %}
+{% block head_title %}News &raquo; {{ SITE_NAME }}{% endblock %}
 
 {% block content %}
-    <h1>Blog Posts</h1>
+    <h1>News</h1>
     {% if post_list %}
         <div class="post-list">
             {% for post in post_list %}
@@ -16,6 +16,6 @@
             {% endfor %}
         </div>
     {% else %}
-        <p class="alert alert-info lead">No blog posts have been published.</p>
+        <p class="alert alert-info lead">No posts have been published.</p>
     {% endif %}
 {% endblock %}
