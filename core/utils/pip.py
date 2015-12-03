@@ -29,6 +29,8 @@ def pip_install(path, names, is_file, has_version = True):
         for name in names:
             if has_version and name.version != None and name.version != '':
                 command = '{} {}=={} '.format(command, name.name, name.version)
+            elif name.name == 'django':
+                command = '{} {}==1.8.4'.format(command, name.name)
             else:
                 command = '{} {} --upgrade'.format(command, name.name)
     out = run_command(command)

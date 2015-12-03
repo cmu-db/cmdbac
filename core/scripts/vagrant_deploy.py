@@ -9,16 +9,19 @@ django.setup()
 from library.models import *
 from deployers import *
 from drivers import *
+from analyzers import *
 import utils
 
 def main():
-    if len(sys.argv) != 3:
+    if len(sys.argv) not in [3, 4]:
         return
     repo_name = sys.argv[1]
     deploy_id = sys.argv[2]
-    database_name = 'SQLite3'
-    # database_name = 'PostgreSQL'
-    # database_name = 'MySQL'
+    if len(sys.argv) > 3:
+        database_name = sys.argv[3]
+    else:
+        database_name = 'MySQL'
+    print database_name
 
     repo = Repository.objects.get(name=repo_name)
     database = Database.objects.get(name=database_name)
@@ -36,8 +39,11 @@ def main():
     except Exception, e:
         LOG.exception(e)
         driverResult = {}
+    while True:
+        pass
     deployer.kill_server()
     deployer.save_attempt(ATTEMPT_STATUS_SUCCESS, driverResult)
+
 
 if __name__ == "__main__":
     main()
