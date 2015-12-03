@@ -1,6 +1,6 @@
-# CMDBAC - Carnegie Mellon Database Application Catalog
+# Carnegie Mellon Database Application Catalog (DBAC)
 
-For more details, Please visit the [CMUDBAC Wiki](https://github.com/cmu-db/dbac/wiki "CMDBAC Wiki") page.
+For more details, Please visit the [DBAC Wiki](https://github.com/cmu-db/dbac/wiki "DBAC Wiki") page.
 
 ### Installation
 
@@ -8,5 +8,6 @@ Please refer to the [installation instructions](https://github.com/cmu-db/dbac/w
 
 ### Contributors
 
-[https://github.com/cmu-db/db-webcrawler/graphs/contributors](https://github.com/cmu-db/dbac/graphs/contributors)
-
+* [Zeyuan Shang](http://www.shangzeyuan.com/)
+* [Andy Pavlo](http://www.cs.cmu.edu/~pavlo)
+* [Dana Van Aken](http://www.cs.cmu.edu/~dvaken)
