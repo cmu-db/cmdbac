@@ -21,7 +21,7 @@ class MySQLAnalyzer(BaseAnalyzer):
     def count_transaction(self, queries):
         cnt = 0
         for query in queries:
-            if 'commit' in query.lower():
+            if 'commit' in query['content'].lower():
                 cnt += 1
         return cnt
 

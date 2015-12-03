@@ -39,10 +39,17 @@ def main():
     except Exception, e:
         LOG.exception(e)
         driverResult = {}
-    while True:
-        pass
+    
     deployer.kill_server()
     deployer.save_attempt(ATTEMPT_STATUS_SUCCESS, driverResult)
+
+    analyzer = get_analyzer(deployer)
+    for form, _ in driver.forms:
+        analyzer.analyze_queries(form['queries'])
+    print analyzer.queries_stats
+
+    analyzer.analyze_database()
+    print analyzer.database_stats
 
 
 if __name__ == "__main__":
