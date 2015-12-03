@@ -237,8 +237,8 @@ def queries(request, id):
         
         return render(request, 'queries.html', context)
 
-def about(request):
-    return render(request, 'about.html')
+def people(request):
+    return render(request, 'people.html')
 
 def tools(request):
     context = {}
