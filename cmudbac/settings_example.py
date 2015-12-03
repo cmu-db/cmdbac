@@ -77,11 +77,11 @@ TEMPLATES = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'crawler',
+        'NAME': 'dbac',
         'HOST': 'localhost',
         'PORT': '3306',
-        'USER': 'root',
-        'PASSWORD': '',
+        'USER': 'CHANGE_ME',
+        'PASSWORD': 'CHANGE_ME',
         'STORAGE_ENGINE': 'InnoDB'
     }
 }

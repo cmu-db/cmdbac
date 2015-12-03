@@ -32,7 +32,7 @@ def pip_install(path, names, is_file, has_version = True):
             elif name.name == 'django':
                 command = '{} {}==1.8.4'.format(command, name.name)
             else:
-                command = '{} {} --upgrade'.format(command, name.name)
+                command = '{} {}'.format(command, name.name)
     out = run_command(command)
 
     return out
