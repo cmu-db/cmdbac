@@ -75,7 +75,7 @@ pip install BeautifulSoup4
 
 # install Django
 echo installing Djano
-pip install django
+pip install django==1.8.6
 
 # install dependencies
 install 'Git' git

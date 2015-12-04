@@ -26,7 +26,7 @@ class MySQLAnalyzer(BaseAnalyzer):
         return cnt
 
     def analyze_queries(self, queries):
-        self.queries_stats['transaction'] = self.queries_stats.get('transaction', 0) + self.count_transaction(queries)
+        self.queries_stats['num_transactions'] = self.count_transaction(queries)
 
         try:
             conn = self.deployer.get_database_connection()

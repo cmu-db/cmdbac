@@ -179,6 +179,7 @@ class BaseDeployer(object):
         login_result = driver_result.get('login', USER_STATUS_UNKNOWN)
         forms = driver_result.get('forms', None)
         screenshot_path = driver_result.get('screenshot', None)
+        statistics = driver_result.get('statistics', None)
 
         # get runtime
         if self.runtime == None:
@@ -235,6 +236,15 @@ class BaseDeployer(object):
             image.data = screenshot.read()
             image.attempt = self.attempt
             image.save()
+
+        # save statistics
+        if statistics != None:
+            for description, count in statistics.iteritems():
+                statistic = Statistic()
+                statistic.description = description
+                statistic.count = count
+                statistic.attempt = self.attempt
+                statistic.save()
 
         LOG.info("Saved Attempt #%s for %s" % (self.attempt, self.attempt.repo))
         
