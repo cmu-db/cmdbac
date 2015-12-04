@@ -17,10 +17,8 @@ def main():
     total_deployer = int(sys.argv[2])
     database = Database.objects.get(name='MySQL')
 
-    for repo in Repository.objects.filter(project_type=3):
+    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
         if repo.id % total_deployer != deploy_id - 1:
-            continue
-        if repo.latest_attempt.result == 'MR':
             continue
         print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
         try:
