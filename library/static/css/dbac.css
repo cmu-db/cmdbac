@@ -84,6 +84,33 @@ body {
   margin-top: 0;
 }
 
+.jumbotron {
+    position: relative;
+    background: #fff url("/static/img/jumbotron-bg.jpg") no-repeat center center;
+    background-color: inherit;
+/*     width: 100%; */
+    max-width: 1044px;
+    height: 100%;
+    background-size: cover;
+    overflow: hidden;
+}
+
+.container-full-bg {
+    width:100%;
+    height:100%;
+    max-width: 100%;
+    min-height: 360px;
+    background-position: center;
+    background-size: cover;
+    background-color: #F5F5F5;
+    text-align: center;
+}
+.container-full-bg .container, .container-full-bg .container .jumbotron {
+    height:100%;
+    width:100%;
+}
+
+
 
 /*
  * Placeholder dashboard ideas

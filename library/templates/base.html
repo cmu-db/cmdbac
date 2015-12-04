@@ -16,7 +16,9 @@
     </head>
 
     <body>
+    {% load active_page %}
 
+    <!-- HEADER -->
     <div class="container">
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
             <div class="container">
@@ -32,11 +34,11 @@
                 
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="{% url 'repositories' %}">Respositories</a></li>
-                        <li><a href="{% url 'tools' %}">Tools</a></li>
+                        <li class="{% active_page request 'repositories' %}"><a href="{% url 'repositories' %}">Repositories</a></li>
+                        <li class="{% active_page request 'tools' %}"><a href="{% url 'tools' %}">Tools</a></li>
                         <li><a href="https://github.com/cmu-db/db-webcrawler/wiki">Documentation</a></li>
-                        <li><a href="{% url 'blog' %}">News</a></li>
-                        <li><a href="{% url 'people' %}">People</a></li>
+                        <li class="{% active_page request 'blog' %}"><a href="{% url 'blog' %}">News</a></li>
+                        <li class="{% active_page request 'people' %}"><a href="{% url 'people' %}">People</a></li>
                     </ul>
                     <div class="col-sm-3 col-md-3 pull-right">
                         <form class="navbar-form" role="search" action="{% url 'repositories' %}" method="get">
@@ -51,9 +53,19 @@
                 </div>
             </div>
         </nav>
-        {% block main %}{% endblock%}
     </div>
-
+    <!-- END HEADER -->
+    
+    <!-- PREFIX -->
+    {% block prefix %}{% endblock %}
+    <!-- END PREFIX -->
+    
+    <!-- MAIN -->
+    <div class="container">
+        {% block main %}{% endblock %}
+    </div>
+    <!-- END MAIN -->
+    
     <footer>
        <div class="panel-footer text-center">
             &copy; {%now "Y"%} <a href="http://db.cs.cmu.edu">Carnegie Mellon University Database Group</a>

@@ -1,9 +1,17 @@
 {% extends "base.html" %}
 
+{% block prefix %}
+    <div class="container-full-bg">
+        <div class="container special">
+            <div class="jumbotron">Database Application Catalog</div>
+        </div>
+    </div>
+{% endblock %}
+
 {% block main %}
 {% include "attempt_status_codes.html" %}
 
-<h2 class="sub-header">Introduction</h2>
+<!--<h2 class="sub-header">Introduction</h2>
 <div>
     This is a website showing result of crawling and deploying database applications that are hosted on GitHub.<br><br>
 
@@ -12,7 +20,7 @@
     We wrote a web crawler that searches for and downloads database applications hosted on open-source repositories (i.e. GitHub). The crawler uses heuristics that allows it to identify whether a project uses a database for storage. We target web-based applications that use well-known web frameworks (i.e. Django, Ruby on Rails). Thus, we can identify whether a project is relevant if its source code references libraries from one of these frameworks.<br><br>
  
     We then developed a tool for automatically deploying an application in a VM sandbox. Targeting applications that use the common web frameworks listed above makes this step easier because they provide an object-relational mapping library that does not depend on a particular DBMS. Their configurations are also likely to be the same (e.g. setting the DBMS credentials in a common configuration file).<br><br>
-</div>
+</div>-->
 <h2 class="sub-header">Statistics</h2>
 
 <div class="table-responsive">
