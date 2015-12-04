@@ -120,7 +120,6 @@
                                     -
                                 {% endif %}
                                 </td>
-                                <td>{{ attempt.hostname }}</td>
                                 <td>
                                     <a id="{{attempt.id}}" href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}" class="label label-{{ attempt.result_label }}">{{attempt.result_name}}</a>
                                     <a href="#" data-toggle="modal" data-target="#attemptStatusModal">?</a>
