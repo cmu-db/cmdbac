@@ -114,8 +114,10 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
                             <script>
                                 function fixHeight() {
                                    var height = document.getElementById('attempt-info').offsetHeight;
-                                   $('.screenshot-div').css('height', height);
-                                   $('.screenshot-div').css('overflow', 'hidden');
+                                   document.getElementsByClassName('screenshot-div')[0].style.height = height;
+                                   document.getElementsByClassName('screenshot-div')[0].style.overflow = 'hidden'; 
+                                   // .css('height', height);
+                                   // $('.screenshot-div').css('overflow', 'hidden');
                                    // document.getElementById('screenshot-div').style.overflow = "hidden";
                                    // document.getElementById('screenshot-div').setAttribute("height", height);
                                    document.getElementById('screenshot').setAttribute("height", height);
@@ -241,7 +243,7 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
                     </div>
                     </div>
                     <script>
-                        $(document).ready(function() {
+                        document.addEventListener("DOMContentLoaded", function(event) {
                             $('#queries-details-{{form.id}}').load("{% url 'queries' form.id %}");
                         });
                     </script>
