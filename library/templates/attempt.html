@@ -33,8 +33,8 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
     <li>Attempt #{{attempt.id}}
 </ul>
 
-<h2 class="sub-header">Attempt #{{attempt.id}}</h2>
-<div class="table-responsive">
+<section>
+    <h3 class="sub-header">Information</h2>
     <table class="table table-bordered table-striped">
         <colgroup>
             <col class="col-xs-7">
@@ -113,14 +113,14 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
                         {% if screenshot %}
                             <script>
                                 function fixHeight() {
-                                   var height = document.getElementById('attempt-info').offsetHeight;
-                                   document.getElementsByClassName('screenshot-div')[0].style.height = height;
-                                   document.getElementsByClassName('screenshot-div')[0].style.overflow = 'hidden'; 
-                                   // .css('height', height);
-                                   // $('.screenshot-div').css('overflow', 'hidden');
-                                   // document.getElementById('screenshot-div').style.overflow = "hidden";
-                                   // document.getElementById('screenshot-div').setAttribute("height", height);
-                                   document.getElementById('screenshot').setAttribute("height", height);
+                                var height = document.getElementById('attempt-info').offsetHeight;
+                                document.getElementsByClassName('screenshot-div')[0].style.height = height;
+                                document.getElementsByClassName('screenshot-div')[0].style.overflow = 'hidden'; 
+                                // .css('height', height);
+                                // $('.screenshot-div').css('overflow', 'hidden');
+                                // document.getElementById('screenshot-div').style.overflow = "hidden";
+                                // document.getElementById('screenshot-div').setAttribute("height", height);
+                                document.getElementById('screenshot').setAttribute("height", height);
                                 }
                             </script>
                             <a href="#" data-toggle="modal" data-target="#screenshotModal">
@@ -129,8 +129,8 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
                         {% else %}
                             <script>
                                 function fixHeight() {
-                                   var height = document.getElementById('attempt-info').offsetHeight;
-                                   document.getElementById('screenshot').setAttribute("height", height);
+                                var height = document.getElementById('attempt-info').offsetHeight;
+                                document.getElementById('screenshot').setAttribute("height", height);
                                 }
                             </script>
                             <img src="{{STATIC_URL}}img/no_image.gif" id="screenshot" height="1" width="100%" onload="fixHeight()">
@@ -140,7 +140,7 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
             </tr>
         </tbody>
     </table>
-</div>
+</section>
 
 <!-- DEPENDENCIES -->
 <section>

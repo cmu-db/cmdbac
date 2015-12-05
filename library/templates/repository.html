@@ -24,83 +24,87 @@
     <div class="panel-body">{{repository.description}}</div>
 </div>
 
-<h2 class="sub-header">Repository Detail</h2>
-<div class="col-xs-6">
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-            <colgroup>
-                <col class="col-xs-2">
-                <col class="col-xs-6">
-            </colgroup>
-            <tbody>
-            <tr>
-                <td>Full Name</td>
-                <td><a href="{{ repository.repo_url }}">{{ repository.name }}</a></td>
-            </tr>
-            <tr>
-                <td>Project Type</td>
-                <td>{{repository.project_type.name}}</td>
-            </tr>
-            <tr>
-                <td>Language</td>
-                <td>{{repository.language}}</td>
-            </tr>
-            <tr>
-                <td>Create Time</td>
-                <td>{{ repository.created_at|date:'Y-m-d H:i:s' }}</td>
-            </tr>
-            <tr>
-                <td>Update Time</td>
-                <td>{{ repository.updated_at|date:'Y-m-d H:i:s' }}</td>
-            </tr>
-            <tr>
-                <td>Push Time</td>
-                <td>{{ repository.pushed_at|date:'Y-m-d H:i:s' }}</td>
-            </tr>
-            </tbody>
-        </table>
+<!-- DETAILS -->
+<section>
+    <h3 class="sub-header">Repository Detail</h3>
+    <div class="col-xs-6">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <colgroup>
+                    <col class="col-xs-2">
+                    <col class="col-xs-6">
+                </colgroup>
+                <tbody>
+                <tr>
+                    <td>Full Name</td>
+                    <td><a href="{{ repository.repo_url }}">{{ repository.name }}</a></td>
+                </tr>
+                <tr>
+                    <td>Project Type</td>
+                    <td>{{repository.project_type.name}}</td>
+                </tr>
+                <tr>
+                    <td>Language</td>
+                    <td>{{repository.language}}</td>
+                </tr>
+                <tr>
+                    <td>Create Time</td>
+                    <td>{{ repository.created_at|date:'Y-m-d H:i:s' }}</td>
+                </tr>
+                <tr>
+                    <td>Update Time</td>
+                    <td>{{ repository.updated_at|date:'Y-m-d H:i:s' }}</td>
+                </tr>
+                <tr>
+                    <td>Push Time</td>
+                    <td>{{ repository.pushed_at|date:'Y-m-d H:i:s' }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
 
-<div class="col-xs-6">
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-            <colgroup>
-                <col class="col-xs-2">
-                <col class="col-xs-6">
-            </colgroup>
-            <tbody>
-                <tr>
-                    <td>Default Branch</td>
-                    <td>{{repository.default_branch}}</td>
-                </tr>
-                <tr>
-                    <td>Size</td>
-                    <td>{{repository.size}}</td>
-                </tr>
-                <tr>
-                    <td>Forks Count</td>
-                    <td>{{repository.forks_count}}</td>
-                </tr>
-                <tr>
-                    <td>Commits Count</td>
-                    <td>{{repository.commits_count}}</td>
-                </tr>
-                <tr>
-                    <td>Branches Count</td>
-                    <td>{{repository.branches_count}}</td>
-                </tr>
-                <tr>
-                    <td>Contributors Count</td>
-                    <td>{{repository.contributors_count}}</td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="col-xs-6">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <colgroup>
+                    <col class="col-xs-2">
+                    <col class="col-xs-6">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td>Default Branch</td>
+                        <td>{{repository.default_branch}}</td>
+                    </tr>
+                    <tr>
+                        <td>Size</td>
+                        <td>{{repository.size}}</td>
+                    </tr>
+                    <tr>
+                        <td>Forks Count</td>
+                        <td>{{repository.forks_count}}</td>
+                    </tr>
+                    <tr>
+                        <td>Commits Count</td>
+                        <td>{{repository.commits_count}}</td>
+                    </tr>
+                    <tr>
+                        <td>Branches Count</td>
+                        <td>{{repository.branches_count}}</td>
+                    </tr>
+                    <tr>
+                        <td>Contributors Count</td>
+                        <td>{{repository.contributors_count}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
+</section>
 
-<h2 class="sub-header">Attempts</h2>
-<div class="table-responsive">
+<!-- ATTEMPTS -->
+<section>
+    <h3 class="sub-header">Attempts</h3>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -149,19 +153,18 @@
                 {% endif %}
         </tbody>
     </table>
-</div>
+    <ul id="pagination" class="pagination-sm"></ul>
 
-<ul id="pagination" class="pagination-sm"></ul>
-
-<script type='text/javascript'>
-    $('#pagination').twbsPagination({
-        totalPages: {{ attempts.paginator.num_pages }},
-        visiblePages: 10,
-        href: '?page={% templatetag openvariable %}number{% templatetag closevariable %}&{{ queries_no_page.urlencode }}',
-        onPageClick: function (event, page) {
-            $('#page-content').text('Page ' + page);
-        }
-    });
-</script>
+    <script type='text/javascript'>
+        $('#pagination').twbsPagination({
+            totalPages: {{ attempts.paginator.num_pages }},
+            visiblePages: 10,
+            href: '?page={% templatetag openvariable %}number{% templatetag closevariable %}&{{ queries_no_page.urlencode }}',
+            onPageClick: function (event, page) {
+                $('#page-content').text('Page ' + page);
+            }
+        });
+    </script>
+</section>
 
 {% endblock %}
