@@ -20,6 +20,11 @@ from drivers import *
 from analyzers import *
 import utils
 
+## =====================================================================
+## LOGGING CONFIGURATION
+## =====================================================================
+LOG = logging.getLogger()
+
 def run_driver(driver, timeout, queue):
     forms_cnt = 0
     start_time = time.time()
@@ -76,7 +81,7 @@ def main():
         deployer.kill_server()
         sys.exit(-1)
 
-    print 'Running driver ...'
+    LOG.info('Running driver ...')
     driver = BaseDriver(deployer)
     
     try:
@@ -104,24 +109,24 @@ def main():
     except Exception, e:
         traceback.print_exc()
     
-    print 'The number of forms submitted : {}'.format(forms_cnt)
+    LOG.info('The number of forms submitted : {}'.format(forms_cnt))
 
     # kill server
     deployer.kill_server()
 
     # analyze
-    print 'Analyzing queries ...'
+    LOG.info('Analyzing queries ...')
     analyzer = get_analyzer(deployer)
     for form, _ in driver.forms:
         analyzer.analyze_queries(form['queries'])
-    print analyzer.queries_stats
+    LOG.info(analyzer.queries_stats)
 
     # extract database info
-    print 'Extracting database info ...'
+    LOG.info('Extracting database info ...')
     analyzer.analyze_database()
-    print analyzer.database_stats
+    LOG.info(analyzer.database_stats)
 
-    print 'Finishing ...'
+    LOG.info('Finishing ...')
 
 if __name__ == "__main__":
     main()
