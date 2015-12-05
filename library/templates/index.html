@@ -69,6 +69,7 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
+                                <th></th>
                                 <th>Project Type</th>
                                 <th><del># of Repo</del></th>
                                 <th><del># of Deploy</del></th>
@@ -81,6 +82,7 @@
                             {% if stats %}
                             {% for stat in stats %}
                             <tr>
+                                <td>LOGO</td>
                                 <td><a href="{% url 'repositories' %}?types={{ stat.repo_type }}">{{ stat.repo_type }}</a></td>
                                 <td><del>{{ stat.num_repo }}</del></td>
                                 <td><del>{{ stat.num_deploy }}</del></td>
