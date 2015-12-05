@@ -21,6 +21,10 @@ h6 {
     font-weight: 700;
 }
 
+pre {
+    font-family: 'Inconsolata', monospace;
+}
+
 .topnav {
     font-size: 14px; 
 }
@@ -31,7 +35,7 @@ h6 {
 }
 
 .intro-header {
-    padding-top: 50px; /* If you're making other pages, make sure there is 50px of padding to make sure the navbar doesn't overlap content! */
+/*     padding-top: 50px; /* If you're making other pages, make sure there is 50px of padding to make sure the navbar doesn't overlap content! */ */
     padding-bottom: 50px;
     text-align: center;
     color: #f8f8f8;
@@ -39,9 +43,13 @@ h6 {
     background-size: cover;
 }
 
+.intro-message img {
+    width: 50%;
+}
+
 .intro-message {
     position: relative;
-    padding-top: 20%;
+    padding-top: 5%;
     padding-bottom: 20%;
 }
 
