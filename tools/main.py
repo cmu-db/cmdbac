@@ -14,8 +14,8 @@ django.setup()
 import utils
 ###########
 
-ATTEMPT_DETAIL_URL = "http://127.0.0.1:8000/api/attempt/{id}/detail"
-ATTEMPT_BENCHMARK_URL = "http://127.0.0.1:8000/api/attempt/{}/benchmark"
+ATTEMPT_DETAIL_URL = "http://127.0.0.1:8000/api/attempt/{id}/detail/"
+ATTEMPT_BENCHMARK_URL = "http://127.0.0.1:8000/api/attempt/{id}/benchmark/"
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -44,8 +44,7 @@ def get_attempt_detail(attempt_id):
     response = requests.get(url)
     return response.json()
 
-def run_attempt_benchmark(atempt_id, database, benchmark):
-    attempt_id = 204
+def run_attempt_benchmark(attempt_id, database, benchmark):
     if 0:
         database = {
             'database': 'mysql',
@@ -75,19 +74,19 @@ def run_attempt_benchmark(atempt_id, database, benchmark):
         'num_threads': 1,
         'timeout': 60
     }
-    data = json.dumps({
-        'id': attempt_id,
+    payload = {
         'database': database, 
         'benchmark': benchmark
-    })
-    response = requests.post(BENCHMARK_URL, data)
+    }
+    url = ATTEMPT_BENCHMARK_URL.format(id = attempt_id)
+    response = requests.post(url, json = payload)
     print response.text
     ## utils.run_benchmark(attempt_id, database, benchmark)
 
 if __name__ == "__main__":
     args = parse_args()
-    # run_attempt_benchmark(1, 1, 1)
-    # sys.exit(0)
+    run_attempt_benchmark(args.attempt, 1, 1)
+    sys.exit(0)
     if 'database' not in args:
         attempt_id = args.attempt
         attempt_info = get_attempt_detail(attempt_id)

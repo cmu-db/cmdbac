@@ -260,4 +260,16 @@ class AttemptViewSet(viewsets.ViewSet):
 
     @detail_route(methods=['post'])
     def benchmark(self, request, pk):
+        queryset = Attempt.objects.all()
+        attempt = get_object_or_404(queryset, id=pk)
+        serializer = AttemptSerializer(attempt)
+
+        # check payload
+        payload = dict(request.data)
+        print payload
+        if 'database' not in payload and 'benchmark' not in payload:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # run benchmark
+        utils.run_benchmark(pk, payload['database'], payload['benchmark'])
+
         return Response({'status': 'password set'})
