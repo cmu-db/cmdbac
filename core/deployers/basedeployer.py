@@ -19,11 +19,11 @@ import utils
 ## LOGGING CONFIGURATION
 ## =====================================================================
 LOG = logging.getLogger()
-LOG_handler = logging.StreamHandler()
+streamHandler = logging.StreamHandler()
 LOG_formatter = logging.Formatter(fmt='%(asctime)s [%(filename)s:%(funcName)s:%(lineno)03d] %(levelname)-5s: %(message)s',
                                   datefmt='%m-%d-%Y %H:%M:%S')
-LOG_handler.setFormatter(LOG_formatter)
-LOG.addHandler(LOG_handler)
+streamHandler.setFormatter(LOG_formatter)
+LOG.addHandler(streamHandler)
 LOG.setLevel(logging.INFO)
 
 ## =====================================================================
@@ -46,6 +46,11 @@ class BaseDeployer(object):
         self.port = int(self.repo.project_type.default_port) + int(self.deploy_id)
         self.runtime = None
         self.log_file = None
+
+        # add file handler to LOG
+        fileHandler = logging.FileHandler(os.path.join('/vagrant', str(self.deploy_id) + '.log'), 'w')
+        fileHandler.setFormatter(LOG_formatter)
+        LOG.addHandler(fileHandler)
 
         if database_config == None:
             if self.database.name == 'MySQL':
