@@ -1,5 +1,9 @@
-$('.collapse').on('show.bs.collapse', function(){
-   $(this).siblings().find(".glyphicon-plus").removeClass("glyphicon-plus").addClass("glyphicon-minus");
-}).on('hidden.bs.collapse', function(){
-   $(this).siblings().find(".glyphicon-minus").removeClass("glyphicon-minus").addClass("glyphicon-plus");
+$('.collapse').on('show.bs.collapse', function(event) {
+	icon = $('#' + $(this).attr('id') + '-icon');
+	icon.removeClass("glyphicon-plus").addClass("glyphicon-minus");
+	event.stopPropagation();
+}).on('hidden.bs.collapse', function(event) {
+	icon = $('#' + $(this).attr('id') + '-icon');
+	icon.removeClass("glyphicon-minus").addClass("glyphicon-plus");
+	event.stopPropagation();
 });
