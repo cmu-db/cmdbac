@@ -5,6 +5,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 import traceback
 import markdown
 from threading import Thread
+from multiprocessing import Process
+import time
  
 from django.shortcuts import render
 from rest_framework import viewsets
@@ -15,6 +17,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
 from django.db.models import Count
+from django.http import StreamingHttpResponse
 from models import *
 from forms import *
 import utils
@@ -266,10 +269,31 @@ class AttemptViewSet(viewsets.ViewSet):
 
         # check payload
         payload = dict(request.data)
-        print payload
         if 'database' not in payload and 'benchmark' not in payload:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # run benchmark
-        utils.run_benchmark(pk, payload['database'], payload['benchmark'])
+        process = Process(target = utils.run_benchmark, args = (pk, payload['database'], payload['benchmark']))
+        process.start()
+        # utils.run_benchmark(pk, payload['database'], payload['benchmark'])
+        # shoule know the deployer id 
+        deployer_id = 1
+        log_file_path = os.path.join(os.path.dirname(__file__), os.pardir, 'vagrant', str(deployer_id) + '.log')
+        
+        def stream_response_generator():
+            last_line_no = 0
+            while process.is_alive():
+                time.sleep(5)
+                with open(log_file_path, 'r') as log_file:
+                    content = log_file.readlines()
+                    line_no = len(content)
+                    if line_no > last_line_no:
+                        yield content[last_line_no:]
+                        last_line_no = line_no
+            time.sleep(5)
+            with open(log_file_path, 'r') as log_file:
+                    content = log_file.readlines()
+                    line_no = len(content)
+                    if line_no > last_line_no:
+                        yield content[last_line_no:]
 
-        return Response({'status': 'password set'})
+        return StreamingHttpResponse(stream_response_generator())
