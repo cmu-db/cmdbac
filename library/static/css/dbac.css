@@ -25,6 +25,12 @@ pre {
     font-family: 'Inconsolata', monospace;
     font-weight: normal;
     font-size: 90%;
+    height: auto;
+    max-height: 400px;
+    overflow: auto;
+    word-break: normal !important;
+    word-wrap: normal !important;
+    white-space: pre !important;
 }
 .breadcrumb {
     font-weight: bold;
