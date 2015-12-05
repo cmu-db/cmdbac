@@ -111,6 +111,7 @@
                             {% for attempt in attempts %}
                             <tr>
                                 <td><a href="{% url 'repository' attempt.repo.user_name attempt.repo.repo_name %}">{{ attempt.repo.name }}</a></td>
+                                <td><img src="{% static attempt.repo.project_type.logo %}" alt="{{ attempt.repo.project_type.name }}" title="{{ attempt.repo.project_type.name }}" class="projecttype-logo" /></td>
                                 {% if attempt.start_time %}
                                 <td>{{ attempt.start_time|date:'Y-m-d H:i:s' }}</td>
                                 {% else %}
