@@ -142,129 +142,131 @@ Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
     </table>
 </div>
 
-<div>
-<h2 class="sub-header">Dependencies 
-    <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#dependencies" aria-expanded="false" aria-controls="dependencies">
-      <i class="glyphicon glyphicon-plus"></i>
-    </a>
-</h2>
-<div id="dependencies" class="collapse">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Package</th>
-                <th>Source</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% if dependencies %}
-            {% for dependency in dependencies %}
-            <tr>
-                <td>{{ dependency.package.name }} {{ dependency.package.version }}</td>
-                <td><span class="label label-{{ dependency.source_label }}">{{dependency.source_name}}</span></td>
-            </tr>
-            {% endfor %}
-            {% endif %}
-        </tbody>
-    </table>
-</div>
-</div>
+<!-- DEPENDENCIES -->
+<section>
+    <h3 class="sub-header">Dependencies 
+        <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#dependencies" aria-expanded="false" aria-controls="dependencies">
+        <i class="glyphicon glyphicon-plus"></i>
+        </a>
+    </h3>
+    <div id="dependencies" class="collapse">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Package</th>
+                    <th>Source</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if dependencies %}
+                {% for dependency in dependencies %}
+                <tr>
+                    <td>{{ dependency.package.name }} {{ dependency.package.version }}</td>
+                    <td><span class="label label-{{ dependency.source_label }}">{{dependency.source_name}}</span></td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</section>
 
+<!-- FORMS -->
+<section>
+    <h3 class="sub-header">Forms
+        <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#forms" aria-expanded="false" aria-controls="forms">
+        <i class="glyphicon glyphicon-plus"></i>
+        </a>
+    </h3>
+    <div id="forms" class="collapse">
+        <table class="table table-striped" style="word-break:break-all">
+            <thead>
+                <tr>
+                    <th class="col-md-2">Action</th>
+                    <th class="col-md-2">Url</th>
+                    <th class="col-md-3">Fields</th>
+                    <th class="col-md-5">Queries</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if forms %}
+                {% for form in forms %}
+                <tr>
+                    <td>{{ form.action }}</td>
+                    <td>{{ form.url }}</td>
+                    <td>
+                        {% if form.fields %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for field in form.fields %}
+                                    <tr>
+                                        <td>{{ field.name }}</td>
+                                        <td>{{ field.type }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if form.counters %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for counter in form.counters %}
+                                    <tr>
+                                        <td>{{ counter.description }}</td>
+                                        <td>{{ counter.count }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div>
+                        <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#queries-details-{{form.id}}" aria-expanded="false" aria-controls="queries-details-{{form.id}}">
+                            Details
+                        </a>
+                        <div id="queries-details-{{form.id}}" class="collapse">
+                        </div>
+                        </div>
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function(event) {
+                                $('#queries-details-{{form.id}}').load("{% url 'queries' form.id %}");
+                            });
+                        </script>
+                        {% endif%}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</section>
 
-<div>
-<h2 class="sub-header">Forms
-    <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#forms" aria-expanded="false" aria-controls="forms">
-      <i class="glyphicon glyphicon-plus"></i>
-    </a>
-</h2>
-<div id="forms" class="collapse">
-    <table class="table table-striped" style="word-break:break-all">
-        <thead>
-            <tr>
-                <th class="col-md-2">Action</th>
-                <th class="col-md-2">Url</th>
-                <th class="col-md-3">Fields</th>
-                <th class="col-md-5">Queries</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% if forms %}
-            {% for form in forms %}
-            <tr>
-                <td>{{ form.action }}</td>
-                <td>{{ form.url }}</td>
-                <td>
-                    {% if form.fields %}
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Type</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for field in form.fields %}
-                                <tr>
-                                    <td>{{ field.name }}</td>
-                                    <td>{{ field.type }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if form.counters %}
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Type</th>
-                                    <th>Count</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for counter in form.counters %}
-                                <tr>
-                                    <td>{{ counter.description }}</td>
-                                    <td>{{ counter.count }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#queries-details-{{form.id}}" aria-expanded="false" aria-controls="queries-details-{{form.id}}">
-                        Details
-                    </a>
-                    <div id="queries-details-{{form.id}}" class="collapse">
-                    </div>
-                    </div>
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function(event) {
-                            $('#queries-details-{{form.id}}').load("{% url 'queries' form.id %}");
-                        });
-                    </script>
-                    {% endif%}
-                </td>
-            </tr>
-            {% endfor %}
-            {% endif %}
-        </tbody>
-    </table>
-</div>
-</div>
-
-<div>
-<h2 class="sub-header">Log
-    <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#log" aria-expanded="false" aria-controls="log">
-      <i class="glyphicon glyphicon-plus"></i>
-    </a>
-</h2>
-<div id="log" class="collapse">
-    <pre>{{ attempt.log }}</pre>
-</div>
-</div>
+<!-- LOG -->
+<section>
+    <h3 class="sub-header">Log
+        <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#log" aria-expanded="false" aria-controls="log">
+        <i class="glyphicon glyphicon-plus"></i>
+        </a>
+    </h3>
+    <div id="log" class="collapse">
+        <pre>{{ attempt.log }}</pre>
+    </div>
+</section>
 {% endblock %}
