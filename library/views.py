@@ -23,8 +23,8 @@ from forms import *
 import utils
 
 class Statistic:
-    def __init__(self, repo_type, num_repo, num_suc, num_deploy, num_valid_deploy):
-        self.repo_type = repo_type
+    def __init__(self, project_type, num_repo, num_suc, num_deploy, num_valid_deploy):
+        self.project_type = project_type
         self.num_repo = num_repo
         self.num_suc = num_suc
         self.num_deploy = num_deploy
@@ -45,7 +45,7 @@ def home(request):
         # num_pkg = Package.objects.filter(project_type=t).count()
         num_deploy = repos.exclude(latest_attempt=None).count()
         num_valid_deploy = repos.filter(valid_project=True).count()
-        stat = Statistic(repo_type, num_repo, num_suc, num_deploy, num_valid_deploy)
+        stat = Statistic(t, num_repo, num_suc, num_deploy, num_valid_deploy)
         stats.append(stat)
     context['stats'] = stats
     context['attempts'] = Attempt.objects.exclude(result=ATTEMPT_STATUS_MISSING_REQUIRED_FILES).order_by('-start_time')[:5]

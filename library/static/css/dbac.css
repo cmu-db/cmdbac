@@ -34,6 +34,10 @@ pre {
 .label {
     font-weight: bold;
 }
+a.label-statuscode {
+    cursor: help;
+}
+
 .breadcrumb {
     font-weight: bold;
     font-size: 100%;
@@ -81,6 +85,7 @@ pre {
 
 .intro-message > h3 {
     text-shadow: 2px 2px 3px rgba(0,0,0,0.6);
+    font-style: italic;
 }
 
 @media(max-width:767px) {
@@ -197,7 +202,7 @@ p.copyright {
 
 /* Move down content because we have a fixed navbar that is 50px tall */
 body {
-  padding-top: 50px;
+  padding-top: 30px;
 }
 
 
