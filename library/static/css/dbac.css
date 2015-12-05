@@ -23,6 +23,12 @@ h6 {
 
 pre {
     font-family: 'Inconsolata', monospace;
+    font-weight: normal;
+    font-size: 90%;
+}
+.breadcrumb {
+    font-weight: bold;
+    font-size: 100%;
 }
 
 .topnav {
