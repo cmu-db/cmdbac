@@ -8,11 +8,12 @@ from threading import Thread
  
 from django.shortcuts import render
 from rest_framework import viewsets
-from rest_framework import filters
+from rest_framework.decorators import detail_route
+from rest_framework.response import Response
 from serializers import AttemptSerializer
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.db.models import Count
 from models import *
 from forms import *
@@ -246,8 +247,17 @@ def tools(request):
     context['content'] = markdown.markdown(content, extensions = ['markdown.extensions.fenced_code'])
     return render(request, 'tools.html', context)
 
-class AttemptViewSet(viewsets.ModelViewSet):
-    queryset = Attempt.objects.all()
-    serializer_class = AttemptSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id',)
+class AttemptViewSet(viewsets.ViewSet):
+    def get_queryset(self):
+        return Attempt.objects.all()
+
+    @detail_route(methods=['get'])
+    def detail(self, request, pk):
+        queryset = Attempt.objects.all()
+        attempt = get_object_or_404(queryset, id=pk)
+        serializer = AttemptSerializer(attempt)
+        return Response(serializer.data)
+
+    @detail_route(methods=['post'])
+    def benchmark(self, request, pk):
+        return Response({'status': 'password set'})
