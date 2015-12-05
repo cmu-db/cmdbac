@@ -109,6 +109,7 @@
         <thead>
             <tr>
                 <th>Attempt #</th>
+                <th>Database</th>
                 <th>Start Time</th>
                 <th>Duration</th>
                 <th>Deployment Host</th>
@@ -122,7 +123,7 @@
                 {% for attempt in attempts %}
                 <tr>
                     <td><a href="{% url 'attempt' attempt.id %}?{{ queries.urlencode }}">{{ attempt.id }}</a></td>
-                    
+                    <td>{{attempt.database.name}}</td>
                     <td>
                     {% if attempt.start_time %}
                         {{ attempt.start_time|date:'Y-m-d H:i:s' }}
