@@ -38,7 +38,7 @@ class BaseDriver(object):
         if last_line_no == None:
             return len(sql_log_file.readlines())
         else:
-            return sql_log_file.readlines()[last_line_no-1:]
+            return sql_log_file.readlines()[last_line_no:]
 
     def process_query(self, queries, inputs):
         ret_queries = []
