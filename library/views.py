@@ -282,18 +282,18 @@ class AttemptViewSet(viewsets.ViewSet):
         def stream_response_generator():
             last_line_no = 0
             while process.is_alive():
-                time.sleep(5)
+                time.sleep(1)
                 with open(log_file_path, 'r') as log_file:
                     content = log_file.readlines()
                     line_no = len(content)
                     if line_no > last_line_no:
-                        yield content[last_line_no:]
+                        yield ''.join(content[last_line_no:])
                         last_line_no = line_no
-            time.sleep(5)
+            time.sleep(1)
             with open(log_file_path, 'r') as log_file:
                     content = log_file.readlines()
                     line_no = len(content)
                     if line_no > last_line_no:
-                        yield content[last_line_no:]
+                        yield ''.join(content[last_line_no:])
 
         return StreamingHttpResponse(stream_response_generator())

@@ -79,7 +79,7 @@ def run_attempt_benchmark(attempt_id, database, benchmark):
         'benchmark': benchmark
     }
     url = ATTEMPT_BENCHMARK_URL.format(id = attempt_id)
-    response = requests.post(url, json = payload, stream = True, timeout = 10)
+    response = requests.post(url, json = payload, stream = True, timeout = 10000)
     for chunk in response.iter_content(chunk_size=1024): 
         if chunk:
             print chunk,
