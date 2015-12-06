@@ -20,11 +20,12 @@ PACKAGE_SOURCE = temp
 globals()['PACKAGE_SOURCE_CODES'] = PACKAGE_SOURCE_CODES
 
 # Deployment Attempt Status
+# NOTE: If you change these, then you must also change the info page 'templates/attempt_status_codes.html'
 ATTEMPT_STATUS = (
     ('DE', 'Download Error', 'danger'),
     ('MR', 'Missing Required Files', 'danger'),
     ('MD', 'Missing Dependencies', 'danger'),
-    ('SE', 'Syncing Error', 'danger'),
+    ('SE', 'Database Error', 'danger'),
     ('RE', 'Running Error', 'danger'),
     ('OK', 'Success', 'success')
 )

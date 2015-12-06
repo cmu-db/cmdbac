@@ -33,8 +33,9 @@ pre {
 }
 .label {
     font-weight: bold;
+    font-size: 90%;
 }
-a.label-statuscode {
+.label-statuscode {
     cursor: help;
 }
 

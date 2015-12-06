@@ -14,27 +14,39 @@
                     <tbody>
                         <tr>
                             <td><span class="label label-warning">Download Error</span></td>
-                            <td>Failed to download the repository</td>
+                            <td>
+                                The system failed to download the application's source code from the on-line repository. This could be a transient network error or the application could have been deleted.
+                            </td>
                         </tr>
                         <tr>
                             <td><span class="label label-danger">Missing Required Files</span></td>
-                            <td>Couldn't find some files that are required to run the deploymen. Maybe it does not contain a runnable application. Didn't try to deploy.</td>
+                            <td>
+                                The application did not contain the necessary files that are needed to deploy and run it. This likely means that the application is not the project type that we assumed that it was. This can occur if the crawler mis-idenfies it as a database application.
+                            </td>
                         </tr>
                         <tr>
                             <td><span class="label label-danger">Missing Dependencies</span></td>
-                            <td>Some dependency files are missing while deploying</td>
+                            <td>
+                                The deployer was unable to determine what dependencies are needed to automatically deploy the application.
+                            </td>
                         </tr>
                         <tr>
                             <td><span class="label label-danger">Syncing Error</span></td>
-                            <td>Some thing goes run when trying to sync the application</td>
+                            <td>
+                                The application failed to instantiate and synchronize its database properly. This can occur if there are additional manual steps that are needed prior to deployment.
+                            </td>
                         </tr>
                         <tr>
                             <td><span class="label label-danger">Running Error</span></td>
-                            <td>Some thing goes run when trying to run the application</td>
+                            <td>
+                                The system was able to install the dependencies needed for the application but then it experienced an unexpected error when trying to actually run it. This could because the application in its current form is broken and is thus not runnable.
+                            </td>
                         </tr>
                          <tr>
                             <td><span class="label label-success">Success</span></td>
-                            <td>Deployment success</td>
+                            <td>
+                                The application was successfully deployed and the system was able to run a workload and capture queries.
+                            </td>
                         </tr>
                     </tbody>
                 </table>
