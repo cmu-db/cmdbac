@@ -39,7 +39,10 @@
                 </tr>
                 <tr>
                     <td>Project Type</td>
-                    <td>{{repository.project_type.name}}</td>
+                    <td>
+                        <img src="{% static repository.project_type.logo %}" alt="{{ repository.project_type.name }}" title="{{ repository.project_type.name }}" class="projecttype-logo" />
+                        {{repository.project_type.name}}
+                    </td>
                 </tr>
                 <tr>
                     <td>Language</td>
