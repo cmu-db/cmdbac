@@ -4,6 +4,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 
 import traceback
 import markdown
+import math
 from threading import Thread
 from multiprocessing import Process
 import time
@@ -17,14 +18,16 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
 from django.db.models import Count
+from django.db.models import Max
 from django.http import StreamingHttpResponse
 from models import *
 from forms import *
 import utils
 
 class Statistic:
-    def __init__(self, project_type, num_repo, num_suc, num_deploy, num_valid_deploy):
+    def __init__(self, project_type, last_updated, num_repo, num_suc, num_deploy, num_valid_deploy):
         self.project_type = project_type
+        self.last_updated = last_updated
         self.num_repo = num_repo
         self.num_suc = num_suc
         self.num_deploy = num_deploy
@@ -37,19 +40,38 @@ class Statistic:
 def home(request):
     context = {}
     stats = []
+    total_success = 0
     for t in ProjectType.objects.all():
         repo_type = t.name
         repos = Repository.objects.filter(project_type=t)
+        
+        # Total number of repositories for this project type
         num_repo = repos.count()
+        
+        # Total number of succesful attempts for this project type
         num_suc = repos.filter(latest_attempt__result=ATTEMPT_STATUS_SUCCESS).count()
+        total_success += num_suc
+        
+        # The timestamp of the last attempt (doesn't have to be succesful)
+        last_updated = repos.aggregate(Max('updated_date'))
+        if type(last_updated) is dict:
+            last_updated = last_updated.values()[0]
+            
         # num_pkg = Package.objects.filter(project_type=t).count()
         num_deploy = repos.exclude(latest_attempt=None).count()
         num_valid_deploy = repos.filter(valid_project=True).count()
-        stat = Statistic(t, num_repo, num_suc, num_deploy, num_valid_deploy)
+        stat = Statistic(t, last_updated, num_repo, num_suc, num_deploy, num_valid_deploy)
         stats.append(stat)
+    ## FOR
+    
     context['stats'] = stats
+    
+    # Round down to the nearest thousand
+    context['total_success'] = int(math.floor(total_success/1000.0) * 1000)
+    
     context['attempts'] = Attempt.objects.exclude(result=ATTEMPT_STATUS_MISSING_REQUIRED_FILES).order_by('-start_time')[:5]
     return render(request, 'index.html', context)
+## DEF
 
 def repositories(request):
     context = {}

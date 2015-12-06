@@ -79,19 +79,36 @@
     </div>
     <!-- END MAIN -->
     
+    <!-- FOOTER -->
     <footer>
-       <div class="panel-footer text-center">
-            &copy; {%now "Y"%} <a href="http://db.cs.cmu.edu">Carnegie Mellon University Database Group</a>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-left">
+                    <span class="copyright">
+                        Copyright &copy; {%now "Y"%} <a href="http://db.cs.cmu.edu">Carnegie Mellon University Database Group</a>
+                    </span>
+                </div>
+                <div class="col-md-6 text-right">
+                    <ul class="list-inline social-buttons">
+                        <li><a href="https://twitter.com/CMUDB"><i class="fa fa-twitter"></i></a>
+                        </li>
+                        <li><a href="https://github.com/cmu-db/dbac"><i class="fa fa-github"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </footer>
+    <!-- END FOOTER -->
 
-        <!-- Bootstrap core JavaScript
-        ================================================== -->
-        <!-- Placed at the end of the document so the pages load faster -->
-        <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
-        <script src="{{STATIC_URL}}js/jquery.twbsPagination.min.js"></script>
-        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-        <script src="{{STATIC_URL}}js/collapse.js"></script>
-        {{ analytics_code }}
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="{{STATIC_URL}}js/jquery.twbsPagination.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <script src="{{STATIC_URL}}js/collapse.js"></script>
+    {{ analytics_code }}
+    
     </body>
 </html>
