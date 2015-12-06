@@ -1,9 +1,7 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 
-{% block title %}
-Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {{SITE_TITLE}}
-{% endblock %}
+{% block title %}Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {% endblock %}
 
 {% block main %}
 <div class="modal fade" id="screenshotModal">

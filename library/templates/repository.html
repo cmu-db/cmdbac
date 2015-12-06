@@ -1,9 +1,7 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 
-{% block title %}
-{{repository.name}}
-{% endblock %}
+{% block title %}{{attempt.repo.name}} &raquo; {% endblock %}
 
 {% block main %}
 {% include "attempt_status_codes.html" %}
