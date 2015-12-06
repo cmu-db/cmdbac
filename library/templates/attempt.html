@@ -90,7 +90,9 @@
                                 </tr>
                                 <tr>
                                     <td>Attempt Result</td>
-                                    <td><span class="label label-{{ attempt.result_label }}">{{attempt.result_name}}</span></td>
+                                    <td>
+                                        <a id="{{attempt.id}}" href="#" data-toggle="modal" data-target="#attemptStatusModal" title="View Status Code Information" class="label label-statuscode label-{{ attempt.result_label }}" style="cursor: help;">{{attempt.result_name}}</a>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>Registration Form </td>
