@@ -12,6 +12,6 @@ urlpatterns = patterns('',
     url(r'^repository/(?P<user_name>.+)/(?P<repo_name>.+)/', 'library.views.repository', name='repository'),
     url(r'^attempt/(?P<id>\d+)/', 'library.views.attempt', name='attempt'),
     url(r'^queries/(?P<id>\d+)/', 'library.views.queries', name='queries'),
-    url(r'^people/$', 'library.views.people', name='people'),
+    url(r'^about/$', 'library.views.about', name='about'),
     url(r'^tools/$', 'library.views.tools', name='tools'),
 )

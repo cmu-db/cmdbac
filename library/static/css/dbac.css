@@ -39,6 +39,7 @@ a.label-statuscode {
 }
 
 .breadcrumb {
+    margin-top: 30px;
     font-weight: bold;
     font-size: 100%;
 }
