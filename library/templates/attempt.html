@@ -4,6 +4,8 @@
 {% block title %}Attempt #{{attempt.id}} &raquo; {{attempt.repo.name}} &raquo; {% endblock %}
 
 {% block main %}
+{% include "attempt_status_codes.html" %}
+
 <div class="modal fade" id="screenshotModal">
     <div class="modal-dialog">
         <div class="modal-content">
