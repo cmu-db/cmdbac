@@ -13,6 +13,12 @@
                     </colgroup>
                     <tbody>
                         <tr>
+                            <td><span class="label label-success">Success</span></td>
+                            <td>
+                                The application was successfully deployed and the system was able to run a workload and capture queries.
+                            </td>
+                        </tr>
+                        <tr>
                             <td><span class="label label-warning">Download Error</span></td>
                             <td>
                                 The system failed to download the application's source code from the on-line repository. This could be a transient network error or the application could have been deleted.
@@ -31,7 +37,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td><span class="label label-danger">Syncing Error</span></td>
+                            <td><span class="label label-danger">Database Error</span></td>
                             <td>
                                 The application failed to instantiate and synchronize its database properly. This can occur if there are additional manual steps that are needed prior to deployment.
                             </td>
@@ -42,12 +48,7 @@
                                 The system was able to install the dependencies needed for the application but then it experienced an unexpected error when trying to actually run it. This could because the application in its current form is broken and is thus not runnable.
                             </td>
                         </tr>
-                         <tr>
-                            <td><span class="label label-success">Success</span></td>
-                            <td>
-                                The application was successfully deployed and the system was able to run a workload and capture queries.
-                            </td>
-                        </tr>
+
                     </tbody>
                 </table>
             </div>
