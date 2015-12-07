@@ -48,7 +48,7 @@ def queries_stats():
 
 def coverage_stats():
     num_repos = 0
-    coverage = 0
+    coverage = {}
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
         forms = Form.objects.filter(attempt = repo.latest_attempt)
         covered_tables = set()
@@ -64,12 +64,12 @@ def coverage_stats():
                 if m:
                     covered_tables.add(m.group(1))
         statistic = statistics.get(description = 'num_tables')
-        coverage += float(len(covered_tables) * 100) / statistic.count
-        num_repos += 1
-    print coverage / num_repos
+        bucket = int(float(len(covered_tables) * 100) / statistic.count / 10)
+        coverage[bucket] = coverage.get(bucket, 0) + 1
+    print coverage
 
 def main():
-    queries_stats()
+    coverage_stats()
 
 
 if __name__ == '__main__':
