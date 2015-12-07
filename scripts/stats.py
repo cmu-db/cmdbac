@@ -35,13 +35,16 @@ def coverage_stats():
         forms = Form.objects.filter(attempt = repo.latest_attempt)
         covered_tables = set()
         if len(forms) != 0:
+            statistics = Statistic.objects.filter(attempt = repo.latest_attempt)
+            if len(statistics) == 0:
+                continue
             for form in forms:
                 queries = Query.objects.filter(form = form)
                 for query in queries:
                     m = re.search('FROM `(.*?)`', query.content)
                     if m:
                         covered_tables.add(m.group(1))
-            statistic = Statistic.objects.filter(attempt = repo.latest_attempt).get(description = 'num_tables')
+            statistic = statistics.get(description = 'num_tables')
             coverage += float(len(covered_tables) * 100) / statistic.count
             num_repos += 1
     print coverage / num_repos
