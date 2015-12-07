@@ -193,6 +193,11 @@ pre {
 }
 
 
+.projecttype-logo {
+    max-width: 26px;
+    height: auto;
+}
+
 /*
  * Base structure
  */
@@ -395,10 +400,6 @@ ul.social-buttons li a:hover,ul.social-buttons li a:focus,ul.social-buttons li a
 @media screen and (max-width: 600px) {
     table {
         font-size: 75%;
-    }
-    .projecttype-logo {
-        max-width: 32px;
-        height: auto;
     }
     .section-heading {
         font-size: 175%;
