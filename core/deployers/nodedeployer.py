@@ -31,7 +31,7 @@ class NodeDeployer(BaseDeployer):
     ## DEF
     
     def configure_settings(self, path):
-        utils.replace_file_regex(path, "mysql\.createConnection\({.*?}.*?\);", 
+        utils.replace_files_regex(path, "mysql\.createConnection\({.*?}.*?\);", 
             """mysql.createConnection({{
                 host     : '{host}',
                 port     : '{port}',
@@ -79,6 +79,12 @@ class NodeDeployer(BaseDeployer):
         }
     ## DEF
 
+    def find_port(self):
+        out = utils.run_command('netstat -nlp | grep -i "node"')
+        port = re.search('0 :::(\d+)', out[1])
+        if port:
+            self.port = port.group(1)
+
     def try_deploy(self, deploy_path):
         LOG.info('Configuring settings ...')
         self.kill_server()
@@ -110,6 +116,8 @@ class NodeDeployer(BaseDeployer):
 
         self.run_server(deploy_path)
         time.sleep(5)
+
+        self.find_port()
         
         attemptStatus = self.check_server()
 

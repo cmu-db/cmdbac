@@ -282,7 +282,7 @@ class BaseDeployer(object):
         self.repo.save()
     ## DEF
     
-    def deploy(self, save = True, num_processes = 1):
+    def deploy(self, save = True):
         LOG.info('Deploying repo: {} ...'.format(self.repo.name))
         
         self.attempt = Attempt()
@@ -325,8 +325,6 @@ class BaseDeployer(object):
 
         LOG.info('Deploying at {} ...'.format(self.base_path))
 
-        self.num_processes = num_processes
-        
         try:
             attemptStatus = self.deploy_repo_attempt(self.base_path)
         except Exception, e:
@@ -359,10 +357,9 @@ class BaseDeployer(object):
 
     def kill_server(self):
         LOG.info('Killing server on port {} ...'.format(self.port))
-        for index in range(self.num_processes):
-            ret = utils.kill_port(self.port + index)
+        utils.kill_port(self.port)
         utils.unblock_network()
-        return ret
+        return
     ## DEF
     
 ## CLASS
