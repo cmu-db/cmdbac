@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}Repositories &raquo; {{ block.super }}{% endblock %}
+
+{% block main %}
+{% include "status/attempt_status_codes.html" %}
+{% include "admin/add_module.html" %}
+{% include "admin/add_repository.html" %}
+
+{% if messages %}
+<div>
+<ul class="messages">
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <div class="alert alert-success" role="alert">{{message}}</div>
+        {% endif %}
+        {% if message.tags == 'error' %}
+            <div class="alert alert-danger" role="alert">{{message}}</div>
+        {% endif %}
+    {% endfor %}
+</ul>
+{% endif %}
+
+<h2 class="page-header">Repositories</h2>
+
+<ul id="pagination1" class="sync-pagination pagination-sm pagination"></ul>
+
+<form action="{% url 'repositories' %}" method="get">
+    <div style="float:left">
+    {{ result_form }}
+    </div>
+
+    <div style="float:left">
+    {{ type_form }}
+    </div>
+
+    <div style="float:left">
+        <b>Name:</b>
+        <input type="Search" placeholder='Search by full name' value='{{ search }}' class="form-control" name='search'/>
+        <div style="margin: 20px">
+            <input class="btn btn-primary btn-lg" type="submit" value="Filter"/>
+        </div>
+    </div>
+</form>
+
+{% if user.is_staff %}  
+<div style="float:right">
+    <div style="margin: 20px">
+        <a class="btn btn-primary btn-lg" style="" href="#" data-toggle="modal" data-target="#addModuleModal">Add Module</a>
+    </div>
+
+    <div style="margin: 20px">
+        <a class="btn btn-primary btn-lg" style="" href="#" data-toggle="modal" data-target="#addRepositoryModal">Add Repository</a>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

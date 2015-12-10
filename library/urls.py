@@ -14,4 +14,5 @@ urlpatterns = patterns('',
     url(r'^queries/(?P<id>\d+)/', 'library.views.queries', name='queries'),
     url(r'^about/$', 'library.views.about', name='about'),
     url(r'^tools/$', 'library.views.tools', name='tools'),
+    url(r'^search/$', 'library.views.search', name='search')
 )
