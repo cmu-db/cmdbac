@@ -4,9 +4,9 @@
 {% block title %}Repositories &raquo; {{ block.super }}{% endblock %}
 
 {% block main %}
-{% include "attempt_status_codes.html" %}
-{% include "add_module.html" %}
-{% include "add_repository.html" %}
+{% include "status/attempt_status_codes.html" %}
+{% include "admin/add_module.html" %}
+{% include "admin/add_repository.html" %}
 
 {% if messages %}
 <div>

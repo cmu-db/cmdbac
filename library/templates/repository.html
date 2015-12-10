@@ -4,7 +4,7 @@
 {% block title %}{{attempt.repo.name}} &raquo; {% endblock %}
 
 {% block main %}
-{% include "attempt_status_codes.html" %}
+{% include "status/attempt_status_codes.html" %}
 <ul class="breadcrumb">
     <li>
         <a href="{% url 'repositories' %}?{{ queries.urlencode }}#{{repository.name}}">Repositories</a>
