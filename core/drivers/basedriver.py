@@ -59,6 +59,8 @@ class BaseDriver(object):
                 if query == None:
                     continue
                 query = query.group(1)
+            if inputs == None:
+                continue
             for name, value in sorted(inputs.items(), key=lambda (x, y): len(str(y)), reverse=True):
                 if str(value) in query:
                     query = query.replace(str(value), '<span style="color:red">{}</span>'.format(name))
@@ -103,6 +105,11 @@ class BaseDriver(object):
             if value != form2[name]:
                 return False
         return True
+
+    def equal_url(self, url1, url2):
+        if url1['url'] == url2['url']:
+            return True
+        return False
 
     def bootstrap(self):
         # get main page
@@ -168,7 +175,7 @@ class BaseDriver(object):
 
         return ret_forms
 
-    def initialize(self):
+    def get_forms(self):
         # get main page
         main_url = self.deployer.get_main_url()
 
@@ -269,6 +276,49 @@ class BaseDriver(object):
     
         return {'register': register_result, 'login': login_result, 'forms': ret_forms}
 
+    def get_urls():
+        # get main page
+        main_url = self.deployer.get_main_url()
+
+        # set json filename
+        json_filename = 'urls{}.json'.format(self.deployer.deploy_id)
+
+        # extract all the urls
+        try:
+            if self.browser != None:
+                urls = extract.extract_all_urls_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
+            else:
+                urls = extract.extract_all_urls(main_url, json_filename)
+        except Exception, e:
+            urls = []
+            LOG.exception(e)
+        ret_urls = []
+
+        for url in urls:
+            url['queries'] = []
+            url['counter'] = {}
+            if any(self.equal_url(url, ret_url) for ret_url in ret_urls):
+                continue
+
+            last_line_no = self.check_log()
+            try:
+                submit.query_url(self.deployer.base_path, form, None)
+            except:
+                traceback.print_exc()
+            url['queries'], url['counter'] = self.process_query(self.check_log(last_line_no), None)
+            if len(url['queries']) == 0:
+                ret_urls.append(form)
+                continue
+
+            LOG.info('Normal: Query the Url on {} Successfully ...'.format(url['url']))
+            ret_urls.append(url)
+        
+        return ret_urls
+
+    def initialize(self):
+        driver_results = self.get_forms()
+        driver_results['urls'] = self.get_urls()
+
     def submit_forms(self):
         # get main page
         main_url = self.deployer.get_main_url()
@@ -310,6 +360,7 @@ class BaseDriver(object):
         # get main page
         main_url = self.deployer.get_main_url()
 
+        # get forms
         admin_forms = self.bootstrap()
         
         driver_results = self.initialize()
