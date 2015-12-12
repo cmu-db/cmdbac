@@ -243,7 +243,7 @@ def attempt(request, id):
     context['urls'] = []
     for url in urls:
         url_counters = UrlCounter.objects.filter(url=url)
-        url_counters = sorted(counters, key = lambda x: keyword_order.get(x.description, 10))
+        url_counters = sorted(url_counters, key = lambda x: keyword_order.get(x.description, 10))
         context['urls'].append({
             'id': url.id,
             'url': url.url,
