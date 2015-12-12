@@ -310,7 +310,7 @@ class BaseDriver(object):
 
             last_line_no = self.check_log()
             try:
-                submit.query_url(self.deployer.base_path, form, None)
+                submit.query_url(form, self.browser)
             except:
                 traceback.print_exc()
             url['queries'], url['counter'] = self.process_query(self.check_log(last_line_no), None)
