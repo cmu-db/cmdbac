@@ -241,7 +241,7 @@ class BaseDeployer(object):
                 url.url = u['url']
                 url.attempt = self.attempt
                 url.save()
-                for q in f['queries']:
+                for q in u['queries']:
                     query = UrlQuery()
                     query.content = q['content']
                     query.url = url

@@ -59,12 +59,11 @@ class BaseDriver(object):
                 if query == None:
                     continue
                 query = query.group(1)
-            if inputs == None:
-                continue
-            for name, value in sorted(inputs.items(), key=lambda (x, y): len(str(y)), reverse=True):
-                if str(value) in query:
-                    query = query.replace(str(value), '<span style="color:red">{}</span>'.format(name))
-                    matched = True
+            if inputs != None:
+                for name, value in sorted(inputs.items(), key=lambda (x, y): len(str(y)), reverse=True):
+                    if str(value) in query:
+                        query = query.replace(str(value), '<span style="color:red">{}</span>'.format(name))
+                        matched = True
             ret_queries.append({'content': query, 'matched': matched})
         counter = count.count_query(queries)
         return ret_queries, counter
@@ -294,7 +293,7 @@ class BaseDriver(object):
         # extract all the urls
         try:
             if self.browser != None:
-                urls = extract.extract_all_urls_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
+                urls = extract.extract_all_urls_with_cookie(main_url, self.browser._ua_handlers['_cookies'].cookiejar, json_filename)
             else:
                 urls = extract.extract_all_urls(main_url, json_filename)
         except Exception, e:
@@ -310,12 +309,12 @@ class BaseDriver(object):
 
             last_line_no = self.check_log()
             try:
-                submit.query_url(form, self.browser)
+                submit.query_url(url, self.browser)
             except:
                 traceback.print_exc()
             url['queries'], url['counter'] = self.process_query(self.check_log(last_line_no), None)
             if len(url['queries']) == 0:
-                ret_urls.append(form)
+                ret_urls.append(url)
                 continue
 
             LOG.info('Normal: Query the Url on {} Successfully ...'.format(url['url']))

@@ -29,19 +29,21 @@ def main():
     moduleName = "deployers.%s" % (repo.project_type.deployer_class.lower())
     moduleHandle = __import__(moduleName, globals(), locals(), [repo.project_type.deployer_class])
     klass = getattr(moduleHandle, repo.project_type.deployer_class)
+    
     deployer = klass(repo, database, deploy_id)
     if deployer.deploy() != 0:
         deployer.kill_server()
         sys.exit(-1)
+        
     try:
         driver = BaseDriver(deployer)
         driverResult = driver.drive()
     except Exception, e:
         LOG.exception(e)
         driverResult = {}
-    
+
     deployer.kill_server()
-    
+
     analyzer = get_analyzer(deployer)
     for form, _ in driver.forms:
         analyzer.analyze_queries(form['queries'])

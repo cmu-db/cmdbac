@@ -5,7 +5,7 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 import cookielib
 
-from driver.items import InputItem, FormItem
+from driver.items import UrlItem
 
 class UrlWithCookieSpider(CrawlSpider):
     name = "url_with_cookie"
