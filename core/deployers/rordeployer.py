@@ -164,8 +164,7 @@ class RoRDeployer(BaseDeployer):
             LOG.info(out)
             return ATTEMPT_STATUS_SYNCING_ERROR
         
-        for index in range(self.num_processes):
-            self.run_server(deploy_path, self.port + index)
+        self.run_server(deploy_path, self.port)
 
         attemptStatus = self.check_server()
 

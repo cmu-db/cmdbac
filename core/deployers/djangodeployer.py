@@ -273,8 +273,7 @@ class DjangoDeployer(BaseDeployer):
 
         self.create_superuser(deploy_path)
 
-        for index in range(self.num_processes):
-            self.run_server(deploy_path, self.port + index)
+        self.run_server(deploy_path, self.port)
 
         time.sleep(5)
         
