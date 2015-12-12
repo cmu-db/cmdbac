@@ -28,5 +28,5 @@ class FormItem(scrapy.Item):
 	clazz = scrapy.Field()
 	enctype = scrapy.Field()
 
-def UrlItem(scrapy.Item):
+class UrlItem(scrapy.Item):
     url = scrapy.Field()

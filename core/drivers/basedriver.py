@@ -284,7 +284,7 @@ class BaseDriver(object):
     
         return {'register': register_result, 'login': login_result, 'forms': ret_forms}
 
-    def get_urls():
+    def get_urls(self):
         # get main page
         main_url = self.deployer.get_main_url()
 
@@ -326,6 +326,8 @@ class BaseDriver(object):
     def initialize(self):
         driver_results = self.get_forms()
         driver_results['urls'] = self.get_urls()
+
+        return driver_results
 
     def submit_forms(self):
         # get main page

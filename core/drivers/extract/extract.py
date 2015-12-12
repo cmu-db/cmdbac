@@ -56,6 +56,8 @@ def extract_urls(url, follow = "false", cookie_jar = None, filename = "urls.json
 			utils.cd(os.path.dirname(os.path.abspath(__file__))),
 			'scrapy crawl url_with_cookie -o {} -a start_url="{}" -a cookie_jar={}'.format(filename, url, cookie_jar_path)), 60)
 		
+	print out
+
 	with open(os.path.join(os.path.dirname(__file__), filename)) as json_urls:
 		urls = json.load(json_urls)
 
