@@ -36,3 +36,35 @@ def extract_all_forms(url, filename):
 
 def extract_all_forms_with_cookie(url, cookie_jar, filename):
 	return extract_forms(url, "true", cookie_jar, filename)
+
+def extract_urls(url, follow = "false", cookie_jar = None, filename = "urls.json"):
+	utils.remove_file(os.path.join(os.path.dirname(__file__), filename))
+
+	if cookie_jar == None:
+		try:
+			out = utils.run_command('{} && {}'.format(
+				utils.cd(os.path.dirname(os.path.abspath(__file__))),
+				'scrapy crawl url -o {} -a start_url="{}" -a follow={} -a proxy={}'.format(filename, url, follow, HTTP_PROXY)), 60)
+		except:
+			out = utils.run_command('{} && {}'.format(
+				utils.cd(os.path.dirname(os.path.abspath(__file__))),
+				'scrapy crawl url -o {} -a start_url="{}" -a follow={}'.format(filename, url, follow)), 60)
+	else:
+		cookie_jar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename.replace('.json', '.txt'))
+		cookie_jar.save(cookie_jar_path)
+		out = utils.run_command('{} && {}'.format(
+			utils.cd(os.path.dirname(os.path.abspath(__file__))),
+			'scrapy crawl url_with_cookie -o {} -a start_url="{}" -a cookie_jar={}'.format(filename, url, cookie_jar_path)), 60)
+		
+	with open(os.path.join(os.path.dirname(__file__), filename)) as json_urls:
+		urls = json.load(json_urls)
+
+	utils.remove_file(os.path.join(os.path.dirname(__file__), filename))
+		
+	return urls
+
+def extract_all_urls(url, filename):
+	return extract_urls(url, "true", filename = filename)
+
+def extract_all_urls_with_cookie(url, cookie_jar, filename):
+	return extract_urls(url, "true", cookie_jar, filename)
