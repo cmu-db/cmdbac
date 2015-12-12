@@ -268,10 +268,17 @@ def queries(request, id):
 
         form = Form.objects.get(id=id)
         queries = Query.objects.filter(form=form)
-        context['form'] = {
-            'id': form.id,
-            'queries': queries
-        }
+        context['queries'] = queries
+        
+        return render(request, 'queries.html', context)
+
+def url_queries(request, id):
+    if request.is_ajax():
+        context = {}
+
+        url = Url.objects.get(id=id)
+        queries = UrlQuery.objects.filter(url=url)
+        context['queries'] = queries
         
         return render(request, 'queries.html', context)
 

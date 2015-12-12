@@ -301,15 +301,15 @@
                             </table>
                         </div>
                         <div>
-                        <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#queries-details-{{url.id}}" aria-expanded="false" aria-controls="queries-details-{{url.id}}">
+                        <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#url-queries-details-{{url.id}}" aria-expanded="false" aria-controls="url-queries-details-{{url.id}}">
                             Details
                         </a>
-                        <div id="queries-details-{{url.id}}" class="collapse">
+                        <div id="url-queries-details-{{url.id}}" class="collapse">
                         </div>
                         </div>
                         <script>
                             document.addEventListener("DOMContentLoaded", function(event) {
-                                $('#queries-details-{{url.id}}').load("{% url 'queries' url.id %}");
+                                $('#url-queries-details-{{url.id}}').load("{% url 'url_queries' url.id %}");
                             });
                         </script>
                         {% endif%}
