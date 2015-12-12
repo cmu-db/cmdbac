@@ -133,8 +133,12 @@ class BaseDriver(object):
 
         # submit other forms as admin
         if br != None:
-            forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
-    
+            try:
+                forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
+            except Exception, e:
+                forms = []
+                LOG.exception(e)
+
         # save browser
         self.browser = br
 
@@ -228,7 +232,11 @@ class BaseDriver(object):
                 ret_forms.append(login_form)
 
         if br != None:
-            forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
+            try:
+                forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
+            except Exception, e:
+                forms = []
+                LOG.exception(e)
 
         # save browser
         if self.deployer.repo.project_type.id == 1 and self.browser != None: # Django
