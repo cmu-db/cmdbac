@@ -318,6 +318,22 @@ class Query(models.Model):
     form = models.ForeignKey('Form', related_name='queries')
 ## CLASS
 
+class Url(models.Model):
+    url = models.CharField(max_length = 200)
+    attempt = models.ForeignKey('Attempt', related_name='urls')
+## CLASS
+
+class UrlQuery(models.Model):
+    content = models.TextField()
+    url = models.ForeignKey('Url', related_name='queries')
+## CLASS
+
+class UrlCounter(models.Model):
+    description = models.CharField(max_length = 200)
+    count = models.IntegerField(default = 0)
+    url = models.ForeignKey('Url')
+## CLASS
+
 class Image(models.Model):
     def set_data(self, data):
         self._data = base64.encodestring(data)

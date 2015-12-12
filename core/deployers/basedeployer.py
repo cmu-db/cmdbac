@@ -183,6 +183,7 @@ class BaseDeployer(object):
         register_result = driver_result.get('register', USER_STATUS_UNKNOWN)
         login_result = driver_result.get('login', USER_STATUS_UNKNOWN)
         forms = driver_result.get('forms', None)
+        urls = driver_result.get('urls', None)
         screenshot_path = driver_result.get('screenshot', None)
         statistics = driver_result.get('statistics', None)
 
@@ -232,6 +233,24 @@ class BaseDeployer(object):
                     counter.description = description
                     counter.count = count
                     counter.form = form
+                    counter.save()
+
+        if urls != None:
+            for u in urls:
+                url = Url()
+                url.url = u['url']
+                url.attempt = self.attempt
+                url.save()
+                for q in f['queries']:
+                    query = UrlQuery()
+                    query.content = q['content']
+                    query.url = url
+                    query.save()
+                for description, count in u['counter'].iteritems():
+                    counter = UrlCounter()
+                    counter.description = description
+                    counter.count = count
+                    counter.url = url
                     counter.save()
 
         # save screenshot
