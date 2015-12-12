@@ -42,6 +42,7 @@ class BaseDriver(object):
 
     def process_query(self, queries, inputs):
         ret_queries = []
+        counted_queries = []
         for query in queries:
             matched = False
             if self.deployer.get_database().name == 'MySQL':
@@ -65,7 +66,8 @@ class BaseDriver(object):
                         query = query.replace(str(value), '<span style="color:red">{}</span>'.format(name))
                         matched = True
             ret_queries.append({'content': query, 'matched': matched})
-        counter = count.count_query(queries)
+            counted_queries.append(query)
+        counter = count.count_query(counted_queries)
         return ret_queries, counter
 
     def save_screenshot(self, main_url, screenshot_path):
