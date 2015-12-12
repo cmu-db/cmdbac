@@ -152,6 +152,7 @@ class BaseDriver(object):
         for form in forms:
             if any(self.equal_form(form, ret_form) for ret_form in ret_forms):
                 continue
+
             last_line_no = self.check_log()
             try:
                 part_inputs = submit.fill_form_random(self.deployer.base_path, form, br)
@@ -165,6 +166,7 @@ class BaseDriver(object):
             if len(form['queries']) == 0:
                 ret_forms.append(form)
                 continue
+                
             LOG.info('Admin: Fill in Form on {} Successfully ...'.format(form['url']))
             ret_forms.append(form)
             for i in range(5):
@@ -202,6 +204,7 @@ class BaseDriver(object):
             register_result = USER_STATUS_FAIL
         else:
             register_form['queries'], register_form['counter'] = self.process_query(self.check_log(last_line_no), inputs)
+        
         if register_form and len(register_form['queries']) > 0:
             register_result = USER_STATUS_SUCCESS
         else:
@@ -210,6 +213,7 @@ class BaseDriver(object):
             LOG.info('Fail to register ...')
         else:
             LOG.info('Register Successfully ...')
+
         if register_form != None:
             ret_forms.append(register_form)
 
@@ -227,6 +231,7 @@ class BaseDriver(object):
                 login_result = USER_STATUS_FAIL
             else:
                 login_form['queries'], login_form['counter'] = self.process_query(self.check_log(last_line_no), inputs)
+            
             if login_form and len(login_form['queries']) > 0:
                 login_result = USER_STATUS_SUCCESS
             else:
@@ -235,6 +240,7 @@ class BaseDriver(object):
                 LOG.info('Fail to login ...')
             else:
                 LOG.info('Login Successfully ...')
+
             if login_form != None:
                 ret_forms.append(login_form)
 
@@ -255,6 +261,7 @@ class BaseDriver(object):
         for form in forms:
             if any(self.equal_form(form, ret_form) for ret_form in self.forms):
                 continue
+
             last_line_no = self.check_log()
             browser_index = 0
             try:
@@ -272,6 +279,7 @@ class BaseDriver(object):
             form['queries'], form['counter'] = self.process_query(self.check_log(last_line_no), part_inputs)
             if len(form['queries']) == 0:
                 continue
+
             self.forms.append((form, browser_index))
     
         return {'register': register_result, 'login': login_result, 'forms': ret_forms}
@@ -330,6 +338,7 @@ class BaseDriver(object):
             form['counter'] = {}
             if any(self.equal_form(form, ret_form) for ret_form in ret_forms):
                 continue
+
             last_line_no = self.check_log()
             try:
                 if browser_index == 0:
@@ -346,6 +355,7 @@ class BaseDriver(object):
             if len(form['queries']) == 0:
                 ret_forms.append(form)
                 continue
+
             LOG.info('Normal: Fill in Form on {} Successfully ...'.format(form['url']))
             ret_forms.append(form)
             for i in range(5):
