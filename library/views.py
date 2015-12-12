@@ -217,18 +217,19 @@ def attempt(request, id):
 
     dependencies = Dependency.objects.filter(attempt__id=id).order_by('package__name')
     context['dependencies'] = dependencies
+
+    keyword_order = {
+        'SELECT': 1,
+        'INSERT': 2,
+        'UPDATE': 3,
+        'DELETE': 4
+    }
     
     forms = Form.objects.filter(attempt=attempt)
     context['forms'] = []
     for form in forms:
         fields = Field.objects.filter(form=form)
         counters = Counter.objects.filter(form=form)
-        keyword_order = {
-            'SELECT': 1,
-            'INSERT': 2,
-            'UPDATE': 3,
-            'DELETE': 4
-        }
         counters = sorted(counters, key = lambda x: keyword_order.get(x.description, 10))
         context['forms'].append({
             'id': form.id,
@@ -236,6 +237,17 @@ def attempt(request, id):
             'url': form.url,
             'fields': fields,
             'counters': counters
+        })
+
+    urls = Url.objects.filter(attempt=attempt)
+    context['urls'] = []
+    for url in urls:
+        url_counters = UrlCounter.objects.filter(url=url)
+        url_counters = sorted(counters, key = lambda x: keyword_order.get(x.description, 10))
+        context['urls'].append({
+            'id': url.id,
+            'url': url.url,
+            'counters': url_counters
         })
     
     try:

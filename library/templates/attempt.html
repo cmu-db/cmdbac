@@ -260,6 +260,68 @@
     </div>
 </section>
 
+<!-- URLS -->
+<section>
+    <h3 class="sub-header">Urls
+        <a class="btn btn-xs btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#urls" aria-expanded="false" aria-controls="urls">
+        <i class="glyphicon glyphicon-plus" id="urls-icon"></i>
+        </a>
+    </h3>
+    <div id="urls" class="collapse">
+        <table class="table table-striped" style="word-break:break-all">
+            <thead>
+                <tr>
+                    <th class="col-md-4">Url</th>
+                    <th class="col-md-8">Queries</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if urls %}
+                {% for url in urls %}
+                <tr>
+                    <td>{{ url.url }}</td>
+                    <td>
+                        {% if url.counters %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for counter in url.counters %}
+                                    <tr>
+                                        <td>{{ counter.description }}</td>
+                                        <td>{{ counter.count }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div>
+                        <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#queries-details-{{url.id}}" aria-expanded="false" aria-controls="queries-details-{{url.id}}">
+                            Details
+                        </a>
+                        <div id="queries-details-{{url.id}}" class="collapse">
+                        </div>
+                        </div>
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function(event) {
+                                $('#queries-details-{{url.id}}').load("{% url 'queries' url.id %}");
+                            });
+                        </script>
+                        {% endif%}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
 <!-- LOG -->
 <section>
     <h3 class="sub-header">Log
