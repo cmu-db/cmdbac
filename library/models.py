@@ -273,7 +273,7 @@ class Attempt(models.Model):
     
     runtime = models.ForeignKey('Runtime', default=None)
 
-    forms_count = models.IntegerField(default = 0)
+    actions_count = models.IntegerField(default = 0)
     queries_count = models.IntegerField(default = 0)
 
     def __unicode__(self):
@@ -287,23 +287,21 @@ class Module(models.Model):
         unique_together = ('name', 'package')
 ## CLASS
 
-class Form(models.Model):
-    action = models.CharField(max_length = 200)
+class Action(models.Model):
     url = models.CharField(max_length = 200)
-    admin = models.BooleanField(default=False)
-    attempt = models.ForeignKey('Attempt', related_name='forms')
-## CLASS
+    method = models.CharField(max_length = 10)
+    attempt = models.ForeignKey('Attempt', related_name='actions')
 
 class Field(models.Model):
     name = models.CharField(max_length = 200)
     type = models.CharField(max_length = 200)
-    form = models.ForeignKey('Form', related_name='fields')
+    form = models.ForeignKey('Action', related_name='fields')
 ## CLASS
 
 class Counter(models.Model):
     description = models.CharField(max_length = 200)
     count = models.IntegerField(default = 0)
-    form = models.ForeignKey('Form')
+    form = models.ForeignKey('Action')
 ## CLASS
 
 class Statistic(models.Model):
@@ -315,23 +313,7 @@ class Statistic(models.Model):
 class Query(models.Model):
     content = models.TextField()
     matched = models.BooleanField(default=False)
-    form = models.ForeignKey('Form', related_name='queries')
-## CLASS
-
-class Url(models.Model):
-    url = models.CharField(max_length = 200)
-    attempt = models.ForeignKey('Attempt', related_name='urls')
-## CLASS
-
-class UrlQuery(models.Model):
-    content = models.TextField()
-    url = models.ForeignKey('Url', related_name='queries')
-## CLASS
-
-class UrlCounter(models.Model):
-    description = models.CharField(max_length = 200)
-    count = models.IntegerField(default = 0)
-    url = models.ForeignKey('Url')
+    form = models.ForeignKey('Action', related_name='queries')
 ## CLASS
 
 class Image(models.Model):

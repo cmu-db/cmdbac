@@ -202,55 +202,58 @@ class BaseDeployer(object):
         self.attempt.size = utils.get_size(self.base_path)
         self.attempt.runtime = runtime
         if forms != None:
-            self.attempt.forms_count = len(forms)
+            self.attempt.actions_count = len(forms)
             self.attempt.queries_count = sum(len(form['queries']) for form in forms)
+        if urls != None:
+            self.attempt.actions_count += len(urls)
+            self.attempt.queries_count += sum(len(url['queries']) for url in urls)
+
         self.attempt.save()
 
         # save forms
         if forms != None:
             for f in forms:
-                form = Form()
-                form.action = f['action']
-                form.url = f['url']
-                form.attempt = self.attempt
-                if 'admin' in f:
-                    form.admin = True
-                form.save()
+                action = Action()
+                action.url = f['url']
+                action.method = f['method']
+                action.attempt = self.attempt
+                action.save()
                 for q in f['queries']:
                     query = Query()
                     query.content = q['content']
                     query.matched = q['matched']
-                    query.form = form
+                    query.action = action
                     query.save()
                 for input in f['inputs']:
                     field = Field()
                     field.name = input['name']
                     field.type = input['type']
-                    field.form = form
+                    field.action = action
                     field.save()
                 for description, count in f['counter'].iteritems():
                     counter = Counter()
                     counter.description = description
                     counter.count = count
-                    counter.form = form
+                    counter.action = action
                     counter.save()
 
         if urls != None:
             for u in urls:
-                url = Url()
-                url.url = u['url']
-                url.attempt = self.attempt
-                url.save()
+                action = Action()
+                action.url = u['url']
+                action.method = 'GET'
+                action.attempt = self.attempt
+                action.save()
                 for q in u['queries']:
-                    query = UrlQuery()
+                    query = Query()
                     query.content = q['content']
-                    query.url = url
+                    query.action = action
                     query.save()
                 for description, count in u['counter'].iteritems():
-                    counter = UrlCounter()
+                    counter = Counter()
                     counter.description = description
                     counter.count = count
-                    counter.url = url
+                    counter.action = action
                     counter.save()
 
         # save screenshot

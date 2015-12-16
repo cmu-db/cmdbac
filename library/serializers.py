@@ -32,11 +32,11 @@ class QuerySerializer(serializers.ModelSerializer):
     class Meta:
         model = Query
 
-class FormSerializer(serializers.ModelSerializer):
+class ActionSerializer(serializers.ModelSerializer):
     fields = FieldSerializer(many=True, read_only=True)
     queries = QuerySerializer(many=True, read_only=True)
     class Meta:
-        model = Form
+        model = Action
 
 
 class AttemptSerializer(serializers.ModelSerializer):
@@ -44,11 +44,11 @@ class AttemptSerializer(serializers.ModelSerializer):
     runtime_info = RuntimeSerializer(source='runtime')
     database_info = DatabaseSerializer(source='database')
     dependencies = DependencySerializer(source='dependency_set', many=True)
-    forms = FormSerializer(many=True, read_only = True)
+    actions = ActionSerializer(many=True, read_only = True)
 
     class Meta:
         model = Attempt
         fields = ('id', 'start_time', 'stop_time', 'repo_info', 'sha', 'size', 'log', 'hostname', 
-                  'runtime_info', 'database_info', 'result', 'register', 'login', 'forms_count', 'queries_count',
+                  'runtime_info', 'database_info', 'result', 'register', 'login', 'actions_count', 'queries_count',
                   'dependencies', 'forms'
             )
