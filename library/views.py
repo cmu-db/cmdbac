@@ -225,29 +225,18 @@ def attempt(request, id):
         'DELETE': 4
     }
     
-    forms = Form.objects.filter(attempt=attempt)
-    context['forms'] = []
-    for form in forms:
-        fields = Field.objects.filter(form=form)
-        counters = Counter.objects.filter(form=form)
+    actions = Action.objects.filter(attempt=attempt)
+    context['actions'] = []
+    for action in actions:
+        fields = Field.objects.filter(action=action)
+        counters = Counter.objects.filter(action=action)
         counters = sorted(counters, key = lambda x: keyword_order.get(x.description, 10))
-        context['forms'].append({
-            'id': form.id,
-            'action': form.action,
-            'url': form.url,
+        context['actions'].append({
+            'id': action.id,
+            'url': action.url,
+            'method': action.method,
             'fields': fields,
             'counters': counters
-        })
-
-    urls = Url.objects.filter(attempt=attempt)
-    context['urls'] = []
-    for url in urls:
-        url_counters = UrlCounter.objects.filter(url=url)
-        url_counters = sorted(url_counters, key = lambda x: keyword_order.get(x.description, 10))
-        context['urls'].append({
-            'id': url.id,
-            'url': url.url,
-            'counters': url_counters
         })
     
     try:
@@ -266,18 +255,8 @@ def queries(request, id):
     if request.is_ajax():
         context = {}
 
-        form = Form.objects.get(id=id)
-        queries = Query.objects.filter(form=form)
-        context['queries'] = queries
-        
-        return render(request, 'queries.html', context)
-
-def url_queries(request, id):
-    if request.is_ajax():
-        context = {}
-
-        url = Url.objects.get(id=id)
-        queries = UrlQuery.objects.filter(url=url)
+        action = Action.objects.get(id=id)
+        queries = Query.objects.filter(action=action)
         context['queries'] = queries
         
         return render(request, 'queries.html', context)
