@@ -1,6 +1,6 @@
 # Carnegie Mellon Database Application Catalog
 
-For more details, Please visit the [DBAC Wiki](https://github.com/cmu-db/dbac/wiki "DBAC Wiki") page.
+For more details, Please visit the [CMDBAC Wiki](https://github.com/cmu-db/dbac/wiki "DBAC Wiki") page.
 
 ### Installation
 
