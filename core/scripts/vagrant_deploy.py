@@ -21,7 +21,7 @@ def main():
         database_name = sys.argv[3]
     else:
         database_name = 'MySQL'
-    print database_name
+    print 'Deploying on {} ...'.format(database_name)
 
     repo = Repository.objects.get(name=repo_name)
     database = Database.objects.get(name=database_name)
