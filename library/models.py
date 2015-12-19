@@ -295,13 +295,13 @@ class Action(models.Model):
 class Field(models.Model):
     name = models.CharField(max_length = 200)
     type = models.CharField(max_length = 200)
-    form = models.ForeignKey('Action', related_name='fields')
+    action = models.ForeignKey('Action', related_name='fields')
 ## CLASS
 
 class Counter(models.Model):
     description = models.CharField(max_length = 200)
     count = models.IntegerField(default = 0)
-    form = models.ForeignKey('Action')
+    action = models.ForeignKey('Action')
 ## CLASS
 
 class Statistic(models.Model):
@@ -313,7 +313,7 @@ class Statistic(models.Model):
 class Query(models.Model):
     content = models.TextField()
     matched = models.BooleanField(default=False)
-    form = models.ForeignKey('Action', related_name='queries')
+    action = models.ForeignKey('Action', related_name='queries')
 ## CLASS
 
 class Image(models.Model):
