@@ -215,7 +215,9 @@ class BaseDeployer(object):
             for f in forms:
                 action = Action()
                 action.url = f['url']
-                action.method = f['method']
+                if f['method'] == '':
+                    f['method'] = 'get'
+                action.method = f['method'].upper()
                 action.attempt = self.attempt
                 action.save()
                 for q in f['queries']:
