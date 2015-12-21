@@ -173,31 +173,31 @@
     </div>
 </section>
 
-<!-- FORMS -->
+<!-- ACTIONS -->
 <section>
-    <h3 class="sub-header">Forms
-        <a class="btn btn-xs btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#forms" aria-expanded="false" aria-controls="forms">
-        <i class="glyphicon glyphicon-plus" id="forms-icon"></i>
+    <h3 class="sub-header">Actions
+        <a class="btn btn-xs btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#actions" aria-expanded="false" aria-controls="actions">
+        <i class="glyphicon glyphicon-plus" id="actions-icon"></i>
         </a>
     </h3>
-    <div id="forms" class="collapse">
+    <div id="actions" class="collapse">
         <table class="table table-striped" style="word-break:break-all">
             <thead>
                 <tr>
-                    <th class="col-md-2">Action</th>
                     <th class="col-md-2">Url</th>
+                    <th class="col-md-2">Method</th>
                     <th class="col-md-3">Fields</th>
                     <th class="col-md-5">Queries</th>
                 </tr>
             </thead>
             <tbody>
-                {% if forms %}
-                {% for form in forms %}
+                {% if actions %}
+                {% for action in actions %}
                 <tr>
-                    <td>{{ form.action }}</td>
-                    <td>{{ form.url }}</td>
+                    <td>{{ action.url }}</td>
+                    <td>{{ action.method }}</td>
                     <td>
-                        {% if form.fields %}
+                        {% if action.fields %}
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
@@ -207,7 +207,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for field in form.fields %}
+                                    {% for field in action.fields %}
                                     <tr>
                                         <td>{{ field.name }}</td>
                                         <td>{{ field.type }}</td>
@@ -219,7 +219,7 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if form.counters %}
+                        {% if action.counters %}
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
@@ -229,7 +229,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for counter in form.counters %}
+                                    {% for counter in action.counters %}
                                     <tr>
                                         <td>{{ counter.description }}</td>
                                         <td>{{ counter.count }}</td>
@@ -239,77 +239,15 @@
                             </table>
                         </div>
                         <div>
-                        <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#queries-details-{{form.id}}" aria-expanded="false" aria-controls="queries-details-{{form.id}}">
+                        <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#queries-details-{{action.id}}" aria-expanded="false" aria-controls="queries-details-{{action.id}}">
                             Details
                         </a>
-                        <div id="queries-details-{{form.id}}" class="collapse">
+                        <div id="queries-details-{{action.id}}" class="collapse">
                         </div>
                         </div>
                         <script>
                             document.addEventListener("DOMContentLoaded", function(event) {
-                                $('#queries-details-{{form.id}}').load("{% url 'queries' form.id %}");
-                            });
-                        </script>
-                        {% endif%}
-                    </td>
-                </tr>
-                {% endfor %}
-                {% endif %}
-            </tbody>
-        </table>
-    </div>
-</section>
-
-<!-- URLS -->
-<section>
-    <h3 class="sub-header">Urls
-        <a class="btn btn-xs btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#urls" aria-expanded="false" aria-controls="urls">
-        <i class="glyphicon glyphicon-plus" id="urls-icon"></i>
-        </a>
-    </h3>
-    <div id="urls" class="collapse">
-        <table class="table table-striped" style="word-break:break-all">
-            <thead>
-                <tr>
-                    <th class="col-md-4">Url</th>
-                    <th class="col-md-8">Queries</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if urls %}
-                {% for url in urls %}
-                <tr>
-                    <td>{{ url.url }}</td>
-                    <td>
-                        {% if url.counters %}
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Type</th>
-                                        <th>Count</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for counter in url.counters %}
-                                    <tr>
-                                        <td>{{ counter.description }}</td>
-                                        <td>{{ counter.count }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div>
-                        <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#url-queries-details-{{url.id}}" aria-expanded="false" aria-controls="url-queries-details-{{url.id}}">
-                            Details
-                        </a>
-                        <div id="url-queries-details-{{url.id}}" class="collapse">
-                        </div>
-                        </div>
-                        <script>
-                            document.addEventListener("DOMContentLoaded", function(event) {
-                                $('#url-queries-details-{{url.id}}').load("{% url 'url_queries' url.id %}");
+                                $('#queries-details-{{action.id}}').load("{% url 'queries' action.id %}");
                             });
                         </script>
                         {% endif%}

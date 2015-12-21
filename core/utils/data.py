@@ -19,16 +19,13 @@ import utils
 LOG = logging.getLogger()
 
 def add_module(module_name, package_name, package_type_id, package_version):
-    for project_type in ProjectType.objects.filter(id=package_type_id):
-        package = Package()
-        package.project_type = project_type
-        package.name = package_name
-        package.version = package_version
-        package.save()
-        module = Module()
-        module.name = module_name
-        module.package = package
-        module.save()
+    project_type = ProjectType.objects.get(id=package_type_id)
+    Package.objects.get_or_create(name = package_name, version = package_version)
+    package = Package.objects.get(name = package_name, version = package_version)
+    module = Module()
+    module.name = module_name
+    module.package = package
+    module.save()
 
 def add_repo(repo_name, crawler_status_id, repo_setup_scripts):
     for cs in CrawlerStatus.objects.filter(id=crawler_status_id):
@@ -44,7 +41,7 @@ def add_repo(repo_name, crawler_status_id, repo_setup_scripts):
 
         crawler.add_repository(repo_name, repo_setup_scripts)
 
-def deploy_repo(repo_name, database = 'MySQL'):
+def deploy_repo(repo_name, database = 'PostgreSQL'):
     repo = Repository.objects.get(name=repo_name)
     print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
     try:

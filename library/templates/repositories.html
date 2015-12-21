@@ -49,7 +49,7 @@
                     <a href="?order_by={% if order_by != "-latest_attempt__result" %}-{% endif %}latest_attempt__result&amp;{{ queries_no_page_order.urlencode }}">Last Result
                 </th>
                 <th class="col-md-1">
-                    <a href="?order_by={% if order_by != "-latest_attempt__forms_count" %}-{% endif %}latest_attempt__forms_count&amp;{{queries_no_page_order.urlencode }}">Forms
+                    <a href="?order_by={% if order_by != "-latest_attempt__actions_count" %}-{% endif %}latest_attempt__actions_count&amp;{{queries_no_page_order.urlencode }}">Actions
                 </th>
                 <th class="col-md-1">
                     <a href="?order_by={% if order_by != "-latest_attempt__queries_count" %}-{% endif %}latest_attempt__queries_count&amp;{{queries_no_page_order.urlencode }}">Queries
@@ -80,7 +80,7 @@
 
                     <td>
                     {% if repository.latest_attempt %}
-                        {{ repository.latest_attempt.forms_count }}
+                        {{ repository.latest_attempt.actions_count }}
                     {% else %}
                         0
                     {% endif %}

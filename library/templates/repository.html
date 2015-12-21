@@ -115,7 +115,7 @@
                 <th>Duration</th>
                 <th>Deployment Host</th>
                 <th>Result</th>
-                <th># of Forms</th>
+                <th># of Actions</th>
                 <th># of Queries</th>
             </tr>
         </thead>
@@ -147,7 +147,7 @@
                         <a id="{{attempt.id}}" href="#" data-toggle="modal" data-target="#attemptStatusModal" title="View Status Code Information" class="label label-statuscode label-{{ attempt.result_label }}" style="cursor: help;">{{attempt.result_name}}</a>
                     </td>
 
-                    <td>{{ attempt.forms_count }}</td>
+                    <td>{{ attempt.actions_count }}</td>
                     <td>{{ attempt.queries_count }}</td>
                 </tr>
                 {% endfor %}
