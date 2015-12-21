@@ -85,6 +85,16 @@ class NodeDeployer(BaseDeployer):
         if port:
             self.port = port.group(1)
 
+    def create_tables(self, deploy_path):
+        sql_files = utils.search_file_regex(deploy_path, '.*\.sql')
+        conn = self.get_database_connection()
+        cur = conn.cursor()
+        for sql_file in sql_files:
+            for statement in open(sql_file).read().split(';'):
+                cur.execute(statement)
+        if self.database.name == 'MySQL':
+            conn.commit()
+
     def try_deploy(self, deploy_path):
         LOG.info('Configuring settings ...')
         self.kill_server()
@@ -95,6 +105,9 @@ class NodeDeployer(BaseDeployer):
 
         self.attempt.database = self.get_database()
         LOG.info('Database: ' + self.attempt.database.name)
+
+        LOG.info('Create Tables ...')
+        self.create_tables(deploy_path)
 
         LOG.info('Installing requirements ...')
         out = self.install_requirements(deploy_path)

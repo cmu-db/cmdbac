@@ -130,7 +130,7 @@ def repositories(request):
             repo_name = request.GET['deploy']
             print 'deploy: ' + repo_name
             try:
-                thread = Thread(target = utils.deploy_repo, args = (repo_name, ))
+                thread = Thread(target = utils.deploy_repo, args = (repo_name, 'MySQL'))
                 thread.start()
                 # thread.join()
                 messages.success(request, 'Deploying repository {}'.format(repo_name))
