@@ -19,7 +19,7 @@ import utils
 LOG = logging.getLogger()
 
 def add_module(module_name, package_name, package_type_id, package_version):
-    project_type = ProjectType.objects.get(id=package_type_id):
+    project_type = ProjectType.objects.get(id=package_type_id)
     package = Package.objects.get_or_create(name = package_name, version = package_version)
     module = Module()
     module.name = module_name
