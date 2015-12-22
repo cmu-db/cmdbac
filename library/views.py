@@ -101,7 +101,7 @@ def repositories(request):
             package_type = request.GET['type']
             package_version = request.GET['version']
             print 'add ' + package_type + ' module : ' + module_name
-            project_type_map = {'django': 1, 'ror': 2}
+            project_type_map = {'django': 1}
             try:    
                 utils.add_module(module_name, package_name, project_type_map[package_type], package_version)
                 messages.success(request, 'Successfully added new module {}'.format(module_name))
@@ -116,7 +116,7 @@ def repositories(request):
             repo_type = request.GET['type']
             repo_setup_scripts = request.GET['scripts']
             print 'add ' + repo_type + ' repository : ' + repo_name
-            project_type_map = {'django': 1, 'ror': 2, 'node': 3}
+            project_type_map = {'django': 1, 'ror': 2, 'node': 3, 'drupal': 4}
             try:    
                 utils.add_repo(repo_name, project_type_map[repo_type], repo_setup_scripts)
                 messages.success(request, 'Successfully added new repository {}'.format(repo_name))

@@ -28,18 +28,18 @@ def add_module(module_name, package_name, package_type_id, package_version):
     module.save()
 
 def add_repo(repo_name, crawler_status_id, repo_setup_scripts):
-    for cs in CrawlerStatus.objects.filter(id=crawler_status_id):
-        repo_source = cs.source
-        project_type = cs.project_type
+    cs = CrawlerStatus.objects.get(id=crawler_status_id)
+    repo_source = cs.source
+    project_type = cs.project_type
 
-        moduleName = "crawlers.%s" % (repo_source.crawler_class.lower())
-        moduleHandle = __import__(moduleName, globals(), locals(), [repo_source.crawler_class])
-        klass = getattr(moduleHandle, repo_source.crawler_class)
-        with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
-            auth = json.load(auth_file)
-        crawler = klass(cs, auth)
+    moduleName = "crawlers.%s" % (repo_source.crawler_class.lower())
+    moduleHandle = __import__(moduleName, globals(), locals(), [repo_source.crawler_class])
+    klass = getattr(moduleHandle, repo_source.crawler_class)
+    with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
+        auth = json.load(auth_file)
+    crawler = klass(cs, auth)
 
-        crawler.add_repository(repo_name, repo_setup_scripts)
+    crawler.add_repository(repo_name, repo_setup_scripts)
 
 def deploy_repo(repo_name, database = 'PostgreSQL'):
     repo = Repository.objects.get(name=repo_name)
