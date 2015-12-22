@@ -86,14 +86,17 @@ class NodeDeployer(BaseDeployer):
             self.port = port.group(1)
 
     def create_tables(self, deploy_path):
+        executed = False
         sql_files = utils.search_file_regex(deploy_path, '.*\.sql')
         conn = self.get_database_connection()
         cur = conn.cursor()
         for sql_file in sql_files:
+            executed = True
             for statement in open(sql_file).read().split(';'):
                 cur.execute(statement)
         if self.database.name == 'MySQL':
             conn.commit()
+        return executed
 
     def try_deploy(self, deploy_path):
         LOG.info('Configuring settings ...')
@@ -107,7 +110,11 @@ class NodeDeployer(BaseDeployer):
         LOG.info('Database: ' + self.attempt.database.name)
 
         LOG.info('Create Tables ...')
-        self.create_tables(deploy_path)
+        try:
+            if not self.create_tables(deploy_path):
+                return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
+        except:
+            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
 
         LOG.info('Installing requirements ...')
         out = self.install_requirements(deploy_path)
