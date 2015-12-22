@@ -48,9 +48,12 @@ class BaseDeployer(object):
         self.log_file = None
 
         # add file handler to LOG
-        fileHandler = logging.FileHandler(os.path.join('/vagrant', str(self.deploy_id) + '.log'), 'w')
-        fileHandler.setFormatter(LOG_formatter)
-        LOG.addHandler(fileHandler)
+        try:
+            fileHandler = logging.FileHandler(os.path.join('/vagrant', str(self.deploy_id) + '.log'), 'w')
+            fileHandler.setFormatter(LOG_formatter)
+            LOG.addHandler(fileHandler)
+        except:
+            pass
 
         if database_config == None:
             if self.database.name == 'MySQL':
