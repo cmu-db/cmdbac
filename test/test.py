@@ -3,7 +3,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2015-12-22 23:55:52
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2015-12-23 01:41:32
+# @Last Modified time: 2015-12-23 02:01:34
 from selenium import webdriver
 import time
 import traceback
@@ -105,6 +105,8 @@ if __name__ == "__main__":
     time.sleep(STEP_SLEEP_TIME)
     print browser.current_url
     browser.save_screenshot('/tmp/screenshot.png')
+
+    browser.quit()
 
 
 
