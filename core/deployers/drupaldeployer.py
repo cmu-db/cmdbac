@@ -42,7 +42,12 @@ class DrupalDeployer(BaseDeployer):
     ## DEF
 
     def sync_server(self, path):
-        pass
+        LOG.info('Syncing server ...')
+        utils.run_command('{} && drush dl php_server'.format(
+            utils.cd(path)))
+        utils.run_command_async('drush ss', input=['0.0.0.0\n', '{}\n'.format(self.port)], cwd=path)
+
+        time.sleep(5)
     ## DEF
 
     def run_server(self, path):
@@ -51,7 +56,6 @@ class DrupalDeployer(BaseDeployer):
 
     def get_runtime(self):
         out = utils.run_command('php -v')
-        print out
         return {
             'executable': 'php',
             'version': out[1].split('\n')[0].split()[1]
@@ -68,6 +72,8 @@ class DrupalDeployer(BaseDeployer):
 
         self.attempt.database = self.get_database()
         LOG.info('Database: ' + self.attempt.database.name)
+
+        self.sync_server(deploy_path)
 
         return ATTEMPT_STATUS_SUCCESS
 

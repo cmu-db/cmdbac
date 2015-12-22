@@ -30,9 +30,10 @@ def main():
         deployer.kill_server()
         sys.exit(-1)
     
-    deployer.kill_server()
+    while True:
+        pass 
 
-    return 
+    deployer.kill_server()
 
     try:
         driver = BaseDriver(deployer)
