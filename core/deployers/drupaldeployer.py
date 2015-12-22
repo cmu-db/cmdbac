@@ -48,6 +48,9 @@ class DrupalDeployer(BaseDeployer):
         utils.run_command_async('drush ss', input=['0.0.0.0\n', '{}\n'.format(self.port)], cwd=path)
 
         time.sleep(5)
+
+
+
     ## DEF
 
     def run_server(self, path):
@@ -88,6 +91,8 @@ class DrupalDeployer(BaseDeployer):
     def deploy_repo_attempt(self, deploy_path):
         package_jsons = utils.search_file(deploy_path, 'install.php')
         base_dir = sorted([os.path.dirname(package_json) for package_json in package_jsons])[0]
+
+        # TODO : delete robots.txt
 
         self.setting_path = base_dir
 
