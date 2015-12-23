@@ -1,0 +1,58 @@
+[
+{
+  "pk": 1, 
+  "model": "library.crawlerstatus", 
+  "fields": {
+    "last_crawler_time": "2015-01-16T15:59:45", 
+    "source": 1, 
+    "project_type": 1, 
+    "next_url": "",
+    "min_size": 100,
+    "cur_size": 100,
+    "max_size": 20000,
+    "query": "django"
+  }
+},
+{
+  "pk": 2, 
+  "model": "library.crawlerstatus", 
+  "fields": {
+    "last_crawler_time": "2015-01-16T15:58:19", 
+    "source": 1, 
+    "project_type": 2, 
+    "next_url": "",
+    "min_size": 100,
+    "cur_size": 100, 
+    "max_size": 10000,
+    "query": ""
+  }
+},
+{
+  "pk": 3, 
+  "model": "library.crawlerstatus", 
+  "fields": {
+    "last_crawler_time": "2015-01-16T15:58:19", 
+    "source": 1, 
+    "project_type": 3, 
+    "next_url": "",
+    "min_size": 100,
+    "cur_size": 100, 
+    "max_size": 10000,
+    "query": "mysql"
+  }
+},
+{
+  "pk": 4, 
+  "model": "library.crawlerstatus", 
+  "fields": {
+    "last_crawler_time": "2015-01-16T15:58:19", 
+    "source": 1, 
+    "project_type": 4, 
+    "next_url": "",
+    "min_size": 100,
+    "cur_size": 100, 
+    "max_size": 10000,
+    "query": "drupal"
+  }
+}
+]
