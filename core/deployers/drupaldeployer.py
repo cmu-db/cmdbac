@@ -41,6 +41,10 @@ class DrupalDeployer(BaseDeployer):
         return 'http://127.0.0.1:{}/'.format(self.port)
     ## DEF
 
+    def configure_profile(self):
+        pass
+    ## DEF
+
     def sync_server(self, path):
         LOG.info('Syncing server ...')
         utils.run_command('{} && drush dl php_server'.format(
@@ -49,8 +53,7 @@ class DrupalDeployer(BaseDeployer):
 
         time.sleep(5)
 
-
-
+        self.configure_profile()
     ## DEF
 
     def run_server(self, path):
