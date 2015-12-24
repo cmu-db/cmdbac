@@ -115,7 +115,7 @@ pip install pinax-blog
 pip install pytz
 
 # install php
-apt-get install apache2 php5-mysql libapache2-mod-php5 mysql-server php5-dev
+apt-get install apache2 php5-mysql libapache2-mod-php5 mysql-server php5-dev php5-gd
 
 # install drush
 wget http://files.drush.org/drush.phar
