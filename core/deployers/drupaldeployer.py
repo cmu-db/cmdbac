@@ -47,10 +47,13 @@ class DrupalDeployer(BaseDeployer):
     ## DEF
 
     def configure_profile(self):
+        from pyvirtualdisplay import Display
+        display = Display(visible=0, size=(800, 600))
+        display.start()
+
         browser = webdriver.PhantomJS()
         browser.get('http://127.0.0.1:8181/install.php')
     
-        browser.save_screenshot('/tmp/screenshot.png')
         # select profile
         try:
             WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'edit-profile--4')))
@@ -58,18 +61,18 @@ class DrupalDeployer(BaseDeployer):
             browser.find_element_by_tag_name('form').submit()
             print 'Selecting profile ...'
         except:
+            traceback.print_exc()
             pass
 
-        browser.save_screenshot('/tmp/screenshot.png')
         # select locale
         try:
             WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
             browser.find_element_by_tag_name('form').submit()
             print 'Selecting locale ...'
         except:
+            traceback.print_exc()
             pass
         
-        browser.save_screenshot('/tmp/screenshot.png')
         # configure database
         try:
             WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'edit-mysql-database')))
@@ -78,6 +81,7 @@ class DrupalDeployer(BaseDeployer):
             browser.find_element_by_id('edit-mysql-password').send_keys(self.database_config['password'])
             browser.find_element_by_class_name('fieldset-title').click()
         except:
+            traceback.print_exc()
             pass
         
         browser.save_screenshot('/tmp/screenshot.png')
@@ -89,6 +93,7 @@ class DrupalDeployer(BaseDeployer):
             browser.find_element_by_tag_name('form').submit()
             print 'Configuring database ...'
         except:
+            traceback.print_exc()
             pass
 
         browser.save_screenshot('/tmp/screenshot.png')
@@ -103,6 +108,7 @@ class DrupalDeployer(BaseDeployer):
             browser.find_element_by_tag_name('form').submit()
             print 'Configuring site ...'
         except:
+            traceback.print_exc()
             pass
 
         browser.save_screenshot('/tmp/screenshot.png')
@@ -115,6 +121,7 @@ class DrupalDeployer(BaseDeployer):
             browser.find_element_by_tag_name('form').submit()
             print 'Configuring feature set ...'
         except:
+            traceback.print_exc()
             pass
 
         browser.save_screenshot('/tmp/screenshot.png')
@@ -124,6 +131,7 @@ class DrupalDeployer(BaseDeployer):
             browser.find_element_by_tag_name('form').submit()
             print 'Configuring layout ...'
         except:
+            traceback.print_exc()
             pass
 
         browser.save_screenshot('/tmp/screenshot.png')
@@ -140,11 +148,13 @@ class DrupalDeployer(BaseDeployer):
             browser.find_element_by_tag_name('form').submit()
             print 'Configuring general user ...'
         except:
+            traceback.print_exc()
             pass
 
         time.sleep(WAIT_TIME * 2)
         browser.save_screenshot('/tmp/screenshot.png')
         browser.quit()
+        display.stop()
         ## DEF
 
     def sync_server(self, path):
@@ -153,7 +163,7 @@ class DrupalDeployer(BaseDeployer):
             utils.cd(path)))
         utils.run_command_async('drush ss', input=['0.0.0.0\n', '{}\n'.format(self.port)], cwd=path)
 
-        time.sleep(5)
+        time.sleep(WAIT_TIME)
 
         try:
             self.configure_profile()
