@@ -4,6 +4,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 import logging
 import re
 import time
+import traceback
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from basedeployer import BaseDeployer
 from library.models import *
@@ -30,7 +35,7 @@ class DrupalDeployer(BaseDeployer):
         self.main_filename = None
 
         ## HACK
-        self.database_config['password'] = ''
+        ## self.database_config['password'] = ''
     ## DEF
 
     def configure_settings(self, path):
@@ -150,7 +155,10 @@ class DrupalDeployer(BaseDeployer):
 
         time.sleep(5)
 
-        self.configure_profile()
+        try:
+            self.configure_profile()
+        except:
+            traceback.print_exc()
     ## DEF
 
     def run_server(self, path):
