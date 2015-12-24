@@ -115,7 +115,7 @@ pip install pinax-blog
 pip install pytz
 
 # install php
-sudo apt-get install apache2 php5-mysql libapache2-mod-php5 mysql-server
+sudo apt-get install apache2 php5-mysql libapache2-mod-php5 mysql-server drush
 
 # Fix Dependencies
 apt-get -f -y install >/dev/null 2>&1
