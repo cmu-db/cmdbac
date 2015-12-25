@@ -3,12 +3,13 @@
 # @Author: Zeyuan Shang
 # @Date:   2015-12-22 23:55:52
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2015-12-23 12:12:04
+# @Last Modified time: 2015-12-25 12:25:01
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
+import traceback
 
 WAIT_TIME = 15
 
@@ -23,8 +24,8 @@ if __name__ == "__main__":
         browser.find_element_by_id('edit-profile--4').click()
         browser.find_element_by_tag_name('form').submit()
         print 'Selecting profile ...'
-
     except:
+        traceback.print_exc()
         pass
 
     browser.save_screenshot('/tmp/screenshot.png')
@@ -34,13 +35,14 @@ if __name__ == "__main__":
         browser.find_element_by_tag_name('form').submit()
         print 'Selecting locale ...'
     except:
+        traceback.print_exc()
         pass
 
     database_config = {
         'host': '127.0.0.1',
         'port': 3306,
         'username': 'root',
-        'password': '',
+        'password': 'root',
         'name': 'drupal_app0'
     }
     
@@ -53,6 +55,7 @@ if __name__ == "__main__":
         browser.find_element_by_id('edit-mysql-password').send_keys(database_config['password'])
         browser.find_element_by_class_name('fieldset-title').click()
     except:
+        traceback.print_exc()
         pass
     
     browser.save_screenshot('/tmp/screenshot.png')
@@ -64,6 +67,7 @@ if __name__ == "__main__":
         browser.find_element_by_tag_name('form').submit()
         print 'Configuring database ...'
     except:
+        traceback.print_exc()
         pass
 
     browser.save_screenshot('/tmp/screenshot.png')
@@ -78,6 +82,7 @@ if __name__ == "__main__":
         browser.find_element_by_tag_name('form').submit()
         print 'Configuring site ...'
     except:
+        traceback.print_exc()
         pass
 
     browser.save_screenshot('/tmp/screenshot.png')
@@ -90,6 +95,7 @@ if __name__ == "__main__":
         browser.find_element_by_tag_name('form').submit()
         print 'Configuring feature set ...'
     except:
+        traceback.print_exc()
         pass
 
     browser.save_screenshot('/tmp/screenshot.png')
@@ -99,6 +105,7 @@ if __name__ == "__main__":
         browser.find_element_by_tag_name('form').submit()
         print 'Configuring layout ...'
     except:
+        traceback.print_exc()
         pass
 
     browser.save_screenshot('/tmp/screenshot.png')
@@ -115,6 +122,7 @@ if __name__ == "__main__":
         browser.find_element_by_tag_name('form').submit()
         print 'Configuring general user ...'
     except:
+        traceback.print_exc()
         pass
 
     time.sleep(WAIT_TIME * 2)
