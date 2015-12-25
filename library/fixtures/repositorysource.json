@@ -10,5 +10,17 @@
     "crawler_class": "GitHubCrawler", 
     "logo": "img/github.png"
   }
+},
+{
+  "pk": 2, 
+  "model": "library.repositorysource", 
+  "fields": {
+    "name": "Drupal", 
+    "commit_url": "https://www.drupal.org/node/${commit}", 
+    "base_url": "https://www.drupal.org/project/${repo_name}", 
+    "search_token": "CHANGE ME",
+    "crawler_class": "DrupalCrawler", 
+    "logo": "img/drupal.png"
+  }
 }
 ]

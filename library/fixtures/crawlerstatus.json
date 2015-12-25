@@ -46,7 +46,7 @@
   "model": "library.crawlerstatus", 
   "fields": {
     "last_crawler_time": "2015-01-16T15:58:19", 
-    "source": 1, 
+    "source": 2, 
     "project_type": 4, 
     "next_url": "",
     "min_size": 100,

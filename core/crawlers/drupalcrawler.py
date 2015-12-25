@@ -10,6 +10,7 @@ import urlparse
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
+import traceback
 
 from basecrawler import BaseCrawler
 from library.models import *
@@ -29,7 +30,6 @@ LOG.setLevel(logging.INFO)
 ## =====================================================================
 ## DRUPAL CONFIGURATION
 ## =====================================================================
-BASE_URL = "http://https://www.drupal.org/project/{}"
 
 ## =====================================================================
 ## DRUPAL CRAWLER
@@ -46,21 +46,22 @@ class DrupalCrawler(BaseCrawler):
         return response
     ## DEF
 
-    def get_api_data(name):
+    def get_api_data(self, name):
         data = {}
-        data['url'] = BASE_URL.format(name)
+        data['url'] = self.crawlerStatus.source.get_url(name)
         response = requests.get(data['url'])
-        soup = BeautifulSoup(response.read())
-        data['time'] = soup.find('time')
-        print data
+        soup = BeautifulSoup(response.text, "lxml")
+        data['time'] = soup.find('time').attrs['datetime']
         return data
 
     def add_repository(self, name, setup_scripts):
         if Repository.objects.filter(name=name, source=self.crawlerStatus.source).exists():
             LOG.info("Repository '%s' already exists" % name)
         else:
-            api_data = self.get_api_data(name)
-            if api_data.get('time', '') == '':
+            try:
+                api_data = self.get_api_data(name)
+            except:
+                traceback.print_exc()
                 raise Exception('Not Found')
 
             # Create the new repository
@@ -69,7 +70,7 @@ class DrupalCrawler(BaseCrawler):
             repo.source = self.crawlerStatus.source
             repo.project_type = self.crawlerStatus.project_type
             repo.last_attempt = None
-            repo.created_at = datetime.fromtimestamp(api_data['time']).strftime("%Y-%m-%dT%H:%M:%SZ")
+            repo.created_at = datetime.fromtimestamp(int(api_data['time'])).strftime("%Y-%m-%d %H:%M:%S")
             repo.updated_at = repo.created_at
             repo.pushed_at = repo.created_at
             repo.homepage = api_data['url']
@@ -85,7 +86,7 @@ class DrupalCrawler(BaseCrawler):
             repo.commits_count = -1
             repo.branches_count = -1
             repo.releases_count = -1
-            repo.contributors_count  -1
+            repo.contributors_count = -1
             repo.setup_scripts = setup_scripts
             repo.save()
             LOG.info("Successfully created new repository '%s' [%d]" % (repo, repo.id))

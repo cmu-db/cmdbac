@@ -35,9 +35,13 @@ def add_repo(repo_name, crawler_status_id, repo_setup_scripts):
     moduleName = "crawlers.%s" % (repo_source.crawler_class.lower())
     moduleHandle = __import__(moduleName, globals(), locals(), [repo_source.crawler_class])
     klass = getattr(moduleHandle, repo_source.crawler_class)
-    with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
-        auth = json.load(auth_file)
-    crawler = klass(cs, auth)
+    # FOR GITHUB
+    if repo_source.id == 1: 
+        with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
+            auth = json.load(auth_file)
+        crawler = klass(cs, auth)
+    else:
+        crawler = klass(cs)
 
     crawler.add_repository(repo_name, repo_setup_scripts)
 
