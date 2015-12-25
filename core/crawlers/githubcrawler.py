@@ -83,36 +83,6 @@ class GitHubCrawler(BaseCrawler):
         response = urllib2.urlopen(request)
         return response
     ## DEF
-
-    def get_api_data(self, name):
-        response = requests.get(urlparse.urljoin(API_GITHUB_REPO, name), auth=(self.auth['user'], self.auth['pass']))
-        data = response.json()
-        return data
-    ## DEF
-
-    def get_webpage_data(self, name):
-        data = {}
-        response = self.load_url(urlparse.urljoin(GITHUB_HOST, name))
-        soup = BeautifulSoup(response.read(), "lxml")
-        numbers = soup.find_all(class_='num text-emphasized')
-        
-        # The fields that we want to extract integers
-        # The order matters here
-        fields = [
-            "commits_count",
-            "branches_count",
-            "releases_count",
-            "contributors_count",
-        ]
-        for i in xrange(len(fields)):
-            try:
-                data[fields[i]] = int(re.sub("\D", "", numbers[i].string))
-            except:
-                data[fields[i]] = 0
-        ## FOR
-
-        return data
-    ## DEF
     
     def search(self):
         # Load and parse!
@@ -143,6 +113,36 @@ class GitHubCrawler(BaseCrawler):
         self.crawlerStatus.save()
             
         return
+    ## DEF
+
+    def get_api_data(self, name):
+        response = requests.get(urlparse.urljoin(API_GITHUB_REPO, name), auth=(self.auth['user'], self.auth['pass']))
+        data = response.json()
+        return data
+    ## DEF
+
+    def get_webpage_data(self, name):
+        data = {}
+        response = self.load_url(urlparse.urljoin(GITHUB_HOST, name))
+        soup = BeautifulSoup(response.read(), "lxml")
+        numbers = soup.find_all(class_='num text-emphasized')
+        
+        # The fields that we want to extract integers
+        # The order matters here
+        fields = [
+            "commits_count",
+            "branches_count",
+            "releases_count",
+            "contributors_count",
+        ]
+        for i in xrange(len(fields)):
+            try:
+                data[fields[i]] = int(re.sub("\D", "", numbers[i].string))
+            except:
+                data[fields[i]] = 0
+        ## FOR
+
+        return data
     ## DEF
 
     def add_repository(self, name, setup_scripts):
@@ -204,6 +204,7 @@ class GitHubCrawler(BaseCrawler):
         data = response.json()
         time.sleep(1) 
         return data[0]['sha']
+    # DEF
 
     def download_repository(self, attempt, zip_name):
         with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
@@ -216,3 +217,4 @@ class GitHubCrawler(BaseCrawler):
                 zip_file.write(chunk)
                 zip_file.flush()
         zip_file.close()
+    # DEF
