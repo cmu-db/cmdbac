@@ -11,9 +11,12 @@ import requests
 from string import Template
 from bs4 import BeautifulSoup
 from datetime import datetime
+from string import Template
+import json
 
 from basecrawler import BaseCrawler
 from library.models import *
+import utils
 
 ## =====================================================================
 ## LOGGING CONFIGURATION
@@ -38,6 +41,8 @@ BASE_URL = "https://github.com/search?utf8=%E2%9C%93&q=${query}+" + \
 GITHUB_HOST = 'https://github.com/'
 API_GITHUB_REPO = 'https://api.github.com/repos/'
 API_GITHUB_SLEEP = 4 # seconds
+GITHUB_API_COMMITS_URL = Template('https://api.github.com/repos/${name}/commits')
+GITHUB_DOWNLOAD_URL_TEMPLATE = Template('https://github.com/${name}/archive/${sha}.zip')
 
 ## =====================================================================
 ## GITHUB CRAWLER
@@ -108,6 +113,37 @@ class GitHubCrawler(BaseCrawler):
 
         return data
     ## DEF
+    
+    def search(self):
+        # Load and parse!
+        response = self.load_url(self.next_url())
+        soup = BeautifulSoup(response.read(), "lxml")
+        titles = soup.find_all(class_='title')
+        LOG.info("Found %d repositories" % len(titles))
+        
+        # Pick through the results and find repos
+        for title in titles:
+            name = title.contents[1].string
+            self.add_repository(name, 'pwd')
+            # Sleep for a little bit to prevent us from getting blocked
+            time.sleep(API_GITHUB_SLEEP)
+        ## FOR
+
+        # Figure out what is the next page that we need to load
+        next_page = soup.find(class_='next_page')
+        next_url = None
+        if not next_page or not next_page.has_attr('href'):
+            LOG.info("No next page link found!")
+            self.crawlerStatus.next_url = None
+        else:
+            self.crawlerStatus.next_url = GITHUB_HOST + next_page['href']
+            
+        # Make sure we update our crawler status
+        LOG.info("Updating status for %s" % self.crawlerStatus)
+        self.crawlerStatus.save()
+            
+        return
+    ## DEF
 
     def add_repository(self, name, setup_scripts):
         if Repository.objects.filter(name=name, source=self.crawlerStatus.source).exists():
@@ -160,34 +196,23 @@ class GitHubCrawler(BaseCrawler):
             repo.save()
             LOG.info("Successfully created new repository '%s' [%d]" % (repo, repo.id))
         ## IF
-    
-    def search(self):
-        # Load and parse!
-        response = self.load_url(self.next_url())
-        soup = BeautifulSoup(response.read(), "lxml")
-        titles = soup.find_all(class_='title')
-        LOG.info("Found %d repositories" % len(titles))
-        
-        # Pick through the results and find repos
-        for title in titles:
-            name = title.contents[1].string
-            self.add_repository(name, 'pwd')
-            # Sleep for a little bit to prevent us from getting blocked
-            time.sleep(API_GITHUB_SLEEP)
-        ## FOR
-
-        # Figure out what is the next page that we need to load
-        next_page = soup.find(class_='next_page')
-        next_url = None
-        if not next_page or not next_page.has_attr('href'):
-            LOG.info("No next page link found!")
-            self.crawlerStatus.next_url = None
-        else:
-            self.crawlerStatus.next_url = GITHUB_HOST + next_page['href']
-            
-        # Make sure we update our crawler status
-        LOG.info("Updating status for %s" % self.crawlerStatus)
-        self.crawlerStatus.save()
-            
-        return
     ## DEF
+
+    def get_latest_sha(self, repo):
+        url = GITHUB_API_COMMITS_URL.substitute(name=repo.name)
+        response = utils.query(url)
+        data = response.json()
+        time.sleep(1) 
+        return data[0]['sha']
+
+    def download_repository(self, attempt, zip_name):
+        with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
+            auth = json.load(auth_file)
+        url = GITHUB_DOWNLOAD_URL_TEMPLATE.substitute(name=attempt.repo.name, sha=attempt.sha)
+        response = utils.query(url)
+        zip_file = open(zip_name, 'wb')
+        for chunk in response.iter_content(chunk_size=1024): 
+            if chunk:
+                zip_file.write(chunk)
+                zip_file.flush()
+        zip_file.close()

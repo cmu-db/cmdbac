@@ -18,6 +18,19 @@ import utils
 ## =====================================================================
 LOG = logging.getLogger()
 
+def get_crawler(crawler_status, repo_source):
+    moduleName = "crawlers.%s" % (repo_source.crawler_class.lower())
+    moduleHandle = __import__(moduleName, globals(), locals(), [repo_source.crawler_class])
+    klass = getattr(moduleHandle, repo_source.crawler_class)
+    # FOR GITHUB
+    if repo_source.id == 1: 
+        with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
+            auth = json.load(auth_file)
+        crawler = klass(crawler_status, auth)
+    else:
+        crawler = klass(crawler_status)
+    return crawler
+
 def add_module(module_name, package_name, package_type_id, package_version):
     project_type = ProjectType.objects.get(id=package_type_id)
     Package.objects.get_or_create(name = package_name, version = package_version)
@@ -31,18 +44,7 @@ def add_repo(repo_name, crawler_status_id, repo_setup_scripts):
     cs = CrawlerStatus.objects.get(id=crawler_status_id)
     repo_source = cs.source
     project_type = cs.project_type
-
-    moduleName = "crawlers.%s" % (repo_source.crawler_class.lower())
-    moduleHandle = __import__(moduleName, globals(), locals(), [repo_source.crawler_class])
-    klass = getattr(moduleHandle, repo_source.crawler_class)
-    # FOR GITHUB
-    if repo_source.id == 1: 
-        with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
-            auth = json.load(auth_file)
-        crawler = klass(cs, auth)
-    else:
-        crawler = klass(cs)
-
+    crawler = get_crawler(cs, repo_source)
     crawler.add_repository(repo_name, repo_setup_scripts)
 
 def deploy_repo(repo_name, database = 'PostgreSQL'):

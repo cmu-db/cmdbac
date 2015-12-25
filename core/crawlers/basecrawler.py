@@ -22,4 +22,8 @@ class BaseCrawler(object):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     # DEF
 
+    def download_repository(self, repo_name, zip_name):
+        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
+    # DEF
+
 ## CLASS

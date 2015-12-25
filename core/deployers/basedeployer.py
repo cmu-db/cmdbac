@@ -177,7 +177,6 @@ class BaseDeployer(object):
         self.buffer.flush()
         self.attempt.log = self.buffer.getvalue()
 
-
     def save_attempt(self, attempt_result, driver_result = {}):
         # flush log
         self.flush_log()
@@ -195,7 +194,6 @@ class BaseDeployer(object):
             self.runtime = self.get_runtime()
         Runtime.objects.get_or_create(executable = self.runtime['executable'], version = self.runtime['version'])
         runtime = Runtime.objects.get(executable = self.runtime['executable'], version = self.runtime['version'])
-
 
         # save attempt
         self.attempt.result = attempt_result
@@ -308,7 +306,7 @@ class BaseDeployer(object):
         self.repo.attempts_count = self.repo.attempts_count + 1
         self.repo.save()
     ## DEF
-    
+
     def deploy(self, save = True):
         LOG.info('Deploying repo: {} ...'.format(self.repo.name))
         
@@ -317,9 +315,13 @@ class BaseDeployer(object):
         self.attempt.database = self.database
         self.attempt.start_time = datetime.now()
         self.attempt.hostname = socket.gethostname()
-        LOG.info('Validating ...')
+
+        crawler_status = CrawlerStatus.objects.get(id=1)
+        crawler = utils.get_crawler(crawler_status, self.repo.source)
+
+        LOG.info('Validating Repository ...')
         try:
-            self.attempt.sha = utils.get_latest_sha(self.repo)
+            self.attempt.sha = crawler.get_latest_sha(self.repo)
         except Exception, e:
             LOG.exception(e)
             if save:
@@ -328,9 +330,9 @@ class BaseDeployer(object):
                 LOG.error('Download Error..')
             return -1
 
-        LOG.info('Downloading at {} ...'.format(self.attempt.sha))
+        LOG.info('Downloading Repository ...'.format(self.attempt.sha))
         try:
-            utils.download_repo(self.attempt, self.zip_file)
+            crawler.download_repository(self.attempt, self.zip_file)
         except Exception, e:
             LOG.exception(e)
             if save:
