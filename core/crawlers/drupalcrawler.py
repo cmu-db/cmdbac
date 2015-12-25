@@ -14,6 +14,7 @@ import traceback
 
 from basecrawler import BaseCrawler
 from library.models import *
+import utils
 
 ## =====================================================================
 ## LOGGING CONFIGURATION
@@ -30,6 +31,8 @@ LOG.setLevel(logging.INFO)
 ## =====================================================================
 ## DRUPAL CONFIGURATION
 ## =====================================================================
+BASE_URL = 'https://www.drupal.org/project/{name}'
+COMMIT_URL = 'https://www.drupal.org/node/{sha}'
 
 ## =====================================================================
 ## DRUPAL CRAWLER
@@ -99,18 +102,20 @@ class DrupalCrawler(BaseCrawler):
     # DEF
 
     def get_latest_sha(self, repo):
-        url = GITHUB_API_COMMITS_URL.substitute(name=repo.name)
+        url = BASE_URL.format(name = repo.repo_name())
         response = utils.query(url)
-        data = response.json()
-        time.sleep(1) 
-        return data[0]['sha']
+        data = response.text
+        results = re.findall(COMMIT_URL.format(sha='(\d+)'), data)
+        return results[1]
     # DEF
 
     def download_repository(self, attempt, zip_name):
-        with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
-            auth = json.load(auth_file)
-        url = GITHUB_DOWNLOAD_URL_TEMPLATE.substitute(name=attempt.repo.name, sha=attempt.sha)
+        url = COMMIT_URL.format(sha=attempt.sha)
         response = utils.query(url)
+        data = response.text
+        download_url = re.search('http://.*?\.zip', data).group(0)
+        
+        response = utils.query(download_url)
         zip_file = open(zip_name, 'wb')
         for chunk in response.iter_content(chunk_size=1024): 
             if chunk:
