@@ -66,7 +66,7 @@ class DrupalCrawler(BaseCrawler):
 
             # Create the new repository
             repo = Repository()
-            repo.name = name
+            repo.name = 'drupal/' + name
             repo.source = self.crawlerStatus.source
             repo.project_type = self.crawlerStatus.project_type
             repo.last_attempt = None
