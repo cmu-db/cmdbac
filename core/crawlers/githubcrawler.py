@@ -110,7 +110,7 @@ class GitHubCrawler(BaseCrawler):
     ## DEF
 
     def add_repository(self, name, setup_scripts):
-        if Repository.objects.filter(name=name).exists():
+        if Repository.objects.filter(name=name, source=self.crawlerStatus.source).exists():
             LOG.info("Repository '%s' already exists" % name)
         else:
             api_data = self.get_api_data(name)
