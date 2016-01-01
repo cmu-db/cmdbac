@@ -159,8 +159,6 @@ class DrupalDeployer(BaseDeployer):
 
     def sync_server(self, path):
         LOG.info('Syncing server ...')
-        utils.run_command('{} && drush dl php_server'.format(
-            utils.cd(path)))
         utils.run_command_async('drush ss', input=['0.0.0.0\n', '{}\n'.format(self.port)], cwd=path)
 
         time.sleep(WAIT_TIME)

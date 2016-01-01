@@ -123,6 +123,7 @@ php drush.phar core-status
 chmod +x drush.phar
 sudo mv drush.phar /usr/local/bin/drush
 drush init
+drush dl php_server
 
 # Fix Dependencies
 apt-get -f -y install >/dev/null 2>&1
