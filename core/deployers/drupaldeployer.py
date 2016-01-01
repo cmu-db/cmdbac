@@ -52,61 +52,41 @@ class DrupalDeployer(BaseDeployer):
         display.start()
 
         browser = webdriver.PhantomJS()
-        browser.get('http://127.0.0.1:8181/install.php')
-    
-        # select profile
-        try:
-            WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'edit-profile--4')))
-            browser.find_element_by_id('edit-profile--4').click()
-            browser.find_element_by_tag_name('form').submit()
-            print 'Selecting profile ...'
-        except:
-            traceback.print_exc()
-            pass
-
-        # select locale
-        try:
-            WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
-            browser.find_element_by_tag_name('form').submit()
-            print 'Selecting locale ...'
-        except:
-            traceback.print_exc()
-            pass
+        browser.get('http://127.0.0.1:8181/install.php?profile={}&welcome=done&locale=en'.format(self.repo.repo_name()))
         
         # configure database
+        print 'Configuring database ...'
         try:
             WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'edit-mysql-database')))
             browser.find_element_by_id('edit-mysql-database').send_keys(self.database_config['name'])
             browser.find_element_by_id('edit-mysql-username').send_keys(self.database_config['username'])
             browser.find_element_by_id('edit-mysql-password').send_keys(self.database_config['password'])
             browser.find_element_by_class_name('fieldset-title').click()
-        except:
-            traceback.print_exc()
-            pass
         
-        browser.save_screenshot('/tmp/screenshot.png')
-        try:
             WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'edit-mysql-host')))
             browser.find_element_by_id('edit-mysql-host').clear()
             browser.find_element_by_id('edit-mysql-host').send_keys(self.database_config['host'])
             browser.find_element_by_id('edit-mysql-port').send_keys(self.database_config['port'])
             browser.find_element_by_tag_name('form').submit()
-            print 'Configuring database ...'
         except:
             traceback.print_exc()
             pass
-
         browser.save_screenshot('/tmp/screenshot.png')
+
         # configure site
+        print 'Configuring site ...'
         try:
             WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'edit-site-name')))
             browser.find_element_by_id('edit-site-name').send_keys(self.database_config['name'])
             browser.find_element_by_id('edit-site-mail').send_keys('admin@test.com')
-            browser.find_element_by_id('edit-account-name').send_keys('admin')
-            browser.find_element_by_id('edit-account-pass-pass1').send_keys('admin')
-            browser.find_element_by_id('edit-account-pass-pass2').send_keys('admin')
+            try:
+                browser.find_element_by_id('edit-account-name').send_keys('admin')
+                browser.find_element_by_id('edit-account-pass-pass1').send_keys('admin')
+                browser.find_element_by_id('edit-account-pass-pass2').send_keys('admin')
+            except:
+                traceback.print_exc()
+                pass
             browser.find_element_by_tag_name('form').submit()
-            print 'Configuring site ...'
         except:
             traceback.print_exc()
             pass
@@ -163,10 +143,7 @@ class DrupalDeployer(BaseDeployer):
 
         time.sleep(WAIT_TIME)
 
-        try:
-            self.configure_profile()
-        except:
-            traceback.print_exc()
+        self.configure_profile()
     ## DEF
 
     def run_server(self, path):
@@ -192,9 +169,12 @@ class DrupalDeployer(BaseDeployer):
         self.attempt.database = self.get_database()
         LOG.info('Database: ' + self.attempt.database.name)
 
-        self.sync_server(deploy_path)
+        try:
+            self.sync_server(deploy_path)
+        except:
+            return ATTEMPT_STATUS_RUNNING_ERROR
 
-        return ATTEMPT_STATUS_SUCCESS
+        #return ATTEMPT_STATUS_SUCCESS
 
         self.run_server(deploy_path)
         time.sleep(5)
