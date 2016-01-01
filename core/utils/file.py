@@ -51,7 +51,7 @@ def unzip(zip_name, dir_name):
 def rm_dir(path):
     #if os.path.exists(path):
     #    shutil.rmtree(path)
-    os.system('rm -rf {}'.format(path))
+    os.system('sudo rm -rf {}'.format(path))
 
 def mk_dir(path):
     if not os.path.exists(path):
