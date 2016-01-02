@@ -22,7 +22,7 @@ LOG = logging.getLogger()
 ## =====================================================================
 ## SETTINGS
 ## =====================================================================
-WAIT_TIME = 15
+WAIT_TIME = 30
 
 ## =====================================================================
 ## Drupal DEPLOYER
@@ -55,87 +55,72 @@ class DrupalDeployer(BaseDeployer):
         browser.get('http://127.0.0.1:8181/install.php?profile={}&welcome=done&locale=en'.format(self.repo.repo_name()))
         
         # configure database
-        print 'Configuring database ...'
-        try:
-            WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'edit-mysql-database')))
-            browser.find_element_by_id('edit-mysql-database').send_keys(self.database_config['name'])
-            browser.find_element_by_id('edit-mysql-username').send_keys(self.database_config['username'])
-            browser.find_element_by_id('edit-mysql-password').send_keys(self.database_config['password'])
-            browser.find_element_by_class_name('fieldset-title').click()
+        LOG.info('Configuring database ...')
+
+        WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'edit-mysql-database')))
+        browser.find_element_by_id('edit-mysql-database').send_keys(self.database_config['name'])
+        browser.find_element_by_id('edit-mysql-username').send_keys(self.database_config['username'])
+        browser.find_element_by_id('edit-mysql-password').send_keys(self.database_config['password'])
         
-            WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'edit-mysql-host')))
-            browser.find_element_by_id('edit-mysql-host').clear()
-            browser.find_element_by_id('edit-mysql-host').send_keys(self.database_config['host'])
-            browser.find_element_by_id('edit-mysql-port').send_keys(self.database_config['port'])
-            browser.find_element_by_tag_name('form').submit()
-        except:
-            traceback.print_exc()
-            pass
-        browser.save_screenshot('/tmp/screenshot.png')
-
+        browser.find_element_by_class_name('fieldset-title').click()
+        WebDriverWait(browser, WAIT_TIME).until(EC.visibility_of_element_located((By.ID, 'edit-mysql-host')))
+        browser.find_element_by_id('edit-mysql-host').clear()
+        browser.find_element_by_id('edit-mysql-host').send_keys(self.database_config['host'])
+        browser.find_element_by_id('edit-mysql-port').send_keys(self.database_config['port'])
+        browser.find_element_by_tag_name('form').submit()
+        
         # configure site
-        print 'Configuring site ...'
+        LOG.info('Configuring site ...')
+
+        WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'edit-site-name')))
+        browser.find_element_by_id('edit-site-name').send_keys(self.database_config['name'])
+        browser.find_element_by_id('edit-site-mail').send_keys('admin@test.com')
         try:
-            WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'edit-site-name')))
-            browser.find_element_by_id('edit-site-name').send_keys(self.database_config['name'])
-            browser.find_element_by_id('edit-site-mail').send_keys('admin@test.com')
-            try:
-                browser.find_element_by_id('edit-account-name').send_keys('admin')
-                browser.find_element_by_id('edit-account-pass-pass1').send_keys('admin')
-                browser.find_element_by_id('edit-account-pass-pass2').send_keys('admin')
-            except:
-                traceback.print_exc()
-                pass
-            browser.find_element_by_tag_name('form').submit()
+            browser.find_element_by_id('edit-account-name').send_keys('admin')
+            browser.find_element_by_id('edit-account-pass-pass1').send_keys('admin')
+            browser.find_element_by_id('edit-account-pass-pass2').send_keys('admin')
         except:
             traceback.print_exc()
             pass
+        browser.find_element_by_tag_name('form').submit()
 
-        browser.save_screenshot('/tmp/screenshot.png')
-        # feature set
-        try:
-            WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.CLASS_NAME, 'form-checkbox')))
+        # heuristical
+        while True:
+            WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'content')))
+
+            # wait for progess
+            if len(browser.find_elements_by_id('progress')) != 0:
+                time.sleep(5)
+                continue
+
+            page_title = browser.find_element_by_class_name('page-title').text
+            print page_title
+
+            # select all checkboxes
             for option in browser.find_elements_by_class_name('form-checkbox'):
                 if not option.is_selected():
                     option.click()
-            browser.find_element_by_tag_name('form').submit()
-            print 'Configuring feature set ...'
-        except:
-            traceback.print_exc()
-            pass
 
-        browser.save_screenshot('/tmp/screenshot.png')
-        # layout
-        try:
-            WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
-            browser.find_element_by_tag_name('form').submit()
-            print 'Configuring layout ...'
-        except:
-            traceback.print_exc()
-            pass
+            # handle general user
+            if len(browser.find_elements_by_id('edit-name')) != 0:
+                browser.find_element_by_id('edit-name').send_keys('test')
+                browser.find_element_by_id('edit-mail').send_keys('test@test.com')
+                try:
+                    browser.find_element_by_id('edit-pass-pass1').send_keys('test')
+                    browser.find_element_by_id('edit-pass-pass2').send_keys('test')
+                except:
+                    pass
 
-        browser.save_screenshot('/tmp/screenshot.png')
-        # general user
-        try:
-            WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'edit-name')))
-            browser.find_element_by_id('edit-name').send_keys('test')
-            browser.find_element_by_id('edit-mail').send_keys('test@test.com')
-            try:
-                browser.find_element_by_id('edit-pass-pass1').send_keys('test')
-                browser.find_element_by_id('edit-pass-pass2').send_keys('test')
-            except:
-                pass
-            browser.find_element_by_tag_name('form').submit()
-            print 'Configuring general user ...'
-        except:
-            traceback.print_exc()
-            pass
+            # finish
+            if len(browser.find_elements_by_xpath("//*[contains(text(), 'Congratulations')]")) != 0:
+                break
 
-        time.sleep(WAIT_TIME * 2)
-        browser.save_screenshot('/tmp/screenshot.png')
+            # submit
+            browser.find_element_by_id('edit-submit').click()
+
         browser.quit()
         display.stop()
-        ## DEF
+    ## DEF
 
     def sync_server(self, path):
         LOG.info('Syncing server ...')
@@ -172,6 +157,7 @@ class DrupalDeployer(BaseDeployer):
         try:
             self.sync_server(deploy_path)
         except:
+            traceback.print_exc()
             return ATTEMPT_STATUS_RUNNING_ERROR
 
         #return ATTEMPT_STATUS_SUCCESS
@@ -191,8 +177,6 @@ class DrupalDeployer(BaseDeployer):
         # TODO : delete robots.txt
 
         self.setting_path = base_dir
-
-        print self.setting_path
 
         return self.try_deploy(base_dir)
     ## DEF
