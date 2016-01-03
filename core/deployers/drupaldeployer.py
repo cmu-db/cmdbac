@@ -22,7 +22,7 @@ LOG = logging.getLogger()
 ## =====================================================================
 ## SETTINGS
 ## =====================================================================
-WAIT_TIME = 30
+WAIT_TIME = 60
 
 ## =====================================================================
 ## Drupal DEPLOYER
@@ -47,79 +47,94 @@ class DrupalDeployer(BaseDeployer):
     ## DEF
 
     def configure_profile(self):
-        from pyvirtualdisplay import Display
-        display = Display(visible=0, size=(800, 600))
-        display.start()
+        ret = True
 
-        browser = webdriver.PhantomJS()
-        browser.get('http://127.0.0.1:8181/install.php?profile={}&welcome=done&locale=en'.format(self.repo.repo_name()))
-        
-        # configure database
-        LOG.info('Configuring database ...')
-
-        WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'edit-mysql-database')))
-        browser.find_element_by_id('edit-mysql-database').send_keys(self.database_config['name'])
-        browser.find_element_by_id('edit-mysql-username').send_keys(self.database_config['username'])
-        browser.find_element_by_id('edit-mysql-password').send_keys(self.database_config['password'])
-        
-        browser.find_element_by_class_name('fieldset-title').click()
-        WebDriverWait(browser, WAIT_TIME).until(EC.visibility_of_element_located((By.ID, 'edit-mysql-host')))
-        browser.find_element_by_id('edit-mysql-host').clear()
-        browser.find_element_by_id('edit-mysql-host').send_keys(self.database_config['host'])
-        browser.find_element_by_id('edit-mysql-port').send_keys(self.database_config['port'])
-        browser.find_element_by_tag_name('form').submit()
-        
-        # configure site
-        LOG.info('Configuring site ...')
-
-        WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'edit-site-name')))
-        browser.find_element_by_id('edit-site-name').send_keys(self.database_config['name'])
-        browser.find_element_by_id('edit-site-mail').send_keys('admin@test.com')
         try:
-            browser.find_element_by_id('edit-account-name').send_keys('admin')
-            browser.find_element_by_id('edit-account-pass-pass1').send_keys('admin')
-            browser.find_element_by_id('edit-account-pass-pass2').send_keys('admin')
-        except:
-            traceback.print_exc()
-            pass
-        browser.find_element_by_tag_name('form').submit()
+            from pyvirtualdisplay import Display
+            display = Display(visible=0, size=(800, 600))
+            display.start()
 
-        # heuristical
-        while True:
-            WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'content')))
+            browser = webdriver.PhantomJS()
+            browser.get('http://127.0.0.1:8181/install.php?profile={}&welcome=done&locale=en'.format(self.repo.repo_name()))
+            
+            # configure database
+            LOG.info('Configuring database ...')
 
-            # wait for progess
-            if len(browser.find_elements_by_id('progress')) != 0:
-                time.sleep(5)
-                continue
+            WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'edit-mysql-database')))
+            browser.find_element_by_id('edit-mysql-database').send_keys(self.database_config['name'])
+            browser.find_element_by_id('edit-mysql-username').send_keys(self.database_config['username'])
+            browser.find_element_by_id('edit-mysql-password').send_keys(self.database_config['password'])
+            
+            browser.find_element_by_class_name('fieldset-title').click()
+            WebDriverWait(browser, WAIT_TIME).until(EC.visibility_of_element_located((By.ID, 'edit-mysql-host')))
+            browser.find_element_by_id('edit-mysql-host').clear()
+            browser.find_element_by_id('edit-mysql-host').send_keys(self.database_config['host'])
+            browser.find_element_by_id('edit-mysql-port').send_keys(self.database_config['port'])
+            browser.find_element_by_tag_name('form').submit()
+            
+            # configure site
+            LOG.info('Configuring site ...')
 
-            page_title = browser.find_element_by_class_name('page-title').text
-            print page_title
+            WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'edit-site-name')))
+            browser.find_element_by_id('edit-site-name').send_keys(self.database_config['name'])
+            browser.find_element_by_id('edit-site-mail').send_keys('admin@test.com')
+            try:
+                browser.find_element_by_id('edit-account-name').send_keys('admin')
+                browser.find_element_by_id('edit-account-pass-pass1').send_keys('admin')
+                browser.find_element_by_id('edit-account-pass-pass2').send_keys('admin')
+            except:
+                pass
+            browser.find_element_by_tag_name('form').submit()
 
-            # select all checkboxes
-            for option in browser.find_elements_by_class_name('form-checkbox'):
-                if not option.is_selected():
-                    option.click()
+            # heuristical
+            while True:
+                WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'content')))
 
-            # handle general user
-            if len(browser.find_elements_by_id('edit-name')) != 0:
-                browser.find_element_by_id('edit-name').send_keys('test')
-                browser.find_element_by_id('edit-mail').send_keys('test@test.com')
+                # wait for progess
+                if len(browser.find_elements_by_id('progress')) != 0:
+                    time.sleep(5)
+                    continue
+
                 try:
-                    browser.find_element_by_id('edit-pass-pass1').send_keys('test')
-                    browser.find_element_by_id('edit-pass-pass2').send_keys('test')
+                    WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'page-title')))
+                    page_title = browser.find_element_by_class_name('page-title').text
+                    print page_title
                 except:
                     pass
+                
+                # select all checkboxes
+                for option in browser.find_elements_by_class_name('form-checkbox'):
+                    if not option.is_selected():
+                        option.click()
 
-            # finish
-            if len(browser.find_elements_by_xpath("//*[contains(text(), 'Congratulations')]")) != 0:
-                break
+                # handle general user
+                if len(browser.find_elements_by_id('edit-name')) != 0:
+                    browser.find_element_by_id('edit-name').send_keys('test')
+                    browser.find_element_by_id('edit-mail').send_keys('test@test.com')
+                    try:
+                        browser.find_element_by_id('edit-pass-pass1').send_keys('test')
+                        browser.find_element_by_id('edit-pass-pass2').send_keys('test')
+                    except:
+                        pass
 
-            # submit
-            browser.find_element_by_id('edit-submit').click()
+                # finish
+                if len(browser.find_elements_by_xpath("//*[contains(text(), 'Congratulations')]")) != 0:
+                    break
 
-        browser.quit()
-        display.stop()
+                # submit
+                try:
+                    browser.find_element_by_id('edit-submit').click()
+                except:
+                    browser.find_element_by_id('edit-continue').submit()
+        except:
+            traceback.print_exc()
+            browser.save_screenshot('/tmp/screenshot.png')
+            ret = False
+        finally:
+            browser.quit()
+            display.stop()
+
+        return ret
     ## DEF
 
     def sync_server(self, path):
@@ -128,7 +143,7 @@ class DrupalDeployer(BaseDeployer):
 
         time.sleep(WAIT_TIME)
 
-        self.configure_profile()
+        return self.configure_profile()
     ## DEF
 
     def run_server(self, path):
@@ -154,10 +169,7 @@ class DrupalDeployer(BaseDeployer):
         self.attempt.database = self.get_database()
         LOG.info('Database: ' + self.attempt.database.name)
 
-        try:
-            self.sync_server(deploy_path)
-        except:
-            traceback.print_exc()
+        if not self.sync_server(deploy_path):
             return ATTEMPT_STATUS_RUNNING_ERROR
 
         #return ATTEMPT_STATUS_SUCCESS
