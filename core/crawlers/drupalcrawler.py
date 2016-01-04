@@ -33,24 +33,59 @@ LOG.setLevel(logging.INFO)
 ## =====================================================================
 BASE_URL = 'https://www.drupal.org/project/{name}'
 COMMIT_URL = 'https://www.drupal.org/node/{sha}'
+SEARCH_URL = 'https://www.drupal.org/project/project_distribution'
+DRUPAL_HOST = 'https://www.drupal.org'
+DRUPAL_SLEEP = 1
 
 ## =====================================================================
 ## DRUPAL CRAWLER
 ## =====================================================================
 class DrupalCrawler(BaseCrawler):
-    def __init__(self, crawlerStatus):
+    def __init__(self, crawlerStatus, auth):
         BaseCrawler.__init__(self, crawlerStatus)
     ## DEF
 
-    def load_url(self, url):
-        LOG.info("Retrieving data from %s" % url)
-        request = urllib2.Request(url)
-        response = urllib2.urlopen(request)
-        return response
+    def next_url(self):
+        # Check whether there is a next url that we need to load
+        # from where we left off from our last run\
+        if not self.crawlerStatus.next_url is None and not self.crawlerStatus.next_url == '':
+            return self.crawlerStatus.next_url
+        
+        # Otherwise, compute what the next page we want to load
+        return SEARCH_URL
     ## DEF
     
     def search(self):
-        pass
+        # Load and parse!
+        response = utils.query(self.next_url())
+        soup = BeautifulSoup(response.text, "lxml")
+        titles = soup.find_all(class_='node-project-distribution')
+        LOG.info("Found %d repositories" % len(titles))
+
+        # Pick through the results and find repos
+        for title in titles:
+            name = title.contents[1].contents[0]['href'].split('/')[2]
+            self.add_repository(name, '')
+            # Sleep for a little bit to prevent us from getting blocked
+            time.sleep(DRUPAL_SLEEP)
+        ## FOR
+
+        # Figure out what is the next page that we need to load
+        try:
+            next_page = soup.find(class_='pager-next').contents[0]
+        except:
+            next_page = None
+        if not next_page or not next_page.has_attr('href'):
+            LOG.info("No next page link found!")
+            self.crawlerStatus.next_url = None
+        else:
+            self.crawlerStatus.next_url = DRUPAL_HOST + next_page['href']
+
+        # Make sure we update our crawler status
+        LOG.info("Updating status for %s" % self.crawlerStatus)
+        self.crawlerStatus.save()
+            
+        return
     ## DEF
 
     def get_api_data(self, name):
@@ -63,7 +98,7 @@ class DrupalCrawler(BaseCrawler):
     # DEF
 
     def add_repository(self, name, setup_scripts):
-        if Repository.objects.filter(name=name, source=self.crawlerStatus.source).exists():
+        if Repository.objects.filter(name='drupal/' + name, source=self.crawlerStatus.source).exists():
             LOG.info("Repository '%s' already exists" % name)
         else:
             try:
