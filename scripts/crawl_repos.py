@@ -17,26 +17,26 @@ import crawlers
 from library.models import *
 
 if __name__ == '__main__':
-    with open(os.path.join(os.path.dirname(__file__), os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
-        auth = json.load(auth_file)
+    try:
+        with open(os.path.join(os.path.dirname(__file__), os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
+            auth = json.load(auth_file)
+    except:
+        auth = None
 
     while True:
-        for cs in CrawlerStatus.objects.filter(id = 3):
-            repo_source = cs.source
-            project_type = cs.project_type
+        cs = CrawlerStatus.objects.get(id = 4)
+        repo_source = cs.source
+        project_type = cs.project_type
 
-            moduleName = "crawlers.%s" % (repo_source.crawler_class.lower())
-            moduleHandle = __import__(moduleName, globals(), locals(), [repo_source.crawler_class])
-            klass = getattr(moduleHandle, repo_source.crawler_class)
-            crawler = klass(cs, auth)
+        moduleName = "crawlers.%s" % (repo_source.crawler_class.lower())
+        moduleHandle = __import__(moduleName, globals(), locals(), [repo_source.crawler_class])
+        klass = getattr(moduleHandle, repo_source.crawler_class)
+        crawler = klass(cs, auth)
 
-            try:
-                crawler.crawl()
-            except:
-                print traceback.print_exc()
-                pass
-            time.sleep(10)
-            #crawler.save()
-        ## FOR
+        try:
+            crawler.crawl()
+        except:
+            print traceback.print_exc()
+        time.sleep(10)
     ## WHILE
 ## IF

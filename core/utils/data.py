@@ -23,12 +23,12 @@ def get_crawler(crawler_status, repo_source):
     moduleHandle = __import__(moduleName, globals(), locals(), [repo_source.crawler_class])
     klass = getattr(moduleHandle, repo_source.crawler_class)
     # FOR GITHUB
-    if repo_source.id == 1: 
+    try:
         with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
             auth = json.load(auth_file)
-        crawler = klass(crawler_status, auth)
-    else:
-        crawler = klass(crawler_status)
+    except:
+        auth = None
+    crawler = klass(crawler_status, auth)
     return crawler
 
 def add_module(module_name, package_name, package_type_id, package_version):
