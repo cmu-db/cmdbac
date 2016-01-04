@@ -76,32 +76,24 @@ class GitHubCrawler(BaseCrawler):
 
         return self.template.substitute(args)
     ## DEF
-
-    def load_url(self, url):
-        LOG.info("Retrieving data from %s" % url)
-        request = urllib2.Request(url)
-        response = urllib2.urlopen(request)
-        return response
-    ## DEF
     
     def search(self):
         # Load and parse!
-        response = self.load_url(self.next_url())
-        soup = BeautifulSoup(response.read(), "lxml")
+        response = utils.query(self.next_url())
+        soup = BeautifulSoup(response.text, "lxml")
         titles = soup.find_all(class_='title')
         LOG.info("Found %d repositories" % len(titles))
         
         # Pick through the results and find repos
         for title in titles:
             name = title.contents[1].string
-            self.add_repository(name, 'pwd')
+            self.add_repository(name, '')
             # Sleep for a little bit to prevent us from getting blocked
             time.sleep(API_GITHUB_SLEEP)
         ## FOR
 
         # Figure out what is the next page that we need to load
         next_page = soup.find(class_='next_page')
-        next_url = None
         if not next_page or not next_page.has_attr('href'):
             LOG.info("No next page link found!")
             self.crawlerStatus.next_url = None
@@ -123,8 +115,8 @@ class GitHubCrawler(BaseCrawler):
 
     def get_webpage_data(self, name):
         data = {}
-        response = self.load_url(urlparse.urljoin(GITHUB_HOST, name))
-        soup = BeautifulSoup(response.read(), "lxml")
+        response = utils.query(urlparse.urljoin(GITHUB_HOST, name))
+        soup = BeautifulSoup(response.text, "lxml")
         numbers = soup.find_all(class_='num text-emphasized')
         
         # The fields that we want to extract integers
