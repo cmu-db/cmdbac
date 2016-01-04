@@ -22,7 +22,7 @@ LOG = logging.getLogger()
 ## =====================================================================
 ## SETTINGS
 ## =====================================================================
-WAIT_TIME = 60
+WAIT_TIME = 300
 
 ## =====================================================================
 ## Drupal DEPLOYER
@@ -96,11 +96,10 @@ class DrupalDeployer(BaseDeployer):
                     continue
 
                 try:
-                    WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'page-title')))
                     page_title = browser.find_element_by_class_name('page-title').text
-                    print page_title
                 except:
-                    pass
+                    page_title = browser.find_element_by_id('page-title').text
+                print page_title
                 
                 # select all checkboxes
                 for option in browser.find_elements_by_class_name('form-checkbox'):
@@ -125,7 +124,7 @@ class DrupalDeployer(BaseDeployer):
                 try:
                     browser.find_element_by_id('edit-submit').click()
                 except:
-                    browser.find_element_by_id('edit-continue').submit()
+                    browser.find_element_by_tag_name('form').submit()
         except:
             traceback.print_exc()
             browser.save_screenshot('/tmp/screenshot.png')

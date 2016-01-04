@@ -3,7 +3,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2015-12-22 23:55:52
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-01-03 11:59:02
+# @Last Modified time: 2016-01-03 12:15:10
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -97,6 +97,7 @@ if __name__ == "__main__":
             if len(browser.find_elements_by_xpath("//*[contains(text(), 'Congratulations')]")) != 0:
                 break
 
+            # submit
             try:
                 browser.find_element_by_id('edit-submit').click()
             except:
