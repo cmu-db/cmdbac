@@ -80,7 +80,7 @@ class GitHubCrawler(BaseCrawler):
     def search(self):
         # Load and parse!
         response = utils.query(self.next_url())
-        soup = BeautifulSoup(response.text, "lxml")
+        soup = BeautifulSoup(response.text)
         titles = soup.find_all(class_='title')
         LOG.info("Found %d repositories" % len(titles))
         
@@ -116,7 +116,7 @@ class GitHubCrawler(BaseCrawler):
     def get_webpage_data(self, name):
         data = {}
         response = utils.query(urlparse.urljoin(GITHUB_HOST, name))
-        soup = BeautifulSoup(response.text, "lxml")
+        soup = BeautifulSoup(response.text)
         numbers = soup.find_all(class_='num text-emphasized')
         
         # The fields that we want to extract integers

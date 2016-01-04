@@ -58,7 +58,7 @@ class DrupalCrawler(BaseCrawler):
     def search(self):
         # Load and parse!
         response = utils.query(self.next_url())
-        soup = BeautifulSoup(response.text, "lxml")
+        soup = BeautifulSoup(response.text)
         titles = soup.find_all(class_='node-project-distribution')
         LOG.info("Found %d repositories" % len(titles))
 
@@ -92,7 +92,7 @@ class DrupalCrawler(BaseCrawler):
         data = {}
         data['url'] = self.crawlerStatus.source.get_url(name)
         response = requests.get(data['url'])
-        soup = BeautifulSoup(response.text, "lxml")
+        soup = BeautifulSoup(response.text)
         data['time'] = soup.find('time').attrs['datetime']
         return data
     # DEF

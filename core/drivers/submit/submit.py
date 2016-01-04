@@ -139,7 +139,7 @@ def fill_form_random_fast(deploy_path, form, session):
     inputs = {}
     files = None
     response = session.get(form['url'])
-    soup = BeautifulSoup(response.text, "lxml")
+    soup = BeautifulSoup(response.text)
     for input in form['inputs']:
         if input['value'] != '':
             i = soup.find('input', {"name":input['name']})
