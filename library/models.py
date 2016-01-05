@@ -192,7 +192,10 @@ class Repository(models.Model):
     def repo_name(self):
         return self.name.split('/')[1]
     def repo_url(self):
-        return self.source.get_url(self.name)
+        if self.project_type.id == 4:
+            return self.source.get_url(self.repo_name())
+        else:
+            return self.source.get_url(self.name)
 
     class Meta:
         verbose_name_plural = "repositories"
