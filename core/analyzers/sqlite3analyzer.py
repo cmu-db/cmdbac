@@ -33,12 +33,12 @@ class SQLite3Analyzer(BaseAnalyzer):
             for query in queries:
                 try:
                     explain_query = 'explain {};'.format(query['content'])
-                    print explain_query
+                    # print explain_query
                     cur.execute(explain_query)
                     rows = cur.fetchall()
-                    for row in rows:
-                        print row
-                    print '-------------------------'
+                    # for row in rows:
+                    #    print row
+                    # print '-------------------------'
                 except Exception, e:
                     LOG.exception(e)
 

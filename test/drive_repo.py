@@ -6,6 +6,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
 django.setup()
+from library.models import *
+from deployers import *
+from drivers import *
+from analyzers import *
 
 from library.models import *
 import utils
@@ -26,11 +30,6 @@ def main():
     klass = getattr(moduleHandle, repo.project_type.deployer_class)
     
     deployer = klass(repo, database, deploy_id)
-    if deployer.deploy() != 0:
-        deployer.kill_server()
-        sys.exit(-1)
-
-    deployer.kill_server()
 
     try:
         driver = BaseDriver(deployer)
@@ -40,15 +39,6 @@ def main():
         driverResult = {}
 
     # deployer.kill_server()
-
-    analyzer = get_analyzer(deployer)
-    for form, _ in driver.forms:
-        analyzer.analyze_queries(form['queries'])
-    driverResult['statistics'] = analyzer.queries_stats
-    analyzer.analyze_database()
-    driverResult['statistics'].update(analyzer.database_stats)
-
-    deployer.save_attempt(ATTEMPT_STATUS_SUCCESS, driverResult)
 
 if __name__ == "__main__":
     main()

@@ -93,8 +93,11 @@ class BaseDriver(object):
             return screenshot_path
         except Exception, e:
             LOG.exception(e)
-            br.quit()
-            display.stop()
+            try:
+                br.quit()
+                display.stop()
+            except:
+                pass
             return None
 
     def equal_form(self, form1, form2):
@@ -374,7 +377,7 @@ class BaseDriver(object):
         main_url = self.deployer.get_main_url()
 
         # get forms
-        admin_forms = self.bootstrap()
+        # admin_forms = self.bootstrap()
         
         driver_results = self.initialize()
 
