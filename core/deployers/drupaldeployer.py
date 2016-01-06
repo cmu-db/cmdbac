@@ -88,7 +88,10 @@ class DrupalDeployer(BaseDeployer):
 
             # heuristical
             while True:
-                WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'content')))
+                try:
+                    WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'content')))
+                except:
+                    break
 
                 # wait for progess
                 if len(browser.find_elements_by_id('progress')) != 0:
@@ -103,7 +106,7 @@ class DrupalDeployer(BaseDeployer):
                 
                 # select all checkboxes
                 for option in browser.find_elements_by_class_name('form-checkbox'):
-                    if not option.is_selected():
+                    if option.is_displayed() and not option.is_selected():
                         option.click()
 
                 # handle general user

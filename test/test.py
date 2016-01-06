@@ -3,7 +3,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2015-12-22 23:55:52
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-01-03 12:15:10
+# @Last Modified time: 2016-01-06 11:24:23
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -63,8 +63,11 @@ if __name__ == "__main__":
 
         # heuristical
         while True:
-            WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'content')))
-            
+            try:
+                WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'content')))
+            except:
+                break
+
             # wait for progess
             if len(browser.find_elements_by_id('progress')) != 0:
                 time.sleep(5)
@@ -79,7 +82,7 @@ if __name__ == "__main__":
 
             # select all checkboxes
             for option in browser.find_elements_by_class_name('form-checkbox'):
-                if not option.is_selected():
+                if option.is_displayed() and not option.is_selected():
                     option.click()
 
             # handle general user
