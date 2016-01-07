@@ -27,6 +27,7 @@ ATTEMPT_STATUS = (
     ('MD', 'Missing Dependencies', 'danger'),
     ('SE', 'Database Error', 'danger'),
     ('RE', 'Running Error', 'danger'),
+    ('NQ', 'No Queries', 'danger'),
     ('OK', 'Success', 'success')
 )
 ATTEMPT_STATUS_CODES = {}

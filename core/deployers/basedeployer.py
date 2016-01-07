@@ -208,6 +208,8 @@ class BaseDeployer(object):
         if urls != None:
             self.attempt.actions_count += len(urls)
             self.attempt.queries_count += sum(len(url['queries']) for url in urls)
+        if self.attempt.actions_count == 0 and self.attempt.result == ATTEMPT_STATUS_SUCCESS:
+            self.attempt.result = ATTEMPT_STATUS_NO_QUERIES
 
         self.attempt.save()
 
