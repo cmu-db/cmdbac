@@ -36,8 +36,13 @@ class FormSpider(CrawlSpider):
         self.browser.quit()
  
     def parse_form(self, response):
+        if 'reg' in response.url:
+            use_browser = True
+        else:
+            use_browser = False
         for sel in response.xpath('//form'):
-            self.browser.get(response.url)
+            if use_browser:
+                self.browser.get(response.url)
             formItem = FormItem()
 
             formItem['action'] = ''
@@ -61,9 +66,10 @@ class FormSpider(CrawlSpider):
                 except:
                     _id = ''
                 if _id != '':
-                    input_element = self.browser.find_element_by_id(_id)
-                    if not input_element.is_displayed():
-                        continue
+                    if use_browser:
+                        input_element = self.browser.find_element_by_id(_id)
+                        if not input_element.is_displayed():
+                            continue
                 name = ip.xpath('@name').extract()[0]
                 try:
                     _type = ip.xpath('@type').extract()[0]

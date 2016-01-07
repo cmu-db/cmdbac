@@ -20,7 +20,7 @@ def main():
     repo_name = sys.argv[1]
     deploy_id = sys.argv[2]
     database_name = 'MySQL'
-    print 'Deploying on {} ...'.format(database_name)
+    print 'Database : {} ...'.format(database_name)
 
     repo = Repository.objects.get(name=repo_name)
     database = Database.objects.get(name=database_name)

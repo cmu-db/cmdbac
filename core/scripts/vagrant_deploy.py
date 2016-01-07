@@ -21,7 +21,7 @@ def main():
         database_name = sys.argv[3]
     else:
         database_name = 'MySQL'
-    print 'Deploying on {} ...'.format(database_name)
+    print 'Database : {} ...'.format(database_name)
 
     repo = Repository.objects.get(name=repo_name)
     database = Database.objects.get(name=database_name)
@@ -44,12 +44,14 @@ def main():
 
     deployer.kill_server()
 
+    '''
     analyzer = get_analyzer(deployer)
     for form, _ in driver.forms:
         analyzer.analyze_queries(form['queries'])
     driverResult['statistics'] = analyzer.queries_stats
     analyzer.analyze_database()
     driverResult['statistics'].update(analyzer.database_stats)
+    '''
 
     deployer.save_attempt(ATTEMPT_STATUS_SUCCESS, driverResult)
 

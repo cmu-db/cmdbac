@@ -20,6 +20,8 @@ import count
 ## =====================================================================
 LOG = logging.getLogger()
 
+SUBMISSION_FORMS_TIMES = 5
+
 ## =====================================================================
 ## BASE DRIVER
 ## =====================================================================
@@ -32,6 +34,7 @@ class BaseDriver(object):
         else:
             self.log_file = LOG_FILE_LOCATION[deployer.get_database().name.lower()]
         self.forms = []
+        self.urls = []
 
     def check_log(self, last_line_no = None):
         sql_log_file = open(self.log_file, 'r')
@@ -173,7 +176,7 @@ class BaseDriver(object):
                 
             LOG.info('Admin: Fill in Form on {} Successfully ...'.format(form['url']))
             ret_forms.append(form)
-            for i in range(5):
+            for i in range(SUBMISSION_FORMS_TIMES):
                 try:
                     submit.fill_form_random(self.deployer.base_path, form, br)
                 except:
@@ -304,12 +307,11 @@ class BaseDriver(object):
         except Exception, e:
             urls = []
             LOG.exception(e)
-        ret_urls = []
 
         for url in urls:
             url['queries'] = []
             url['counter'] = {}
-            if any(self.equal_url(url, ret_url) for ret_url in ret_urls):
+            if any(self.equal_url(url, ret_url) for ret_url in self.urls):
                 continue
 
             last_line_no = self.check_log()
@@ -319,17 +321,14 @@ class BaseDriver(object):
                 traceback.print_exc()
             url['queries'], url['counter'] = self.process_query(self.check_log(last_line_no), None)
             if len(url['queries']) == 0:
-                ret_urls.append(url)
+                self.urls.append(url)
                 continue
 
-            LOG.info('Normal: Query the Url on {} Successfully ...'.format(url['url']))
-            ret_urls.append(url)
-        
-        return ret_urls
+            self.urls.append(url)
 
     def initialize(self):
         driver_results = self.get_forms()
-        driver_results['urls'] = self.get_urls()
+        self.get_urls()
 
         return driver_results
 
@@ -359,12 +358,11 @@ class BaseDriver(object):
                 continue
             form['queries'], form['counter'] = self.process_query(self.check_log(last_line_no), part_inputs)
             if len(form['queries']) == 0:
-                ret_forms.append(form)
                 continue
 
             LOG.info('Normal: Fill in Form on {} Successfully ...'.format(form['url']))
             ret_forms.append(form)
-            for i in range(5):
+            for i in range(SUBMISSION_FORMS_TIMES):
                 try:
                     submit.fill_form_random(self.deployer.base_path, form, self.browser)
                 except:
@@ -372,16 +370,44 @@ class BaseDriver(object):
 
         return ret_forms
 
+    def query_urls(self):
+        # get main page
+        main_url = self.deployer.get_main_url()
+
+        ret_urls = []
+
+        for url in self.urls:
+            url['queries'] = []
+            url['counter'] = {}
+            if any(self.equal_url(url, ret_url) for ret_url in ret_urls):
+                continue
+
+            last_line_no = self.check_log()
+            try:
+                submit.query_url(url, self.browser)
+            except:
+                traceback.print_exc()
+            url['queries'], url['counter'] = self.process_query(self.check_log(last_line_no), None)
+            if len(url['queries']) == 0:
+                continue
+
+            LOG.info('Normal: Query the Url on {} Successfully ...'.format(url['url']))
+            ret_urls.append(url)
+        
+        return ret_urls        
+
     def drive(self):
         # get main page
         main_url = self.deployer.get_main_url()
 
         # get forms
-        # admin_forms = self.bootstrap()
+        admin_forms = self.bootstrap()
         
         driver_results = self.initialize()
 
         normal_forms = self.submit_forms()
+
+        urls = self.query_urls()
 
         # filter forms
         driver_results['forms'] += sorted(normal_forms, key=lambda x: len(x['queries']), reverse=True)
@@ -391,6 +417,9 @@ class BaseDriver(object):
                 continue
             filtered_forms.append(form)
         driver_results['forms'] = filtered_forms
+
+        # save urls
+        driver_results['urls'] = urls
 
         LOG.info('Saving Screenshot ...')
         screenshot_path = self.save_screenshot(main_url, os.path.join(self.deployer.base_path, 'screenshot.png'))
