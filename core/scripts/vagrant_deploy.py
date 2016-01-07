@@ -44,14 +44,12 @@ def main():
 
     deployer.kill_server()
 
-    '''
     analyzer = get_analyzer(deployer)
     for form, _ in driver.forms:
         analyzer.analyze_queries(form['queries'])
     driverResult['statistics'] = analyzer.queries_stats
     analyzer.analyze_database()
     driverResult['statistics'].update(analyzer.database_stats)
-    '''
 
     deployer.save_attempt(ATTEMPT_STATUS_SUCCESS, driverResult)
 
