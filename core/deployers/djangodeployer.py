@@ -56,8 +56,8 @@ EMAIL_FILE_PATH = '{path}'
 ## DJANGO DEPLOYER
 ## =====================================================================
 class DjangoDeployer(BaseDeployer):
-    def __init__(self, repo, database, deploy_id, database_config = None, runtime = None):
-        BaseDeployer.__init__(self, repo, database, deploy_id, database_config, runtime)
+    def __init__(self, repo, database, deploy_id, database_config = None):
+        BaseDeployer.__init__(self, repo, database, deploy_id, database_config)
         if database_config == None:
             self.database_config['name'] = 'django_app' + str(deploy_id)
         if self.database.name == 'SQLite3':
@@ -80,12 +80,41 @@ class DjangoDeployer(BaseDeployer):
     
     def install_requirements(self, deploy_path, requirement_files):
         ret_packages = []
-        if requirement_files:
-            for requirement_file in requirement_files:
-                out = utils.pip_install(deploy_path, requirement_file, True)
-                with open(requirement_file, "r") as my_requirement_file:
-                    ret_packages += my_requirement_file.readlines()
-        return ret_packages
+        if self.repo.latest_attempt != None and self.repo.latest_attempt.result == ATTEMPT_STATUS_SUCCESS:
+            dependencies = Dependency.objects.filter(attempt = self.repo.latest_attempt)
+            for dependency in dependencies:
+                if dependency.source == PACKAGE_SOURCE_FILE:
+                    self.packages_from_file.append(dependency.package)
+                else:
+                    self.packages_from_database.append(dependency.package)
+                LOG.info('pip install {}'.format(dependency.package))
+                pip_output = utils.pip_install(self.base_path, [dependency.package], False)
+                LOG.info('pip install output: {}'.format(pip_output))
+        else:
+            if requirement_files:
+                for requirement_file in requirement_files:
+                    out = utils.pip_install(deploy_path, requirement_file, True)
+                    with open(requirement_file, "r") as my_requirement_file:
+                        ret_packages += my_requirement_file.readlines()
+
+            for package in ret_packages:
+                package = package.strip()
+                if len(package) == 0:
+                    continue
+                if package[0] == '#':
+                    continue
+                if len(package.split('==')) >= 2:
+                    name, version = package.split('==')
+                elif len(package.split('>=')) >= 2:
+                    name, version = package.split('>=')
+                else:
+                    name, version = package, ''
+                try:
+                    pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
+                    self.packages_from_file.append(pkg)
+                except Exception, e:
+                    LOG.exception(e)
+            ## FOR
     ## DEF
 
     def get_urls(self):
@@ -176,25 +205,7 @@ class DjangoDeployer(BaseDeployer):
         LOG.info('Database: ' + self.attempt.database.name)
 
         LOG.info('Installing requirements ...')
-        packages = self.install_requirements(self.base_path, requirement_files)
-        for package in packages:
-            package = package.strip()
-            if len(package) == 0:
-                continue
-            if package[0] == '#':
-                continue
-            if len(package.split('==')) >= 2:
-                name, version = package.split('==')
-            elif len(package.split('>=')) >= 2:
-                name, version = package.split('>=')
-            else:
-                name, version = package, ''
-            try:
-                pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
-                self.packages_from_file.append(pkg)
-            except Exception, e:
-                LOG.exception(e)
-        ## FOR
+        self.install_requirements(self.base_path, requirement_files)
 
         threshold = 20
         last_missing_module_name = ''

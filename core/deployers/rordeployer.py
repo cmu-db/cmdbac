@@ -54,11 +54,10 @@ gem '{}'
 ## RUBY ON RAILS DEPLOYER
 ## =====================================================================
 class RoRDeployer(BaseDeployer):
-    def __init__(self, repo, database, deploy_id, database_config = None, runtime = None):
+    def __init__(self, repo, database, deploy_id, database_config = None):
         BaseDeployer.__init__(self, repo, database, deploy_id, database_config)
         if database_config == None:
             self.database_config['name'] = 'ror_app' + str(deploy_id)
-        self.runtime = runtime
     ## DEF
     
     def configure_settings(self):
@@ -110,16 +109,16 @@ class RoRDeployer(BaseDeployer):
     ## DEF
 
     def get_runtime(self):
-        if self.runtime == None:
+        if self.repo.latest_attempt != None and self.repo.latest_attempt.result == ATTEMPT_STATUS_SUCCESS:
+            return {
+                'executable': self.repo.latest_attempt.runtime.executable,
+                'version': self.repo.latest_attempt.runtime.version
+            }
+        else:
             out = utils.run_command('ruby -v')[1].split(' ')
             return {
                 'executable': out[0],
                 'version': out[1]
-            }
-        else:
-            return {
-                'executable': self.runtime.executable,
-                'version': self.runtime.version
             }
     ## DEF
 

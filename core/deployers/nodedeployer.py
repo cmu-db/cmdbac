@@ -23,8 +23,8 @@ LOG = logging.getLogger()
 ## NODE.JS DEPLOYER
 ## =====================================================================
 class NodeDeployer(BaseDeployer):
-    def __init__(self, repo, database, deploy_id, database_config = None, runtime = None):
-        BaseDeployer.__init__(self, repo, database, deploy_id, database_config, runtime)
+    def __init__(self, repo, database, deploy_id, database_config = None):
+        BaseDeployer.__init__(self, repo, database, deploy_id, database_config)
         if database_config == None:
             self.database_config['name'] = 'node_app' + str(deploy_id)
         self.main_filename = None

@@ -70,11 +70,10 @@ def main():
     attempt = Attempt.objects.get(id=attempt_id)
     repo = attempt.repo
     database = Database.objects.get(name__iexact=database_config['database'])
-    runtime = attempt.runtime
     moduleName = "deployers.%s" % (repo.project_type.deployer_class.lower())
     moduleHandle = __import__(moduleName, globals(), locals(), [repo.project_type.deployer_class])
     klass = getattr(moduleHandle, repo.project_type.deployer_class)
-    deployer = klass(repo, database, deploy_id, database_config, runtime)
+    deployer = klass(repo, database, deploy_id, database_config)
 
     result = deployer.deploy(False)
     if result != 0:

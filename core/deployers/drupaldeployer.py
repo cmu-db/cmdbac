@@ -28,11 +28,10 @@ WAIT_TIME = 300
 ## Drupal DEPLOYER
 ## =====================================================================
 class DrupalDeployer(BaseDeployer):
-    def __init__(self, repo, database, deploy_id, database_config = None, runtime = None):
-        BaseDeployer.__init__(self, repo, database, deploy_id, database_config, runtime)
+    def __init__(self, repo, database, deploy_id, database_config = None):
+        BaseDeployer.__init__(self, repo, database, deploy_id, database_config)
         if database_config == None:
             self.database_config['name'] = 'drupal_app' + str(deploy_id)
-        self.main_filename = None
 
         ## HACK
         ## self.database_config['password'] = ''
@@ -174,8 +173,6 @@ class DrupalDeployer(BaseDeployer):
         if not self.sync_server(deploy_path):
             return ATTEMPT_STATUS_RUNNING_ERROR
 
-        #return ATTEMPT_STATUS_SUCCESS
-
         self.run_server(deploy_path)
         time.sleep(5)
         
@@ -187,8 +184,6 @@ class DrupalDeployer(BaseDeployer):
     def deploy_repo_attempt(self, deploy_path):
         package_jsons = utils.search_file(deploy_path, 'install.php')
         base_dir = sorted([os.path.dirname(package_json) for package_json in package_jsons])[0]
-
-        # TODO : delete robots.txt
 
         self.setting_path = base_dir
 

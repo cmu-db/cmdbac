@@ -33,7 +33,7 @@ class BaseDeployer(object):
     TMP_ZIP_FILE = "tmp.zip"
     TMP_DEPLOY_PATH = "/tmp/crawler"
     
-    def __init__(self, repo, database, deploy_id, database_config = None, runtime = None):
+    def __init__(self, repo, database, deploy_id, database_config = None):
         self.repo = repo
         self.database = database
         self.requirement_files = None
@@ -44,8 +44,8 @@ class BaseDeployer(object):
         self.base_path = self.TMP_DEPLOY_PATH + str(self.deploy_id)
         self.setting_path = None
         self.port = int(self.repo.project_type.default_port) + int(self.deploy_id)
-        self.runtime = None
         self.log_file = None
+        self.runtime = None
 
         # add file handler to LOG
         try:
@@ -216,50 +216,56 @@ class BaseDeployer(object):
         # save forms
         if forms != None:
             for f in forms:
-                action = Action()
-                action.url = f['url']
-                if f['method'] == '':
-                    f['method'] = 'get'
-                action.method = f['method'].upper()
-                action.attempt = self.attempt
-                action.save()
-                for q in f['queries']:
-                    query = Query()
-                    query.content = q['content']
-                    query.matched = q['matched']
-                    query.action = action
-                    query.save()
-                for input in f['inputs']:
-                    field = Field()
-                    field.name = input['name']
-                    field.type = input['type']
-                    field.action = action
-                    field.save()
-                for description, count in f['counter'].iteritems():
-                    counter = Counter()
-                    counter.description = description
-                    counter.count = count
-                    counter.action = action
-                    counter.save()
+                try:
+                    action = Action()
+                    action.url = f['url']
+                    if f['method'] == '':
+                        f['method'] = 'get'
+                    action.method = f['method'].upper()
+                    action.attempt = self.attempt
+                    action.save()
+                    for q in f['queries']:
+                        query = Query()
+                        query.content = q['content']
+                        query.matched = q['matched']
+                        query.action = action
+                        query.save()
+                    for input in f['inputs']:
+                        field = Field()
+                        field.name = input['name']
+                        field.type = input['type']
+                        field.action = action
+                        field.save()
+                    for description, count in f['counter'].iteritems():
+                        counter = Counter()
+                        counter.description = description
+                        counter.count = count
+                        counter.action = action
+                        counter.save()
+                except:
+                    pass
 
         if urls != None:
             for u in urls:
-                action = Action()
-                action.url = u['url']
-                action.method = 'GET'
-                action.attempt = self.attempt
-                action.save()
-                for q in u['queries']:
-                    query = Query()
-                    query.content = q['content']
-                    query.action = action
-                    query.save()
-                for description, count in u['counter'].iteritems():
-                    counter = Counter()
-                    counter.description = description
-                    counter.count = count
-                    counter.action = action
-                    counter.save()
+                try:
+                    action = Action()
+                    action.url = u['url']
+                    action.method = 'GET'
+                    action.attempt = self.attempt
+                    action.save()
+                    for q in u['queries']:
+                        query = Query()
+                        query.content = q['content']
+                        query.action = action
+                        query.save()
+                    for description, count in u['counter'].iteritems():
+                        counter = Counter()
+                        counter.description = description
+                        counter.count = count
+                        counter.action = action
+                        counter.save()
+                except:
+                    pass
 
         # save screenshot
         if screenshot_path != None:
