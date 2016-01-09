@@ -32,6 +32,7 @@ class BenchmarkDriver(BaseDriver):
         self.forms = driver.forms
         self.browser = mechanize.Browser()
         self.browser.set_cookiejar(driver.browser._ua_handlers['_cookies'].cookiejar)
+        self.browser.set_handle_robots(False)
 
     def submit_forms(self):
         forms_cnt = 0

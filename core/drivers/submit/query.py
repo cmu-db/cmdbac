@@ -6,6 +6,7 @@ import mechanize
 def query_url(url, br = None):
     if br == None:
         br = mechanize.Browser()
+        br.set_handle_robots(False)
     
     br.open(url['url'].encode("ascii","ignore"))
 
