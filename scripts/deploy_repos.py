@@ -6,6 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
 django.setup()
+from django.db.models import Q
 
 from library.models import *
 import utils
@@ -17,7 +18,7 @@ def main():
     total_deployer = int(sys.argv[2])
     database = Database.objects.get(name='MySQL')
 
-    for repo in Repository.objects.filter(project_type = 4).exclude(latest_attempt__result = 'OK'):
+    for repo in Repository.objects.filter(project_type = 3).filter(Q(latest_attempt__result = 'DE') | Q(latest_attempt__result = 'OK')):
     # for repo in Repository.objects.filter(project_type = 1).filter(latest_attempt__result = 'OK').filter(latest_attempt__log__contains = "[Errno 13] Permission denied: '/var/log/mysql/mysql.log'"):
         if repo.id % total_deployer != deploy_id - 1:
             continue
