@@ -93,7 +93,11 @@ class NodeDeployer(BaseDeployer):
         for sql_file in sql_files:
             executed = True
             for statement in open(sql_file).read().split(';'):
-                cur.execute(statement)
+                try:
+                    cur.execute(statement)
+                except Exception, e:
+                    print statement
+                    LOG.exception(e)
         if self.database.name == 'MySQL':
             conn.commit()
         return executed
@@ -112,9 +116,10 @@ class NodeDeployer(BaseDeployer):
         LOG.info('Create Tables ...')
         try:
             if not self.create_tables(deploy_path):
+                LOG.error('No sql file found!')
                 return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
-        except:
-            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
+        except Exception, e:
+            LOG.exception(e)
 
         LOG.info('Installing requirements ...')
         out = self.install_requirements(deploy_path)

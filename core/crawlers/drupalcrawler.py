@@ -148,7 +148,7 @@ class DrupalCrawler(BaseCrawler):
         url = COMMIT_URL.format(sha=attempt.sha)
         response = utils.query(url)
         data = response.text
-        download_url = re.search('http://.*?\.zip', data).group(0)
+        download_url = re.search('https://.*?\.zip', data).group(0)
         
         response = utils.query(download_url)
         zip_file = open(zip_name, 'wb')
