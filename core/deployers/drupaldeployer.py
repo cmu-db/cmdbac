@@ -148,7 +148,7 @@ class DrupalDeployer(BaseDeployer):
     ## DEF
 
     def run_server(self, path):
-        pass
+        self.configure_network()
     ## DEF
 
     def get_runtime(self):
