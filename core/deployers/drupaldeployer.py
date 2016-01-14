@@ -100,7 +100,10 @@ class DrupalDeployer(BaseDeployer):
                 try:
                     page_title = browser.find_element_by_class_name('page-title').text
                 except:
-                    page_title = browser.find_element_by_id('page-title').text
+                    try:
+                        page_title = browser.find_element_by_id('page-title').text
+                    except:
+                        page_title = 'Unkown page'
                 print page_title
                 
                 # select all checkboxes
