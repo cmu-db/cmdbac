@@ -182,8 +182,10 @@ class DrupalDeployer(BaseDeployer):
     ## DEF
     
     def deploy_repo_attempt(self, deploy_path):
-        package_jsons = utils.search_file(deploy_path, 'install.php')
-        base_dir = sorted([os.path.dirname(package_json) for package_json in package_jsons])[0]
+        install_phps = utils.search_file(deploy_path, 'install.php')
+        if len(install_phps) == 0:
+            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
+        base_dir = sorted([os.path.dirname(install_php) for install_php in install_phps])[0]
 
         self.setting_path = base_dir
 
