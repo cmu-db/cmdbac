@@ -145,11 +145,11 @@ class DrupalCrawler(BaseCrawler):
     # DEF
 
     def download_repository(self, attempt, zip_name):
-        url = COMMIT_URL.format(sha=attempt.sha)
+        url = BASE_URL.format(name = attempt.repo.repo_name())
         response = utils.query(url)
         data = response.text
-        download_url = re.search('https://.*?\.zip', data).group(0)
-        
+        download_url = re.search('https://[^ ]*?\.zip', data).group(0)
+
         response = utils.query(download_url)
         zip_file = open(zip_name, 'wb')
         for chunk in response.iter_content(chunk_size=1024): 
