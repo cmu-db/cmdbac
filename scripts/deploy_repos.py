@@ -3,6 +3,8 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 
+import time
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
 django.setup()
@@ -22,6 +24,9 @@ def main():
     # for repo in Repository.objects.filter(project_type = 1).filter(latest_attempt__result = 'OK').filter(latest_attempt__log__contains = "[Errno 13] Permission denied: '/var/log/mysql/mysql.log'"):
         if repo.id % total_deployer != deploy_id - 1:
             continue
+        n = len(Attempt.objects.filter(repo = repo).filter(result = 'OK'))
+        if n == 0:
+            continue
         n = len(Action.objects.filter(attempt = repo.latest_attempt))
         if n != 0 :
             continue
@@ -30,6 +35,8 @@ def main():
             utils.vagrant_deploy(repo, deploy_id, database)
         except:
             pass
+        finally:
+            time.sleep(30)
 
 if __name__ == '__main__':
     main()
