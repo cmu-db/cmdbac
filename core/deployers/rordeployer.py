@@ -78,8 +78,9 @@ class RoRDeployer(BaseDeployer):
     
     def install_requirements(self, path):
         if path:
-            command = '{} && bundle install'.format(
-                utils.cd(path))
+            command = '{} && {} && bundle install'.format(
+                  utils.cd(path),
+                  utils.use_ruby_version(self.runtime['version']))
             out = utils.run_command(command)
             return out[1]
         return ''
@@ -91,22 +92,25 @@ class RoRDeployer(BaseDeployer):
 
     def sync_server(self, path):
         LOG.info('Syncing server ...')
-        command = '{} && bundle exec rake db:migrate'.format(
-            utils.cd(path))
+        command = '{} && {} && bundle exec rake db:migrate'.format(
+            utils.cd(path),
+            utils.use_ruby_version(self.runtime['version']))
         return utils.run_command(command)
     ## DEF
 
     def run_server(self, path, port):
         self.configure_network()
         LOG.info('Running server ...')
-        command = '{} && bundle exec rails server -p {} -d'.format(
+        command = '{} && {} && bundle exec rails server -p {} -d'.format(
             utils.cd(path), 
+            utils.use_ruby_version(self.runtime['version']),
             port)
         return utils.run_command(command)
     ## DEF
 
-    def get_runtime(self):
-    	latest_successful_attempt = self.get_latest_successful_attempt()
+    def get_runtime(self, version = None):
+    	# latest_successful_attempt = self.get_latest_successful_attempt()
+        latest_successful_attempt = None
         if latest_successful_attempt != None:
             return {
                 'executable': latest_successful_attempt.runtime.executable,
@@ -115,8 +119,8 @@ class RoRDeployer(BaseDeployer):
         else:
             out = utils.run_command('ruby -v')[1].split(' ')
             return {
-                'executable': out[0],
-                'version': out[1]
+                'executable': 'ruby',
+                'version': version
             }
     ## DEF
 
@@ -125,18 +129,18 @@ class RoRDeployer(BaseDeployer):
         self.kill_server()
         self.clear_database()
         self.configure_settings()
-        self.runtime = self.get_runtime()
+
+        # get runtime
+        ruby_versions = utils.get_ruby_versions()
+        ruby_version = ruby_versions[0]
+        print ruby_version
+        self.runtime = self.get_runtime(ruby_version)
         LOG.info(self.runtime)
         
         self.attempt.database = self.get_database()
         LOG.info('Database: ' + self.attempt.database.name)
 
-        ruby_versions = utils.get_ruby_versions()
-        ruby_version = filter(lambda version: version[:5] in self.runtime['version'], ruby_versions)
-        if len(ruby_version) != 1:
-            return ATTEMPT_STATUS_DATABASE_ERROR
-        else:
-            ruby_version = ruby_version[0]
+
 
         LOG.info('Using Ruby {} ...'.format(ruby_version))
     

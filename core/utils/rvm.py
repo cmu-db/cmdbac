@@ -12,7 +12,7 @@ def get_ruby_versions():
         s = re.search('ruby-(.+) \[', line)
         if s:
             versions.append(s.group(1))
-    return versions
+    return sorted(versions)
 
 def use_ruby_version(version):
     command = 'source /usr/local/rvm/scripts/rvm && rvm use {}'.format(version[:5])
