@@ -78,9 +78,13 @@ class RoRDeployer(BaseDeployer):
     
     def install_requirements(self, path):
         if path:
+            '''
             command = '{} && {} && bundle install'.format(
                 utils.cd(path),
                 utils.use_ruby_version(self.runtime['version']))
+			'''
+			command = '{} && bundle install'.format(
+                utils.cd(path))
             out = utils.run_command(command)
             return out[1]
         return ''
@@ -92,18 +96,27 @@ class RoRDeployer(BaseDeployer):
 
     def sync_server(self, path):
         LOG.info('Syncing server ...')
+        '''
         command = '{} && {} && bundle exec rake db:migrate'.format(
             utils.cd(path),
             utils.use_ruby_version(self.runtime['version']))
+		'''
+		command = '{} && bundle exec rake db:migrate'.format(
+            utils.cd(path))
         return utils.run_command(command)
     ## DEF
 
     def run_server(self, path, port):
         self.configure_network()
         LOG.info('Running server ...')
+        '''
         command = '{} && {} && bundle exec rails server -p {} -d'.format(
             utils.cd(path), 
             utils.use_ruby_version(self.runtime['version']),
+            port)
+		'''
+		command = '{} && bundle exec rails server -p {} -d'.format(
+            utils.cd(path), 
             port)
         return utils.run_command(command)
     ## DEF
