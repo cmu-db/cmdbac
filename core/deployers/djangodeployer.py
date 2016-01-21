@@ -276,7 +276,7 @@ class DjangoDeployer(BaseDeployer):
                         LOG.exception(e)
                     dependencies.append((missing_module_name, candidate_packages, 0))
             else:
-                return ATTEMPT_STATUS_SYNCING_ERROR
+                return ATTEMPT_STATUS_DATABASE_ERROR
         ## FOR
 
         for missing_module_name, candidate_packages, index in dependencies:

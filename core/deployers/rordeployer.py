@@ -136,7 +136,7 @@ class RoRDeployer(BaseDeployer):
         ruby_versions = utils.get_ruby_versions()
         ruby_version = filter(lambda version: version[:5] in self.runtime['version'], ruby_versions)
         if len(ruby_version) != 1:
-            return ATTEMPT_STATUS_SYNCING_ERROR
+            return ATTEMPT_STATUS_DATABASE_ERROR
         else:
             ruby_version = ruby_version[0]
 
@@ -161,7 +161,7 @@ class RoRDeployer(BaseDeployer):
         out = self.sync_server(deploy_path)
         if 'rake aborted!' in out[1]:
             LOG.info(out)
-            return ATTEMPT_STATUS_SYNCING_ERROR
+            return ATTEMPT_STATUS_DATABASE_ERROR
         
         self.run_server(deploy_path, self.port)
 
