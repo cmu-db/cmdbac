@@ -52,6 +52,7 @@ rvm use 2.2.2 --default
 gem install bundler
 gem install rails
 gem install bundle
+install 'ruby' ruby-dev
 
 echo -e "\n- - - - - -\n"
 echo -n "Should be sqlite 3.8.1 or higher: sqlite "
