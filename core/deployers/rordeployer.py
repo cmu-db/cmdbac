@@ -109,10 +109,11 @@ class RoRDeployer(BaseDeployer):
     ## DEF
 
     def get_runtime(self):
-        if self.repo.latest_attempt != None and self.repo.latest_attempt.result == ATTEMPT_STATUS_SUCCESS:
+    	latest_successful_attempt = self.get_latest_successful_attempt()
+        if latest_successful_attempt != None:
             return {
-                'executable': self.repo.latest_attempt.runtime.executable,
-                'version': self.repo.latest_attempt.runtime.version
+                'executable': latest_successful_attempt.runtime.executable,
+                'version': latest_successful_attempt.runtime.version
             }
         else:
             out = utils.run_command('ruby -v')[1].split(' ')

@@ -149,6 +149,14 @@ class BaseDeployer(object):
             LOG.exception(e)
     ## DEF
 
+    def get_latest_successful_attempt(self):
+        attempts = Attempt.objects.filter(repo = self.repo).filter(result = 'OK').order_by('stop_time')
+        if len(attempts) > 0:
+            return attempts[0]
+        else:
+            return None
+    ## DEF
+
     def get_main_url(self):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     ## DEF

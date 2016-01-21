@@ -80,8 +80,9 @@ class DjangoDeployer(BaseDeployer):
     
     def install_requirements(self, deploy_path, requirement_files):
         ret_packages = []
-        if self.repo.latest_attempt != None and self.repo.latest_attempt.result == ATTEMPT_STATUS_SUCCESS:
-            dependencies = Dependency.objects.filter(attempt = self.repo.latest_attempt)
+        latest_successful_attempt = self.get_latest_successful_attempt()
+        if latest_successful_attempt != None:
+            dependencies = Dependency.objects.filter(attempt = latest_successful_attempt)
             for dependency in dependencies:
                 if dependency.source == PACKAGE_SOURCE_FILE:
                     self.packages_from_file.append(dependency.package)
