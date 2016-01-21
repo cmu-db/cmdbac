@@ -7,7 +7,6 @@ import urllib
 import urllib2
 import logging
 import urlparse
-import requests
 from string import Template
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -76,10 +75,13 @@ class GitHubCrawler(BaseCrawler):
 
         return self.template.substitute(args)
     ## DEF
+
+    def github_query(self, url):
+        return utils.query(url, auth = self.auth)
     
     def search(self):
         # Load and parse!
-        response = utils.query(self.next_url())
+        response = self.github_query(self.next_url())
         soup = BeautifulSoup(response.text)
         titles = soup.find_all(class_='title')
         LOG.info("Found %d repositories" % len(titles))
@@ -108,14 +110,14 @@ class GitHubCrawler(BaseCrawler):
     ## DEF
 
     def get_api_data(self, name):
-        response = requests.get(urlparse.urljoin(API_GITHUB_REPO, name), auth=(self.auth['user'], self.auth['pass']))
+        response = self.github_query(urlparse.urljoin(API_GITHUB_REPO, name))
         data = response.json()
         return data
     ## DEF
 
     def get_webpage_data(self, name):
         data = {}
-        response = utils.query(urlparse.urljoin(GITHUB_HOST, name))
+        response = self.github_query(urlparse.urljoin(GITHUB_HOST, name))
         soup = BeautifulSoup(response.text)
         numbers = soup.find_all(class_='num text-emphasized')
         
@@ -192,7 +194,7 @@ class GitHubCrawler(BaseCrawler):
 
     def get_latest_sha(self, repo):
         url = GITHUB_API_COMMITS_URL.substitute(name=repo.name)
-        response = utils.query(url)
+        response = self.github_query(url)
         data = response.json()
         time.sleep(1) 
         return data[0]['sha']
@@ -202,7 +204,7 @@ class GitHubCrawler(BaseCrawler):
         with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
             auth = json.load(auth_file)
         url = GITHUB_DOWNLOAD_URL_TEMPLATE.substitute(name=attempt.repo.name, sha=attempt.sha)
-        response = utils.query(url)
+        response = self.github_query(url)
         zip_file = open(zip_name, 'wb')
         for chunk in response.iter_content(chunk_size=1024): 
             if chunk:
