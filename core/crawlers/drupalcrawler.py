@@ -65,7 +65,10 @@ class DrupalCrawler(BaseCrawler):
         # Pick through the results and find repos
         for title in titles:
             name = title.contents[1].contents[0]['href'].split('/')[2]
-            self.add_repository(name, '')
+            try:
+                self.add_repository(name, '')
+            except:
+                traceback.print_exc()
             # Sleep for a little bit to prevent us from getting blocked
             time.sleep(DRUPAL_SLEEP)
         ## FOR
@@ -101,12 +104,8 @@ class DrupalCrawler(BaseCrawler):
         if Repository.objects.filter(name='drupal/' + name, source=self.crawlerStatus.source).exists():
             LOG.info("Repository '%s' already exists" % name)
         else:
-            try:
-                api_data = self.get_api_data(name)
-            except:
-                traceback.print_exc()
-                raise Exception('Not Found')
-
+            api_data = self.get_api_data(name)
+            
             # Create the new repository
             repo = Repository()
             repo.name = 'drupal/' + name

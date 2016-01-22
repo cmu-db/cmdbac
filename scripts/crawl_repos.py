@@ -36,7 +36,7 @@ if __name__ == '__main__':
         try:
             crawler.crawl()
         except:
-            print traceback.print_exc()
+            traceback.print_exc()
         time.sleep(10)
     ## WHILE
 ## IF
