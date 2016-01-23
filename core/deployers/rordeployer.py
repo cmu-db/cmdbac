@@ -117,11 +117,17 @@ class RoRDeployer(BaseDeployer):
                 'version': latest_successful_attempt.runtime.version
             }
         else:
-            out = utils.run_command('ruby -v')[1].split(' ')
-            return {
-                'executable': 'ruby',
-                'version': version
-            }
+            if version != None:
+                return {
+                    'executable': 'ruby',
+                    'version': version
+                }
+            else:
+                out = utils.run_command('ruby -v')[1].split(' ')
+                return {
+                    'executable': 'ruby',
+                    'version': out[1]
+                }
     ## DEF
 
     def try_deploy(self, deploy_path):
@@ -139,8 +145,6 @@ class RoRDeployer(BaseDeployer):
         
         self.attempt.database = self.get_database()
         LOG.info('Database: ' + self.attempt.database.name)
-
-
 
         LOG.info('Using Ruby {} ...'.format(ruby_version))
     
