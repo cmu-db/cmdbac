@@ -145,7 +145,7 @@ class DrupalDeployer(BaseDeployer):
         LOG.info('Syncing server ...')
         utils.run_command_async('drush ss', input=['0.0.0.0\n', '{}\n'.format(self.port)], cwd=path)
 
-        time.sleep(WAIT_TIME)
+        time.sleep(10)
 
         return self.configure_profile()
     ## DEF
