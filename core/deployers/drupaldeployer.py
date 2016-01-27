@@ -54,7 +54,7 @@ class DrupalDeployer(BaseDeployer):
             display.start()
 
             browser = webdriver.PhantomJS()
-            browser.get('http://127.0.0.1:8181/install.php?profile={}&welcome=done&locale=en'.format(self.repo.repo_name()))
+            browser.get('http://127.0.0.1:{port}/install.php?profile={profile}&welcome=done&locale=en'.format(port = self.port, profile = self.repo.repo_name()))
             
             # configure database
             LOG.info('Configuring database ...')
