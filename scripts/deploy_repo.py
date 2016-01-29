@@ -18,7 +18,7 @@ def main():
         return
     deploy_id = int(sys.argv[1])
     repo_name = sys.argv[2]
-    database = Database.objects.get(name='MySQL')
+    database = Database.objects.get(name='PostgreSQL')
 
     repo = Repository.objects.get(name = repo_name)
     print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
