@@ -37,7 +37,7 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
                         # print explain_query
                         cur.execute(explain_query)
                         rows = cur.fetchall()
-                        LOF.info('-------------------------')
+                        LOG.info('-------------------------')
                         for row in rows:
                             LOG.info(row)
                         LOG.info('-------------------------')
