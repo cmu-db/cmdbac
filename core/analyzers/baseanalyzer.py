@@ -17,6 +17,15 @@ class BaseAnalyzer(object):
         self.queries_stats = {}
         self.database_stats = {}
         self.deployer = deployer
+
+    def is_valid_for_explain(self, query):
+        if not query:
+            return False
+        prefixes = ['show', 'begin', 'end', 'commit', 'set']
+        lowered_query = query.lower()
+        if any(lowered_query.startswith(prefix) for prefix in prefixes):
+            return False
+        return True
     
     def analyze_queries(self, queries):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)

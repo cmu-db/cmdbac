@@ -20,21 +20,10 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
         BaseAnalyzer.__init__(self, deployer)
 
     def count_transaction(self, queries):
-        # TODO
-        cnt = 0
-        return cnt
-
-    def is_valid_for_explain(self, query):
-        if not query:
-            return False
-        prefixes = ['show', 'begin', 'commit', 'end', 'set']
-        lowered_query = query.lower()
-        if any(lowered_query.startswith(prefix) for prefix in prefixes):
-            return False
-        return True
+        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
 
     def analyze_queries(self, queries):
-        self.queries_stats['transaction'] = self.queries_stats.get('transaction', 0) + self.count_transaction(queries)
+        # self.queries_stats['num_transactions'] = self.count_transaction(queries)
 
         try:
             conn = self.deployer.get_database_connection()
@@ -48,9 +37,10 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
                         # print explain_query
                         cur.execute(explain_query)
                         rows = cur.fetchall()
-                        # for row in rows:
-                        #    print row
-                        # print '-------------------------'
+                        LOF.info('-------------------------')
+                        for row in rows:
+                            LOG.info(row)
+                        LOG.info('-------------------------')
                 except Exception, e:
                     LOG.exception(e)
 
