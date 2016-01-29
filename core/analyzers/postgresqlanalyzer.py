@@ -27,7 +27,7 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
     def is_valid_for_explain(self, query):
         if not query:
             return False
-        prefixes = ['show', 'begin', 'commit', 'end']
+        prefixes = ['show', 'begin', 'commit', 'end', 'set']
         lowered_query = query.lower()
         if any(lowered_query.startswith(prefix) for prefix in prefixes):
             return False
