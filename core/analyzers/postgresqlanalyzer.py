@@ -24,6 +24,15 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
         cnt = 0
         return cnt
 
+    def is_valid_for_explain(self, query):
+        if not query:
+            return False
+        prefixes = ['show', 'begin', 'commit', 'end']
+        lowered_query = query.lower()
+        if any(lowered_query.startswith(prefix) for prefix in prefixes):
+            return False
+        return True
+
     def analyze_queries(self, queries):
         self.queries_stats['transaction'] = self.queries_stats.get('transaction', 0) + self.count_transaction(queries)
 
@@ -34,13 +43,14 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
             
             for query in queries:
                 try:
-                    explain_query = 'EXPLAIN ANALYZE {};'.format(query['content'])
-                    # print explain_query
-                    cur.execute(explain_query)
-                    rows = cur.fetchall()
-                    # for row in rows:
-                    #    print row
-                    # print '-------------------------'
+                    if self.is_valid_for_explain(query['raw']):
+                        explain_query = 'EXPLAIN ANALYZE {};'.format(query['raw'])
+                        # print explain_query
+                        cur.execute(explain_query)
+                        rows = cur.fetchall()
+                        # for row in rows:
+                        #    print row
+                        # print '-------------------------'
                 except Exception, e:
                     LOG.exception(e)
 

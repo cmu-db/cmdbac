@@ -66,9 +66,9 @@ class BaseDriver(object):
             if inputs != None:
                 for name, value in sorted(inputs.items(), key=lambda (x, y): len(str(y)), reverse=True):
                     if str(value) in query:
-                        query = query.replace(str(value), '<span style="color:red">{}</span>'.format(name))
+                        matched_query = query.replace(str(value), '<span style="color:red">{}</span>'.format(name))
                         matched = True
-            ret_queries.append({'content': query, 'matched': matched})
+            ret_queries.append({'content': matched_query, 'matched': matched, 'raw': query})
             counted_queries.append(query)
         counter = count.count_query(counted_queries)
         return ret_queries, counter
