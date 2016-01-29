@@ -109,8 +109,7 @@ class RoRDeployer(BaseDeployer):
     ## DEF
 
     def get_runtime(self, version = None):
-    	# latest_successful_attempt = self.get_latest_successful_attempt()
-        latest_successful_attempt = None
+    	latest_successful_attempt = self.get_latest_successful_attempt()
         if latest_successful_attempt != None:
             return {
                 'executable': latest_successful_attempt.runtime.executable,
