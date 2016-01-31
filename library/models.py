@@ -320,6 +320,11 @@ class Query(models.Model):
     action = models.ForeignKey('Action', related_name='queries')
 ## CLASS
 
+class Explain(models.Model):
+    output = models.TextField()
+    query = models.ForeignKey('Query', related_name='explains')
+## CLASS
+
 class Image(models.Model):
     def set_data(self, data):
         self._data = base64.encodestring(data)

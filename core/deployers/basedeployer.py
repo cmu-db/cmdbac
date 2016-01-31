@@ -52,8 +52,8 @@ class BaseDeployer(object):
             fileHandler = logging.FileHandler(os.path.join('/vagrant', str(self.deploy_id) + '.log'), 'w')
             fileHandler.setFormatter(LOG_formatter)
             LOG.addHandler(fileHandler)
-        except:
-            pass
+        except Exception, e:
+            LOG.exception(e)  
 
         if database_config == None:
             if self.database.name == 'MySQL':
@@ -242,6 +242,12 @@ class BaseDeployer(object):
                         query.matched = q['matched']
                         query.action = action
                         query.save()
+
+                        if 'explain' in q:
+                            explain = Explain()
+                            explain.output = q['explain']
+                            explain.query = query
+                            explain.save()
                     for input in f['inputs']:
                         field = Field()
                         field.name = input['name']
@@ -254,8 +260,8 @@ class BaseDeployer(object):
                         counter.count = count
                         counter.action = action
                         counter.save()
-                except:
-                    pass
+                except Exception, e:
+                    LOG.exception(e)  
 
         if urls != None:
             for u in urls:
@@ -270,14 +276,20 @@ class BaseDeployer(object):
                         query.content = q['content']
                         query.action = action
                         query.save()
+
+                        if 'explain' in q:
+                            explain = Explain()
+                            explain.output = q['explain']
+                            explain.query = query
+                            explain.save()
                     for description, count in u['counter'].iteritems():
                         counter = Counter()
                         counter.description = description
                         counter.count = count
                         counter.action = action
                         counter.save()
-                except:
-                    pass
+                except Exception, e:
+                    LOG.exception(e)  
 
         # save screenshot
         if screenshot_path != None:

@@ -37,10 +37,10 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
                         # print explain_query
                         cur.execute(explain_query)
                         rows = cur.fetchall()
-                        LOG.info('-------------------------')
+                        output = '\n'
                         for row in rows:
-                            LOG.info(row)
-                        LOG.info('-------------------------')
+                            output += row[0] + '\n'
+                        query['explain'] = output
                 except Exception, e:
                     LOG.exception(e)
 
