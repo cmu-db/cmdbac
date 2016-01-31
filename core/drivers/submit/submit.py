@@ -58,8 +58,7 @@ def submit_form(form, inputs, br = None):
                         continue
                     br[input['name']] = inputs[input['name']]
             except:
-                # traceback.print_exc()
-                pass
+                traceback.print_exc()
 
     response = br.submit().code
 
@@ -91,6 +90,8 @@ def fill_form(form, matched_patterns = {}, br = None):
         if input['value'] != '':
             continue
         for pattern_name in patterns:
+            if input['type'] == 'hidden':
+                continue
             pattern, value = patterns[pattern_name]
             if match_any_pattern(input['name'], pattern) or match_any_pattern(input['type'], pattern):
                 if pattern_name in matched_patterns:

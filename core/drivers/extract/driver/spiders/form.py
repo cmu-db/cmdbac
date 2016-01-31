@@ -36,7 +36,8 @@ class FormSpider(CrawlSpider):
         self.browser.quit()
  
     def parse_form(self, response):
-        if 'reg' in response.url:
+        register_patterns = ['register', 'signup', 'sign-up', 'sign_up']
+        if any(pattern in response.url for pattern in register_patterns):
             use_browser = True
         else:
             use_browser = False
