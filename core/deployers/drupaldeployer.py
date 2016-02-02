@@ -5,6 +5,7 @@ import logging
 import re
 import time
 import traceback
+import threading
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -22,7 +23,8 @@ LOG = logging.getLogger()
 ## =====================================================================
 ## SETTINGS
 ## =====================================================================
-WAIT_TIME = 300
+WAIT_TIME_SHORT = 10
+WAIT_TIME_LONG = 300
 
 ## =====================================================================
 ## Drupal DEPLOYER
@@ -32,9 +34,6 @@ class DrupalDeployer(BaseDeployer):
         BaseDeployer.__init__(self, repo, database, deploy_id, database_config)
         if database_config == None:
             self.database_config['name'] = 'drupal_app' + str(deploy_id)
-
-        ## HACK
-        ## self.database_config['password'] = ''
     ## DEF
 
     def configure_settings(self, path):
@@ -45,8 +44,40 @@ class DrupalDeployer(BaseDeployer):
         return 'http://127.0.0.1:{}/'.format(self.port)
     ## DEF
 
+    def drupal_has_installed(self):
+        return self.installed
+
     def configure_profile(self):
-        ret = True
+        self.installed = False
+
+        def check_drupal_status(deployer, browser):
+            while True:
+                time.sleep(WAIT_TIME_SHORT)
+
+                if self.installed:
+                    break
+
+                try:
+                    browser.get('http://127.0.0.1:{port}/install.php'.format(port = deployer.port))
+                    WebDriverWait(browser, WAIT_TIME_SHORT).until(EC.presence_of_element_located((By.ID, 'content')))
+                    
+                    # wait for progess
+                    if len(browser.find_elements_by_id('progress')) != 0:
+                        time.sleep(5)
+                        continue
+
+                    try:
+                        page_title = browser.find_element_by_class_name('page-title').text
+                    except:
+                        try:
+                            page_title = browser.find_element_by_id('page-title').text
+                        except:
+                            page_title = 'Unkown page'
+                    if 'Drupal already installed' in page_title:
+                        self.installed = True
+                        break
+                except:
+                    pass
 
         try:
             from pyvirtualdisplay import Display
@@ -56,16 +87,21 @@ class DrupalDeployer(BaseDeployer):
             browser = webdriver.PhantomJS()
             browser.get('http://127.0.0.1:{port}/install.php?profile={profile}&welcome=done&locale=en'.format(port = self.port, profile = self.repo.repo_name()))
             
+            status_browser = webdriver.PhantomJS()
+            t = threading.Thread(target = check_drupal_status, args = (self, status_browser))
+            t.daemon = True
+            t.start()
+
             # configure database
             LOG.info('Configuring database ...')
 
-            WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'edit-mysql-database')))
+            WebDriverWait(browser, WAIT_TIME_LONG).until(EC.presence_of_element_located((By.ID, 'edit-mysql-database')))
             browser.find_element_by_id('edit-mysql-database').send_keys(self.database_config['name'])
             browser.find_element_by_id('edit-mysql-username').send_keys(self.database_config['username'])
             browser.find_element_by_id('edit-mysql-password').send_keys(self.database_config['password'])
             
             browser.find_element_by_class_name('fieldset-title').click()
-            WebDriverWait(browser, WAIT_TIME).until(EC.visibility_of_element_located((By.ID, 'edit-mysql-host')))
+            WebDriverWait(browser, WAIT_TIME_LONG).until(EC.visibility_of_element_located((By.ID, 'edit-mysql-host')))
             browser.find_element_by_id('edit-mysql-host').clear()
             browser.find_element_by_id('edit-mysql-host').send_keys(self.database_config['host'])
             browser.find_element_by_id('edit-mysql-port').send_keys(self.database_config['port'])
@@ -74,7 +110,7 @@ class DrupalDeployer(BaseDeployer):
             # configure site
             LOG.info('Configuring site ...')
 
-            WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'edit-site-name')))
+            WebDriverWait(browser, WAIT_TIME_LONG).until(EC.presence_of_element_located((By.ID, 'edit-site-name')))
             browser.find_element_by_id('edit-site-name').send_keys(self.database_config['name'])
             browser.find_element_by_id('edit-site-mail').send_keys('admin@test.com')
             try:
@@ -87,8 +123,11 @@ class DrupalDeployer(BaseDeployer):
 
             # heuristical
             while True:
+                if self.drupal_has_installed():
+                    break
+
                 try:
-                    WebDriverWait(browser, WAIT_TIME).until(EC.presence_of_element_located((By.ID, 'content')))
+                    WebDriverWait(browser, WAIT_TIME_SHORT).until(EC.presence_of_element_located((By.ID, 'content')))
                 except:
                     break
 
@@ -105,6 +144,8 @@ class DrupalDeployer(BaseDeployer):
                     except:
                         page_title = 'Unkown page'
                 print page_title
+                if 'Drupal already installed' in page_title:
+                    break
                 
                 # select all checkboxes
                 for option in browser.find_elements_by_class_name('form-checkbox'):
@@ -130,22 +171,23 @@ class DrupalDeployer(BaseDeployer):
                     browser.find_element_by_id('edit-submit').click()
                 except:
                     browser.find_element_by_tag_name('form').submit()
+
+            self.installed = True
         except:
             traceback.print_exc()
             browser.save_screenshot('/tmp/screenshot.png')
-            ret = False
-        finally:
+        finally: 
             browser.quit()
             display.stop()
 
-        return ret
+        return self.installed
     ## DEF
 
     def sync_server(self, path):
         LOG.info('Syncing server ...')
         utils.run_command_async('drush ss', input=['0.0.0.0\n', '{}\n'.format(self.port)], cwd=path)
 
-        time.sleep(10)
+        time.sleep(WAIT_TIME_SHORT)
 
         return self.configure_profile()
     ## DEF
