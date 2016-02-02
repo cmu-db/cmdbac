@@ -20,11 +20,16 @@ def main():
     deploy_id = int(sys.argv[2])
     total_deployer = int(sys.argv[3])
     database = Database.objects.get(name='MySQL')
-    
-    for repo in Repository.objects.filter(project_type = project_type).filter(latest_attempt = None):
-    # for repo in Repository.objects.filter(project_type = project_type).exclude(Q(latest_attempt__result = 'DE') | Q(latest_attempt__result = 'OK')):
+
+    for repo in Repository.objects.filter(project_type = project_type).filter(Q(latest_attempt__result = 'DE') | Q(latest_attempt__result = 'OK')):
     # for repo in Repository.objects.filter(project_type = 1).filter(latest_attempt__result = 'OK').filter(latest_attempt__log__contains = "[Errno 13] Permission denied: '/var/log/mysql/mysql.log'"):
         if repo.id % total_deployer != deploy_id - 1:
+            continue
+        n = len(Attempt.objects.filter(repo = repo).filter(result = 'OK'))
+        if n == 0:
+            continue
+        m = len(Action.objects.filter(attempt = repo.latest_attempt))
+        if m != 0:
             continue
         print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
         try:
