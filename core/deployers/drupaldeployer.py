@@ -146,6 +146,12 @@ class DrupalDeployer(BaseDeployer):
                 print page_title
                 if 'Drupal already installed' in page_title:
                     break
+
+                try: 
+                    has_error = browser.find_element_by_class_name('messages error')
+                    break
+                except:
+                    pass
                 
                 # select all checkboxes
                 for option in browser.find_elements_by_class_name('form-checkbox'):
