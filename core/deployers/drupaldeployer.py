@@ -91,36 +91,7 @@ class DrupalDeployer(BaseDeployer):
             t = threading.Thread(target = check_drupal_status, args = (self, status_browser))
             t.daemon = True
             t.start()
-
-            # configure database
-            LOG.info('Configuring database ...')
-
-            WebDriverWait(browser, WAIT_TIME_LONG).until(EC.presence_of_element_located((By.ID, 'edit-mysql-database')))
-            browser.find_element_by_id('edit-mysql-database').send_keys(self.database_config['name'])
-            browser.find_element_by_id('edit-mysql-username').send_keys(self.database_config['username'])
-            browser.find_element_by_id('edit-mysql-password').send_keys(self.database_config['password'])
             
-            browser.find_element_by_class_name('fieldset-title').click()
-            WebDriverWait(browser, WAIT_TIME_LONG).until(EC.visibility_of_element_located((By.ID, 'edit-mysql-host')))
-            browser.find_element_by_id('edit-mysql-host').clear()
-            browser.find_element_by_id('edit-mysql-host').send_keys(self.database_config['host'])
-            browser.find_element_by_id('edit-mysql-port').send_keys(self.database_config['port'])
-            browser.find_element_by_tag_name('form').submit()
-            
-            # configure site
-            LOG.info('Configuring site ...')
-
-            WebDriverWait(browser, WAIT_TIME_LONG).until(EC.presence_of_element_located((By.ID, 'edit-site-name')))
-            browser.find_element_by_id('edit-site-name').send_keys(self.database_config['name'])
-            browser.find_element_by_id('edit-site-mail').send_keys('admin@test.com')
-            try:
-                browser.find_element_by_id('edit-account-name').send_keys('admin')
-                browser.find_element_by_id('edit-account-pass-pass1').send_keys('admin')
-                browser.find_element_by_id('edit-account-pass-pass2').send_keys('admin')
-            except:
-                pass
-            browser.find_element_by_tag_name('form').submit()
-
             # heuristical
             while True:
                 if self.drupal_has_installed():
@@ -158,8 +129,27 @@ class DrupalDeployer(BaseDeployer):
                     if option.is_displayed() and not option.is_selected():
                         option.click()
 
+                # click field set
+                if len(browser.find_elements_by_class_name('fieldset-title')) != 0:
+                    browser.find_element_by_class_name('fieldset-title').click()
+            
+                # handle database
+                if len(browser.find_elements_by_id('edit-mysql-database')) != 0:
+                    browser.find_element_by_id('edit-mysql-database').send_keys(self.database_config['name'])
+                    browser.find_element_by_id('edit-mysql-username').send_keys(self.database_config['username'])
+                    browser.find_element_by_id('edit-mysql-password').send_keys(self.database_config['password'])
+                # handle site
+                elif len(browser.find_elements_by_id('edit-site-name')) != 0:
+                    browser.find_element_by_id('edit-site-name').send_keys(self.database_config['name'])
+                    browser.find_element_by_id('edit-site-mail').send_keys('admin@test.com')
+                    try:
+                        browser.find_element_by_id('edit-account-name').send_keys('admin')
+                        browser.find_element_by_id('edit-account-pass-pass1').send_keys('admin')
+                        browser.find_element_by_id('edit-account-pass-pass2').send_keys('admin')
+                    except:
+                        pass
                 # handle general user
-                if len(browser.find_elements_by_id('edit-name')) != 0:
+                elif len(browser.find_elements_by_id('edit-name')) != 0:
                     browser.find_element_by_id('edit-name').send_keys('test')
                     browser.find_element_by_id('edit-mail').send_keys('test@test.com')
                     try:
