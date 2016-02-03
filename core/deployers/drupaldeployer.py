@@ -92,6 +92,12 @@ class DrupalDeployer(BaseDeployer):
             t.daemon = True
             t.start()
             
+            database_tag_name = {
+                'MySQL': 'mysql',
+                'PostgreSQL': 'pgsql',
+                'SQLite3': 'sqlite'
+            }.get(self.database.name, 'mysql')
+
             # heuristical
             while True:
                 if self.drupal_has_installed():
@@ -134,10 +140,11 @@ class DrupalDeployer(BaseDeployer):
                     browser.find_element_by_class_name('fieldset-title').click()
             
                 # handle database
-                if len(browser.find_elements_by_id('edit-mysql-database')) != 0:
-                    browser.find_element_by_id('edit-mysql-database').send_keys(self.database_config['name'])
-                    browser.find_element_by_id('edit-mysql-username').send_keys(self.database_config['username'])
-                    browser.find_element_by_id('edit-mysql-password').send_keys(self.database_config['password'])
+                if len(browser.find_elements_by_id('edit-driver-{}'.format(database_tag_name))) != 0:
+                    browser.find_element_by_id('edit-driver-{}'.format(database_tag_name)).click()
+                    browser.find_element_by_id('edit-{}-database'.format(database_tag_name)).send_keys(self.database_config['name'])
+                    browser.find_element_by_id('edit-{}-username'.format(database_tag_name)).send_keys(self.database_config['username'])
+                    browser.find_element_by_id('edit-{}-password'.format(database_tag_name)).send_keys(self.database_config['password'])
                 # handle site
                 elif len(browser.find_elements_by_id('edit-site-name')) != 0:
                     browser.find_element_by_id('edit-site-name').send_keys(self.database_config['name'])
