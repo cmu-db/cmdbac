@@ -14,12 +14,12 @@ from library.models import *
 import utils
 
 def main():
-    if len(sys.argv) != 4:
+    if len(sys.argv) != 5:
         return
     project_type = int(sys.argv[1])
     deploy_id = int(sys.argv[2])
     total_deployer = int(sys.argv[3])
-    database = Database.objects.get(name='MySQL')
+    database = Database.objects.get(name=sys.argv[4])
     
     for repo in Repository.objects.filter(project_type = project_type).filter(latest_attempt = None):
     # for repo in Repository.objects.filter(project_type = project_type).exclude(Q(latest_attempt__result = 'DE') | Q(latest_attempt__result = 'OK')):
