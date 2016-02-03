@@ -105,13 +105,29 @@ class BaseDriver(object):
             return None
 
     def equal_form(self, form1, form2):
-        for name, value in form1.iteritems():
-            if name in ['class', 'queries', 'url', 'counter', 'admin']:
-                continue
-            if name not in form2:
+        # check method first
+        if form1['method'] != form2['method']:
+            return False
+
+        # check inputs
+        def equal_input(input1, input2):
+            for name, value in input1.iteritems():
+                if name in ['value']:
+                    continue
+                if name not in input2:
+                    return False
+                if value != input2[name]:
+                    return False
+            return True
+
+        inputs1 = form1['inputs']
+        inputs2 = form2['inputs']
+        if len(inputs1) != len(inputs2):
+            return False
+        for i in xrange(len(inputs1)):
+            if not equal_input(inputs1[i], inputs2[i]):
                 return False
-            if value != form2[name]:
-                return False
+
         return True
 
     def equal_url(self, url1, url2):
@@ -269,7 +285,7 @@ class BaseDriver(object):
 
         # save forms
         for form in forms:
-            if any(self.equal_form(form, ret_form) for ret_form in self.forms):
+            if any(self.equal_form(form, ret_form) for ret_form, _ in self.forms):
                 continue
 
             last_line_no = self.check_log()
