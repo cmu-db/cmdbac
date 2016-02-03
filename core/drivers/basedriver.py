@@ -120,6 +120,8 @@ class BaseDriver(object):
         return False
 
     def bootstrap(self):
+        LOG.info('Driving : Bootstraping ...')
+
         # get main page
         main_url = self.deployer.get_main_url()
 
@@ -328,6 +330,8 @@ class BaseDriver(object):
             self.urls.append(url)
 
     def initialize(self):
+        LOG.info('Driving: Initializing ...')
+
         driver_results = self.get_forms()
         self.get_urls()
 
@@ -398,16 +402,21 @@ class BaseDriver(object):
         return ret_urls        
 
     def drive(self):
+        LOG.info('Driving Repository: {} ...'.format(self.deployer.repo.name))
+
         # get main page
         main_url = self.deployer.get_main_url()
 
-        # get forms
+        # bootstrap
         admin_forms = self.bootstrap()
         
+        # initialize
         driver_results = self.initialize()
 
+        # submit forms
         normal_forms = self.submit_forms()
 
+        # query urls
         urls = self.query_urls()
 
         # filter forms

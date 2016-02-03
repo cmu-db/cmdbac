@@ -340,7 +340,7 @@ class BaseDeployer(object):
     ## DEF
 
     def deploy(self, save = True):
-        LOG.info('Deploying repo: {} ...'.format(self.repo.name))
+        LOG.info('Deploying Repository: {} ...'.format(self.repo.name))
         
         self.attempt = Attempt()
         self.attempt.repo = self.repo
