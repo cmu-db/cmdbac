@@ -26,6 +26,13 @@ class BaseAnalyzer(object):
         if any(lowered_query.startswith(prefix) for prefix in prefixes):
             return False
         return True
+
+    def count_transaction(self, queries):
+        cnt = 0
+        for query in queries:
+            if 'commit' in query['content'].lower():
+                cnt += 1
+        return cnt
     
     def analyze_queries(self, queries):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)

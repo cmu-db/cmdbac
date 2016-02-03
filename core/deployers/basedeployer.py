@@ -237,17 +237,20 @@ class BaseDeployer(object):
                     action.attempt = self.attempt
                     action.save()
                     for q in f['queries']:
-                        query = Query()
-                        query.content = q['content']
-                        query.matched = q['matched']
-                        query.action = action
-                        query.save()
+                        try:
+                            query = Query()
+                            query.content = q['content']
+                            query.matched = q['matched']
+                            query.action = action
+                            query.save()
 
-                        if 'explain' in q:
-                            explain = Explain()
-                            explain.output = q['explain']
-                            explain.query = query
-                            explain.save()
+                            if 'explain' in q:
+                                explain = Explain()
+                                explain.output = q['explain']
+                                explain.query = query
+                                explain.save()
+                        except:
+                            pass
                     for input in f['inputs']:
                         field = Field()
                         field.name = input['name']
@@ -272,16 +275,19 @@ class BaseDeployer(object):
                     action.attempt = self.attempt
                     action.save()
                     for q in u['queries']:
-                        query = Query()
-                        query.content = q['content']
-                        query.action = action
-                        query.save()
+                        try:
+                            query = Query()
+                            query.content = q['content']
+                            query.action = action
+                            query.save()
 
-                        if 'explain' in q:
-                            explain = Explain()
-                            explain.output = q['explain']
-                            explain.query = query
-                            explain.save()
+                            if 'explain' in q:
+                                explain = Explain()
+                                explain.output = q['explain']
+                                explain.query = query
+                                explain.save()
+                        except:
+                            pass
                     for description, count in u['counter'].iteritems():
                         counter = Counter()
                         counter.description = description

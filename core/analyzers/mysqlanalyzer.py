@@ -1,9 +1,9 @@
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
-from baseanalyzer import BaseAnalyzer
-
 import logging
+
+from baseanalyzer import BaseAnalyzer
 
 ## =====================================================================
 ## LOGGING CONFIGURATION
@@ -18,13 +18,6 @@ class MySQLAnalyzer(BaseAnalyzer):
     def __init__(self, deployer):
         BaseAnalyzer.__init__(self, deployer)
 
-    def count_transaction(self, queries):
-        cnt = 0
-        for query in queries:
-            if 'commit' in query['content'].lower():
-                cnt += 1
-        return cnt
-
     def analyze_queries(self, queries):
         self.queries_stats['num_transactions'] = self.count_transaction(queries)
 
@@ -34,15 +27,18 @@ class MySQLAnalyzer(BaseAnalyzer):
 
             for query in queries:
                 try:
-                    explain_query = 'explain {};'.format(query['content'])
-                    # print explain_query
-                    cur.execute(explain_query)
-                    rows = cur.fetchall()
-                    # for row in rows:
-                    #    print row
-                    # print '-------------------------'
+                    if self.is_valid_for_explain(query['raw']):
+                        explain_query = 'EXPLAIN {};'.format(query['raw'])
+                        # print explain_query
+                        cur.execute(explain_query)
+                        rows = cur.fetchall()
+                        output = '\n'
+                        for row in rows:
+                            output += str(row) + '\n'
+                        query['explain'] = output
                 except Exception, e:
-                    LOG.exception(e)
+                    pass
+                    # LOG.exception(e)
 
             cur.close()
             conn.close()

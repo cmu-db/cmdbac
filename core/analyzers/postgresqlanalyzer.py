@@ -19,11 +19,8 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
     def __init__(self, deployer):
         BaseAnalyzer.__init__(self, deployer)
 
-    def count_transaction(self, queries):
-        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
-
     def analyze_queries(self, queries):
-        # self.queries_stats['num_transactions'] = self.count_transaction(queries)
+        self.queries_stats['num_transactions'] = self.count_transaction(queries)
 
         try:
             conn = self.deployer.get_database_connection()
