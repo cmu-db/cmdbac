@@ -137,8 +137,7 @@ class RoRDeployer(BaseDeployer):
 
         # get runtime
         ruby_versions = utils.get_ruby_versions()
-        ruby_version = ruby_versions[0]
-        print ruby_version
+        ruby_version = ruby_versions[2]
         self.runtime = self.get_runtime(ruby_version)
         LOG.info(self.runtime)
         
@@ -189,13 +188,7 @@ class RoRDeployer(BaseDeployer):
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
         gemfile_paths = [os.path.dirname(gemfile) for gemfile in gemfiles]
 
-        db_files = utils.search_file(deploy_path, 'database.yml')
-        if not db_files:
-            LOG.error("Unable to find database.yml")
-            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
-        db_file_paths = [os.path.dirname(os.path.dirname(db_file)) for db_file in db_files if os.path.basename(os.path.normpath(os.path.dirname(db_file))) == "config"]
-        
-        base_dirs = set.intersection(set(rakefile_paths), set(gemfile_paths), set(db_file_paths))
+        base_dirs = set.intersection(set(rakefile_paths), set(gemfile_paths))
         if not base_dirs:
             LOG.error('Can not find base directory!')
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
