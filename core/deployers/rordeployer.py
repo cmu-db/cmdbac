@@ -1,6 +1,7 @@
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
+import time
 import logging
 import re
 
@@ -76,12 +77,16 @@ class RoRDeployer(BaseDeployer):
         ## WITH
     ## DEF
     
+    def run_command(self, path, command):
+        commands = '{} && {} && {}'.format(
+            utils.cd(path),
+            utils.use_ruby_version(self.runtime['version']),
+            command)
+        return utils.run_command(commands)
+
     def install_requirements(self, path):
         if path:
-            command = '{} && {} && bundle install'.format(
-                  utils.cd(path),
-                  utils.use_ruby_version(self.runtime['version']))
-            out = utils.run_command(command)
+            out = self.run_command(path, 'bundle install')
             return out[1]
         return ''
     ## DEF
@@ -92,20 +97,29 @@ class RoRDeployer(BaseDeployer):
 
     def sync_server(self, path):
         LOG.info('Syncing server ...')
-        command = '{} && {} && bundle exec rake db:migrate'.format(
-            utils.cd(path),
-            utils.use_ruby_version(self.runtime['version']))
-        return utils.run_command(command)
+        out = self.run_command(path, 'bundle exec rake db:migrate')
+        if 'rake aborted!' in out[1]:
+            LOG.info(out)
+            return False
+
+        if self.repo.setup_scripts != None:
+            for command in self.repo.setup_scripts.split('\n'):
+                self.run_command(path, command)
+
+        return True
     ## DEF
 
-    def run_server(self, path, port):
+    def create_superuser(self, path):
+        LOG.info('Creating superuser ...')
+        out = self.run_command(path, 'rails runner "{}"'.format("User.create!(:email=>'admin@test.com',:username=>'admin',:password=>'admin')"))
+        return out
+    ## DEF
+
+    def run_server(self, path):
         self.configure_network()
         LOG.info('Running server ...')
-        command = '{} && {} && bundle exec rails server -p {} -d'.format(
-            utils.cd(path), 
-            utils.use_ruby_version(self.runtime['version']),
-            port)
-        return utils.run_command(command)
+        out = self.run_command(path, 'bundle exec rails server -p {} -b 0.0.0.0 -d'.format(self.port))
+        return out
     ## DEF
 
     def get_runtime(self, version = None):
@@ -162,12 +176,14 @@ class RoRDeployer(BaseDeployer):
                 except Exception, e:
                     LOG.exception(e)
 
-        out = self.sync_server(deploy_path)
-        if 'rake aborted!' in out[1]:
-            LOG.info(out)
+        if not self.sync_server(deploy_path):
             return ATTEMPT_STATUS_DATABASE_ERROR
         
-        self.run_server(deploy_path, self.port)
+        print self.create_superuser(deploy_path)
+
+        self.run_server(deploy_path)
+
+        time.sleep(5)
 
         attemptStatus = self.check_server()
 
