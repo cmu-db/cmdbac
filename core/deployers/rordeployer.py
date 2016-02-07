@@ -72,8 +72,14 @@ class RoRDeployer(BaseDeployer):
                 username=self.database_config['username'], password=self.database_config['password'],
                 port=self.database_config['port'], host=self.database_config['host'], adapter=adapter))
         ## WITH
-        with open(os.path.join(self.setting_path, 'Gemfile'), "a") as my_file:
-            my_file.write(GEMFILE_SETTINGS.format(adapter))
+        need_gem = True
+        with open(os.path.join(self.setting_path, 'Gemfile'), "r") as my_file:
+            gems = my_file.read()
+            if adapter in gems:
+                need_gem = False
+        if need_gem:
+            with open(os.path.join(self.setting_path, 'Gemfile'), "a") as my_file:
+                my_file.write(GEMFILE_SETTINGS.format(adapter))
         ## WITH
     ## DEF
     
@@ -151,7 +157,7 @@ class RoRDeployer(BaseDeployer):
 
         # get runtime
         ruby_versions = utils.get_ruby_versions()
-        ruby_version = ruby_versions[2]
+        ruby_version = ruby_versions[1]
         self.runtime = self.get_runtime(ruby_version)
         LOG.info(self.runtime)
         
@@ -196,7 +202,6 @@ class RoRDeployer(BaseDeployer):
             LOG.error('No rakefile found!')
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
         rakefile_paths = [os.path.dirname(rakefile) for rakefile in rakefiles]
-        
 
         gemfiles = utils.search_file(deploy_path, 'Gemfile')
         if not gemfiles:
@@ -204,7 +209,7 @@ class RoRDeployer(BaseDeployer):
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
         gemfile_paths = [os.path.dirname(gemfile) for gemfile in gemfiles]
 
-        base_dirs = set.intersection(set(rakefile_paths), set(gemfile_paths))
+        base_dirs = sorted(set.intersection(set(rakefile_paths), set(gemfile_paths)))
         if not base_dirs:
             LOG.error('Can not find base directory!')
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
