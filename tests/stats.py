@@ -68,9 +68,20 @@ def coverage_stats():
         coverage[bucket] = coverage.get(bucket, 0) + 1
     print coverage
 
-def main():
-    coverage_stats()
+def transactions_stats():
+    num_repos = 0
+    num_transactions = 0
+    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
+        statistics = Statistic.objects.filter(attempt = repo.latest_attempt)
+        statistic = statistics.get(description = 'num_transactions')
+        if statistic != None and statistic.count > 0:
+            num_repos += 1
+            num_transactions += statistic.count
+    print '# of repos with transactions : {}'.format(num_repos)
+    print '# of transactions : {}'.format(num_transactions)
 
+def main():
+    transactions_stats()
 
 if __name__ == '__main__':
     main()
