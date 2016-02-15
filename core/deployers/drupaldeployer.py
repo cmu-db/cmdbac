@@ -118,7 +118,6 @@ class DrupalDeployer(BaseDeployer):
                     else:
                         browser.refresh()
                 except:
-                    traceback.print_exc()
                     pass
 
                 # wait for progess

@@ -20,7 +20,8 @@ def run(args, cwd = None, shell = True, env = None, inputs = None):
                 time.sleep(5)
                 p.stdin.write(input)
             except:
-                traceback.print_exc()
+                # traceback.print_exc()
+                pass
     stdout, stderr = p.communicate()
     return p.returncode, stdout, stderr
 

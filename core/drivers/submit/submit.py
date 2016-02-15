@@ -58,7 +58,8 @@ def submit_form(form, inputs, br = None):
                         continue
                     br[input['name']] = inputs[input['name']]
             except:
-                traceback.print_exc()
+                # traceback.print_exc()
+                pass
 
     response = br.submit().code
 

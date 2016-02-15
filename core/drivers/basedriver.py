@@ -337,7 +337,8 @@ class BaseDriver(object):
             try:
                 submit.query_url(url, self.browser)
             except:
-                traceback.print_exc()
+                # traceback.print_exc()
+                pass
             url['queries'], url['counter'] = self.process_query(self.check_log(last_line_no), None)
             if len(url['queries']) == 0:
                 self.urls.append(url)
@@ -407,7 +408,8 @@ class BaseDriver(object):
             try:
                 submit.query_url(url, self.browser)
             except:
-                traceback.print_exc()
+                # traceback.print_exc()
+                pass
             url['queries'], url['counter'] = self.process_query(self.check_log(last_line_no), None)
             if len(url['queries']) == 0:
                 continue
