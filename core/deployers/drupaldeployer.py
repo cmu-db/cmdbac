@@ -25,6 +25,7 @@ LOG = logging.getLogger()
 ## =====================================================================
 WAIT_TIME_SHORT = 10
 WAIT_TIME_LONG = 300
+ERROR_THRESHOLD = 5
 
 ## =====================================================================
 ## Drupal DEPLOYER
@@ -49,6 +50,7 @@ class DrupalDeployer(BaseDeployer):
 
     def configure_profile(self):
         self.installed = False
+        error_count = 0
 
         def check_drupal_status(deployer, browser):
             while True:
@@ -108,6 +110,17 @@ class DrupalDeployer(BaseDeployer):
                 except:
                     break
 
+                try: 
+                    browser.find_element_by_class_name('error')
+                    error_count += 1
+                    if error_count > ERROR_THRESHOLD:
+                        break
+                    else:
+                        browser.refresh()
+                except:
+                    traceback.print_exc()
+                    pass
+
                 # wait for progess
                 if len(browser.find_elements_by_id('progress')) != 0:
                     time.sleep(5)
@@ -123,12 +136,6 @@ class DrupalDeployer(BaseDeployer):
                 print page_title
                 if 'Drupal already installed' in page_title:
                     break
-
-                try: 
-                    has_error = browser.find_element_by_class_name('messages error')
-                    break
-                except:
-                    pass
                 
                 # select all checkboxes
                 for option in browser.find_elements_by_class_name('form-checkbox'):
