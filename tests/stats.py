@@ -73,10 +73,13 @@ def transactions_stats():
     num_transactions = 0
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
         statistics = Statistic.objects.filter(attempt = repo.latest_attempt)
-        statistic = statistics.get(description = 'num_transactions')
-        if statistic != None and statistic.count > 0:
-            num_repos += 1
-            num_transactions += statistic.count
+        try:
+            statistic = statistics.get(description = 'num_transactions')
+            if statistic.count > 0:
+                num_repos += 1
+                num_transactions += statistic.count
+        except:
+            pass
     print '# of repos with transactions : {}'.format(num_repos)
     print '# of transactions : {}'.format(num_transactions)
 
