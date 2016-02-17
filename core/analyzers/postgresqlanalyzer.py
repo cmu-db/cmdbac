@@ -39,7 +39,8 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
                             output += row[0] + '\n'
                         query['explain'] = output
                 except Exception, e:
-                    LOG.exception(e)
+                    pass
+                    # LOG.exception(e)
 
             conn.set_isolation_level(1)
             cur.close()

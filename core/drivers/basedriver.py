@@ -66,15 +66,21 @@ class BaseDriver(object):
                 else:
                     new_query = query.group(1)
             elif self.deployer.get_database().name == 'PostgreSQL':
-                query = re.search('LOG:  statement: (.+)', query)
+                query = re.search('LOG:  statement: (.+)', line)
                 if query == None:
-                    continue
-                query = query.group(1)
+                    if re.search('LOG:  duration:', line):
+                        continue
+                    current_query += ' ' + line
+                    new_query = ''
+                else:
+                    new_query = query.group(1)
             elif self.deployer.get_database().name == 'SQLite3':
-                query = re.search("QUERY = u'(.+)'", query)
+                query = re.search("QUERY = u'(.+)'", line)
                 if query == None:
-                    continue
-                query = query.group(1)
+                    current_query += ' ' + line
+                    new_query = ''
+                else:
+                    new_query = query.group(1)
 
             if new_query:
                 if current_query:
