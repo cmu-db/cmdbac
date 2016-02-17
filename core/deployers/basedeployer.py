@@ -190,6 +190,8 @@ class BaseDeployer(object):
         self.attempt.log = self.buffer.getvalue()
 
     def save_attempt(self, attempt_result, driver_result = {}):
+        LOG.info("Saving attempt ...")
+
         # flush log
         self.flush_log()
 

@@ -43,16 +43,28 @@ class BaseDriver(object):
         else:
             return sql_log_file.readlines()[last_line_no:]
 
-    def process_query(self, queries, inputs):
-        ret_queries = []
-        counted_queries = []
-        for query in queries:
-            matched = False
+    def process_query(self, query, inputs, queries):
+        matched = False
+        matched_query = query
+        if inputs != None:
+            for name, value in sorted(inputs.items(), key=lambda (x, y): len(str(y)), reverse=True):
+                if str(value) in matched_query:
+                    matched_query = matched_query.replace(str(value), '<span style="color:red">{}</span>'.format(name))
+                    matched = True
+        queries.append({'content': matched_query, 'matched': matched, 'raw': query})
+
+    def process_logs(self, logs, inputs):
+        queries = []
+        current_query = ''
+        new_query = ''
+        for line in logs:
             if self.deployer.get_database().name == 'MySQL':
-                query = re.search('Query.?(.+)', query)
+                query = re.search('Query.?(.+)', line)
                 if query == None:
-                    continue
-                query = query.group(1)
+                    current_query += ' ' + line
+                    new_query = ''
+                else:
+                    new_query = query.group(1)
             elif self.deployer.get_database().name == 'PostgreSQL':
                 query = re.search('LOG:  statement: (.+)', query)
                 if query == None:
@@ -63,16 +75,17 @@ class BaseDriver(object):
                 if query == None:
                     continue
                 query = query.group(1)
-            matched_query = query
-            if inputs != None:
-                for name, value in sorted(inputs.items(), key=lambda (x, y): len(str(y)), reverse=True):
-                    if str(value) in matched_query:
-                        matched_query = matched_query.replace(str(value), '<span style="color:red">{}</span>'.format(name))
-                        matched = True
-            ret_queries.append({'content': matched_query, 'matched': matched, 'raw': query})
-            counted_queries.append(query)
-        counter = count.count_query(counted_queries)
-        return ret_queries, counter
+
+            if new_query:
+                if current_query:
+                    self.process_query(current_query, inputs, queries)
+                current_query = new_query
+                new_query = ''
+        if current_query:
+            self.process_query(current_query, inputs, queries)
+
+        counter = count.count_query(queries)
+        return queries, counter
 
     def save_screenshot(self, main_url, screenshot_path):
         try:
@@ -188,7 +201,7 @@ class BaseDriver(object):
             if part_inputs == None:
                 ret_forms.append(form)
                 continue
-            form['queries'], form['counter'] = self.process_query(self.check_log(last_line_no), part_inputs)
+            form['queries'], form['counter'] = self.process_logs(self.check_log(last_line_no), part_inputs)
             if len(form['queries']) == 0:
                 ret_forms.append(form)
                 continue
@@ -229,7 +242,7 @@ class BaseDriver(object):
         if register_form == None or info == None or inputs == None:
             register_result = USER_STATUS_FAIL
         else:
-            register_form['queries'], register_form['counter'] = self.process_query(self.check_log(last_line_no), inputs)
+            register_form['queries'], register_form['counter'] = self.process_logs(self.check_log(last_line_no), inputs)
         
         if register_form and len(register_form['queries']) > 0:
             register_result = USER_STATUS_SUCCESS
@@ -256,7 +269,7 @@ class BaseDriver(object):
             if login_form == None or br == None:
                 login_result = USER_STATUS_FAIL
             else:
-                login_form['queries'], login_form['counter'] = self.process_query(self.check_log(last_line_no), inputs)
+                login_form['queries'], login_form['counter'] = self.process_logs(self.check_log(last_line_no), inputs)
             
             if login_form and len(login_form['queries']) > 0:
                 login_result = USER_STATUS_SUCCESS
@@ -302,7 +315,7 @@ class BaseDriver(object):
                     part_inputs = None
             if part_inputs == None:
                 continue
-            form['queries'], form['counter'] = self.process_query(self.check_log(last_line_no), part_inputs)
+            form['queries'], form['counter'] = self.process_logs(self.check_log(last_line_no), part_inputs)
             if len(form['queries']) == 0:
                 continue
 
@@ -339,7 +352,7 @@ class BaseDriver(object):
             except:
                 # traceback.print_exc()
                 pass
-            url['queries'], url['counter'] = self.process_query(self.check_log(last_line_no), None)
+            url['queries'], url['counter'] = self.process_logs(self.check_log(last_line_no), None)
             if len(url['queries']) == 0:
                 self.urls.append(url)
                 continue
@@ -378,7 +391,7 @@ class BaseDriver(object):
             if part_inputs == None:
                 ret_forms.append(form)
                 continue
-            form['queries'], form['counter'] = self.process_query(self.check_log(last_line_no), part_inputs)
+            form['queries'], form['counter'] = self.process_logs(self.check_log(last_line_no), part_inputs)
             if len(form['queries']) == 0:
                 continue
 
@@ -410,7 +423,7 @@ class BaseDriver(object):
             except:
                 # traceback.print_exc()
                 pass
-            url['queries'], url['counter'] = self.process_query(self.check_log(last_line_no), None)
+            url['queries'], url['counter'] = self.process_logs(self.check_log(last_line_no), None)
             if len(url['queries']) == 0:
                 continue
 
