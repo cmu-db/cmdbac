@@ -20,4 +20,4 @@ def use_ruby_version(version):
 
 def install_ruby_version(version):
     command = 'source /usr/local/rvm/scripts/rvm && rvm install {}'.format(version)
-    return command
+    return run_command(command)
