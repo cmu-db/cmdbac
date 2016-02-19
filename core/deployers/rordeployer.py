@@ -77,9 +77,21 @@ class RoRDeployer(BaseDeployer):
             gems = my_file.read()
             if adapter in gems:
                 need_gem = False
+            ruby_version = re.search("ruby '(.*)'", gems)
+            if ruby_version:
+                ruby_version = ruby_version.group(1)
+                LOG.info('Find Ruby Version : {}'.format(ruby_version))
+                LOG.info(utils.install_ruby_version(ruby_version))
+                self.runtime = {
+                    'executable': 'ruby',
+                    'version': ruby_version
+                }
         if need_gem:
             with open(os.path.join(self.setting_path, 'Gemfile'), "a") as my_file:
-                my_file.write(GEMFILE_SETTINGS.format(adapter))
+                if self.database.name == 'MySQL':
+                    my_file.write("gem 'mysql2', '~> 0.3.18'\n")
+                else:
+                    my_file.write(GEMFILE_SETTINGS.format(adapter))
         ## WITH
     ## DEF
     
@@ -129,6 +141,8 @@ class RoRDeployer(BaseDeployer):
     ## DEF
 
     def get_runtime(self, version = None):
+        if self.runtime != None:
+            return self.runtime
     	latest_successful_attempt = self.get_latest_successful_attempt()
         if latest_successful_attempt != None:
             return {
