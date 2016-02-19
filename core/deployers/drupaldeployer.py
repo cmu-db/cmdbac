@@ -132,7 +132,7 @@ class DrupalDeployer(BaseDeployer):
                         page_title = browser.find_element_by_id('page-title').text
                     except:
                         page_title = 'Unkown page'
-                print page_title
+                LOG.info(page_title)
                 if 'Drupal already installed' in page_title:
                     break
                 
