@@ -19,5 +19,5 @@ def use_ruby_version(version):
     return command
 
 def install_ruby_version(version):
-    command = 'source /usr/local/rvm/scripts/rvm && rvm install {}'.format(version)
+    command = 'sudo su && source /usr/local/rvm/scripts/rvm && rvm install {} && gem install bundle && gem install bundler'.format(version)
     return run_command(command)

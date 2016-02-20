@@ -46,10 +46,13 @@ rvm install 1.9.3
 rvm install 2.0.0
 rvm install 2.2.2
 rvm use 1.9.3 --default
+gem install bundler
 gem install bundle
 rvm use 2.0.0 --default
+gem install bundler
 gem install bundle
 rvm use 2.2.2 --default
+gem install bundler
 gem install bundle
 install 'ruby' ruby-dev
 
@@ -79,6 +82,7 @@ pip install django==1.8.6
 
 # install dependencies
 install 'Git' git
+git config --global http.proxy $http_proxy
 
 install 'SQLite' sqlite3 libsqlite3-dev
 
