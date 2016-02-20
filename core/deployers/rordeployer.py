@@ -173,6 +173,7 @@ class RoRDeployer(BaseDeployer):
         ruby_versions = utils.get_ruby_versions()
         ruby_version = ruby_versions[1]
         self.runtime = self.get_runtime(ruby_version)
+        ruby_version = self.runtime['version']
         LOG.info(self.runtime)
         
         self.attempt.database = self.get_database()
