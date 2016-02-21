@@ -83,8 +83,12 @@ def transactions_stats():
     print '# of repos with transactions : {}'.format(num_repos)
     print '# of transactions : {}'.format(num_transactions)
 
+def log_stats(content):
+    num_repos = len(Repository.objects.filter(latest_attempt__log__contains = content))
+    print '# of repos with logs : {}'.format(num_repos)
+
 def main():
-    transactions_stats()
+    log_stats('git')
 
 if __name__ == '__main__':
     main()
