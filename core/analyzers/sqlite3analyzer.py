@@ -1,9 +1,9 @@
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
-from baseanalyzer import BaseAnalyzer
-
 import logging
+
+from baseanalyzer import BaseAnalyzer
 
 ## =====================================================================
 ## LOGGING CONFIGURATION
@@ -18,11 +18,32 @@ class SQLite3Analyzer(BaseAnalyzer):
     def __init__(self, deployer):
         BaseAnalyzer.__init__(self, deployer)
 
-    def count_transaction(self, queries):
-        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
-
     def analyze_queries(self, queries):
-        raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
+        self.queries_stats['num_transactions'] = self.count_transaction(queries)
+
+        try:
+            conn = self.deployer.get_database_connection()
+            cur = conn.cursor()
+
+            for query in queries:
+                try:
+                    if self.is_valid_for_explain(query['raw']):
+                        explain_query = 'EXPLAIN {};'.format(query['raw'])
+                        # print explain_query
+                        cur.execute(explain_query)
+                        rows = cur.fetchall()
+                        output = '\n'
+                        for row in rows:
+                            output += str(row) + '\n'
+                        query['explain'] = output
+                except Exception, e:
+                    pass
+                    # LOG.exception(e)
+
+            cur.close()
+            conn.close()
+        except Exception, e:
+            LOG.exception(e)
 
     def analyze_database(self):
         try:
