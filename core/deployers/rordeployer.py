@@ -110,7 +110,7 @@ class RoRDeployer(BaseDeployer):
                 if git_clone_error:
                     command = 'git clone {}'.format(git_clone_error.group(1)).replace('git://github.com/', 'https://github.com/')
                     LOG.info('Fix Git Fetching Error : {}'.format(command))
-                    LOG.info(utils.run_command(command))
+                    utils.run_command(command)
                 else:
                     return out[1]
         return ''
@@ -241,6 +241,9 @@ class RoRDeployer(BaseDeployer):
         for config_file in config_files:
             if 'example' in config_file:
                 new_config_file = config_file.replace('.example', '')
+                utils.copy_file(config_file, new_config_file)
+            elif '-sample' in config_file:
+                new_config_file = config_file.replace('-sample', '')
                 utils.copy_file(config_file, new_config_file)
 
         self.setting_path = base_dir
