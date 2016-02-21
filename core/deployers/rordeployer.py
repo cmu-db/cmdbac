@@ -171,7 +171,7 @@ class RoRDeployer(BaseDeployer):
 
         # get runtime
         ruby_versions = utils.get_ruby_versions()
-        ruby_version = ruby_versions[1]
+        ruby_version = ruby_versions[2]
         self.runtime = self.get_runtime(ruby_version)
         ruby_version = self.runtime['version']
         LOG.info(self.runtime)
@@ -212,23 +212,29 @@ class RoRDeployer(BaseDeployer):
     ## DEF
     
     def deploy_repo_attempt(self, deploy_path):
-        rakefiles = utils.search_file(deploy_path, 'Rakefile')
-        if not rakefiles:
+        rake_files = utils.search_file(deploy_path, 'Rakefile')
+        if not rake_files:
             LOG.error('No rakefile found!')
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
-        rakefile_paths = [os.path.dirname(rakefile) for rakefile in rakefiles]
+        rakefile_paths = [os.path.dirname(rake_file) for rake_file in rake_files]
 
-        gemfiles = utils.search_file(deploy_path, 'Gemfile')
-        if not gemfiles:
+        gem_files = utils.search_file(deploy_path, 'Gemfile')
+        if not gem_files:
             LOG.error('No gemfile found!')
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
-        gemfile_paths = [os.path.dirname(gemfile) for gemfile in gemfiles]
+        gemfile_paths = [os.path.dirname(gem_file) for gem_file in gem_files]
 
         base_dirs = sorted(set.intersection(set(rakefile_paths), set(gemfile_paths)))
         if not base_dirs:
             LOG.error('Can not find base directory!')
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
         base_dir = next(iter(base_dirs))
+
+        config_files = utils.search_file_regex(os.path.join(base_dir, 'config'), '.*yml.*')
+        for config_file in config_files:
+            if 'example' in config_file:
+                new_config_file = config_file.replace('.example', '')
+                utils.copy_file(config_file, new_config_file)
 
         self.setting_path = base_dir
 
