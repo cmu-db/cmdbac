@@ -249,6 +249,9 @@ class RoRDeployer(BaseDeployer):
             elif '-sample' in config_file:
                 new_config_file = config_file.replace('-sample', '')
                 utils.copy_file(config_file, new_config_file)
+            elif '.tmpl' in config_file:
+                new_config_file = config_file.replace('.tmpl', '')
+                utils.copy_file(config_file, new_config_file)
 
         self.setting_path = base_dir
 
