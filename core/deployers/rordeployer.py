@@ -239,8 +239,11 @@ class RoRDeployer(BaseDeployer):
 
         config_files = utils.search_file_regex(os.path.join(base_dir, 'config'), '.*yml.*')
         for config_file in config_files:
-            if 'example' in config_file:
+            if '.example' in config_file:
                 new_config_file = config_file.replace('.example', '')
+                utils.copy_file(config_file, new_config_file)
+            elif '/example' in config_file:
+                new_config_file = config_file.replace('/example', '')
                 utils.copy_file(config_file, new_config_file)
             elif '-sample' in config_file:
                 new_config_file = config_file.replace('-sample', '')
