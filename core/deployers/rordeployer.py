@@ -88,6 +88,7 @@ class RoRDeployer(BaseDeployer):
                 }
         if need_gem:
             with open(os.path.join(self.setting_path, 'Gemfile'), "a") as my_file:
+                my_file.write('\n')
                 if self.database.name == 'MySQL':
                     my_file.write("gem 'mysql2', '~> 0.3.18'\n")
                 else:
