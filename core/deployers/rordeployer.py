@@ -1,4 +1,4 @@
-import os, sys
+fimport os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
 import time
@@ -104,8 +104,15 @@ class RoRDeployer(BaseDeployer):
 
     def install_requirements(self, path):
         if path:
-            out = self.run_command(path, 'bundle install')
-            return out[1]
+            while True:
+                out = self.run_command(path, 'bundle install')
+                git_clone_error = re.search('Retrying git clone (.*) due to error', out[1])
+                if git_clone_error:
+                    command = 'git clone {}'.format(git_clone_error.group(1)).replace('git://github.com/', 'https://github.com/')
+                    LOG.info('Fix Git Fetching Error : {}'.format(command))
+                    LOG.info(utils.run_command(command))
+                else:
+                    return out[1]
         return ''
     ## DEF
     
