@@ -73,6 +73,7 @@ class GitHubCrawler(BaseCrawler):
             args["size"] = self.crawlerStatus.cur_size
             self.crawlerStatus.cur_size = self.crawlerStatus.cur_size + 1
 
+        print self.template.substitute(args)
         return self.template.substitute(args)
     ## DEF
 

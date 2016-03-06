@@ -16,7 +16,11 @@ django.setup()
 import crawlers
 from library.models import *
 
-if __name__ == '__main__':
+def main():
+    if len(sys.argv) != 2:
+        return
+    project_id = int(sys.argv[1])
+
     try:
         with open(os.path.join(os.path.dirname(__file__), os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
             auth = json.load(auth_file)
@@ -24,7 +28,7 @@ if __name__ == '__main__':
         auth = None
 
     while True:
-        cs = CrawlerStatus.objects.get(id = 4)
+        cs = CrawlerStatus.objects.get(id = project_id)
         repo_source = cs.source
         project_type = cs.project_type
 
@@ -40,3 +44,7 @@ if __name__ == '__main__':
         time.sleep(10)
     ## WHILE
 ## IF
+
+
+if __name__ == '__main__':
+    main()

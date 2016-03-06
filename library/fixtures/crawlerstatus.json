@@ -52,7 +52,7 @@
     "min_size": 100,
     "cur_size": 100, 
     "max_size": 10000,
-    "query": "drupal"
+    "query": "DRUPAL_ROOT"
   }
 }
 ]
