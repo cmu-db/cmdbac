@@ -16,6 +16,7 @@ class BaseAnalyzer(object):
     def __init__(self, deployer):
         self.queries_stats = {}
         self.database_stats = {}
+        self.database_informations = {}
         self.deployer = deployer
 
     def is_valid_for_explain(self, query):

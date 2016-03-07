@@ -50,6 +50,7 @@ def main():
     driverResult['statistics'] = analyzer.queries_stats
     analyzer.analyze_database()
     driverResult['statistics'].update(analyzer.database_stats)
+    driverResult['informations'] = analyzer.database_informations
 
     deployer.save_attempt(ATTEMPT_STATUS_SUCCESS, driverResult)
 
