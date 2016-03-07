@@ -202,6 +202,7 @@ class BaseDeployer(object):
         urls = driver_result.get('urls', None)
         screenshot_path = driver_result.get('screenshot', None)
         statistics = driver_result.get('statistics', None)
+        informations = driver_result.get('informations', None)
 
         # get runtime
         if self.runtime == None:
@@ -268,6 +269,7 @@ class BaseDeployer(object):
                 except Exception, e:
                     LOG.exception(e)  
 
+        # save urls
         if urls != None:
             for u in urls:
                 try:
@@ -315,6 +317,15 @@ class BaseDeployer(object):
                 statistic.count = count
                 statistic.attempt = self.attempt
                 statistic.save()
+
+        # save informations
+        if informations != None:
+            for name, description in informations.iteritems():
+                information = Information()
+                information.name = name
+                information.description = description
+                information.attempt = self.attempt
+                information.save()
 
         LOG.info("Saved Attempt #%s for %s" % (self.attempt, self.attempt.repo))
         

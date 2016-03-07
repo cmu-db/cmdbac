@@ -309,8 +309,14 @@ class Counter(models.Model):
 ## CLASS
 
 class Statistic(models.Model):
-    description  = models.CharField(max_length = 200)
+    description = models.CharField(max_length = 200)
     count = models.IntegerField(default = 0)
+    attempt = models.ForeignKey('Attempt')
+## CLASS
+
+class Information(models.Model):
+    name = models.CharField(max_length = 200)
+    description = models.TextField()
     attempt = models.ForeignKey('Attempt')
 ## CLASS
 
