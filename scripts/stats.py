@@ -10,7 +10,6 @@ import django
 django.setup()
 
 from library.models import *
-import utils
 
 def tables_stats():
     num_repos = 0
