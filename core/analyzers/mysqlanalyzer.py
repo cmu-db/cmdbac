@@ -75,9 +75,9 @@ class MySQLAnalyzer(BaseAnalyzer):
             cur.execute("SELECT * from INFORMATION_SCHEMA.columns WHERE table_schema = '{}';".format(database))
             self.database_informations['columns'] = str(cur.fetchall())
 
-            # the full information of statistics
+            # the full information of indexes
             cur.execute("SELECT * FROM information_schema.statistics WHERE table_schema = '{}';".format(database))
-            self.database_informations['statistics'] = str(cur.fetchall())
+            self.database_informations['indexes'] = str(cur.fetchall())
 
             # the full information of constraints
             cur.execute("SELECT * FROM information_schema.table_constraints WHERE constraint_schema = '{}';".format(database))
