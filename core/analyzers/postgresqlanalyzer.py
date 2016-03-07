@@ -62,6 +62,34 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
             cur.execute("SELECT COUNT(*) FROM pg_stat_all_indexes WHERE schemaname = 'public';")
             self.database_stats['num_indexes'] = int(cur.fetchone()[0])
 
+            # the number of foreign keys
+            cur.execute("SELECT COUNT(*) FROM information_schema.referential_constraints WHERE constraint_schema = 'public';")
+            self.database_stats['num_foreignkeys'] = int(cur.fetchone()[0])
+
+            # the full information of tables
+            cur.execute("SELECT * FROM information_schema.tables WHERE table_schema = 'public';")
+            self.database_informations['tables'] = str(cur.fetchall())
+
+            # the full information of columns
+            cur.execute("SELECT * FROM information_schema.columns WHERE table_schema = 'public';")
+            self.database_informations['columns'] = str(cur.fetchall())
+
+            # the full information of indexes
+            cur.execute("SELECT * FROM pg_stat_all_indexes WHERE schemaname = 'public';")
+            self.database_informations['indexes'] = str(cur.fetchall())
+
+            # the full information of foreign keys
+            cur.execute("SELECT * FROM information_schema.referential_constraints WHERE constraint_schema = 'public';")
+            self.database_informations['foreignkeys'] = str(cur.fetchall())
+
+            # the full information of triggers
+            cur.execute("SELECT * FROM information_schema.triggers WHERE trigger_schema = 'public';")
+            self.database_informations['triggers'] = str(cur.fetchall())
+
+            # the full information of views
+            cur.execute("SELECT * FROM information_schema.views WHERE table_schema = 'public';")
+            self.database_informations['views'] = str(cur.fetchall())
+
             cur.close()
             conn.close()
         except Exception, e:
