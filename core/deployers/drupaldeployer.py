@@ -52,7 +52,9 @@ class DrupalDeployer(BaseDeployer):
         self.installed = False
         error_count = 0
 
-        def check_drupal_status(deployer, browser):
+        def check_drupal_status(deployer):
+            browser = webdriver.PhantomJS()
+
             while True:
                 time.sleep(WAIT_TIME_SHORT)
 
@@ -81,16 +83,36 @@ class DrupalDeployer(BaseDeployer):
                 except:
                     pass
 
+            browser.quit()
+
+        def get_all_profiles():
+            browser = webdriver.PhantomJS()
+            browser.get('http://127.0.0.1:{port}/install.php'.format(port = self.port))
+            WebDriverWait(browser, WAIT_TIME_LONG).until(EC.presence_of_element_located((By.ID, 'content')))
+
+            profiles = []
+            for element in browser.find_elements_by_class_name('form-radio'):
+                profiles.append(element.get_attribute('value'))
+
+            browser.quit()
+
+            return profiles
+
+
         try:
             from pyvirtualdisplay import Display
             display = Display(visible=0, size=(800, 600))
             display.start()
 
+            profiles = get_all_profiles()
+            profile = self.repo.repo_name()
+            if profile not in profiles:
+                profile = profiles[0]
+
             browser = webdriver.PhantomJS()
-            browser.get('http://127.0.0.1:{port}/install.php?profile={profile}&welcome=done&locale=en'.format(port = self.port, profile = self.repo.repo_name()))
+            browser.get('http://127.0.0.1:{port}/install.php?profile={profile}&welcome=done&locale=en'.format(port = self.port, profile = profile))
             
-            status_browser = webdriver.PhantomJS()
-            t = threading.Thread(target = check_drupal_status, args = (self, status_browser))
+            t = threading.Thread(target = check_drupal_status, args = (self, ))
             t.daemon = True
             t.start()
             
@@ -182,8 +204,8 @@ class DrupalDeployer(BaseDeployer):
                     browser.find_element_by_tag_name('form').submit()
 
             self.installed = True
-        except:
-            traceback.print_exc()
+        except Exception, e:
+            LOG.exception(e)
             browser.save_screenshot('/tmp/screenshot.png')
         finally: 
             browser.quit()
