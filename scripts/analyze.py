@@ -27,9 +27,11 @@ def analyze_joins():
                             result[token.value] = result.get(token.value, 0) + 1
                             has_join = True
                 if has_join:
+                    print content
+                    # TODO : do something here to judge the attributes types and statuses
                     for explain in Explain.objects.filter(query = query):
-                        # TODO : do something here to judge the attributes types and statuses
-                        pass
+                        print explain.output
+                        return
 
     print result
 
@@ -37,9 +39,10 @@ def count_repetitive_queries():
     result = {}
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
         for action in Action.objects.filter(attempt = repo.latest_attempt):
+            # TODO : count the number of repetitive queries per action (queries that are the same and will produce the exact same result)
             queries = Query.objects.filter(action = action)
             for query in queries:
-                # TODO : count the number of repetitive queries per action (queries that are the same and will produce the exact same result)
+                pass
 
 def main():
     analyze_joins()

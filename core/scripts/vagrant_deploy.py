@@ -45,7 +45,7 @@ def main():
     deployer.kill_server()
 
     analyzer = get_analyzer(deployer)
-    for form, _ in driver.forms:
+    for form in driverResult['forms']:
         analyzer.analyze_queries(form['queries'])
     driverResult['statistics'] = analyzer.queries_stats
     analyzer.analyze_database()
