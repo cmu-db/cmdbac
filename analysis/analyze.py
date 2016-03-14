@@ -19,19 +19,22 @@ def analyze_joins():
             queries = Query.objects.filter(action = action)
             for query in queries:
                 content = query.content.upper()
-                has_join = False
+                joins = []
                 if 'JOIN' in content:
                     parsed = sqlparse.parse(content)[0]
-                    for token in parsed.tokens:
-                        if token.is_keyword and 'JOIN' in token.value:
-                            result[token.value] = result.get(token.value, 0) + 1
-                            has_join = True
-                if has_join:
+                    tokens = parsed.tokens
+                    for index in xrange(0, len(tokens)):
+                        if tokens[index].is_keyword and 'JOIN' in tokens[index].value:
+                            result[tokens[index].value] = result.get(tokens[index].value, 0) + 1
+                            joins.append(index)
+                if joins:
                     print content
                     # TODO : do something here to judge the attributes types and statuses
-                    for explain in Explain.objects.filter(query = query):
-                        print explain.output
-                        return
+                    for join in joins:
+                        print tokens[join]
+                        print tokens[join + 2]
+
+                    return
 
     print result
 
