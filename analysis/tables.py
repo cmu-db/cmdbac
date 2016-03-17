@@ -58,12 +58,31 @@ def column_stats():
                         _type = str(cells[7]).replace("'", "").strip()
                         stats['types'][_type] = stats['types'].get(_type, 0) + 1
 
+    print stats
+
+def constraint_stats():
+    stats = {'types': {}}
+
+    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
+        informations = Information.objects.filter(attempt = repo.latest_attempt)
+        if len(informations) == 0:
+            continue
+
+        for i in informations:
+            if i.name == 'constraints':
+                if repo.latest_attempt.database.name == 'MySQL':
+                    for constraint in re.findall('(\(.*?\))[,\)]', i.description):
+                        cells = constraint.split(',')
+
+                        _type = str(cells[5]).replace("'", "").strip()
+                        stats['types'][_type] = stats['types'].get(_type, 0) + 1
 
     print stats
 
 def main():
     # table_stats()
-    column_stats()
+    # column_stats()
+    constraint_stats()
 
 if __name__ == '__main__':
     main()
