@@ -11,40 +11,6 @@ django.setup()
 
 from library.models import *
 
-def tables_stats():
-    num_repos = 0
-    stats = {}
-    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
-        statistics = Statistic.objects.filter(attempt = repo.latest_attempt)
-        if len(statistics) == 0:
-            continue
-        for s in statistics:
-            stats[s.description] = stats.get(s.description, 0) + s.count
-        num_repos += 1
-    print num_repos
-    print stats
-    avg_stats = {}
-    for key, value in stats.iteritems():
-        avg_stats[key] = float(value) / num_repos
-    print avg_stats
-
-def queries_stats():
-    num_queries = 0
-    stats = {}
-    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
-        forms = Form.objects.filter(attempt = repo.latest_attempt)
-        for form in forms:
-            counters = Counter.objects.filter(form = form)
-            for counter in counters:
-                stats[counter.description] = stats.get(counter.description, 0) + counter.count
-                num_queries += counter.count
-    print num_queries
-    print stats
-    avg_stats = {}
-    for key, value in stats.iteritems():
-        avg_stats[key] = float(value * 100) / num_queries
-    print avg_stats
-
 def coverage_stats():
     num_repos = 0
     coverage = {}
