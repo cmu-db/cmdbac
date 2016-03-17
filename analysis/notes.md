@@ -1,20 +1,20 @@
 ### Tables
-1. distribution of # of tables per application(histogram)
-2. distribution of # of indexes per application
-3. distribution of # of foreign keys per application
-4. distribution of # of constraints per application
-4. percentage of column types for all applications(pie chart)
-5. percentage of Nullable columns for all applications
-6. percentage of constraint types for all applications
+1. distribution of # of tables per application(histogram) DONE
+2. distribution of # of indexes per application DONE
+3. distribution of # of foreign keys per application DONE
+4. distribution of # of constraints per application DONE
+4. percentage of column types for all applications(pie chart) DONE
+5. percentage of Nullable columns for all applications DONE
+6. percentage of constraint types for all applications DONE
 
 ### Queries
-1. percentage of the tables accessed(histogram)
-2. percentage of the columns accessed
-3. # of joins(histogram) and their types(pie chart)
+1. percentage of the tables accessed(histogram) DONE
+2. percentage of the columns accessed DONE
+3. # of joins(histogram) and their types(pie chart) DONE
 4. # of repetitive queries 
 5. About sort(from explain) : # of sort keys
 6. percentage of the indexes accessed
-7. percentage of types of queries(SELECT, DELETE, e.t.c)
+7. percentage of types of queries(SELECT, DELETE, e.t.c) DONE
 8. # of scans and their types(Index, Bitmap Heap)
 9. # of hashs
 10. # of nests 
