@@ -5,5 +5,6 @@
 *.kate-swp
 *.json
 *.box
+*.csv
 screenshot*.png
 dump/

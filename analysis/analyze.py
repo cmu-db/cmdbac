@@ -14,7 +14,7 @@ from library.models import *
 
 def analyze_joins():
     result = {}
-    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
+    for repo in Repository.objects.filter(latest_attempt__result = 'OK').filter(project_type=4):
         for action in Action.objects.filter(attempt = repo.latest_attempt):
             queries = Query.objects.filter(action = action)
             for query in queries:
@@ -27,14 +27,11 @@ def analyze_joins():
                         if tokens[index].is_keyword and 'JOIN' in tokens[index].value:
                             result[tokens[index].value] = result.get(tokens[index].value, 0) + 1
                             joins.append(index)
-                if joins:
-                    print content
-                    # TODO : do something here to judge the attributes types and statuses
-                    for join in joins:
-                        print tokens[join]
-                        print tokens[join + 2]
+                # TODO : do something here to judge the attributes types and statuses
+                for explain in Explain.objects.filter(query = query):
+                        print explain.output
 
-                    return
+        return
 
     print result
 
