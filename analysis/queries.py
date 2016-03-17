@@ -99,10 +99,28 @@ def column_coverage_stats(directory = '.'):
         for i in xrange(NUM_BINS):
             writer.writerow([int(bin_edges[i]), hist[i]])
 
+def join_stats():
+    stats = {}
+
+    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
+        for action in Action.objects.filter(attempt = repo.latest_attempt):
+            queries = Query.objects.filter(action = action)
+            for query in queries:
+                content = query.content.upper()
+                if 'JOIN' in content:
+                    parsed = sqlparse.parse(content)[0]
+                    tokens = parsed.tokens
+                    for index in xrange(0, len(tokens)):
+                        if tokens[index].is_keyword and 'JOIN' in tokens[index].value:
+                            stats[tokens[index].value] = stats.get(tokens[index].value, 0) + 1
+
+    print stats
+
 def main():
     # query_stats()
     # table_coverage_stats()
-    column_coverage_stats()
+    # column_coverage_stats()
+    join_stats()
 
 if __name__ == '__main__':
     main()
