@@ -146,13 +146,32 @@ def scan_stats():
 
     print stats
 
+def nest_stats(directory = '.'):
+    stats = []
+
+    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
+        nest_count = 0
+        for action in Action.objects.filter(attempt = repo.latest_attempt):
+            for query in Query.objects.filter(action = action):
+                for explain in Explain.objects.filter(query = query):
+                    nest_count += len(re.findall('Nested', explain.output))
+        stats.append(nest_count)
+
+    hist, bin_edges = np.histogram(stats, NUM_BINS)
+        
+    with open(os.path.join(directory, 'nest_stats.csv'), 'wb') as csv_file:
+        writer = csv.writer(csv_file)
+        for i in xrange(NUM_BINS):
+            writer.writerow([int(bin_edges[i]), hist[i]])
+
 def main():
     # query_stats()
     # table_coverage_stats()
     # column_coverage_stats()
     # join_stats()
     # hash_stats()
-    scan_stats()
+    # scan_stats()
+    nest_stats()
 
 if __name__ == '__main__':
     main()
