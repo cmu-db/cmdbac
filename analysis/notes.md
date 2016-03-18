@@ -12,14 +12,12 @@
 2. percentage of the columns accessed DONE
 3. # of joins(histogram) and their types(pie chart) DONE
 4. # of repetitive queries 
-5. About sort(from explain) : # of sort keys
+5. About sort(from explain) : # of sort keys DONE
 6. percentage of the indexes accessed DONE
 7. percentage of types of queries(SELECT, DELETE, e.t.c) DONE
 8. # of scans and their types(Index, Bitmap Heap) DONE
 9. # of hashs DONE
 10. # of nests DONE
 11. # of aggregates DONE
-12. percentage of AND, OR, ANY,NOT
+12. percentage of AND, OR, ANY,NOT DONE
 -- 13. # of IF, ELSE, WHEN, CASE...
-
-I remember that you have sent me a screenshot for the analysis TODO, but I am sorry that some of them I cannot figure out. The attachment is the explain output you may find interesting.

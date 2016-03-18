@@ -225,6 +225,31 @@ def logical_stats():
 
     print stats
 
+def sort_stats(directory = '.'):
+    stats = {'methods': {}, 'sort_keys': []}
+
+    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
+        for action in Action.objects.filter(attempt = repo.latest_attempt):
+            for query in Query.objects.filter(action = action):
+                for explain in Explain.objects.filter(query = query):
+                    for raw_sort_method in re.findall('Sort Method: \S+', explain.output):
+                        sort_method = raw_sort_method.split()[-1]
+                        stats['methods'][sort_method] = stats['methods'].get(sort_method, 0) + 1
+                    for sort_keys in re.findall('Sort Key: .*', explain.output):
+                        sort_keys_count = len(re.findall(',', sort_keys)) + 1
+                        stats['sort_keys'].append(sort_keys_count)
+
+    print stats['methods']
+
+    hist, bin_edges = np.histogram(stats['sort_keys'], NUM_BINS)
+        
+    with open(os.path.join(directory, 'sort_keys_stats.csv'), 'wb') as csv_file:
+        writer = csv.writer(csv_file)
+        for i in xrange(NUM_BINS):
+            writer.writerow([int(bin_edges[i]), hist[i]])
+
+
+
 def main():
     # query_stats()
     # table_coverage_stats()
@@ -235,7 +260,8 @@ def main():
     # nest_stats()
     # index_coverage_stats()
     # aggregate_stats()
-    logical_stats()
+    # logical_stats()
+    sort_stats()
 
 if __name__ == '__main__':
     main()
