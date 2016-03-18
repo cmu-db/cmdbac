@@ -20,6 +20,6 @@
 10. # of nests DONE
 11. # of aggregates DONE
 12. percentage of AND, OR, ANY,NOT
-13. # of IF, ELSE, WHEN, CASE...
+-- 13. # of IF, ELSE, WHEN, CASE...
 
 I remember that you have sent me a screenshot for the analysis TODO, but I am sorry that some of them I cannot figure out. The attachment is the explain output you may find interesting.

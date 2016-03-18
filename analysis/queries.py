@@ -213,6 +213,18 @@ def aggregate_stats(directory = '.'):
         for i in xrange(NUM_BINS):
             writer.writerow([int(bin_edges[i]), hist[i]])
 
+def logical_stats():
+    stats = {}
+
+    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
+        for action in Action.objects.filter(attempt = repo.latest_attempt):
+            for query in Query.objects.filter(action = action):
+                for explain in Explain.objects.filter(query = query):
+                    for logical_word in ['AND', 'OR', 'ALL', 'NOT']:
+                        stats[logical_word] = stats.get(logical_word, 0) + len(re.findall(logical_word, explain.output))
+
+    print stats
+
 def main():
     # query_stats()
     # table_coverage_stats()
@@ -222,7 +234,8 @@ def main():
     # scan_stats()
     # nest_stats()
     # index_coverage_stats()
-    aggregate_stats()
+    # aggregate_stats()
+    logical_stats()
 
 if __name__ == '__main__':
     main()
