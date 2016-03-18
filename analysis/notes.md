@@ -18,7 +18,7 @@
 8. # of scans and their types(Index, Bitmap Heap) DONE
 9. # of hashs DONE
 10. # of nests DONE
-11. # of aggregates
+11. # of aggregates DONE
 12. percentage of AND, OR, ANY,NOT
 13. # of IF, ELSE, WHEN, CASE...
 

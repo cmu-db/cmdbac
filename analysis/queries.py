@@ -195,6 +195,24 @@ def index_coverage_stats(directory = '.'):
         for i in xrange(NUM_BINS):
             writer.writerow([int(bin_edges[i]), hist[i]])
 
+def aggregate_stats(directory = '.'):
+    stats = []
+
+    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
+        aggregate_count = 0
+        for action in Action.objects.filter(attempt = repo.latest_attempt):
+            for query in Query.objects.filter(action = action):
+                for explain in Explain.objects.filter(query = query):
+                    aggregate_count += len(re.findall('Aggregate', explain.output))
+        stats.append(aggregate_count)
+
+    hist, bin_edges = np.histogram(stats, NUM_BINS)
+        
+    with open(os.path.join(directory, 'aggregate_stats.csv'), 'wb') as csv_file:
+        writer = csv.writer(csv_file)
+        for i in xrange(NUM_BINS):
+            writer.writerow([int(bin_edges[i]), hist[i]])
+
 def main():
     # query_stats()
     # table_coverage_stats()
@@ -203,7 +221,8 @@ def main():
     # hash_stats()
     # scan_stats()
     # nest_stats()
-    index_coverage_stats()
+    # index_coverage_stats()
+    aggregate_stats()
 
 if __name__ == '__main__':
     main()
