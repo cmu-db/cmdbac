@@ -134,12 +134,25 @@ def hash_stats(directory = '.'):
         for i in xrange(NUM_BINS):
             writer.writerow([int(bin_edges[i]), hist[i]])
 
+def scan_stats():
+    stats = {}
+
+    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
+        for action in Action.objects.filter(attempt = repo.latest_attempt):
+            for query in Query.objects.filter(action = action):
+                for explain in Explain.objects.filter(query = query):
+                    for scan in re.findall('[A-Za-z][\sA-Za-z]*Scan', explain.output):
+                        stats[scan] = stats.get(scan, 0) + 1
+
+    print stats
+
 def main():
     # query_stats()
     # table_coverage_stats()
     # column_coverage_stats()
     # join_stats()
-    hash_stats()
+    # hash_stats()
+    scan_stats()
 
 if __name__ == '__main__':
     main()

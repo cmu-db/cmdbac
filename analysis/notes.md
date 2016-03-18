@@ -15,7 +15,7 @@
 5. About sort(from explain) : # of sort keys
 6. percentage of the indexes accessed
 7. percentage of types of queries(SELECT, DELETE, e.t.c) DONE
-8. # of scans and their types(Index, Bitmap Heap)
+8. # of scans and their types(Index, Bitmap Heap) DONE
 9. # of hashs
 10. # of nests 
 11. # of aggregates
