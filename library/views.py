@@ -49,7 +49,7 @@ def home(request):
         num_repo = repos.count()
         
         # Total number of succesful attempts for this project type
-        num_suc = repos.filter(latest_attempt__result=ATTEMPT_STATUS_SUCCESS).count()
+        num_suc = repos.filter(successful_project=ATTEMPT_STATUS_SUCCESS).count()
         total_success += num_suc
         
         # The timestamp of the last attempt (doesn't have to be succesful)

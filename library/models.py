@@ -186,6 +186,8 @@ class Repository(models.Model):
 
     attempts_count = models.IntegerField(default = 0)
 
+    successful_project = models.NullBooleanField(default=None)
+
     def __unicode__(self):
         return self.name
     def user_name(self):
