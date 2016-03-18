@@ -13,11 +13,11 @@
 3. # of joins(histogram) and their types(pie chart) DONE
 4. # of repetitive queries 
 5. About sort(from explain) : # of sort keys
-6. percentage of the indexes accessed
+6. percentage of the indexes accessed DONE
 7. percentage of types of queries(SELECT, DELETE, e.t.c) DONE
 8. # of scans and their types(Index, Bitmap Heap) DONE
 9. # of hashs DONE
-10. # of nests 
+10. # of nests DONE
 11. # of aggregates
 12. percentage of AND, OR, ANY,NOT
 13. # of IF, ELSE, WHEN, CASE...

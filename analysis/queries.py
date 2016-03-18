@@ -164,6 +164,37 @@ def nest_stats(directory = '.'):
         for i in xrange(NUM_BINS):
             writer.writerow([int(bin_edges[i]), hist[i]])
 
+def index_coverage_stats(directory = '.'):
+    stats = []
+
+    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
+        actions = Action.objects.filter(attempt = repo.latest_attempt)
+        if len(actions) == 0:
+            continue
+
+        statistics = Statistic.objects.filter(attempt = repo.latest_attempt).filter(description = 'num_indexes')
+        if len(statistics) == 0:
+            continue
+        index_count = statistics[0].count
+        
+        covered_indexes = set()
+        for action in actions:
+            for query in Query.objects.filter(action = action):
+                for explain in Explain.objects.filter(query = query):
+                    for raw_index in re.findall('Index.*?Scan.*?on \S+', explain.output):
+                        index = raw_index.split()[-1]
+                        covered_indexes.add(index)
+               
+        percentage = int(float(len(covered_indexes) * 100) / index_count)
+        stats.append(percentage)
+
+    hist, bin_edges = np.histogram(stats, NUM_BINS)
+        
+    with open(os.path.join(directory, 'index_coverage.csv'), 'wb') as csv_file:
+        writer = csv.writer(csv_file)
+        for i in xrange(NUM_BINS):
+            writer.writerow([int(bin_edges[i]), hist[i]])
+
 def main():
     # query_stats()
     # table_coverage_stats()
@@ -171,7 +202,8 @@ def main():
     # join_stats()
     # hash_stats()
     # scan_stats()
-    nest_stats()
+    # nest_stats()
+    index_coverage_stats()
 
 if __name__ == '__main__':
     main()
