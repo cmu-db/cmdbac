@@ -116,11 +116,30 @@ def join_stats():
 
     print stats
 
+def hash_stats(directory = '.'):
+    stats = []
+
+    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
+        hash_count = 0
+        for action in Action.objects.filter(attempt = repo.latest_attempt):
+            for query in Query.objects.filter(action = action):
+                for explain in Explain.objects.filter(query = query):
+                    hash_count += len(re.findall('Hash', explain.output))
+        stats.append(hash_count)
+
+    hist, bin_edges = np.histogram(stats, NUM_BINS)
+        
+    with open(os.path.join(directory, 'hash_stats.csv'), 'wb') as csv_file:
+        writer = csv.writer(csv_file)
+        for i in xrange(NUM_BINS):
+            writer.writerow([int(bin_edges[i]), hist[i]])
+
 def main():
     # query_stats()
     # table_coverage_stats()
     # column_coverage_stats()
-    join_stats()
+    # join_stats()
+    hash_stats()
 
 if __name__ == '__main__':
     main()
