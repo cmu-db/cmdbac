@@ -33,7 +33,7 @@ def table_stats(directory = '.'):
     dump_all_stats(directory, stats)
 
 def column_stats(directory = '.'):
-    stats = {'nullable': {}, 'types': {}}
+    stats = {'column_nullable': {}, 'column_types': {}}
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
         informations = Information.objects.filter(attempt = repo.latest_attempt)
@@ -55,7 +55,7 @@ def column_stats(directory = '.'):
     dump_all_stats(directory, stats)
         
 def constraint_stats(directory = '.'):
-    stats = {'types': {}}
+    stats = {'constraint_types': {}}
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
         informations = Information.objects.filter(attempt = repo.latest_attempt)

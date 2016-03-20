@@ -7,7 +7,7 @@ import re
 import csv
 import numpy as np
 import sqlparse
-from dump import dump_stats
+from dump import dump_stats, dump_all_stats
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
@@ -15,7 +15,9 @@ django.setup()
 
 from library.models import *
 
-def query_stats():
+QUERIES_DIRECTORY = 'queries'
+
+def query_stats(directory = '.'):
     stats = {}
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
@@ -28,7 +30,7 @@ def query_stats():
             for counter in counters:
                 stats[counter.description] = stats.get(counter.description, 0) + counter.count
 
-    print stats
+    dump_stats(directory, 'query', stats)
 
 def table_coverage_stats(directory = '.'):
     stats = []
@@ -53,13 +55,8 @@ def table_coverage_stats(directory = '.'):
         percentage = int(float(len(covered_tables) * 100) / table_count)
         stats.append(percentage)
 
-    hist, bin_edges = np.histogram(stats, NUM_BINS)
+    dump_stats(directory, 'table_coverage', stats)
         
-    with open(os.path.join(directory, 'table_coverage.csv'), 'wb') as csv_file:
-        writer = csv.writer(csv_file)
-        for i in xrange(NUM_BINS):
-            writer.writerow([int(bin_edges[i]), hist[i]])
-
 def column_coverage_stats(directory = '.'):
     stats = []
 
@@ -90,14 +87,9 @@ def column_coverage_stats(directory = '.'):
         percentage = int(float(len(covered_columns) * 100) / column_count)
         stats.append(percentage)
 
-    hist, bin_edges = np.histogram(stats, NUM_BINS)
-        
-    with open(os.path.join(directory, 'column_coverage.csv'), 'wb') as csv_file:
-        writer = csv.writer(csv_file)
-        for i in xrange(NUM_BINS):
-            writer.writerow([int(bin_edges[i]), hist[i]])
+    dump_stats(directory, 'column_coverage', stats)
 
-def join_stats():
+def join_stats(directory = '.'):
     stats = {}
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
@@ -112,7 +104,7 @@ def join_stats():
                         if tokens[index].is_keyword and 'JOIN' in tokens[index].value:
                             stats[tokens[index].value] = stats.get(tokens[index].value, 0) + 1
 
-    print stats
+    dump_stats(directory, 'join', stats)
 
 def hash_stats(directory = '.'):
     stats = []
@@ -125,14 +117,9 @@ def hash_stats(directory = '.'):
                     hash_count += len(re.findall('Hash', explain.output))
         stats.append(hash_count)
 
-    hist, bin_edges = np.histogram(stats, NUM_BINS)
-        
-    with open(os.path.join(directory, 'hash_stats.csv'), 'wb') as csv_file:
-        writer = csv.writer(csv_file)
-        for i in xrange(NUM_BINS):
-            writer.writerow([int(bin_edges[i]), hist[i]])
+    dump_stats(directory, 'hash', stats)
 
-def scan_stats():
+def scan_stats(directory = '.'):
     stats = {}
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
@@ -142,7 +129,7 @@ def scan_stats():
                     for scan in re.findall('[A-Za-z][\sA-Za-z]*Scan', explain.output):
                         stats[scan] = stats.get(scan, 0) + 1
 
-    print stats
+    dump_stats(directory, 'scan', stats)
 
 def nest_stats(directory = '.'):
     stats = []
@@ -155,12 +142,7 @@ def nest_stats(directory = '.'):
                     nest_count += len(re.findall('Nested', explain.output))
         stats.append(nest_count)
 
-    hist, bin_edges = np.histogram(stats, NUM_BINS)
-        
-    with open(os.path.join(directory, 'nest_stats.csv'), 'wb') as csv_file:
-        writer = csv.writer(csv_file)
-        for i in xrange(NUM_BINS):
-            writer.writerow([int(bin_edges[i]), hist[i]])
+    dump_stats(directory, 'nest', stats)
 
 def index_coverage_stats(directory = '.'):
     stats = []
@@ -186,12 +168,7 @@ def index_coverage_stats(directory = '.'):
         percentage = int(float(len(covered_indexes) * 100) / index_count)
         stats.append(percentage)
 
-    hist, bin_edges = np.histogram(stats, NUM_BINS)
-        
-    with open(os.path.join(directory, 'index_coverage.csv'), 'wb') as csv_file:
-        writer = csv.writer(csv_file)
-        for i in xrange(NUM_BINS):
-            writer.writerow([int(bin_edges[i]), hist[i]])
+    dump_stats(directory, 'index_coverage', stats)
 
 def aggregate_stats(directory = '.'):
     stats = []
@@ -204,14 +181,9 @@ def aggregate_stats(directory = '.'):
                     aggregate_count += len(re.findall('Aggregate', explain.output))
         stats.append(aggregate_count)
 
-    hist, bin_edges = np.histogram(stats, NUM_BINS)
-        
-    with open(os.path.join(directory, 'aggregate_stats.csv'), 'wb') as csv_file:
-        writer = csv.writer(csv_file)
-        for i in xrange(NUM_BINS):
-            writer.writerow([int(bin_edges[i]), hist[i]])
+    dump_stats(directory, 'aggregate', stats)
 
-def logical_stats():
+def logical_stats(directory = '.'):
     stats = {}
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
@@ -221,10 +193,10 @@ def logical_stats():
                     for logical_word in ['AND', 'OR', 'ALL', 'NOT']:
                         stats[logical_word] = stats.get(logical_word, 0) + len(re.findall(logical_word, explain.output))
 
-    print stats
+    dump_stats(directory, 'logical', stats)
 
 def sort_stats(directory = '.'):
-    stats = {'methods': {}, 'sort_keys': []}
+    stats = {'sort_methods': {}, 'sort_keys': []}
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
         for action in Action.objects.filter(attempt = repo.latest_attempt):
@@ -237,29 +209,20 @@ def sort_stats(directory = '.'):
                         sort_keys_count = len(re.findall(',', sort_keys)) + 1
                         stats['sort_keys'].append(sort_keys_count)
 
-    print stats['methods']
-
-    hist, bin_edges = np.histogram(stats['sort_keys'], NUM_BINS)
-        
-    with open(os.path.join(directory, 'sort_keys_stats.csv'), 'wb') as csv_file:
-        writer = csv.writer(csv_file)
-        for i in xrange(NUM_BINS):
-            writer.writerow([int(bin_edges[i]), hist[i]])
-
-
+    dump_all_stats(directory, stats)
 
 def main():
-    query_stats()
-    # table_coverage_stats()
-    # column_coverage_stats()
-    # join_stats()
-    # hash_stats()
-    # scan_stats()
-    # nest_stats()
-    # index_coverage_stats()
-    # aggregate_stats()
-    # logical_stats()
-    # sort_stats()
+    query_stats(QUERIES_DIRECTORY)
+    table_coverage_stats(QUERIES_DIRECTORY)
+    column_coverage_stats(QUERIES_DIRECTORY)
+    join_stats(QUERIES_DIRECTORY)
+    hash_stats(QUERIES_DIRECTORY)
+    scan_stats(QUERIES_DIRECTORY)
+    nest_stats(QUERIES_DIRECTORY)
+    index_coverage_stats(QUERIES_DIRECTORY)
+    aggregate_stats(QUERIES_DIRECTORY)
+    logical_stats(QUERIES_DIRECTORY)
+    sort_stats(QUERIES_DIRECTORY)
 
 if __name__ == '__main__':
     main()
