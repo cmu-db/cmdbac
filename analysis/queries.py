@@ -7,14 +7,13 @@ import re
 import csv
 import numpy as np
 import sqlparse
+from dump import dump_stats
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
 django.setup()
 
 from library.models import *
-
-NUM_BINS = 10
 
 def query_stats():
     stats = {}
@@ -28,7 +27,6 @@ def query_stats():
             counters = Counter.objects.filter(action = action)
             for counter in counters:
                 stats[counter.description] = stats.get(counter.description, 0) + counter.count
-                stats['TOTAL'] = stats.get('TOTAL', 0) + counter.count
 
     print stats
 
@@ -251,7 +249,7 @@ def sort_stats(directory = '.'):
 
 
 def main():
-    # query_stats()
+    query_stats()
     # table_coverage_stats()
     # column_coverage_stats()
     # join_stats()
@@ -261,7 +259,7 @@ def main():
     # index_coverage_stats()
     # aggregate_stats()
     # logical_stats()
-    sort_stats()
+    # sort_stats()
 
 if __name__ == '__main__':
     main()

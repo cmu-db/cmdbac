@@ -5,7 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 
 import re
 import csv
-from dump import dump_stats
+from dump import dump_all_stats
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
@@ -30,7 +30,7 @@ def table_stats(directory = '.'):
                 stats[s.description] = []
             stats[s.description].append(s.count)
     
-    dump_stats(directory, stats)
+    dump_all_stats(directory, stats)
 
 def column_stats(directory = '.'):
     stats = {'nullable': {}, 'types': {}}
@@ -52,8 +52,8 @@ def column_stats(directory = '.'):
                         _type = str(cells[7]).replace("'", "").strip()
                         stats['types'][_type] = stats['types'].get(_type, 0) + 1
     
-    dump_stats(directory, stats)
-
+    dump_all_stats(directory, stats)
+        
 def constraint_stats(directory = '.'):
     stats = {'types': {}}
 
@@ -71,7 +71,7 @@ def constraint_stats(directory = '.'):
                         _type = str(cells[5])[:-1].replace("'", "").strip()
                         stats['types'][_type] = stats['types'].get(_type, 0) + 1
 
-    dump_stats(directory, stats)
+    dump_all_stats(directory, stats)
 
 def main():
     table_stats(TABLES_DIRECTORY)
