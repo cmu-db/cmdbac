@@ -186,7 +186,7 @@ class Repository(models.Model):
 
     attempts_count = models.IntegerField(default = 0)
 
-    successful_project = models.NullBooleanField(default=None)
+    latest_successful_attempt = models.ForeignKey('Attempt', null=True, related_name='latest_successful_attempt')
 
     def __unicode__(self):
         return self.name

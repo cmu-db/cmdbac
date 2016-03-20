@@ -354,6 +354,8 @@ class BaseDeployer(object):
         else:
             self.repo.valid_project = True
         self.repo.latest_attempt = self.attempt
+        if attempt_result == ATTEMPT_STATUS_SUCCESS:
+            self.repo.latest_successful_attempt = self.attempt
         self.repo.attempts_count = self.repo.attempts_count + 1
         self.repo.save()
     ## DEF
