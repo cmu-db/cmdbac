@@ -5,7 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 
 import re
 import csv
-import numpy as np
+from dump import dump_stats
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
@@ -13,9 +13,9 @@ django.setup()
 
 from library.models import *
 
-NUM_BINS = 10
+TABLES_DIRECTORY = 'tables'
 
-def table_stats():
+def table_stats(directory = '.'):
     stats = {}
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
@@ -30,15 +30,9 @@ def table_stats():
                 stats[s.description] = []
             stats[s.description].append(s.count)
     
-    for description in stats:
-        hist, bin_edges = np.histogram(stats[description], NUM_BINS)
-        
-        with open(os.path.join(directory, description + '.csv'), 'wb') as csv_file:
-            writer = csv.writer(csv_file)
-            for i in xrange(NUM_BINS):
-                writer.writerow([int(bin_edges[i]), hist[i]])
+    dump_stats(directory, stats)
 
-def column_stats():
+def column_stats(directory = '.'):
     stats = {'nullable': {}, 'types': {}}
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
@@ -57,10 +51,10 @@ def column_stats():
 
                         _type = str(cells[7]).replace("'", "").strip()
                         stats['types'][_type] = stats['types'].get(_type, 0) + 1
+    
+    dump_stats(directory, stats)
 
-    print stats
-
-def constraint_stats():
+def constraint_stats(directory = '.'):
     stats = {'types': {}}
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
@@ -74,15 +68,15 @@ def constraint_stats():
                     for constraint in re.findall('(\(.*?\))[,\)]', i.description):
                         cells = constraint.split(',')
 
-                        _type = str(cells[5]).replace("'", "").strip()
+                        _type = str(cells[5])[:-1].replace("'", "").strip()
                         stats['types'][_type] = stats['types'].get(_type, 0) + 1
 
-    print stats
+    dump_stats(directory, stats)
 
 def main():
-    # table_stats()
-    # column_stats()
-    constraint_stats()
+    table_stats(TABLES_DIRECTORY)
+    column_stats(TABLES_DIRECTORY)
+    constraint_stats(TABLES_DIRECTORY)
 
 if __name__ == '__main__':
     main()
