@@ -44,6 +44,8 @@ def table_coverage_stats(directory = '.'):
         if len(statistics) == 0:
             continue
         table_count = statistics[0].count
+        if table_count == 0:
+            continue
         
         covered_tables = set()
         for action in actions:
@@ -74,6 +76,8 @@ def column_coverage_stats(directory = '.'):
             column_count = len(re.findall('(\(.*?\))[,\]]', information.description))
         elif repo.latest_attempt.database.name == 'MySQL':
             column_count = len(re.findall('(\(.*?\))[,\)]', information.description))
+        if column_count == 0:
+            continue
         
         covered_columns = set()
         for action in actions:
@@ -156,6 +160,8 @@ def index_coverage_stats(directory = '.'):
         if len(statistics) == 0:
             continue
         index_count = statistics[0].count
+        if index_count == 0:
+            continue
         
         covered_indexes = set()
         for action in actions:

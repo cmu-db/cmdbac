@@ -47,10 +47,10 @@ def column_stats(directory = '.'):
                         cells = column.split(',')
                         
                         nullable = str(cells[6]).replace("'", "").strip()
-                        stats['nullable'][nullable] = stats['nullable'].get(nullable, 0) + 1
+                        stats['column_nullable'][nullable] = stats['nullable'].get(nullable, 0) + 1
 
                         _type = str(cells[7]).replace("'", "").strip()
-                        stats['types'][_type] = stats['types'].get(_type, 0) + 1
+                        stats['column_types'][_type] = stats['types'].get(_type, 0) + 1
     
     dump_all_stats(directory, stats)
         
@@ -69,7 +69,7 @@ def constraint_stats(directory = '.'):
                         cells = constraint.split(',')
 
                         _type = str(cells[5])[:-1].replace("'", "").strip()
-                        stats['types'][_type] = stats['types'].get(_type, 0) + 1
+                        stats['constraint_types'][_type] = stats['types'].get(_type, 0) + 1
 
     dump_all_stats(directory, stats)
 
