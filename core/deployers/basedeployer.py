@@ -150,15 +150,7 @@ class BaseDeployer(object):
     ## DEF
 
     def get_latest_successful_attempt(self):
-        attempts = Attempt.objects.filter(repo = self.repo).filter(result = 'OK').order_by('stop_time')
-        if len(attempts) > 0:
-            return attempts[0]
-        else:
-            attempts = Attempt.objects.filter(repo = self.repo).filter(result = 'NQ').order_by('stop_time')
-            if len(attempts) > 0:
-                return attempts[0]
-            else: 
-                return None
+        return self.repo.latest_successful_attempt
     ## DEF
 
     def get_main_url(self):
