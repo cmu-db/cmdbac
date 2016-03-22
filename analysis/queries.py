@@ -210,7 +210,7 @@ def sort_stats(directory = '.'):
                 for explain in Explain.objects.filter(query = query):
                     for raw_sort_method in re.findall('Sort Method: \S+', explain.output):
                         sort_method = raw_sort_method.split()[-1]
-                        stats['methods'][sort_method] = stats['methods'].get(sort_method, 0) + 1
+                        stats['sort_methods'][sort_method] = stats['sort_methods'].get(sort_method, 0) + 1
                     for sort_keys in re.findall('Sort Key: .*', explain.output):
                         sort_keys_count = len(re.findall(',', sort_keys)) + 1
                         stats['sort_keys'].append(sort_keys_count)
