@@ -28,7 +28,8 @@ def table_stats(directory = '.'):
                 continue
             if s.description not in stats:
                 stats[s.description] = []
-            stats[s.description].append(s.count)
+            if s.count != 0:
+                stats[s.description].append(s.count)
     
     dump_all_stats(directory, stats)
 

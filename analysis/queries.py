@@ -87,8 +87,10 @@ def column_coverage_stats(directory = '.'):
                 for token in tokens:
                     if isinstance(token, sqlparse.sql.Identifier):
                         covered_columns.add(token.value)
-               
-        percentage = int(float(len(covered_columns) * 100) / column_count)
+        if len(covered_columns) > column_count:
+            percentage = int(float(len(covered_columns) * 100) / column_count)
+        else:
+            percentage = 100
         stats.append(percentage)
 
     dump_stats(directory, 'column_coverage', stats)
