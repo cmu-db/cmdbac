@@ -54,10 +54,8 @@ def table_coverage_stats(directory = '.'):
                     table_name = table.replace('FROM', '').replace("'", "").replace(' ', '')
                     covered_tables.add(table_name)
 
-        if len(covered_tables) > table_count:
-            percentage = int(float(len(covered_tables) * 100) / table_count)
-        else:
-            percentage = 100
+        percentage = int(float(len(covered_tables) * 100) / table_count)
+        percentage = min(percentage, 100)
         stats.append(percentage)
 
     dump_stats(directory, 'table_coverage', stats)
@@ -117,12 +115,15 @@ def hash_stats(directory = '.'):
     stats = []
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
-        hash_count = 0
         for action in Action.objects.filter(attempt = repo.latest_attempt):
             for query in Query.objects.filter(action = action):
+                hash_count = 0
+                has_explain = False
                 for explain in Explain.objects.filter(query = query):
                     hash_count += len(re.findall('Hash', explain.output))
-        stats.append(hash_count)
+                    has_explain = True
+                if has_explain:
+                    stats.append(hash_count)
 
     dump_stats(directory, 'hash', stats)
 
@@ -142,12 +143,15 @@ def nest_stats(directory = '.'):
     stats = []
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
-        nest_count = 0
         for action in Action.objects.filter(attempt = repo.latest_attempt):
             for query in Query.objects.filter(action = action):
+                nest_count = 0
+                has_explain = False
                 for explain in Explain.objects.filter(query = query):
                     nest_count += len(re.findall('Nested', explain.output))
-        stats.append(nest_count)
+                    has_explain = True
+                if has_explain:
+                    stats.append(nest_count)
 
     dump_stats(directory, 'nest', stats)
 
@@ -184,12 +188,15 @@ def aggregate_stats(directory = '.'):
     stats = []
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
-        aggregate_count = 0
         for action in Action.objects.filter(attempt = repo.latest_attempt):
             for query in Query.objects.filter(action = action):
+                aggregate_count = 0
+                has_explain = False
                 for explain in Explain.objects.filter(query = query):
                     aggregate_count += len(re.findall('Aggregate', explain.output))
-        stats.append(aggregate_count)
+                    has_explain = True
+                if has_explain:
+                    stats.append(aggregate_count)
 
     dump_stats(directory, 'aggregate', stats)
 
@@ -200,13 +207,13 @@ def logical_stats(directory = '.'):
         for action in Action.objects.filter(attempt = repo.latest_attempt):
             for query in Query.objects.filter(action = action):
                 for explain in Explain.objects.filter(query = query):
-                    for logical_word in ['AND', 'OR', 'ALL', 'NOT']:
+                    for logical_word in ['AND', 'OR', 'ALL', 'NOT', 'ANY']:
                         stats[logical_word] = stats.get(logical_word, 0) + len(re.findall(logical_word, explain.output))
 
     dump_stats(directory, 'logical', stats)
 
 def sort_stats(directory = '.'):
-    stats = {'sort_methods': {}, 'sort_keys': []}
+    stats = {'sort_methods': {}, 'sort_keys': {}}
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
         for action in Action.objects.filter(attempt = repo.latest_attempt):
@@ -217,22 +224,48 @@ def sort_stats(directory = '.'):
                         stats['sort_methods'][sort_method] = stats['sort_methods'].get(sort_method, 0) + 1
                     for sort_keys in re.findall('Sort Key: .*', explain.output):
                         sort_keys_count = len(re.findall(',', sort_keys)) + 1
-                        stats['sort_keys'].append(sort_keys_count)
+                        stats['sort_keys'][sort_keys_count] = stats['sort_keys'].get(sort_keys_count, 0) + 1
 
     dump_all_stats(directory, stats)
 
+def step_stats(directory = '.'):
+    stats = []
+
+    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
+        if repo.latest_attempt.database.name == 'MySQL':
+            continue
+
+        for action in Action.objects.filter(attempt = repo.latest_attempt):
+            for query in Query.objects.filter(action = action):
+                step_count = 0
+                has_explain = False
+                for explain in Explain.objects.filter(query = query):
+                    step_count += 1 + len(re.findall('->', explain.output))
+                    has_explain = True
+                if has_explain:
+                    stats.append(step_count)
+                print query.content
+
+    dump_stats(directory, 'step', stats)
+
+
 def main():
-    query_stats(QUERIES_DIRECTORY)
+    # query_stats(QUERIES_DIRECTORY)
+    # join_stats(QUERIES_DIRECTORY)
+    # scan_stats(QUERIES_DIRECTORY)
+
     table_coverage_stats(QUERIES_DIRECTORY)
     column_coverage_stats(QUERIES_DIRECTORY)
-    join_stats(QUERIES_DIRECTORY)
-    hash_stats(QUERIES_DIRECTORY)
-    scan_stats(QUERIES_DIRECTORY)
-    nest_stats(QUERIES_DIRECTORY)
     index_coverage_stats(QUERIES_DIRECTORY)
-    aggregate_stats(QUERIES_DIRECTORY)
     logical_stats(QUERIES_DIRECTORY)
     sort_stats(QUERIES_DIRECTORY)
+    step_stats(QUERIES_DIRECTORY)
+
+
+    # TODO : hash_stats(QUERIES_DIRECTORY)
+    # TODO : nest_stats(QUERIES_DIRECTORY)
+    # TODO : aggregate_stats(QUERIES_DIRECTORY)
+        
 
 if __name__ == '__main__':
     main()
