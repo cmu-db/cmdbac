@@ -244,7 +244,6 @@ def step_stats(directory = '.'):
                     has_explain = True
                 if has_explain:
                     stats.append(step_count)
-                print query.content
 
     dump_stats(directory, 'step', stats)
 
