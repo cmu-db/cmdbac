@@ -53,8 +53,11 @@ def table_coverage_stats(directory = '.'):
                 for table in re.findall('FROM\s*\S+', query.content.upper()):
                     table_name = table.replace('FROM', '').replace("'", "").replace(' ', '')
                     covered_tables.add(table_name)
-               
-        percentage = int(float(len(covered_tables) * 100) / table_count)
+
+        if len(covered_tables) > table_count:
+            percentage = int(float(len(covered_tables) * 100) / table_count)
+        else:
+            percentage = 100
         stats.append(percentage)
 
     dump_stats(directory, 'table_coverage', stats)
@@ -87,10 +90,8 @@ def column_coverage_stats(directory = '.'):
                 for token in tokens:
                     if isinstance(token, sqlparse.sql.Identifier):
                         covered_columns.add(token.value)
-        if len(covered_columns) > column_count:
-            percentage = int(float(len(covered_columns) * 100) / column_count)
-        else:
-            percentage = 100
+        percentage = int(float(len(covered_columns) * 100) / column_count)
+        percentage = min(percentage, 100)
         stats.append(percentage)
 
     dump_stats(directory, 'column_coverage', stats)
@@ -174,6 +175,7 @@ def index_coverage_stats(directory = '.'):
                         covered_indexes.add(index)
                
         percentage = int(float(len(covered_indexes) * 100) / index_count)
+        percentage = min(percentage, 100)
         stats.append(percentage)
 
     dump_stats(directory, 'index_coverage', stats)
