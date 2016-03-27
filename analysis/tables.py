@@ -26,12 +26,16 @@ def table_stats(directory = '.'):
         for s in statistics:
             if s.description == 'num_transactions':
                 continue
+            if s.count == 0:
+                continue
             if s.description not in stats:
-                stats[s.description] = []
-            if s.count != 0:
-                stats[s.description].append(s.count)
+                stats[s.description] = {}
+            project_type_name = repo.project_type.name
+            if project_type_name not in stats[s.description]:
+                stats[s.description][project_type_name] = []
+            stats[s.description][repo.project_type.name].append(s.count)
     
-    dump_all_stats(directory, stats)
+    dump_all_stats(directory, stats, True)
 
 def column_stats(directory = '.'):
     stats = {'column_nullable': {}, 'column_types': {}}
@@ -77,7 +81,7 @@ def constraint_stats(directory = '.'):
 def main():
     table_stats(TABLES_DIRECTORY)
     column_stats(TABLES_DIRECTORY)
-    constraint_stats(TABLES_DIRECTORY)
+    # constraint_stats(TABLES_DIRECTORY)
 
 if __name__ == '__main__':
     main()

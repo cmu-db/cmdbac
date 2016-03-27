@@ -8,7 +8,7 @@
 (7) greater than or equal to 4
 (8) what types are they sorting?
 (9) Join keys and sort keys
-(10) Use stacked bar chart
+(10) Use stacked bar chart RESOLVED
 (11) COLUMN modifier
 (12) Nested queries
 (13) aggregates 

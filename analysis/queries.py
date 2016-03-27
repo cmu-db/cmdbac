@@ -33,7 +33,7 @@ def query_stats(directory = '.'):
     dump_stats(directory, 'query', stats)
 
 def table_coverage_stats(directory = '.'):
-    stats = []
+    stats = {}
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
         actions = Action.objects.filter(attempt = repo.latest_attempt)
@@ -56,12 +56,16 @@ def table_coverage_stats(directory = '.'):
 
         percentage = int(float(len(covered_tables) * 100) / table_count)
         percentage = min(percentage, 100)
-        stats.append(percentage)
 
-    dump_stats(directory, 'table_coverage', stats)
+        project_type_name = repo.project_type.name
+        if project_type_name not in stats:
+            stats[project_type_name] = []
+        stats[project_type_name].append(percentage)
+
+    dump_stats(directory, 'table_coverage', stats, True)
         
 def column_coverage_stats(directory = '.'):
-    stats = []
+    stats = {}
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
         actions = Action.objects.filter(attempt = repo.latest_attempt)
@@ -90,9 +94,46 @@ def column_coverage_stats(directory = '.'):
                         covered_columns.add(token.value)
         percentage = int(float(len(covered_columns) * 100) / column_count)
         percentage = min(percentage, 100)
-        stats.append(percentage)
 
-    dump_stats(directory, 'column_coverage', stats)
+        project_type_name = repo.project_type.name
+        if project_type_name not in stats:
+            stats[project_type_name] = []
+        stats[project_type_name].append(percentage)
+
+    dump_stats(directory, 'column_coverage', stats, True)
+
+def index_coverage_stats(directory = '.'):
+    stats = {}
+
+    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
+        actions = Action.objects.filter(attempt = repo.latest_attempt)
+        if len(actions) == 0:
+            continue
+
+        statistics = Statistic.objects.filter(attempt = repo.latest_attempt).filter(description = 'num_indexes')
+        if len(statistics) == 0:
+            continue
+        index_count = statistics[0].count
+        if index_count == 0:
+            continue
+        
+        covered_indexes = set()
+        for action in actions:
+            for query in Query.objects.filter(action = action):
+                for explain in Explain.objects.filter(query = query):
+                    for raw_index in re.findall('Index.*?Scan.*?on \S+', explain.output):
+                        index = raw_index.split()[-1]
+                        covered_indexes.add(index)
+               
+        percentage = int(float(len(covered_indexes) * 100) / index_count)
+        percentage = min(percentage, 100)
+
+        project_type_name = repo.project_type.name
+        if project_type_name not in stats:
+            stats[project_type_name] = []
+        stats[project_type_name].append(percentage)
+
+    dump_stats(directory, 'index_coverage', stats, True)
 
 def join_stats(directory = '.'):
     stats = {}
@@ -154,35 +195,6 @@ def nest_stats(directory = '.'):
                     stats.append(nest_count)
 
     dump_stats(directory, 'nest', stats)
-
-def index_coverage_stats(directory = '.'):
-    stats = []
-
-    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
-        actions = Action.objects.filter(attempt = repo.latest_attempt)
-        if len(actions) == 0:
-            continue
-
-        statistics = Statistic.objects.filter(attempt = repo.latest_attempt).filter(description = 'num_indexes')
-        if len(statistics) == 0:
-            continue
-        index_count = statistics[0].count
-        if index_count == 0:
-            continue
-        
-        covered_indexes = set()
-        for action in actions:
-            for query in Query.objects.filter(action = action):
-                for explain in Explain.objects.filter(query = query):
-                    for raw_index in re.findall('Index.*?Scan.*?on \S+', explain.output):
-                        index = raw_index.split()[-1]
-                        covered_indexes.add(index)
-               
-        percentage = int(float(len(covered_indexes) * 100) / index_count)
-        percentage = min(percentage, 100)
-        stats.append(percentage)
-
-    dump_stats(directory, 'index_coverage', stats)
 
 def aggregate_stats(directory = '.'):
     stats = []
@@ -253,12 +265,12 @@ def main():
     # join_stats(QUERIES_DIRECTORY)
     # scan_stats(QUERIES_DIRECTORY)
 
-    table_coverage_stats(QUERIES_DIRECTORY)
-    column_coverage_stats(QUERIES_DIRECTORY)
+    # table_coverage_stats(QUERIES_DIRECTORY)
+    # column_coverage_stats(QUERIES_DIRECTORY)
     index_coverage_stats(QUERIES_DIRECTORY)
-    logical_stats(QUERIES_DIRECTORY)
-    sort_stats(QUERIES_DIRECTORY)
-    step_stats(QUERIES_DIRECTORY)
+    # logical_stats(QUERIES_DIRECTORY)
+    # sort_stats(QUERIES_DIRECTORY)
+    # step_stats(QUERIES_DIRECTORY)
 
 
     # TODO : hash_stats(QUERIES_DIRECTORY)
