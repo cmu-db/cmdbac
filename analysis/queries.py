@@ -28,9 +28,14 @@ def query_stats(directory = '.'):
         for action in actions:
             counters = Counter.objects.filter(action = action)
             for counter in counters:
-                stats[counter.description] = stats.get(counter.description, 0) + counter.count
+                project_type_name = repo.project_type.name
+                if project_type_name not in stats:
+                    stats[project_type_name] = {}
+                if counter.description not in stats[project_type_name]:
+                    stats[project_type_name][counter.description] = 0
+                stats[project_type_name][counter.description] += counter.count
 
-    dump_stats(directory, 'query', stats)
+    dump_stats(directory, 'query', stats, True)
 
 def table_coverage_stats(directory = '.'):
     stats = {}
@@ -261,18 +266,20 @@ def step_stats(directory = '.'):
 
 
 def main():
-    # query_stats(QUERIES_DIRECTORY)
+    # active
+
+    # working
+    query_stats(QUERIES_DIRECTORY)
     # join_stats(QUERIES_DIRECTORY)
     # scan_stats(QUERIES_DIRECTORY)
-
     # table_coverage_stats(QUERIES_DIRECTORY)
     # column_coverage_stats(QUERIES_DIRECTORY)
-    index_coverage_stats(QUERIES_DIRECTORY)
+    # index_coverage_stats(QUERIES_DIRECTORY)
     # logical_stats(QUERIES_DIRECTORY)
     # sort_stats(QUERIES_DIRECTORY)
     # step_stats(QUERIES_DIRECTORY)
 
-
+    # deprecated
     # TODO : hash_stats(QUERIES_DIRECTORY)
     # TODO : nest_stats(QUERIES_DIRECTORY)
     # TODO : aggregate_stats(QUERIES_DIRECTORY)

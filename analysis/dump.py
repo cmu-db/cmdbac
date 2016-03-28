@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-03-21 01:05:00
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-03-28 00:30:15
+# @Last Modified time: 2016-03-28 01:12:35
 import os
 import csv
 
@@ -15,6 +15,9 @@ def dump_stats(directory, description, values, with_labels = False):
                 if isinstance(stats, list):
                     for i in stats:
                         writer.writerow([label, i])
+                elif isinstance(stats, dict):
+                    for key, value in stats.iteritems():
+                        writer.writerow([label, key, value])
                 else:
                     print 'can not dump {}'.format(description)
         else:

@@ -79,9 +79,14 @@ def constraint_stats(directory = '.'):
     dump_all_stats(directory, stats)
 
 def main():
+    # active
+
+    # working
     table_stats(TABLES_DIRECTORY)
     column_stats(TABLES_DIRECTORY)
-    # constraint_stats(TABLES_DIRECTORY)
+
+    # deprecated
+    # TODO : constraint_stats(TABLES_DIRECTORY)
 
 if __name__ == '__main__':
     main()

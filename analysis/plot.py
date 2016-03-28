@@ -3,7 +3,7 @@
 # @Author: zeyuanxy
 # @Date:   2016-03-21 01:52:14
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-03-28 00:42:27
+# @Last Modified time: 2016-03-28 01:15:13
 import sys
 import os
 import numpy as np 
@@ -76,29 +76,78 @@ def plot_pie_chart(directory, csv_file, output_directory, min_percentage = 0.05)
     plt.title(name)
     fig.savefig(os.path.join(output_directory, name + '.pdf'))
 
+def plot_table(directory, csv_file, output_directory):
+    stats = {}
+    row_labels = []
+    col_labels = []
+    with open(os.path.join(directory, csv_file), 'r') as f:
+        description = f.readline()
+        for line in f.readlines():
+            cells = line.split(',')
+            row_label = cells[0]
+            if row_label not in row_labels:
+                row_labels.append(row_label)
+            if row_label not in stats:
+                stats[row_label] = {}
+            col_label = cells[1]
+            if col_label not in col_labels:
+                col_labels.append(col_label)
+            value = int(cells[2])
+            stats[row_label][col_label] = value
+    data = []
+    for row_label in row_labels:
+        data.append([])
+        for col_label in col_labels:
+            if row_label not in stats:
+                data[-1].append(0)
+                continue
+            if col_label not in stats[row_label]:
+                data[-1].append(0)
+                continue
+            data[-1].append(stats[row_label][col_label])
+
+    plt.clf()
+    fig = plt.Figure()
+    fig.set_canvas(plt.gcf().canvas)
+    plt.figure(1, figsize=(6,6))
+    plt.table(cellText = data, rowLabels = row_labels, colLabels = col_labels)
+    name = csv_file.split('.')[0]
+    plt.title(name)
+    fig.savefig(os.path.join(output_directory, name + '.pdf'))
+    print '123'
+
 def plot_tables(directory):
     output_directory = os.path.join(FIG_DIRECTORY, 'tables')
+
+    # active
     plot_histogram(directory, 'num_tables.csv', output_directory, max_value = 100)
     plot_histogram(directory, 'num_indexes.csv', output_directory, max_value = 100)
-    # TODO : plot_histogram(directory, 'num_constraints.csv', output_directory)
     plot_histogram(directory, 'num_foreignkeys.csv', output_directory)
     plot_pie_chart(directory, 'column_nullable.csv', output_directory)
     plot_pie_chart(directory, 'column_types.csv', output_directory)
+    
+    # deprecated
+    # TODO : plot_histogram(directory, 'num_constraints.csv', output_directory)
     # TODO : plot_pie_chart(directory, 'constraint_types.csv', output_directory)
 
 def plot_queries(directory):
     output_directory = os.path.join(FIG_DIRECTORY, 'queries')
-    plot_pie_chart(directory, 'query.csv', output_directory, 0.01)
-    plot_histogram(directory, 'table_coverage.csv', output_directory)
-    plot_histogram(directory, 'column_coverage.csv', output_directory)
-    plot_histogram(directory, 'index_coverage.csv', output_directory)
-    plot_pie_chart(directory, 'join.csv', output_directory, 0)
-    plot_pie_chart(directory, 'logical.csv', output_directory, 0)
-    plot_pie_chart(directory, 'scan.csv', output_directory, 0.01)
-    plot_pie_chart(directory, 'sort_keys.csv', output_directory, 0.01)
-    plot_pie_chart(directory, 'sort_methods.csv', output_directory, 0.01)
-    plot_histogram(directory, 'step.csv', output_directory)
 
+    # active
+
+    # working
+    plot_table(directory, 'query.csv', output_directory)
+    # plot_histogram(directory, 'table_coverage.csv', output_directory)
+    # plot_histogram(directory, 'column_coverage.csv', output_directory)
+    # plot_histogram(directory, 'index_coverage.csv', output_directory)
+    # plot_pie_chart(directory, 'join.csv', output_directory, 0)
+    # plot_pie_chart(directory, 'logical.csv', output_directory, 0)
+    # plot_pie_chart(directory, 'scan.csv', output_directory, 0.01)
+    # plot_pie_chart(directory, 'sort_keys.csv', output_directory, 0.01)
+    # plot_pie_chart(directory, 'sort_methods.csv', output_directory, 0.01)
+    # plot_histogram(directory, 'step.csv', output_directory)
+
+    # deprecated
     # TODO : plot_histogram(directory, 'nest.csv', output_directory)
     # TODO : plot_histogram(directory, 'hash.csv', output_directory)
     # TODO : plot_histogram(directory, 'aggregate.csv', output_directory)
