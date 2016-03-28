@@ -3,7 +3,7 @@
 # @Author: zeyuanxy
 # @Date:   2016-03-21 01:52:14
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-03-28 01:15:13
+# @Last Modified time: 2016-03-28 23:22:40
 import sys
 import os
 import numpy as np 
@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 FIG_DIRECTORY = os.path.join(os.path.dirname(__file__), 'fig')
 
-def plot_histogram(directory, csv_file, output_directory, bins = 10, max_value = None):
+def plot_numeric_histogram(directory, csv_file, output_directory, bins = 10, max_value = None):
     stats = {}
     with open(os.path.join(directory, csv_file), 'r') as f:
         description = f.readline()
@@ -77,6 +77,7 @@ def plot_pie_chart(directory, csv_file, output_directory, min_percentage = 0.05)
     fig.savefig(os.path.join(output_directory, name + '.pdf'))
 
 def plot_table(directory, csv_file, output_directory):
+    # prepare data
     stats = {}
     row_labels = []
     col_labels = []
@@ -106,15 +107,32 @@ def plot_table(directory, csv_file, output_directory):
                 continue
             data[-1].append(stats[row_label][col_label])
 
+    # prepare figure
     plt.clf()
     fig = plt.Figure()
     fig.set_canvas(plt.gcf().canvas)
     plt.figure(1, figsize=(6,6))
-    plt.table(cellText = data, rowLabels = row_labels, colLabels = col_labels)
+
+    # bar
+    colors = plt.cm.BuPu(np.linspace(0, 0.5, len(row_labels)))
+    n_rows = len(data)
+    index = np.arange(len(col_labels)) + 0.3
+    bar_width = 0.4
+    y_offset = np.array([0.0] * len(col_labels))
+    for row in range(len(row_labels)):
+        plt.bar(index, data[row], bar_width, bottom=y_offset, color=colors[row])
+        y_offset = y_offset + data[row]
+    colors = colors[::-1]
+
+    # make room for the table
+    plt.subplots_adjust(left=0.2, bottom=0.3)
+
+    # table 
+    plt.table(cellText = data, rowLabels = row_labels, rowColours = colors, colLabels = col_labels)
     name = csv_file.split('.')[0]
     plt.title(name)
+    plt.xticks([])
     fig.savefig(os.path.join(output_directory, name + '.pdf'))
-    print '123'
 
 def plot_tables(directory):
     output_directory = os.path.join(FIG_DIRECTORY, 'tables')
