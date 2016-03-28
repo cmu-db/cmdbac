@@ -5,7 +5,7 @@
 (4) sanity check the table coverage 
 (5) 3(e) and 3(f) should use the sum of the columns as denominator DONE
 (6) How many tables each query access?
-(7) greater than or equal to 4
+(7) greater than or equal to 4 DONE
 (8) what types are they sorting?
 (9) Join keys and sort keys
 (10) Use stacked bar chart DONE

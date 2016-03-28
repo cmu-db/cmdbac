@@ -126,6 +126,25 @@ def coverage_stats(directory = '.'):
 
     dump_all_stats(directory, stats)
 
+def sort_stats(directory = '.'):
+    stats = {'sort_keys': {}}
+
+    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
+        project_type_name = repo.project_type.name
+        for action in Action.objects.filter(attempt = repo.latest_attempt):
+            for query in Query.objects.filter(action = action):
+                for explain in Explain.objects.filter(query = query):
+                    for sort_keys in re.findall('Sort Key: .*', explain.output):
+                        sort_keys_count = len(re.findall(',', sort_keys)) + 1
+                        if project_type_name not in stats['sort_keys']:
+                            stats['sort_keys'][project_type_name] = {}
+                        if sort_keys_count <= 3:
+                            stats['sort_keys'][project_type_name][str(sort_keys_count)] = stats['sort_keys'][project_type_name].get(str(sort_keys_count), 0) + 1
+                        else:
+                            stats['sort_keys'][project_type_name]['greater than or equal to 4'] = stats['sort_keys'][project_type_name].get('greater than or equal to 4', 0) + 1
+
+    dump_all_stats(directory, stats)
+
 def join_stats(directory = '.'):
     stats = {}
 
@@ -215,29 +234,16 @@ def logical_stats(directory = '.'):
 
     dump_stats(directory, 'logical', stats)
 
-def sort_stats(directory = '.'):
-    stats = {'sort_keys': {}}
-
-    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
-        for action in Action.objects.filter(attempt = repo.latest_attempt):
-            for query in Query.objects.filter(action = action):
-                for explain in Explain.objects.filter(query = query):
-                    for sort_keys in re.findall('Sort Key: .*', explain.output):
-                        sort_keys_count = len(re.findall(',', sort_keys)) + 1
-                        stats['sort_keys'][sort_keys_count] = stats['sort_keys'].get(sort_keys_count, 0) + 1
-
-    dump_all_stats(directory, stats)
-
 def main():
     # active
-    query_stats(QUERIES_DIRECTORY)
-    coverage_stats(QUERIES_DIRECTORY)
+    # query_stats(QUERIES_DIRECTORY)
+    # coverage_stats(QUERIES_DIRECTORY)
+    sort_stats(QUERIES_DIRECTORY)
 
     # working
     # join_stats(QUERIES_DIRECTORY)
     # scan_stats(QUERIES_DIRECTORY)
     # logical_stats(QUERIES_DIRECTORY)
-    # sort_stats(QUERIES_DIRECTORY)
     
     # deprecated
     # TODO : hash_stats(QUERIES_DIRECTORY)
