@@ -58,25 +58,6 @@ def column_stats(directory = '.'):
                         stats['column_types'][_type] = stats['column_types'].get(_type, 0) + 1
     
     dump_all_stats(directory, stats)
-        
-def constraint_stats(directory = '.'):
-    stats = {'constraint_types': {}}
-
-    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
-        informations = Information.objects.filter(attempt = repo.latest_attempt)
-        if len(informations) == 0:
-            continue
-
-        for i in informations:
-            if i.name == 'constraints':
-                if repo.latest_attempt.database.name == 'MySQL':
-                    for constraint in re.findall('(\(.*?\))[,\)]', i.description):
-                        cells = constraint.split(',')
-
-                        _type = str(cells[5])[:-1].replace("'", "").strip()
-                        stats['constraint_types'][_type] = stats['constraint_types'].get(_type, 0) + 1
-
-    dump_all_stats(directory, stats)
 
 def main():
     # active
@@ -86,7 +67,5 @@ def main():
     column_stats(TABLES_DIRECTORY)
 
     # deprecated
-    # TODO : constraint_stats(TABLES_DIRECTORY)
-
 if __name__ == '__main__':
     main()

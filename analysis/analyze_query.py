@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
-sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 
 import re
 import csv
@@ -18,7 +17,7 @@ from library.models import *
 QUERIES_DIRECTORY = 'queries'
 
 def query_stats(directory = '.'):
-    stats = {}
+    stats = {'query_type': {}}
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
         actions = Action.objects.filter(attempt = repo.latest_attempt)
@@ -29,116 +28,103 @@ def query_stats(directory = '.'):
             counters = Counter.objects.filter(action = action)
             for counter in counters:
                 project_type_name = repo.project_type.name
-                if project_type_name not in stats:
-                    stats[project_type_name] = {}
-                if counter.description not in stats[project_type_name]:
-                    stats[project_type_name][counter.description] = 0
-                stats[project_type_name][counter.description] += counter.count
+                if project_type_name not in stats['query_type']:
+                    stats['query_type'][project_type_name] = {}
+                if counter.description not in stats['query_type'][project_type_name]:
+                    stats['query_type'][project_type_name][counter.description] = 0
+                stats['query_type'][project_type_name][counter.description] += counter.count
 
-    dump_stats(directory, 'query', stats, True)
+    dump_all_stats(directory, stats)
 
-def table_coverage_stats(directory = '.'):
-    stats = {}
+def coverage_stats(directory = '.'):
+    stats = {'table_coverage': {}, 'column_coverage': {}, 'index_coverage': {}}
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
         actions = Action.objects.filter(attempt = repo.latest_attempt)
         if len(actions) == 0:
             continue
-
         statistics = Statistic.objects.filter(attempt = repo.latest_attempt).filter(description = 'num_tables')
         if len(statistics) == 0:
             continue
         table_count = statistics[0].count
         if table_count == 0:
             continue
+
+        project_type_name = repo.project_type.name
         
         covered_tables = set()
         for action in actions:
             for query in Query.objects.filter(action = action):
                 for table in re.findall('FROM\s*\S+', query.content.upper()):
-                    table_name = table.replace('FROM', '').replace("'", "").replace(' ', '')
+                    table_name = table.replace('FROM', '').replace("'", "").replace(' ', '').replace('"', '')
+                    if '(' in table_name or ')' in table_name:
+                        continue
                     covered_tables.add(table_name)
 
-        percentage = int(float(len(covered_tables) * 100) / table_count)
-        percentage = min(percentage, 100)
+        table_percentage = int(float(len(covered_tables) * 100) / table_count)
+        table_percentage = min(table_percentage, 100)
 
-        project_type_name = repo.project_type.name
-        if project_type_name not in stats:
-            stats[project_type_name] = []
-        stats[project_type_name].append(percentage)
-
-    dump_stats(directory, 'table_coverage', stats, True)
-        
-def column_coverage_stats(directory = '.'):
-    stats = {}
-
-    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
-        actions = Action.objects.filter(attempt = repo.latest_attempt)
-        if len(actions) == 0:
-            continue
+        if project_type_name not in stats['table_coverage']:
+            stats['table_coverage'][project_type_name] = []
+        stats['table_coverage'][project_type_name].append(table_percentage)
 
         informations = Information.objects.filter(attempt = repo.latest_attempt).filter(name = 'columns')
-        if len(informations) == 0:
-            continue
-        information = informations[0]
-        column_count = 0
-        if repo.latest_attempt.database.name == 'PostgreSQL':
-            column_count = len(re.findall('(\(.*?\))[,\]]', information.description))
-        elif repo.latest_attempt.database.name == 'MySQL':
-            column_count = len(re.findall('(\(.*?\))[,\)]', information.description))
-        if column_count == 0:
-            continue
+        if len(informations) > 0:
+            information = informations[0]
+            column_count = 0
+            for covered_table in covered_tables:
+                column_count += len(re.findall(covered_table.upper(), information.description.upper()))
+            if repo.latest_attempt.database.name == 'PostgreSQL':
+                column_count = min(column_count, len(re.findall('(\(.*?\))[,\]]', information.description)))
+            elif repo.latest_attempt.database.name == 'MySQL':
+                column_count = min(column_count, len(re.findall('(\(.*?\))[,\)]', information.description)))
         
-        covered_columns = set()
-        for action in actions:
-            for query in Query.objects.filter(action = action):
-                parsed = sqlparse.parse(query.content)[0]
-                tokens = parsed.tokens
-                for token in tokens:
-                    if isinstance(token, sqlparse.sql.Identifier):
-                        covered_columns.add(token.value)
-        percentage = int(float(len(covered_columns) * 100) / column_count)
-        percentage = min(percentage, 100)
+            if column_count > 0:
+                covered_columns = set()
+                for action in actions:
+                    for query in Query.objects.filter(action = action):
+                        parsed = sqlparse.parse(query.content)[0]
+                        tokens = parsed.tokens
+                        for token in tokens:
+                            if isinstance(token, sqlparse.sql.Identifier):
+                                covered_columns.add(token.value)
 
-        project_type_name = repo.project_type.name
-        if project_type_name not in stats:
-            stats[project_type_name] = []
-        stats[project_type_name].append(percentage)
+                column_percentage = int(float(len(covered_columns) * 100) / column_count)
+                column_percentage = min(column_percentage, 100)
 
-    dump_stats(directory, 'column_coverage', stats, True)
+                if project_type_name not in stats['column_coverage']:
+                    stats['column_coverage'][project_type_name] = []
+                stats['column_coverage'][project_type_name].append(column_percentage)
 
-def index_coverage_stats(directory = '.'):
-    stats = {}
+        informations = Information.objects.filter(attempt = repo.latest_attempt).filter(name = 'indexes')
+        if len(informations) > 0:
+            information = informations[0]
+            index_count = 0
+            for covered_table in covered_tables:
+                index_count += len(re.findall(covered_table.upper(), information.description.upper()))
+            statistics = Statistic.objects.filter(attempt = repo.latest_attempt).filter(description = 'num_indexes')
+            if len(statistics) == 0:
+                continue
+            if statistics[0].count > 0:
+                index_count = min(index_count, statistics[0].count)
+            
+            if index_count > 0:
+                covered_indexes = set()
+                for action in actions:
+                    for query in Query.objects.filter(action = action):
+                        for explain in Explain.objects.filter(query = query):
+                            for raw_index in re.findall('Index.*?Scan.*?on \S+', explain.output):
+                                index = raw_index.split()[-1]
+                                covered_indexes.add(index)
+                   
+                index_percentage = int(float(len(covered_indexes) * 100) / index_count)
+                index_percentage = min(index_percentage, 100)
 
-    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
-        actions = Action.objects.filter(attempt = repo.latest_attempt)
-        if len(actions) == 0:
-            continue
+                if project_type_name not in stats['index_coverage']:
+                    stats['index_coverage'][project_type_name] = []
+                stats['index_coverage'][project_type_name].append(index_percentage)
 
-        statistics = Statistic.objects.filter(attempt = repo.latest_attempt).filter(description = 'num_indexes')
-        if len(statistics) == 0:
-            continue
-        index_count = statistics[0].count
-        if index_count == 0:
-            continue
-        
-        covered_indexes = set()
-        for action in actions:
-            for query in Query.objects.filter(action = action):
-                for explain in Explain.objects.filter(query = query):
-                    for raw_index in re.findall('Index.*?Scan.*?on \S+', explain.output):
-                        index = raw_index.split()[-1]
-                        covered_indexes.add(index)
-               
-        percentage = int(float(len(covered_indexes) * 100) / index_count)
-        percentage = min(percentage, 100)
-
-        project_type_name = repo.project_type.name
-        if project_type_name not in stats:
-            stats[project_type_name] = []
-        stats[project_type_name].append(percentage)
-
-    dump_stats(directory, 'index_coverage', stats, True)
+    dump_all_stats(directory, stats)
 
 def join_stats(directory = '.'):
     stats = {}
@@ -230,55 +216,29 @@ def logical_stats(directory = '.'):
     dump_stats(directory, 'logical', stats)
 
 def sort_stats(directory = '.'):
-    stats = {'sort_methods': {}, 'sort_keys': {}}
+    stats = {'sort_keys': {}}
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
         for action in Action.objects.filter(attempt = repo.latest_attempt):
             for query in Query.objects.filter(action = action):
                 for explain in Explain.objects.filter(query = query):
-                    for raw_sort_method in re.findall('Sort Method: \S+', explain.output):
-                        sort_method = raw_sort_method.split()[-1]
-                        stats['sort_methods'][sort_method] = stats['sort_methods'].get(sort_method, 0) + 1
                     for sort_keys in re.findall('Sort Key: .*', explain.output):
                         sort_keys_count = len(re.findall(',', sort_keys)) + 1
                         stats['sort_keys'][sort_keys_count] = stats['sort_keys'].get(sort_keys_count, 0) + 1
 
     dump_all_stats(directory, stats)
 
-def step_stats(directory = '.'):
-    stats = []
-
-    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
-        if repo.latest_attempt.database.name == 'MySQL':
-            continue
-
-        for action in Action.objects.filter(attempt = repo.latest_attempt):
-            for query in Query.objects.filter(action = action):
-                step_count = 0
-                has_explain = False
-                for explain in Explain.objects.filter(query = query):
-                    step_count += 1 + len(re.findall('->', explain.output))
-                    has_explain = True
-                if has_explain:
-                    stats.append(step_count)
-
-    dump_stats(directory, 'step', stats)
-
-
 def main():
     # active
+    query_stats(QUERIES_DIRECTORY)
+    coverage_stats(QUERIES_DIRECTORY)
 
     # working
-    query_stats(QUERIES_DIRECTORY)
     # join_stats(QUERIES_DIRECTORY)
     # scan_stats(QUERIES_DIRECTORY)
-    # table_coverage_stats(QUERIES_DIRECTORY)
-    # column_coverage_stats(QUERIES_DIRECTORY)
-    # index_coverage_stats(QUERIES_DIRECTORY)
     # logical_stats(QUERIES_DIRECTORY)
     # sort_stats(QUERIES_DIRECTORY)
-    # step_stats(QUERIES_DIRECTORY)
-
+    
     # deprecated
     # TODO : hash_stats(QUERIES_DIRECTORY)
     # TODO : nest_stats(QUERIES_DIRECTORY)

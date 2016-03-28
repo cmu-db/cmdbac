@@ -3,7 +3,7 @@
 # @Author: zeyuanxy
 # @Date:   2016-03-21 01:52:14
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-03-28 23:22:40
+# @Last Modified time: 2016-03-28 23:28:34
 import sys
 import os
 import numpy as np 
@@ -152,19 +152,18 @@ def plot_queries(directory):
     output_directory = os.path.join(FIG_DIRECTORY, 'queries')
 
     # active
+    plot_table(directory, 'query.csv', output_directory)
+    plot_histogram(directory, 'table_coverage.csv', output_directory)
+    plot_histogram(directory, 'column_coverage.csv', output_directory)
+    plot_histogram(directory, 'index_coverage.csv', output_directory)
 
     # working
-    plot_table(directory, 'query.csv', output_directory)
-    # plot_histogram(directory, 'table_coverage.csv', output_directory)
-    # plot_histogram(directory, 'column_coverage.csv', output_directory)
-    # plot_histogram(directory, 'index_coverage.csv', output_directory)
     # plot_pie_chart(directory, 'join.csv', output_directory, 0)
     # plot_pie_chart(directory, 'logical.csv', output_directory, 0)
     # plot_pie_chart(directory, 'scan.csv', output_directory, 0.01)
     # plot_pie_chart(directory, 'sort_keys.csv', output_directory, 0.01)
     # plot_pie_chart(directory, 'sort_methods.csv', output_directory, 0.01)
-    # plot_histogram(directory, 'step.csv', output_directory)
-
+    
     # deprecated
     # TODO : plot_histogram(directory, 'nest.csv', output_directory)
     # TODO : plot_histogram(directory, 'hash.csv', output_directory)
