@@ -192,6 +192,23 @@ def aggregate_stats(directory = '.'):
 
     dump_all_stats(directory, stats)
 
+def nested_stats(directory = '.'):
+    stats = {'nested_count': {}}
+
+    for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        project_type_name = repo.project_type.name
+        if project_type_name not in stats['nested_count']:
+            stats['nested_count'][project_type_name] = {}
+        for action in Action.objects.filter(attempt = repo.latest_attempt):
+            for query in Query.objects.filter(action = action):
+                nested_count = 0
+                for explain in Explain.objects.filter(query = query):
+                    nested_count += len(re.findall('Nested', explain.output))
+                if nested_count > 0:
+                    stats['nested_count'][project_type_name][str(nested_count)] = stats['nested_count'][project_type_name].get(str(nested_count), 0) + 1
+
+    dump_all_stats(directory, stats)
+
 def join_stats(directory = '.'):
     stats = {}
 
@@ -209,22 +226,6 @@ def join_stats(directory = '.'):
 
     dump_stats(directory, 'join', stats)
 
-def nest_stats(directory = '.'):
-    stats = []
-
-    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
-        for action in Action.objects.filter(attempt = repo.latest_attempt):
-            for query in Query.objects.filter(action = action):
-                nest_count = 0
-                has_explain = False
-                for explain in Explain.objects.filter(query = query):
-                    nest_count += len(re.findall('Nested', explain.output))
-                    has_explain = True
-                if has_explain:
-                    stats.append(nest_count)
-
-    dump_stats(directory, 'nest', stats)
-
 def main():
     # active
     # query_stats(QUERIES_DIRECTORY)
@@ -232,13 +233,13 @@ def main():
     # sort_stats(QUERIES_DIRECTORY)
     # scan_stats(QUERIES_DIRECTORY)
     # multiset_stats(QUERIES_DIRECTORY)
-    aggregate_stats(QUERIES_DIRECTORY)
+    # aggregate_stats(QUERIES_DIRECTORY)
+    nested_stats(QUERIES_DIRECTORY)
 
     # working
     # join_stats(QUERIES_DIRECTORY)
     
     # deprecated
-    # TODO : nest_stats(QUERIES_DIRECTORY)
 
 if __name__ == '__main__':
     main()
