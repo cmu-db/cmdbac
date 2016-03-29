@@ -171,9 +171,9 @@ def multiset_stats(directory = '.'):
             stats['set_operator'][project_type_name] = {}
         for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
             for query in Query.objects.filter(action = action):
-                for logical_word in ['AND', 'OR', 'NOT', 'ALL', 'ANY', 'XOR']:
+                for logical_word in ['AND', 'OR', 'NOT', 'XOR']:
                     stats['logical_operator'][project_type_name][logical_word] = stats['logical_operator'][project_type_name].get(logical_word, 0) + len(re.findall(logical_word, query.content))
-                for set_word in ['UNION', 'INTERSECT', 'EXCEPT', 'EXISTS']:
+                for set_word in ['UNION', 'INTERSECT', 'EXCEPT']:
                     stats['set_operator'][project_type_name][set_word] = stats['set_operator'][project_type_name].get(set_word, 0) + len(re.findall(set_word, query.content))
 
     dump_all_stats(directory, stats)
@@ -193,12 +193,14 @@ def aggregate_stats(directory = '.'):
     dump_all_stats(directory, stats)
 
 def nested_stats(directory = '.'):
-    stats = {'nested_count': {}}
+    stats = {'nested_count': {}, 'nested_operator': {}}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
         project_type_name = repo.project_type.name
         if project_type_name not in stats['nested_count']:
             stats['nested_count'][project_type_name] = {}
+        if project_type_name not in stats['nested_operator']:
+            stats['nested_operator'][project_type_name] = {}
         for action in Action.objects.filter(attempt = repo.latest_attempt):
             for query in Query.objects.filter(action = action):
                 nested_count = 0
@@ -206,6 +208,9 @@ def nested_stats(directory = '.'):
                     nested_count += len(re.findall('Nested', explain.output))
                 if nested_count > 0:
                     stats['nested_count'][project_type_name][str(nested_count)] = stats['nested_count'][project_type_name].get(str(nested_count), 0) + 1
+                for nested_word in ['ALL', 'ANY', 'SOME', 'EXISTS', 'IN', 'NOT EXISTS']:
+                    stats['nested_operator'][project_type_name][nested_word] = stats['nested_operator'][project_type_name].get(nested_word, 0) + len(re.findall(nested_word, query.content))
+                stats['nested_operator'][project_type_name]['EXISTS'] -= len(re.findall('NOT EXISTS', query.content))
 
     dump_all_stats(directory, stats)
 

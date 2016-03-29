@@ -10,7 +10,7 @@
 (9) Join keys and sort keys
 (10) Use stacked bar chart DONE
 (11) COLUMN modifier
-(12) Nested queries
+(12) Nested queries DONE
 (13) aggregates DONE
 (14) GROUP BY 
 (15) having queries
