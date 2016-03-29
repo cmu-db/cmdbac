@@ -18,8 +18,8 @@ TABLES_DIRECTORY = 'tables'
 def table_stats(directory = '.'):
     stats = {}
 
-    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
-        statistics = Statistic.objects.filter(attempt = repo.latest_attempt)
+    for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        statistics = Statistic.objects.filter(attempt = repo.latest_successful_attempt)
         if len(statistics) == 0:
             continue
         
@@ -40,14 +40,14 @@ def table_stats(directory = '.'):
 def column_stats(directory = '.'):
     stats = {'column_nullable': {}, 'column_types': {}}
 
-    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
-        informations = Information.objects.filter(attempt = repo.latest_attempt)
+    for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        informations = Information.objects.filter(attempt = repo.latest_successful_attempt)
         if len(informations) == 0:
             continue
 
         for i in informations:
             if i.name == 'columns':
-                if repo.latest_attempt.database.name == 'PostgreSQL':
+                if repo.latest_successful_attempt.database.name == 'PostgreSQL':
                     for column in re.findall('(\(.*?\))[,\]]', i.description):
                         cells = column.split(',')
                         
@@ -61,9 +61,9 @@ def column_stats(directory = '.'):
 
 def main():
     # active
+    table_stats(TABLES_DIRECTORY)
 
     # working
-    table_stats(TABLES_DIRECTORY)
     column_stats(TABLES_DIRECTORY)
 
     # deprecated

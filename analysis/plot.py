@@ -3,7 +3,7 @@
 # @Author: zeyuanxy
 # @Date:   2016-03-21 01:52:14
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-03-29 00:28:47
+# @Last Modified time: 2016-03-30 00:30:12
 import sys
 import os
 import numpy as np 
@@ -110,9 +110,9 @@ def plot_tables(directory):
     plot_histogram(directory, 'num_foreignkeys.csv', output_directory)
 
     # working
-    # plot_pie_chart(directory, 'column_nullable.csv', output_directory)
-    # plot_pie_chart(directory, 'column_types.csv', output_directory)
-    
+
+    # deprecated
+
 def plot_queries(directory):
     output_directory = os.path.join(FIG_DIRECTORY, 'queries')
 
@@ -122,12 +122,12 @@ def plot_queries(directory):
     plot_histogram(directory, 'column_coverage.csv', output_directory)
     plot_histogram(directory, 'index_coverage.csv', output_directory)
     plot_table(directory, 'sort_keys.csv', output_directory)
+    plot_table(directory, 'scan_type.csv', output_directory)
     
 
     # working
     # plot_pie_chart(directory, 'join.csv', output_directory, 0)
     # plot_pie_chart(directory, 'logical.csv', output_directory, 0)
-    # plot_pie_chart(directory, 'scan.csv', output_directory, 0.01)
     
     # deprecated
     # TODO : plot_histogram(directory, 'nest.csv', output_directory)
