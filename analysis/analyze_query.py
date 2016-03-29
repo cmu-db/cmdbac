@@ -160,6 +160,24 @@ def scan_stats(directory = '.'):
 
     dump_all_stats(directory, stats)
 
+def multiset_stats(directory = '.'):
+    stats = {'logical_operator': {}, 'set_operator': {}}
+
+    for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        project_type_name = repo.project_type.name
+        if project_type_name not in stats['logical_operator']:
+            stats['logical_operator'][project_type_name] = {}
+        if project_type_name not in stats['set_operator']:
+            stats['set_operator'][project_type_name] = {}
+        for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
+            for query in Query.objects.filter(action = action):
+                for logical_word in ['AND', 'OR', 'NOT', 'ALL', 'ANY', 'XOR']:
+                    stats['logical_operator'][project_type_name][logical_word] = stats['logical_operator'][project_type_name].get(logical_word, 0) + len(re.findall(logical_word, query.content))
+                for set_word in ['UNION', 'INTERSECT', 'EXCEPT', 'EXISTS']:
+                    stats['set_operator'][project_type_name][set_word] = stats['set_operator'][project_type_name].get(set_word, 0) + len(re.findall(set_word, query.content))
+
+    dump_all_stats(directory, stats)
+
 def join_stats(directory = '.'):
     stats = {}
 
@@ -209,28 +227,17 @@ def aggregate_stats(directory = '.'):
 
     dump_stats(directory, 'aggregate', stats)
 
-def logical_stats(directory = '.'):
-    stats = {}
-
-    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
-        for action in Action.objects.filter(attempt = repo.latest_attempt):
-            for query in Query.objects.filter(action = action):
-                for explain in Explain.objects.filter(query = query):
-                    for logical_word in ['AND', 'OR', 'ALL', 'NOT', 'ANY']:
-                        stats[logical_word] = stats.get(logical_word, 0) + len(re.findall(logical_word, explain.output))
-
-    dump_stats(directory, 'logical', stats)
-
 def main():
     # active
     # query_stats(QUERIES_DIRECTORY)
     # coverage_stats(QUERIES_DIRECTORY)
     # sort_stats(QUERIES_DIRECTORY)
-    scan_stats(QUERIES_DIRECTORY)
+    # scan_stats(QUERIES_DIRECTORY)
+    multiset_stats(QUERIES_DIRECTORY)
+    
 
     # working
     # join_stats(QUERIES_DIRECTORY)
-    # logical_stats(QUERIES_DIRECTORY)
     
     # deprecated
     # TODO : nest_stats(QUERIES_DIRECTORY)

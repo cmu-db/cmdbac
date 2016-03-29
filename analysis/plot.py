@@ -3,7 +3,7 @@
 # @Author: zeyuanxy
 # @Date:   2016-03-21 01:52:14
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-03-30 00:30:12
+# @Last Modified time: 2016-03-30 00:54:42
 import sys
 import os
 import numpy as np 
@@ -123,12 +123,13 @@ def plot_queries(directory):
     plot_histogram(directory, 'index_coverage.csv', output_directory)
     plot_table(directory, 'sort_keys.csv', output_directory)
     plot_table(directory, 'scan_type.csv', output_directory)
+    plot_table(directory, 'logical_operator.csv', output_directory)
+    plot_table(directory, 'set_operator.csv', output_directory)
     
 
     # working
     # plot_pie_chart(directory, 'join.csv', output_directory, 0)
-    # plot_pie_chart(directory, 'logical.csv', output_directory, 0)
-    
+
     # deprecated
     # TODO : plot_histogram(directory, 'nest.csv', output_directory)
     # TODO : plot_histogram(directory, 'hash.csv', output_directory)
