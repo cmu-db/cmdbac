@@ -11,9 +11,10 @@
 (10) Use stacked bar chart DONE
 (11) COLUMN modifier
 (12) Nested queries
-(13) aggregates 
-(14) having queries
-(15) MySQL documentation
+(13) aggregates DONE
+(14) GROUP BY 
+(15) having queries
+(16) MySQL documentation
 
 2. transactions
 
