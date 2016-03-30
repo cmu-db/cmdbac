@@ -3,7 +3,7 @@
 # @Author: zeyuanxy
 # @Date:   2016-03-21 01:52:14
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-03-31 00:22:07
+# @Last Modified time: 2016-03-31 00:54:19
 import sys
 import os
 import numpy as np 
@@ -110,6 +110,7 @@ def plot_tables(directory):
     plot_histogram(directory, 'num_foreignkeys.csv', output_directory)
     plot_table(directory, 'column_nullable.csv', output_directory)
     plot_table(directory, 'column_type.csv', output_directory)
+    plot_table(directory, 'column_extra.csv', output_directory)
 
     # working
 

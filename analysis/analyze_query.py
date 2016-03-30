@@ -152,10 +152,7 @@ def sort_stats(directory = '.'):
 
             for column in re.findall(regex, information.description):
                 cells = column.split(',')
-                if repo.latest_successful_attempt.database.name == 'PostgreSQL':
-                    name = str(cells[3]).replace("'", "").strip()
-                elif repo.latest_successful_attempt.database.name == 'MySQL':
-                    name = str(cells[3]).replace("'", "").strip()
+                name = str(cells[3]).replace("'", "").strip()
                 _type = str(cells[7]).replace("'", "").strip()
                 column_map[name] = _type
 
@@ -185,7 +182,8 @@ def scan_stats(directory = '.'):
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
         project_type_name = repo.project_type.name
         if project_type_name not in stats['scan_type']:
-            stats['scan_type'][project_type_name] = {}            
+            stats['scan_type'][project_type_name] = {}  
+
         for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
             for query in Query.objects.filter(action = action):
                 for explain in Explain.objects.filter(query = query):
@@ -269,9 +267,13 @@ def having_stats(directory = '.'):
     dump_all_stats(directory, stats)
 
 def join_stats(directory = '.'):
-    stats = {}
+    stats = {'join_type': {}}
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
+        project_type_name = repo.project_type.name
+        if project_type_name not in stats['join_type']:
+            stats['join_type'][project_type_name] = {}
+
         for action in Action.objects.filter(attempt = repo.latest_attempt):
             queries = Query.objects.filter(action = action)
             for query in queries:
@@ -281,9 +283,12 @@ def join_stats(directory = '.'):
                     tokens = parsed.tokens
                     for index in xrange(0, len(tokens)):
                         if tokens[index].is_keyword and 'JOIN' in tokens[index].value:
-                            stats[tokens[index].value] = stats.get(tokens[index].value, 0) + 1
+                            join_type = tokens[index].value
+                            if 'OUTER' not in join_type and 'INNER' not in join_type:
+                                join_type = join_type.replace('JOIN', 'INNER JOIN')
+                            stats['join_type'][project_type_name][join_type] = stats['join_type'][project_type_name].get(join_type, 0) + 1
 
-    dump_stats(directory, 'join', stats)
+    dump_all_stats(directory, stats)
 
 def main():
     # active
@@ -295,9 +300,9 @@ def main():
     # aggregate_stats(QUERIES_DIRECTORY)
     # nested_stats(QUERIES_DIRECTORY)
     # having_stats(QUERIES_DIRECTORY)
+    join_stats(QUERIES_DIRECTORY)
 
     # working
-    # join_stats(QUERIES_DIRECTORY)
     
     # deprecated
 

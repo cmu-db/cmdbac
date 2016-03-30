@@ -8,11 +8,12 @@
 (7) aggregates DONE
 (8) group by, having DONE
 (9) what types are they sorting? DONE
+(10) COLUMN modifier DONE
 
-(10) Check query type
-(11) Deep more join
+(10) Deep more join
+(11) Check query type
 (12) sanity check the table coverage 
-(13) COLUMN modifier
+
 
 2. transactions
 
