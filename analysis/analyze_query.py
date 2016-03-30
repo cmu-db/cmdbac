@@ -37,7 +37,7 @@ def query_stats(directory = '.'):
     dump_all_stats(directory, stats)
 
 def coverage_stats(directory = '.'):
-    stats = {'table_coverage': {}, 'column_coverage': {}, 'index_coverage': {}}
+    stats = {'table_coverage': {}, 'column_coverage': {}, 'index_coverage': {}, 'table_access': {}}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
         actions = Action.objects.filter(attempt = repo.latest_successful_attempt)
@@ -55,11 +55,16 @@ def coverage_stats(directory = '.'):
         covered_tables = set()
         for action in actions:
             for query in Query.objects.filter(action = action):
+                table_access_count = 0
                 for table in re.findall('FROM\s*\S+', query.content.upper()):
                     table_name = table.replace('FROM', '').replace("'", "").replace(' ', '').replace('"', '')
                     if '(' in table_name or ')' in table_name:
                         continue
                     covered_tables.add(table_name)
+                    table_access_count += 1
+                if project_type_name not in stats['table_access']:
+                    stats['table_access'][project_type_name] = []
+                stats['table_access'][project_type_name].append(table_access_count)
 
         table_percentage = int(float(len(covered_tables) * 100) / table_count)
         table_percentage = min(table_percentage, 100)
@@ -254,7 +259,7 @@ def join_stats(directory = '.'):
 def main():
     # active
     # query_stats(QUERIES_DIRECTORY)
-    # coverage_stats(QUERIES_DIRECTORY)
+    coverage_stats(QUERIES_DIRECTORY)
     # sort_stats(QUERIES_DIRECTORY)
     # scan_stats(QUERIES_DIRECTORY)
     # multiset_stats(QUERIES_DIRECTORY)

@@ -33,39 +33,47 @@ def table_stats(directory = '.'):
             project_type_name = repo.project_type.name
             if project_type_name not in stats[s.description]:
                 stats[s.description][project_type_name] = []
-            stats[s.description][repo.project_type.name].append(s.count)
+            stats[s.description][project_type_name].append(s.count)
     
-    dump_all_stats(directory, stats, True)
+    dump_all_stats(directory, stats)
 
 def column_stats(directory = '.'):
-    stats = {'column_nullable': {}, 'column_types': {}}
+    stats = {'column_nullable': {}, 'column_type': {}}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
-        informations = Information.objects.filter(attempt = repo.latest_successful_attempt)
+        informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'columns')
         if len(informations) == 0:
             continue
+        information = informations[0]
 
-        for i in informations:
-            if i.name == 'columns':
-                if repo.latest_successful_attempt.database.name == 'PostgreSQL':
-                    for column in re.findall('(\(.*?\))[,\]]', i.description):
-                        cells = column.split(',')
-                        
-                        nullable = str(cells[6]).replace("'", "").strip()
-                        stats['column_nullable'][nullable] = stats['column_nullable'].get(nullable, 0) + 1
+        project_type_name = repo.project_type.name
+        if project_type_name not in stats['column_nullable']:
+            stats['column_nullable'][project_type_name] = {}
+        if project_type_name not in stats['column_type']:
+            stats['column_type'][project_type_name] = {}
 
-                        _type = str(cells[7]).replace("'", "").strip()
-                        stats['column_types'][_type] = stats['column_types'].get(_type, 0) + 1
-    
+        if repo.latest_successful_attempt.database.name == 'PostgreSQL':
+            regex = '(\(.*?\))[,\]]'
+        elif repo.latest_successful_attempt.database.name == 'MySQL':
+            regex = '(\(.*?\))[,\)]'
+        for column in re.findall(regex, information.description):
+            cells = column.split(',')
+            
+            nullable = str(cells[6]).replace("'", "").strip()
+            stats['column_nullable'][project_type_name][nullable] = stats['column_nullable'][project_type_name].get(nullable, 0) + 1
+
+            _type = str(cells[7]).replace("'", "").strip()
+            stats['column_type'][project_type_name][_type] = stats['column_type'][project_type_name].get(_type, 0) + 1
+
     dump_all_stats(directory, stats)
 
 def main():
     # active
     table_stats(TABLES_DIRECTORY)
-
-    # working
     column_stats(TABLES_DIRECTORY)
 
+    # working
+    
     # deprecated
 if __name__ == '__main__':
     main()
