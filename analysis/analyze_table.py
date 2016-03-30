@@ -38,7 +38,7 @@ def table_stats(directory = '.'):
     dump_all_stats(directory, stats)
 
 def column_stats(directory = '.'):
-    stats = {'column_nullable': {}, 'column_type': {}}
+    stats = {'column_nullable': {}, 'column_type': {}, 'column_extra': {}}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
         informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'columns')
@@ -51,12 +51,15 @@ def column_stats(directory = '.'):
             stats['column_nullable'][project_type_name] = {}
         if project_type_name not in stats['column_type']:
             stats['column_type'][project_type_name] = {}
+        if project_type_name not in stats['column_extra']:
+            stats['column_extra'][project_type_name] = {}
 
         if repo.latest_successful_attempt.database.name == 'PostgreSQL':
             regex = '(\(.*?\))[,\]]'
         elif repo.latest_successful_attempt.database.name == 'MySQL':
             regex = '(\(.*?\))[,\)]'
         for column in re.findall(regex, information.description):
+            print column
             cells = column.split(',')
             
             nullable = str(cells[6]).replace("'", "").strip()
@@ -65,11 +68,15 @@ def column_stats(directory = '.'):
             _type = str(cells[7]).replace("'", "").strip()
             stats['column_type'][project_type_name][_type] = stats['column_type'][project_type_name].get(_type, 0) + 1
 
+            extra = str(cells[16]).replace("'", "").strip()
+            if extra:
+                stats['column_extra'][project_type_name][extra] = stats['column_extra'][project_type_name].get(extra, 0) + 1
+
     dump_all_stats(directory, stats)
 
 def main():
     # active
-    table_stats(TABLES_DIRECTORY)
+    # table_stats(TABLES_DIRECTORY)
     column_stats(TABLES_DIRECTORY)
 
     # working

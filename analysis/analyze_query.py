@@ -152,7 +152,10 @@ def sort_stats(directory = '.'):
 
             for column in re.findall(regex, information.description):
                 cells = column.split(',')
-                name = str(cells[3]).replace("'", "").strip()
+                if repo.latest_successful_attempt.database.name == 'PostgreSQL':
+                    name = str(cells[3]).replace("'", "").strip()
+                elif repo.latest_successful_attempt.database.name == 'MySQL':
+                    name = str(cells[3]).replace("'", "").strip()
                 _type = str(cells[7]).replace("'", "").strip()
                 column_map[name] = _type
 
@@ -286,7 +289,7 @@ def main():
     # active
     # query_stats(QUERIES_DIRECTORY)
     # coverage_stats(QUERIES_DIRECTORY)
-    sort_stats(QUERIES_DIRECTORY)
+    # sort_stats(QUERIES_DIRECTORY)
     # scan_stats(QUERIES_DIRECTORY)
     # multiset_stats(QUERIES_DIRECTORY)
     # aggregate_stats(QUERIES_DIRECTORY)
