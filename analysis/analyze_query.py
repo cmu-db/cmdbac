@@ -132,21 +132,47 @@ def coverage_stats(directory = '.'):
     dump_all_stats(directory, stats)
 
 def sort_stats(directory = '.'):
-    stats = {'sort_keys': {}}
+    stats = {'sort_key_count': {}, 'sort_key_type': {}}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
         project_type_name = repo.project_type.name
-        if project_type_name not in stats['sort_keys']:
-            stats['sort_keys'][project_type_name] = {}
+        if project_type_name not in stats['sort_key_count']:
+            stats['sort_key_count'][project_type_name] = {}
+        if project_type_name not in stats['sort_key_type']:
+            stats['sort_key_type'][project_type_name] = {}
+
+        informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'columns')
+        column_map = {}
+        if len(informations) > 0:
+            information = informations[0]
+            if repo.latest_successful_attempt.database.name == 'PostgreSQL':
+                regex = '(\(.*?\))[,\]]'
+            elif repo.latest_successful_attempt.database.name == 'MySQL':
+                regex = '(\(.*?\))[,\)]'
+
+            for column in re.findall(regex, information.description):
+                cells = column.split(',')
+                name = str(cells[3]).replace("'", "").strip()
+                _type = str(cells[7]).replace("'", "").strip()
+                column_map[name] = _type
+
+
         for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
             for query in Query.objects.filter(action = action):
                 for explain in Explain.objects.filter(query = query):
-                    for sort_keys in re.findall('Sort Key: .*', explain.output):
-                        sort_keys_count = len(re.findall(',', sort_keys)) + 1
-                        if sort_keys_count <= 3:
-                            stats['sort_keys'][project_type_name][str(sort_keys_count)] = stats['sort_keys'][project_type_name].get(str(sort_keys_count), 0) + 1
+                    for sort_key in re.findall('Sort Key: .*', explain.output):
+                        sort_key_count = len(re.findall(',', sort_key)) + 1
+                        if sort_key_count <= 3:
+                            stats['sort_key_count'][project_type_name][str(sort_key_count)] = stats['sort_key_count'][project_type_name].get(str(sort_key_count), 0) + 1
                         else:
-                            stats['sort_keys'][project_type_name]['greater than or equal to 4'] = stats['sort_keys'][project_type_name].get('greater than or equal to 4', 0) + 1
+                            stats['sort_key_count'][project_type_name]['greater than or equal to 4'] = stats['sort_key_count'][project_type_name].get('greater than or equal to 4', 0) + 1
+
+                        sort_keys = map(lambda key: str(key.split('.')[0]).strip(), sort_key[10:].split(','))
+                        
+                        for key in sort_keys:
+                            if key in column_map:
+                                _type = column_map[key]
+                                stats['sort_key_type'][project_type_name][_type] = stats['sort_key_type'][project_type_name].get(_type, 0) + 1
 
     dump_all_stats(directory, stats)
 
@@ -259,8 +285,8 @@ def join_stats(directory = '.'):
 def main():
     # active
     # query_stats(QUERIES_DIRECTORY)
-    coverage_stats(QUERIES_DIRECTORY)
-    # sort_stats(QUERIES_DIRECTORY)
+    # coverage_stats(QUERIES_DIRECTORY)
+    sort_stats(QUERIES_DIRECTORY)
     # scan_stats(QUERIES_DIRECTORY)
     # multiset_stats(QUERIES_DIRECTORY)
     # aggregate_stats(QUERIES_DIRECTORY)

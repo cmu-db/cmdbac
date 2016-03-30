@@ -3,7 +3,7 @@
 # @Author: zeyuanxy
 # @Date:   2016-03-21 01:52:14
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-03-30 23:55:54
+# @Last Modified time: 2016-03-31 00:22:07
 import sys
 import os
 import numpy as np 
@@ -124,7 +124,8 @@ def plot_queries(directory):
     plot_histogram(directory, 'column_coverage.csv', output_directory)
     plot_histogram(directory, 'index_coverage.csv', output_directory)
     plot_histogram(directory, 'table_access.csv', output_directory)
-    plot_table(directory, 'sort_keys.csv', output_directory)
+    plot_table(directory, 'sort_key_count.csv', output_directory)
+    plot_table(directory, 'sort_key_type.csv', output_directory)
     plot_table(directory, 'scan_type.csv', output_directory)
     plot_table(directory, 'logical_operator.csv', output_directory)
     plot_table(directory, 'set_operator.csv', output_directory)
@@ -141,8 +142,8 @@ def plot_queries(directory):
     # TODO : plot_histogram(directory, 'hash.csv', output_directory)
 
 def main():
-    plot_tables('tables')
-    # plot_queries('queries')
+    # plot_tables('tables')
+    plot_queries('queries')
 
 if __name__ == "__main__":
     main()
