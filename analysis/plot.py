@@ -3,7 +3,7 @@
 # @Author: zeyuanxy
 # @Date:   2016-03-21 01:52:14
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-03-30 01:27:17
+# @Last Modified time: 2016-03-30 23:40:29
 import sys
 import os
 import numpy as np 
@@ -128,6 +128,8 @@ def plot_queries(directory):
     plot_table(directory, 'aggregate_operator.csv', output_directory)
     plot_table(directory, 'nested_count.csv', output_directory)
     plot_table(directory, 'nested_operator.csv', output_directory)
+    plot_table(directory, 'having_count.csv', output_directory)
+    plot_table(directory, 'group_count.csv', output_directory)
 
     # working
     # plot_pie_chart(directory, 'join.csv', output_directory, 0)

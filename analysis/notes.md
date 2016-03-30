@@ -12,9 +12,8 @@
 (11) COLUMN modifier
 (12) Nested queries DONE
 (13) aggregates DONE
-(14) GROUP BY 
-(15) having queries
-(16) MySQL documentation
+(14) group by, having DONE
+(15) MySQL documentation
 
 2. transactions
 

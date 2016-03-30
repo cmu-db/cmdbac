@@ -214,6 +214,26 @@ def nested_stats(directory = '.'):
 
     dump_all_stats(directory, stats)
 
+def having_stats(directory = '.'):
+    stats = {'having_count': {}, 'group_count': {}}
+
+    for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        project_type_name = repo.project_type.name
+        if project_type_name not in stats['having_count']:
+            stats['having_count'][project_type_name] = {}
+        if project_type_name not in stats['group_count']:
+            stats['group_count'][project_type_name] = {}
+        for action in Action.objects.filter(attempt = repo.latest_attempt):
+            for query in Query.objects.filter(action = action):
+                having_count = len(re.findall('HAVING', query.content))
+                if having_count > 0:
+                    stats['having_count'][project_type_name][str(having_count)] = stats['having_count'][project_type_name].get(str(having_count), 0) + 1
+                group_count = len(re.findall('GROUP BY', query.content))
+                if group_count > 0:
+                    stats['group_count'][project_type_name][str(group_count)] = stats['group_count'][project_type_name].get(str(group_count), 0) + 1
+
+    dump_all_stats(directory, stats)
+
 def join_stats(directory = '.'):
     stats = {}
 
@@ -239,7 +259,8 @@ def main():
     # scan_stats(QUERIES_DIRECTORY)
     # multiset_stats(QUERIES_DIRECTORY)
     # aggregate_stats(QUERIES_DIRECTORY)
-    nested_stats(QUERIES_DIRECTORY)
+    # nested_stats(QUERIES_DIRECTORY)
+    # having_stats(QUERIES_DIRECTORY)
 
     # working
     # join_stats(QUERIES_DIRECTORY)
