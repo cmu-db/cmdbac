@@ -152,8 +152,10 @@ def sort_stats(directory = '.'):
 
             for column in re.findall(regex, information.description):
                 cells = column.split(',')
+                table = str(cells[2]).replace("'", "").strip()
                 name = str(cells[3]).replace("'", "").strip()
                 _type = str(cells[7]).replace("'", "").strip()
+                column_map[table + '.' + name] = _type
                 column_map[name] = _type
 
 
@@ -167,7 +169,7 @@ def sort_stats(directory = '.'):
                         else:
                             stats['sort_key_count'][project_type_name]['greater than or equal to 4'] = stats['sort_key_count'][project_type_name].get('greater than or equal to 4', 0) + 1
 
-                        sort_keys = map(lambda key: str(key.split('.')[0]).strip(), sort_key[10:].split(','))
+                        sort_keys = map(lambda key: str(key).strip(), sort_key[10:].split(','))
                         
                         for key in sort_keys:
                             if key in column_map:
@@ -267,12 +269,27 @@ def having_stats(directory = '.'):
     dump_all_stats(directory, stats)
 
 def join_stats(directory = '.'):
-    stats = {'join_type': {}}
+    stats = {'join_type': {}, 'join_key_type': {}}
 
     for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
         project_type_name = repo.project_type.name
         if project_type_name not in stats['join_type']:
             stats['join_type'][project_type_name] = {}
+
+        informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'columns')
+        column_map = {}
+        if len(informations) > 0:
+            information = informations[0]
+            if repo.latest_successful_attempt.database.name == 'PostgreSQL':
+                regex = '(\(.*?\))[,\]]'
+            elif repo.latest_successful_attempt.database.name == 'MySQL':
+                regex = '(\(.*?\))[,\)]'
+
+            for column in re.findall(regex, information.description):
+                cells = column.split(',')
+                name = str(cells[3]).replace("'", "").strip()
+                _type = str(cells[7]).replace("'", "").strip()
+                column_map[name] = _type
 
         for action in Action.objects.filter(attempt = repo.latest_attempt):
             queries = Query.objects.filter(action = action)
@@ -294,13 +311,13 @@ def main():
     # active
     # query_stats(QUERIES_DIRECTORY)
     # coverage_stats(QUERIES_DIRECTORY)
-    # sort_stats(QUERIES_DIRECTORY)
+    sort_stats(QUERIES_DIRECTORY)
     # scan_stats(QUERIES_DIRECTORY)
     # multiset_stats(QUERIES_DIRECTORY)
     # aggregate_stats(QUERIES_DIRECTORY)
     # nested_stats(QUERIES_DIRECTORY)
     # having_stats(QUERIES_DIRECTORY)
-    join_stats(QUERIES_DIRECTORY)
+    # join_stats(QUERIES_DIRECTORY)
 
     # working
     
