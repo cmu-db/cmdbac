@@ -62,6 +62,10 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
             cur.execute("SELECT COUNT(*) FROM pg_stat_all_indexes WHERE schemaname = 'public';")
             self.database_stats['num_indexes'] = int(cur.fetchone()[0])
 
+            # the number of constraints
+            cur.execute("SELECT COUNT(*) FROM information_schema.table_constraints WHERE constraint_schema = 'public';")
+            self.database_stats['num_constraints'] = int(cur.fetchone()[0])
+
             # the number of foreign keys
             cur.execute("SELECT COUNT(*) FROM information_schema.referential_constraints WHERE constraint_schema = 'public';")
             self.database_stats['num_foreignkeys'] = int(cur.fetchone()[0])
@@ -77,6 +81,10 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
             # the full information of indexes
             cur.execute("SELECT * FROM pg_stat_all_indexes WHERE schemaname = 'public';")
             self.database_informations['indexes'] = str(cur.fetchall())
+
+            # the full information of constraints
+            cur.execute("SELECT * FROM information_schema.table_constraints WHERE constraint_schema = 'public';")
+            self.database_informations['constraints'] = str(cur.fetchall())
 
             # the full information of foreign keys
             cur.execute("SELECT * FROM information_schema.referential_constraints WHERE constraint_schema = 'public';")
