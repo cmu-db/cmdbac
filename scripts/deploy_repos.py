@@ -27,7 +27,7 @@ def main():
     # for repo in Repository.objects.filter(project_type = 1).filter(latest_attempt__result = 'OK').filter(latest_attempt__log__contains = "[Errno 13] Permission denied: '/var/log/mysql/mysql.log'"):
         if repo.id % total_deployer != deploy_id - 1:
             continue
-        if Information.objects.filter(attempt = repo.latest_successful_attempt):
+        if Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'constraints'):
             continue
         print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
         try:
