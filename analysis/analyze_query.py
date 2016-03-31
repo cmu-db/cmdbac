@@ -269,7 +269,8 @@ def having_stats(directory = '.'):
     dump_all_stats(directory, stats)
 
 def join_stats(directory = '.'):
-    stats = {'join_type': {}, 'join_key_type': {}}
+    stats = {'join_type': {}, 'join_key_type': {}, 'join_key_constraint': {}}
+
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
         project_type_name = repo.project_type.name
@@ -277,6 +278,8 @@ def join_stats(directory = '.'):
             stats['join_type'][project_type_name] = {}
         if project_type_name not in stats['join_key_type']:
             stats['join_key_type'][project_type_name] = {}
+        if project_type_name not in stats['join_key_constraint']:
+            stats['join_key_constraint'][project_type_name] = {}
 
         informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'columns')
         column_map = {}
@@ -294,6 +297,44 @@ def join_stats(directory = '.'):
                 _type = str(cells[7]).replace("'", "").strip()
                 column_map[table + '.' + name] = _type
                 column_map[name] = _type
+
+        key_column_usage_informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'key_column_usage')
+        constraint_informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'constraints')
+        constraint_map = {}
+        if len(key_column_usage_informations) > 0 and len(constraint_informations) > 0:
+            if repo.latest_successful_attempt.database.name == 'PostgreSQL':
+                regex = '(\(.*?\))[,\]]'
+            elif repo.latest_successful_attempt.database.name == 'MySQL':
+                regex = '(\(.*?\))[,\)]'
+            
+            merge_map = {}
+            key_column_usage_information = key_column_usage_informations[0]
+            for column in re.findall(regex, key_column_usage_information.description):
+                cells = column.split(',')
+                constraint_name = str(cells[2]).replace("'", "").strip()
+                table_name = str(cells[5]).replace("'", "").strip()
+                column_name = str(cells[6]).replace("'", "").strip()
+                merge_map_key = table_name + '.' + constraint_name 
+                if merge_map_key in merge_map:
+                    merge_map[merge_map_key].append(column_name)
+                else:
+                    merge_map[merge_map_key] = [column_name]
+
+            constraint_information = constraint_informations[0]
+            for column in re.findall(regex, constraint_information.description):
+                cells = column.split(',')
+                constraint_name = str(cells[2]).replace("'", "").strip()
+                if repo.latest_successful_attempt.database.name == 'PostgreSQL':
+                    table_name = str(cells[5]).replace("'", "").strip()
+                    constraint_type = str(cells[6]).replace("'", "").strip()
+                elif repo.latest_successful_attempt.database.name == 'MySQL':
+                    table_name = str(cells[4]).replace("'", "").strip()
+                    constraint_type = str(cells[5])[:-1].replace("'", "").strip()
+                merge_map_key =  table_name + '.' + constraint_name
+                if merge_map_key in merge_map:
+                    for column_name in merge_map[merge_map_key]:
+                        constraint_map[table_name + '.' + column_name] = constraint_type
+                        constraint_map[column_name] = constraint_type
 
         for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
             queries = Query.objects.filter(action = action)
@@ -319,9 +360,15 @@ def join_stats(directory = '.'):
                             if left_type > right_type:
                                 left_type, right_type = right_type, left_type
                             stats['join_key_type'][project_type_name][left_type + '-' + right_type] = stats['join_key_type'][project_type_name].get(left_type + '-' + right_type, 0) + 1    
+                        # print left_key, right_key
+                        if left_key in constraint_map and right_key in constraint_map:
+                            left_constraint = constraint_map[left_key]
+                            right_constraint = constraint_map[right_key]
+                            if left_constraint > right_constraint:
+                                left_constraint, right_constraint = right_constraint, left_constraint
+                            stats['join_key_constraint'][project_type_name][left_constraint + '-' + right_constraint] = stats['join_key_constraint'][project_type_name].get(left_constraint + '-' + right_constraint, 0) + 1
                     except:
-                        continue           
-                    pass
+                        pass
 
     dump_all_stats(directory, stats)
 

@@ -9,11 +9,10 @@
 (8) group by, having DONE
 (9) what types are they sorting? DONE
 (10) COLUMN modifier DONE
+(11) Deep more join DONE
 
-(10) Deep more join
-(11) Check query type
-(12) sanity check the table coverage 
-
+(12) Check query type
+(13) sanity check the table coverage 
 
 2. transactions
 
