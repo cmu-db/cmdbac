@@ -86,6 +86,10 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
             cur.execute("SELECT * FROM information_schema.table_constraints WHERE constraint_schema = 'public';")
             self.database_informations['constraints'] = str(cur.fetchall())
 
+            # the full information of constraints
+            cur.execute("SELECT * FROM information_schema.key_column_usage WHERE constraint_schema = 'public';")
+            self.database_informations['key_column_usage'] = str(cur.fetchall())
+
             # the full information of foreign keys
             cur.execute("SELECT * FROM information_schema.referential_constraints WHERE constraint_schema = 'public';")
             self.database_informations['foreignkeys'] = str(cur.fetchall())

@@ -17,7 +17,7 @@ import utils
 def main():
     stats = {}
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
-        if not Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'constraints'):
+        if not Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'key_column_usage'):
             stats[repo.project_type] = stats.get(repo.project_type, 0) + 1
 
     print stats
