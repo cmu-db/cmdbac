@@ -235,7 +235,7 @@ def nested_stats(directory = '.'):
             stats['nested_count'][project_type_name] = {}
         if project_type_name not in stats['nested_operator']:
             stats['nested_operator'][project_type_name] = {}
-        for action in Action.objects.filter(attempt = repo.latest_attempt):
+        for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
             for query in Query.objects.filter(action = action):
                 nested_count = 0
                 for explain in Explain.objects.filter(query = query):
@@ -257,7 +257,7 @@ def having_stats(directory = '.'):
             stats['having_count'][project_type_name] = {}
         if project_type_name not in stats['group_count']:
             stats['group_count'][project_type_name] = {}
-        for action in Action.objects.filter(attempt = repo.latest_attempt):
+        for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
             for query in Query.objects.filter(action = action):
                 having_count = len(re.findall('HAVING', query.content))
                 if having_count > 0:
@@ -271,10 +271,12 @@ def having_stats(directory = '.'):
 def join_stats(directory = '.'):
     stats = {'join_type': {}, 'join_key_type': {}}
 
-    for repo in Repository.objects.filter(latest_attempt__result = 'OK'):
+    for repo in Repository.objects.exclude(latest_successful_attempt = None):
         project_type_name = repo.project_type.name
         if project_type_name not in stats['join_type']:
             stats['join_type'][project_type_name] = {}
+        if project_type_name not in stats['join_key_type']:
+            stats['join_key_type'][project_type_name] = {}
 
         informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'columns')
         column_map = {}
@@ -287,16 +289,17 @@ def join_stats(directory = '.'):
 
             for column in re.findall(regex, information.description):
                 cells = column.split(',')
+                table = str(cells[2]).replace("'", "").strip()
                 name = str(cells[3]).replace("'", "").strip()
                 _type = str(cells[7]).replace("'", "").strip()
+                column_map[table + '.' + name] = _type
                 column_map[name] = _type
 
-        for action in Action.objects.filter(attempt = repo.latest_attempt):
+        for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
             queries = Query.objects.filter(action = action)
             for query in queries:
-                content = query.content.upper()
-                if 'JOIN' in content:
-                    parsed = sqlparse.parse(content)[0]
+                if 'JOIN' in query.content:
+                    parsed = sqlparse.parse(query.content)[0]
                     tokens = parsed.tokens
                     for index in xrange(0, len(tokens)):
                         if tokens[index].is_keyword and 'JOIN' in tokens[index].value:
@@ -304,6 +307,21 @@ def join_stats(directory = '.'):
                             if 'OUTER' not in join_type and 'INNER' not in join_type:
                                 join_type = join_type.replace('JOIN', 'INNER JOIN')
                             stats['join_type'][project_type_name][join_type] = stats['join_type'][project_type_name].get(join_type, 0) + 1
+                
+                for join_keys_raw in re.findall('JOIN .*? ON \(.*?\)', query.content):
+                    try:
+                        join_keys = join_keys_raw[join_keys_raw.find('(') + 1:join_keys_raw.find(')') - 1].strip()
+                        join_keys = join_keys.replace('"', '').split('=')
+                        left_key, right_key = join_keys[0].strip(), join_keys[1].strip()
+                        if left_key in column_map and right_key in column_map:
+                            left_type = column_map[left_key]
+                            right_type = column_map[right_key]
+                            if left_type > right_type:
+                                left_type, right_type = right_type, left_type
+                            stats['join_key_type'][project_type_name][left_type + '-' + right_type] = stats['join_key_type'][project_type_name].get(left_type + '-' + right_type, 0) + 1    
+                    except:
+                        continue           
+                    pass
 
     dump_all_stats(directory, stats)
 
@@ -311,13 +329,13 @@ def main():
     # active
     # query_stats(QUERIES_DIRECTORY)
     # coverage_stats(QUERIES_DIRECTORY)
-    sort_stats(QUERIES_DIRECTORY)
+    # sort_stats(QUERIES_DIRECTORY)
     # scan_stats(QUERIES_DIRECTORY)
     # multiset_stats(QUERIES_DIRECTORY)
     # aggregate_stats(QUERIES_DIRECTORY)
     # nested_stats(QUERIES_DIRECTORY)
     # having_stats(QUERIES_DIRECTORY)
-    # join_stats(QUERIES_DIRECTORY)
+    join_stats(QUERIES_DIRECTORY)
 
     # working
     
