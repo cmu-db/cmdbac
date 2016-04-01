@@ -76,13 +76,9 @@ def column_stats(directory = '.'):
 
 def main():
     # active
-    # table_stats(TABLES_DIRECTORY)
-    # column_stats(TABLES_DIRECTORY)
-
-    for explain in Explain.objects.all():
-        print explain.query.content
-        print explain.output
-
+    table_stats(TABLES_DIRECTORY)
+    column_stats(TABLES_DIRECTORY)
+    
     # working
     
     # deprecated

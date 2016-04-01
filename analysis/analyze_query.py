@@ -374,14 +374,14 @@ def join_stats(directory = '.'):
 
 def main():
     # active
-    # query_stats(QUERIES_DIRECTORY)
-    # coverage_stats(QUERIES_DIRECTORY)
-    # sort_stats(QUERIES_DIRECTORY)
-    # scan_stats(QUERIES_DIRECTORY)
-    # multiset_stats(QUERIES_DIRECTORY)
-    # aggregate_stats(QUERIES_DIRECTORY)
-    # nested_stats(QUERIES_DIRECTORY)
-    # having_stats(QUERIES_DIRECTORY)
+    query_stats(QUERIES_DIRECTORY)
+    coverage_stats(QUERIES_DIRECTORY)
+    sort_stats(QUERIES_DIRECTORY)
+    scan_stats(QUERIES_DIRECTORY)
+    multiset_stats(QUERIES_DIRECTORY)
+    aggregate_stats(QUERIES_DIRECTORY)
+    nested_stats(QUERIES_DIRECTORY)
+    having_stats(QUERIES_DIRECTORY)
     join_stats(QUERIES_DIRECTORY)
 
     # working
