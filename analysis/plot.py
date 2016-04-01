@@ -3,7 +3,7 @@
 # @Author: zeyuanxy
 # @Date:   2016-03-21 01:52:14
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-03-31 21:26:31
+# @Last Modified time: 2016-04-02 00:44:15
 import sys
 import os
 import numpy as np 
@@ -107,7 +107,9 @@ def plot_tables(directory):
     # active
     plot_histogram(directory, 'num_tables.csv', output_directory, max_value = 100)
     plot_histogram(directory, 'num_indexes.csv', output_directory, max_value = 100)
+    plot_histogram(directory, 'num_constraints.csv', output_directory)
     plot_histogram(directory, 'num_foreignkeys.csv', output_directory)
+
     plot_table(directory, 'column_nullable.csv', output_directory)
     plot_table(directory, 'column_type.csv', output_directory)
     plot_table(directory, 'column_extra.csv', output_directory)
@@ -143,7 +145,7 @@ def plot_queries(directory):
     # deprecated
    
 def main():
-    # plot_tables('tables')
+    plot_tables('tables')
     plot_queries('queries')
 
 if __name__ == "__main__":
