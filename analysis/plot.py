@@ -3,7 +3,7 @@
 # @Author: zeyuanxy
 # @Date:   2016-03-21 01:52:14
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-04-02 00:44:15
+# @Last Modified time: 2016-04-02 15:11:43
 import sys
 import os
 import numpy as np 
@@ -123,22 +123,32 @@ def plot_queries(directory):
 
     # active
     plot_table(directory, 'query_type.csv', output_directory)
+
     plot_histogram(directory, 'table_coverage.csv', output_directory)
     plot_histogram(directory, 'column_coverage.csv', output_directory)
     plot_histogram(directory, 'index_coverage.csv', output_directory)
     plot_histogram(directory, 'table_access.csv', output_directory)
+
     plot_table(directory, 'sort_key_count.csv', output_directory)
     plot_table(directory, 'sort_key_type.csv', output_directory)
+
     plot_table(directory, 'scan_type.csv', output_directory)
+
     plot_table(directory, 'logical_operator.csv', output_directory)
+
     plot_table(directory, 'set_operator.csv', output_directory)
+
     plot_table(directory, 'aggregate_operator.csv', output_directory)
+
     plot_table(directory, 'nested_count.csv', output_directory)
     plot_table(directory, 'nested_operator.csv', output_directory)
+
     plot_table(directory, 'having_count.csv', output_directory)
     plot_table(directory, 'group_count.csv', output_directory)
+    
     plot_table(directory, 'join_type.csv', output_directory)
     plot_table(directory, 'join_key_type.csv', output_directory)
+    plot_table(directory, 'join_key_constraint.csv', output_directory)
 
     # working
     
