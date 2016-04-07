@@ -6,6 +6,7 @@ import re
 import csv
 import numpy as np
 import sqlparse
+import traceback
 from dump import dump_stats, dump_all_stats
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
@@ -349,26 +350,33 @@ def join_stats(directory = '.'):
                                 join_type = join_type.replace('JOIN', 'INNER JOIN')
                             stats['join_type'][project_type_name][join_type] = stats['join_type'][project_type_name].get(join_type, 0) + 1
                 
-                for join_keys_raw in re.findall('JOIN .*? ON \(.*?\)', query.content):
-                    try:
-                        join_keys = join_keys_raw[join_keys_raw.find('(') + 1:join_keys_raw.find(')') - 1].strip()
-                        join_keys = join_keys.replace('"', '').split('=')
-                        left_key, right_key = join_keys[0].strip(), join_keys[1].strip()
-                        if left_key in column_map and right_key in column_map:
-                            left_type = column_map[left_key]
-                            right_type = column_map[right_key]
-                            if left_type > right_type:
-                                left_type, right_type = right_type, left_type
-                            stats['join_key_type'][project_type_name][left_type + '-' + right_type] = stats['join_key_type'][project_type_name].get(left_type + '-' + right_type, 0) + 1    
-                        # print left_key, right_key
-                        if left_key in constraint_map and right_key in constraint_map:
-                            left_constraint = constraint_map[left_key]
-                            right_constraint = constraint_map[right_key]
-                            if left_constraint > right_constraint:
-                                left_constraint, right_constraint = right_constraint, left_constraint
-                            stats['join_key_constraint'][project_type_name][left_constraint + '-' + right_constraint] = stats['join_key_constraint'][project_type_name].get(left_constraint + '-' + right_constraint, 0) + 1
-                    except:
-                        pass
+                    for join_keys_raw in re.findall('JOIN .*? ON \(.*?\)', query.content):
+                        try:
+                            join_keys = join_keys_raw[join_keys_raw.find('(') + 1:join_keys_raw.find(')') - 1]
+                            join_keys = join_keys.replace('"', '').split('')
+                            left_key, right_key = None
+                            for join_key in join_keys:
+                                if join_key in ['=', 'AND', 'OR']:
+                                    continue
+                                if left_key == None:
+                                    left_key = key
+                                else:
+                                    right_key = key
+                                    if left_key in column_map and right_key in column_map:
+                                        left_type = column_map[left_key]
+                                        right_type = column_map[right_key]
+                                        if left_type > right_type:
+                                            left_type, right_type = right_type, left_type
+                                        stats['join_key_type'][project_type_name][left_type + '-' + right_type] = stats['join_key_type'][project_type_name].get(left_type + '-' + right_type, 0) + 1    
+                                    if left_key in constraint_map and right_key in constraint_map:
+                                        left_constraint = constraint_map[left_key]
+                                        right_constraint = constraint_map[right_key]
+                                        if left_constraint > right_constraint:
+                                            left_constraint, right_constraint = right_constraint, left_constraint
+                                        stats['join_key_constraint'][project_type_name][left_constraint + '-' + right_constraint] = stats['join_key_constraint'][project_type_name].get(left_constraint + '-' + right_constraint, 0) + 1
+                                    left_key = right_key = None
+                        except:
+                            traceback.print_exc()
 
     dump_all_stats(directory, stats)
 

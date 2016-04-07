@@ -59,7 +59,6 @@ def column_stats(directory = '.'):
         elif repo.latest_successful_attempt.database.name == 'MySQL':
             regex = '(\(.*?\))[,\)]'
         for column in re.findall(regex, information.description):
-            print column
             cells = column.split(',')
             
             nullable = str(cells[6]).replace("'", "").strip()
