@@ -359,9 +359,9 @@ def join_stats(directory = '.'):
                                 if join_key in ['=', 'AND', 'OR']:
                                     continue
                                 if left_key == None:
-                                    left_key = key
+                                    left_key = join_key
                                 else:
-                                    right_key = key
+                                    right_key = join_key
                                     if left_key in column_map and right_key in column_map:
                                         left_type = column_map[left_key]
                                         right_type = column_map[right_key]
