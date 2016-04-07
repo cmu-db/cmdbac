@@ -273,7 +273,7 @@ def join_stats(directory = '.'):
     stats = {'join_type': {}, 'join_key_type': {}, 'join_key_constraint': {}}
 
 
-    for repo in Repository.objects.exclude(latest_successful_attempt = None):
+    for repo in Repository.objects.exclude(latest_successful_attempt = None).exclude(project_type = 1):
         project_type_name = repo.project_type.name
         if project_type_name not in stats['join_type']:
             stats['join_type'][project_type_name] = {}
@@ -337,53 +337,59 @@ def join_stats(directory = '.'):
                         constraint_map[table_name + '.' + column_name] = constraint_type
                         constraint_map[column_name] = constraint_type
 
+        cnt = 0
         for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
             queries = Query.objects.filter(action = action)
             for query in queries:
-                content = query.content.replace('(', '').replace(')', '')
+                content = query.content
                 if 'JOIN' in content:
                     parsed = sqlparse.parse(content)[0]
                     tokens = parsed.tokens
-                    last_on_index = -1
+
+                    def process_join_key(token):
+                        if isinstance(token, sqlparse.sql.TokenList):
+                            if isinstance(token, sqlparse.sql.Comparison):
+                                left_key, right_key = str(token.left), str(token.right)
+                                left_key = left_key.replace('"', '')
+                                right_key = right_key.replace('"', '')
+                                if left_key in column_map and right_key in column_map:
+                                    left_type = column_map[left_key]
+                                    right_type = column_map[right_key]
+                                    if left_type > right_type:
+                                        left_type, right_type = right_type, left_type
+                                    stats['join_key_type'][project_type_name][left_type + '-' + right_type] = stats['join_key_type'][project_type_name].get(left_type + '-' + right_type, 0) + 1    
+                                if left_key in constraint_map and right_key in constraint_map:
+                                    left_constraint = constraint_map[left_key]
+                                    right_constraint = constraint_map[right_key]
+                                    if left_constraint > right_constraint:
+                                        left_constraint, right_constraint = right_constraint, left_constraint
+                                    stats['join_key_constraint'][project_type_name][left_constraint + '-' + right_constraint] = stats['join_key_constraint'][project_type_name].get(left_constraint + '-' + right_constraint, 0) + 1
+                            
+                            for _token in token.tokens:
+                                process_join_key(_token)
+
                     for index in xrange(0, len(tokens)):
                         if tokens[index].is_keyword:
-                            if tokens[index].value in ['AND', 'OR']:
-                                continue
-
-                            if last_on_index != -1:
-                                for join_key_index in xrange(last_on_index, index):
-                                    if isinstance(tokens[join_key_index], sqlparse.sql.Comparison):
-                                        left_key, right_key = str(tokens[join_key_index].left), str(tokens[join_key_index].right)
-                                        left_key = left_key.replace('"', '')
-                                        right_key = right_key.replace('"', '')
-                                        if left_key in column_map and right_key in column_map:
-                                            print left_key, right_key
-                                            left_type = column_map[left_key]
-                                            right_type = column_map[right_key]
-                                            if left_type > right_type:
-                                                left_type, right_type = right_type, left_type
-                                            stats['join_key_type'][project_type_name][left_type + '-' + right_type] = stats['join_key_type'][project_type_name].get(left_type + '-' + right_type, 0) + 1    
-                                        if left_key in constraint_map and right_key in constraint_map:
-                                            left_constraint = constraint_map[left_key]
-                                            right_constraint = constraint_map[right_key]
-                                            if left_constraint > right_constraint:
-                                                left_constraint, right_constraint = right_constraint, left_constraint
-                                            stats['join_key_constraint'][project_type_name][left_constraint + '-' + right_constraint] = stats['join_key_constraint'][project_type_name].get(left_constraint + '-' + right_constraint, 0) + 1
-
-                                last_on_index = -1
-
                             if 'JOIN' in tokens[index].value:
                                 join_type = tokens[index].value
                                 if 'OUTER' not in join_type and 'INNER' not in join_type:
                                     join_type = join_type.replace('JOIN', 'INNER JOIN')
                                 stats['join_type'][project_type_name][join_type] = stats['join_type'][project_type_name].get(join_type, 0) + 1
-                            elif tokens[index].value == 'ON':
-                                last_on_index = index
+                        else:
+                            process_join_key(tokens[index])
 
     dump_all_stats(directory, stats)
 
 def main():
     # active
+    # query_stats(QUERIES_DIRECTORY)
+    # coverage_stats(QUERIES_DIRECTORY)
+    # sort_stats(QUERIES_DIRECTORY)
+    # scan_stats(QUERIES_DIRECTORY)
+    # multiset_stats(QUERIES_DIRECTORY)
+    # aggregate_stats(QUERIES_DIRECTORY)
+    # nested_stats(QUERIES_DIRECTORY)
+    # having_stats(QUERIES_DIRECTORY)
     join_stats(QUERIES_DIRECTORY)
 
     # working
