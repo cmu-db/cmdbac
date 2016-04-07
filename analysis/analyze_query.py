@@ -354,7 +354,7 @@ def join_stats(directory = '.'):
                         try:
                             join_keys = join_keys_raw[join_keys_raw.find('(') + 1:join_keys_raw.find(')') - 1]
                             join_keys = join_keys.replace('"', '').split(' ')
-                            left_key, right_key = None
+                            left_key, right_key = None, None
                             for join_key in join_keys:
                                 if join_key in ['=', 'AND', 'OR']:
                                     continue
