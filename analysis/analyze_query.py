@@ -353,7 +353,7 @@ def join_stats(directory = '.'):
                     for join_keys_raw in re.findall('JOIN .*? ON \(.*?\)', query.content):
                         try:
                             join_keys = join_keys_raw[join_keys_raw.find('(') + 1:join_keys_raw.find(')') - 1]
-                            join_keys = join_keys.replace('"', '').split('')
+                            join_keys = join_keys.replace('"', '').split(' ')
                             left_key, right_key = None
                             for join_key in join_keys:
                                 if join_key in ['=', 'AND', 'OR']:
