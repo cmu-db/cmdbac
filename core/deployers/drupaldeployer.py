@@ -106,8 +106,10 @@ class DrupalDeployer(BaseDeployer):
 
             profiles = get_all_profiles()
             profile = self.repo.repo_name()
-            if profile not in profiles:
-                profile = profiles[0]
+            if not self.repo.name.startswith('drupal/'):
+                if profile not in profiles:
+                    profile = profiles[0]
+            LOG.info('Profile: {}'.format(profile))
 
             browser = webdriver.PhantomJS()
             browser.get('http://127.0.0.1:{port}/install.php?profile={profile}&welcome=done&locale=en'.format(port = self.port, profile = profile))
