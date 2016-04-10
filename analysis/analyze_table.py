@@ -38,7 +38,7 @@ def table_stats(directory = '.'):
     dump_all_stats(directory, stats)
 
 def column_stats(directory = '.'):
-    stats = {'column_nullable': {}, 'column_type': {}, 'column_extra': {}}
+    stats = {'column_nullable': {}, 'column_type': {}, 'column_extra': {}, 'column_num': {}}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
         column_informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'columns')
@@ -57,6 +57,8 @@ def column_stats(directory = '.'):
                 stats['column_type'][project_type_name] = {}
             if project_type_name not in stats['column_extra']:
                 stats['column_extra'][project_type_name] = {}
+            if project_type_name not in stats['column_num']:
+                stats['column_num'][project_type_name] = {}
 
             if repo.latest_successful_attempt.database.name == 'PostgreSQL':
                 regex = '(\(.*?\))[,\]]'
@@ -75,6 +77,9 @@ def column_stats(directory = '.'):
                 extra = str(cells[16]).replace("'", "").strip()
                 if extra:
                     stats['column_extra'][project_type_name][extra] = stats['column_extra'][project_type_name].get(extra, 0) + 1.0 / num_tables
+
+                stats['column_num'][project_type_name]['TOTAL'] =  stats['column_num'][project_type_name].get('TOTAL', 0) + 1
+
 
             for column in re.findall(regex, constraint_information.description):
                 cells = column.split(',')
