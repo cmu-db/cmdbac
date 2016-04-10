@@ -3,7 +3,7 @@
 # @Author: zeyuanxy
 # @Date:   2016-03-21 01:52:14
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-04-02 15:11:43
+# @Last Modified time: 2016-04-10 23:18:01
 import sys
 import os
 import numpy as np 
@@ -18,7 +18,7 @@ def plot_histogram(directory, csv_file, output_directory, bins = 10, max_value =
         for line in f.readlines():
             cells = line.strip().split(',')
             label = cells[0]
-            value = int(cells[1])
+            value = float(cells[1])
             if label not in stats:
                 stats[label] = []
             stats[label].append(value)
@@ -60,7 +60,7 @@ def plot_table(directory, csv_file, output_directory):
             col_label = cells[1]
             if col_label not in col_labels:
                 col_labels.append(col_label)
-            value = int(cells[2])
+            value = float(cells[2])
             stats[row_label][col_label] = value
     data = []
     for row_label in row_labels:
@@ -113,6 +113,7 @@ def plot_tables(directory):
     plot_table(directory, 'column_nullable.csv', output_directory)
     plot_table(directory, 'column_type.csv', output_directory)
     plot_table(directory, 'column_extra.csv', output_directory)
+    plot_table(directory, 'column_num.csv', output_directory)
 
     # working
 
