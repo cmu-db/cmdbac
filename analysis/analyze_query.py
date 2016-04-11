@@ -50,28 +50,46 @@ def coverage_stats(directory = '.'):
         table_count = statistics[0].count
         if table_count == 0:
             continue
+        informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'tables')
+        if len(informations) == 0:
+            continue
+
+        information = informations[0]
+        tables = set()
+        if repo.latest_successful_attempt.database.name == 'PostgreSQL':
+            regex = '(\(.*?\))[,\]]'
+        elif repo.latest_successful_attempt.database.name == 'MySQL':
+            regex = '(\(.*?\))[,\)]'
+
+        for table in re.findall(regex, information.description):
+            cells = table.split(',')
+            table_name = str(cells[2]).replace("'", "").strip()
+            tables.add(table_name)
 
         project_type_name = repo.project_type.name
-        
+        if project_type_name not in stats['table_coverage']:
+            stats['table_coverage'][project_type_name] = []
+        if project_type_name not in stats['column_coverage']:
+            stats['column_coverage'][project_type_name] = []
+        if project_type_name not in stats['index_coverage']:
+            stats['index_coverage'][project_type_name] = []
+        if project_type_name not in stats['table_access']:
+            stats['table_access'][project_type_name] = []
+
         covered_tables = set()
         for action in actions:
             for query in Query.objects.filter(action = action):
                 table_access_count = 0
-                for table in re.findall('FROM\s*\S+', query.content.upper()):
-                    table_name = table.replace('FROM', '').replace("'", "").replace(' ', '').replace('"', '')
-                    if '(' in table_name or ')' in table_name:
-                        continue
-                    covered_tables.add(table_name)
-                    table_access_count += 1
-                if project_type_name not in stats['table_access']:
-                    stats['table_access'][project_type_name] = []
+                for token in query.content.split():
+                    token = token.replace('"', '')
+                    if token in tables:
+                        table_access_count += 1
+                        covered_tables.add(token)
                 stats['table_access'][project_type_name].append(table_access_count)
 
         table_percentage = int(float(len(covered_tables) * 100) / table_count)
         table_percentage = min(table_percentage, 100)
 
-        if project_type_name not in stats['table_coverage']:
-            stats['table_coverage'][project_type_name] = []
         stats['table_coverage'][project_type_name].append(table_percentage)
 
         informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'columns')
@@ -98,8 +116,6 @@ def coverage_stats(directory = '.'):
                 column_percentage = int(float(len(covered_columns) * 100) / column_count)
                 column_percentage = min(column_percentage, 100)
 
-                if project_type_name not in stats['column_coverage']:
-                    stats['column_coverage'][project_type_name] = []
                 stats['column_coverage'][project_type_name].append(column_percentage)
 
         informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'indexes')
@@ -126,8 +142,6 @@ def coverage_stats(directory = '.'):
                 index_percentage = int(float(len(covered_indexes) * 100) / index_count)
                 index_percentage = min(index_percentage, 100)
 
-                if project_type_name not in stats['index_coverage']:
-                    stats['index_coverage'][project_type_name] = []
                 stats['index_coverage'][project_type_name].append(index_percentage)
 
     dump_all_stats(directory, stats)
@@ -383,14 +397,14 @@ def join_stats(directory = '.'):
 def main():
     # active
     # query_stats(QUERIES_DIRECTORY)
-    # coverage_stats(QUERIES_DIRECTORY)
+    coverage_stats(QUERIES_DIRECTORY)
     # sort_stats(QUERIES_DIRECTORY)
     # scan_stats(QUERIES_DIRECTORY)
     # multiset_stats(QUERIES_DIRECTORY)
     # aggregate_stats(QUERIES_DIRECTORY)
     # nested_stats(QUERIES_DIRECTORY)
     # having_stats(QUERIES_DIRECTORY)
-    join_stats(QUERIES_DIRECTORY)
+    # join_stats(QUERIES_DIRECTORY)
 
     # working
     
