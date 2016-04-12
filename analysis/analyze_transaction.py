@@ -19,18 +19,20 @@ def transaction_stats(directory = '.'):
     stats = {}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
-        for s in statistics:
-            if s.description == 'num_transactions':
-                continue
-            if s.count == 0:
-                continue
-            if s.description not in stats:
-                stats[s.description] = {}
-            project_type_name = repo.project_type.name
-            if project_type_name not in stats[s.description]:
-                stats[s.description][project_type_name] = []
-            stats[s.description][project_type_name].append(s.count)
-    
+        project_type_name = repo.project_type.name
+        for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
+            current_transaction = ''
+            for query in Query.objects.filter(action = action):
+                if current_transaction != '':
+                    current_transaction += query.content + '\n'
+                if 'BEGIN' in query.content:
+                    assert(current_transaction == '')
+                    current_transaction = query.content + '\n'
+                if 'COMMIT' in query.content:
+                    assert(current_transaction != '')
+                    print current_transaction
+                    current_transaction = ''
+            
     dump_all_stats(directory, stats)
     
 
