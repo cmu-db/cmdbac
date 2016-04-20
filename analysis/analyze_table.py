@@ -26,8 +26,6 @@ def table_stats(directory = '.'):
         for s in statistics:
             if s.description == 'num_transactions':
                 continue
-            if s.count == 0:
-                continue
             if s.description not in stats:
                 stats[s.description] = {}
             project_type_name = repo.project_type.name
