@@ -38,7 +38,7 @@ def table_stats(directory = '.'):
 def column_stats(directory = '.'):
     stats = {'column_nullable': {}, 'column_type': {}, 'column_extra': {}, 'column_num': {}}
 
-    for repo in Repository.objects.exclude(latest_successful_attempt = None):
+    for repo in Repository.objects.exclude(latest_successful_attempt = None).filter(project_type = 1):
         column_informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'columns')
         constraint_informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'constraints')
         num_table_statistics = Statistic.objects.filter(attempt = repo.latest_successful_attempt).filter(description = 'num_tables')
@@ -56,27 +56,44 @@ def column_stats(directory = '.'):
             if project_type_name not in stats['column_extra']:
                 stats['column_extra'][project_type_name] = {}
             if project_type_name not in stats['column_num']:
-                stats['column_num'][project_type_name] = {}
+                stats['column_num'][project_type_name] = []
 
             if repo.latest_successful_attempt.database.name == 'PostgreSQL':
                 regex = '(\(.*?\))[,\]]'
             elif repo.latest_successful_attempt.database.name == 'MySQL':
                 regex = '(\(.*?\))[,\)]'
             
+            table_stats = {'column_nullable': {}, 'column_type': {}, 'column_extra': {}, 'column_num': {}}
             for column in re.findall(regex, column_information.description):
                 cells = column.split(',')
+
+                table = str(cells[2]).replace("'", "").strip()
                 
                 nullable = str(cells[6]).replace("'", "").strip()
-                stats['column_nullable'][project_type_name][nullable] = stats['column_nullable'][project_type_name].get(nullable, 0) + 1.0 / num_tables
+                if table not in table_stats['column_nullable']:
+                    table_stats['column_nullable'][table] = {}
+                table_stats['column_nullable'][table][nullable] = table_stats['column_nullable'][table].get(nullable, 0) + 1
+                # stats['column_nullable'][project_type_name][nullable] = stats['column_nullable'][project_type_name].get(nullable, 0) + 1.0 / num_tables
 
                 _type = str(cells[7]).replace("'", "").strip()
-                stats['column_type'][project_type_name][_type] = stats['column_type'][project_type_name].get(_type, 0) + 1.0 / num_tables
+                if table not in table_stats['column_type']:
+                    table_stats['column_type'][table] = {}
+                table_stats['column_type'][table][_type] = table_stats['column_type'][table].get(_type, 0) + 1
+                # stats['column_type'][project_type_name][_type] = stats['column_type'][project_type_name].get(_type, 0) + 1.0 / num_tables
 
                 extra = str(cells[16]).replace("'", "").strip()
                 if extra:
-                    stats['column_extra'][project_type_name][extra] = stats['column_extra'][project_type_name].get(extra, 0) + 1.0 / num_tables
+                    if table not in table_stats['column_extra']:
+                        table_stats['column_extra'][table] = {}
+                    table_stats['column_extra'][table][extra] = table_stats['column_extra'][table].get(extra, 0) + 1
+                
+                if table not in table_stats['column_num']:
+                    table_stats['column_num'][table] = 0
+                table_stats['column_num'][table] += 1
+                
+                # stats['column_extra'][project_type_name][extra] = stats['column_extra'][project_type_name].get(extra, 0) + 1.0 / num_tables
 
-                stats['column_num'][project_type_name]['TOTAL'] =  stats['column_num'][project_type_name].get('TOTAL', 0) + 1
+                # stats['column_num'][project_type_name]['TOTAL'] =  stats['column_num'][project_type_name].get('TOTAL', 0) + 1
 
 
             for column in re.findall(regex, constraint_information.description):
@@ -85,7 +102,23 @@ def column_stats(directory = '.'):
                     constraint_type = str(cells[6]).replace("'", "").strip()
                 elif repo.latest_successful_attempt.database.name == 'MySQL':
                     constraint_type = str(cells[5])[:-1].replace("'", "").strip()
-                stats['column_extra'][project_type_name][constraint_type] = stats['column_extra'][project_type_name].get(constraint_type, 0) + 1.0 / num_tables
+                if repo.latest_successful_attempt.database.name == 'PostgreSQL':
+                    table = str(cells[5]).replace("'", "").strip()
+                elif repo.latest_successful_attempt.database.name == 'MySQL':
+                    table = str(cells[4]).replace("'", "").strip()
+                if table not in table_stats['column_extra']:
+                    table_stats['column_extra'][table] = {}
+                table_stats['column_extra'][table][constraint_type] = table_stats['column_extra'][table].get(constraint_type, 0) + 1
+
+            for stats_type in table_stats:
+                for table in table_stats[stats_type]:
+                    if isinstance(table_stats[stats_type][table], dict):
+                        for second_type in table_stats[stats_type][table]:
+                            if second_type not in stats[stats_type][project_type_name]:
+                                stats[stats_type][project_type_name][second_type] = []
+                            stats[stats_type][project_type_name][second_type].append(table_stats[stats_type][table][second_type])
+                    else:
+                        stats[stats_type][project_type_name].append(table_stats[stats_type][table])
 
     dump_all_stats(directory, stats)
 
