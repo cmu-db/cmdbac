@@ -152,7 +152,7 @@ def sort_stats(directory = '.'):
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
         project_type_name = repo.project_type.name
         if project_type_name not in stats['sort_key_count']:
-            stats['sort_key_count'][project_type_name] = {}
+            stats['sort_key_count'][project_type_name] = []
         if project_type_name not in stats['sort_key_type']:
             stats['sort_key_type'][project_type_name] = {}
 
@@ -179,13 +179,9 @@ def sort_stats(directory = '.'):
                 for explain in Explain.objects.filter(query = query):
                     for sort_key in re.findall('Sort Key: .*', explain.output):
                         sort_key_count = len(re.findall(',', sort_key)) + 1
-                        if sort_key_count <= 3:
-                            stats['sort_key_count'][project_type_name][str(sort_key_count)] = stats['sort_key_count'][project_type_name].get(str(sort_key_count), 0) + 1
-                        else:
-                            stats['sort_key_count'][project_type_name]['greater than or equal to 4'] = stats['sort_key_count'][project_type_name].get('greater than or equal to 4', 0) + 1
-
-                        sort_keys = map(lambda key: str(key).strip(), sort_key[10:].split(','))
+                        stats['sort_key_count'][project_type_name].append(sort_key_count)
                         
+                        sort_keys = map(lambda key: str(key).strip(), sort_key[10:].split(','))
                         for key in sort_keys:
                             if key in column_map:
                                 _type = column_map[key]
