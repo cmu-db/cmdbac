@@ -243,7 +243,7 @@ def nested_stats(directory = '.'):
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
         project_type_name = repo.project_type.name
         if project_type_name not in stats['nested_count']:
-            stats['nested_count'][project_type_name] = {}
+            stats['nested_count'][project_type_name] = []
         if project_type_name not in stats['nested_operator']:
             stats['nested_operator'][project_type_name] = {}
         for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
@@ -252,7 +252,7 @@ def nested_stats(directory = '.'):
                 for explain in Explain.objects.filter(query = query):
                     nested_count += len(re.findall('Nested', explain.output))
                 if nested_count > 0:
-                    stats['nested_count'][project_type_name][str(nested_count)] = stats['nested_count'][project_type_name].get(str(nested_count), 0) + 1
+                    stats['nested_count'][project_type_name].append(nested_count)
                 for nested_word in ['ALL', 'ANY', 'SOME', 'EXISTS', 'IN', 'NOT EXISTS']:
                     stats['nested_operator'][project_type_name][nested_word] = stats['nested_operator'][project_type_name].get(nested_word, 0) + len(re.findall(nested_word, query.content))
                 stats['nested_operator'][project_type_name]['EXISTS'] -= len(re.findall('NOT EXISTS', query.content))
