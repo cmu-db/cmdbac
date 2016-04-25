@@ -119,6 +119,7 @@ def plot_histogram(directory, csv_file, output_directory, x_label, y_label, bin_
 
     name = csv_file.split('.')[0]
     fig.savefig(os.path.join(output_directory, name + '.pdf'))
+    plt.close(fig)
 
 def plot_tables(directory):
     output_directory = os.path.join(FIG_DIRECTORY, 'tables')
