@@ -283,7 +283,7 @@ def join_stats(directory = '.'):
     stats = {'join_type': {}, 'join_key_type': {}, 'join_key_constraint': {}}
 
 
-    for repo in Repository.objects.exclude(latest_successful_attempt = None).exclude(project_type = 1):
+    for repo in Repository.objects.exclude(latest_successful_attempt = None):
         project_type_name = repo.project_type.name
         if project_type_name not in stats['join_type']:
             stats['join_type'][project_type_name] = {}
