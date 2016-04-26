@@ -8,7 +8,7 @@ def count_query(queries):
 	for query in queries:
 		counted = False
 		for keyword in keywords:
-			if keyword in query['raw']:
+			if keyword in query['raw'].upper():
 				ret[keyword] += 1
 				counted = True
 		if not counted:

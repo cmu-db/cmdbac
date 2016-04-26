@@ -152,7 +152,7 @@ def sort_stats(directory = '.'):
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
         project_type_name = repo.project_type.name
         if project_type_name not in stats['sort_key_count']:
-            stats['sort_key_count'][project_type_name] = {}
+            stats['sort_key_count'][project_type_name] = []
         if project_type_name not in stats['sort_key_type']:
             stats['sort_key_type'][project_type_name] = {}
 
@@ -179,13 +179,9 @@ def sort_stats(directory = '.'):
                 for explain in Explain.objects.filter(query = query):
                     for sort_key in re.findall('Sort Key: .*', explain.output):
                         sort_key_count = len(re.findall(',', sort_key)) + 1
-                        if sort_key_count <= 3:
-                            stats['sort_key_count'][project_type_name][str(sort_key_count)] = stats['sort_key_count'][project_type_name].get(str(sort_key_count), 0) + 1
-                        else:
-                            stats['sort_key_count'][project_type_name]['greater than or equal to 4'] = stats['sort_key_count'][project_type_name].get('greater than or equal to 4', 0) + 1
-
-                        sort_keys = map(lambda key: str(key).strip(), sort_key[10:].split(','))
+                        stats['sort_key_count'][project_type_name].append(sort_key_count)
                         
+                        sort_keys = map(lambda key: str(key).strip(), sort_key[10:].split(','))
                         for key in sort_keys:
                             if key in column_map:
                                 _type = column_map[key]
@@ -247,7 +243,7 @@ def nested_stats(directory = '.'):
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
         project_type_name = repo.project_type.name
         if project_type_name not in stats['nested_count']:
-            stats['nested_count'][project_type_name] = {}
+            stats['nested_count'][project_type_name] = []
         if project_type_name not in stats['nested_operator']:
             stats['nested_operator'][project_type_name] = {}
         for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
@@ -256,7 +252,7 @@ def nested_stats(directory = '.'):
                 for explain in Explain.objects.filter(query = query):
                     nested_count += len(re.findall('Nested', explain.output))
                 if nested_count > 0:
-                    stats['nested_count'][project_type_name][str(nested_count)] = stats['nested_count'][project_type_name].get(str(nested_count), 0) + 1
+                    stats['nested_count'][project_type_name].append(nested_count)
                 for nested_word in ['ALL', 'ANY', 'SOME', 'EXISTS', 'IN', 'NOT EXISTS']:
                     stats['nested_operator'][project_type_name][nested_word] = stats['nested_operator'][project_type_name].get(nested_word, 0) + len(re.findall(nested_word, query.content))
                 stats['nested_operator'][project_type_name]['EXISTS'] -= len(re.findall('NOT EXISTS', query.content))
@@ -269,17 +265,17 @@ def having_stats(directory = '.'):
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
         project_type_name = repo.project_type.name
         if project_type_name not in stats['having_count']:
-            stats['having_count'][project_type_name] = {}
+            stats['having_count'][project_type_name] = []
         if project_type_name not in stats['group_count']:
-            stats['group_count'][project_type_name] = {}
+            stats['group_count'][project_type_name] = []
         for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
             for query in Query.objects.filter(action = action):
                 having_count = len(re.findall('HAVING', query.content))
                 if having_count > 0:
-                    stats['having_count'][project_type_name][str(having_count)] = stats['having_count'][project_type_name].get(str(having_count), 0) + 1
+                    stats['having_count'][project_type_name].append(having_count)
                 group_count = len(re.findall('GROUP BY', query.content))
                 if group_count > 0:
-                    stats['group_count'][project_type_name][str(group_count)] = stats['group_count'][project_type_name].get(str(group_count), 0) + 1
+                    stats['group_count'][project_type_name].append(group_count)
 
     dump_all_stats(directory, stats)
 
@@ -287,7 +283,7 @@ def join_stats(directory = '.'):
     stats = {'join_type': {}, 'join_key_type': {}, 'join_key_constraint': {}}
 
 
-    for repo in Repository.objects.exclude(latest_successful_attempt = None).exclude(project_type = 1):
+    for repo in Repository.objects.exclude(latest_successful_attempt = None):
         project_type_name = repo.project_type.name
         if project_type_name not in stats['join_type']:
             stats['join_type'][project_type_name] = {}
