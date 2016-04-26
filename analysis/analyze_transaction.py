@@ -32,7 +32,7 @@ def action_stats(directory = '.'):
     dump_all_stats(directory, stats)
 
 def transaction_stats(directory = '.'):
-    stats = {'transaction_count': {}, 'transaction_query_count': {}}
+    stats = {'transaction_count': {}, 'transaction_query_count': {}, 'transaction_read_count': {}, 'transaction_write_count': {}}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
         project_type_name = repo.project_type.name
@@ -40,6 +40,11 @@ def transaction_stats(directory = '.'):
             stats['transaction_count'][project_type_name] = []
         if project_type_name not in stats['transaction_query_count']:
             stats['transaction_query_count'][project_type_name] = []
+        if project_type_name not in stats['transaction_read_count']:
+            stats['transaction_read_count'][project_type_name] = []
+        if project_type_name not in stats['transaction_write_count']:
+            stats['transaction_write_count'][project_type_name] = []
+        
 
         for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
             transaction = ''
@@ -61,9 +66,11 @@ def transaction_stats(directory = '.'):
 
                         # for each transaction, count the number of read/write
                         read_count = len(re.findall('SELECT', transaction.upper()))
+                        stats['transaction_read_count'][project_type_name].append(read_count)
                         write_count = 0
                         for keyword in ['INSERT', 'DELETE', 'UPDATE']:
                             write_count += len(re.findall(keyword, transaction.upper()))
+                        stats['transaction_write_count'][project_type_name].append(write_count)
                         
                         # for each transaction, count the queries
                         stats['transaction_query_count'][project_type_name].append(query_count)
@@ -78,7 +85,7 @@ def transaction_stats(directory = '.'):
 def main():
     # active
     action_stats(TRANSACTION_DIRECTORY)
-    # transaction_stats(TRANSACTION_DIRECTORY)
+    transaction_stats(TRANSACTION_DIRECTORY)
     
     # working
     
