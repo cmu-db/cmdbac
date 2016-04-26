@@ -13,31 +13,71 @@ django.setup()
 
 from library.models import *
 
-TRANSACTION_DIRECTORY = 'tables'
+TRANSACTION_DIRECTORY = 'transactions'
 
-def transaction_stats(directory = '.'):
-    stats = {}
+def action_stats(directory = '.'):
+    stats = {'action_query_count': {}}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
         project_type_name = repo.project_type.name
+        if project_type_name not in stats['action_query_count']:
+            stats['action_query_count'][project_type_name] = []
+        
         for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
-            current_transaction = ''
+            query_count = len(Query.objects.filter(action = action))
+            if query_count > 0:
+                stats['action_query_count'][project_type_name].append(query_count)
+
+            
+    dump_all_stats(directory, stats)
+
+def transaction_stats(directory = '.'):
+    stats = {'transaction_count': {}, 'transaction_query_count': {}}
+
+    for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        project_type_name = repo.project_type.name
+        if project_type_name not in stats['transaction_count']:
+            stats['transaction_count'][project_type_name] = []
+        if project_type_name not in stats['transaction_query_count']:
+            stats['transaction_query_count'][project_type_name] = []
+
+        for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
+            transaction = ''
+            query_count = 0
+            transaction_count = 0
+
             for query in Query.objects.filter(action = action):
-                if current_transaction != '':
-                    current_transaction += query.content + '\n'
                 if 'BEGIN' in query.content:
-                    assert(current_transaction == '')
-                    current_transaction = query.content + '\n'
-                if 'COMMIT' in query.content:
-                    assert(current_transaction != '')
-                    print current_transaction
-                    current_transaction = ''
+                    transaction = query.content + '\n'
+                    query_count = 1
+                elif transaction != '':
+                    transaction += query.content + '\n'
+                    query_count += 1
+                    if 'COMMIT' in query.content:
+                        transaction = transaction.strip('\n')
+                    
+                        # for each transaction, count the number of transactions
+                        transaction_count += 1
+
+                        # for each transaction, count the number of read/write
+                        read_count = len(re.findall('SELECT', transaction.upper()))
+                        write_count = 0
+                        for keyword in ['INSERT', 'DELETE', 'UPDATE']:
+                            write_count += len(re.findall(keyword, transaction.upper()))
+                        
+                        # for each transaction, count the queries
+                        stats['transaction_query_count'][project_type_name].append(query_count)
+
+            if transaction_count > 0:
+                stats['transaction_count'][project_type_name].append(transaction_count)
+
             
     dump_all_stats(directory, stats)
     
 
 def main():
     # active
+    action_stats(TRANSACTION_DIRECTORY)
     transaction_stats(TRANSACTION_DIRECTORY)
     
     # working
