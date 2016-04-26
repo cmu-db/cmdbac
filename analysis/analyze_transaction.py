@@ -47,13 +47,13 @@ def transaction_stats(directory = '.'):
             transaction_count = 0
 
             for query in Query.objects.filter(action = action):
-                if 'BEGIN' in query.content:
+                if 'BEGIN' in query.content.upper() or 'START TRANSACTION' in query.content.upper():
                     transaction = query.content + '\n'
                     query_count = 1
                 elif transaction != '':
                     transaction += query.content + '\n'
                     query_count += 1
-                    if 'COMMIT' in query.content:
+                    if 'COMMIT' in query.content.upper():
                         transaction = transaction.strip('\n')
                     
                         # for each transaction, count the number of transactions
@@ -78,7 +78,7 @@ def transaction_stats(directory = '.'):
 def main():
     # active
     action_stats(TRANSACTION_DIRECTORY)
-    transaction_stats(TRANSACTION_DIRECTORY)
+    # transaction_stats(TRANSACTION_DIRECTORY)
     
     # working
     
