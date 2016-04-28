@@ -9,3 +9,10 @@
 	5(a). Why 8 in Drupal? percentage
 	5(d). Find character join
 	6(a). Django: why the number is low? check just only people create it but did not use i
+
+	7(a). use big stride
+	7(c). DO NOT COUNT BEGIN AND COMMIT
+	      BIG TRANSACTION FOR DJANGO AND RUBY on RAILS RAKE FILE
+	FOCUS RUBY ON RAILS: DEPLOY MORE AND DRIVE MORE
+	RELATED WORK(peter's paper and phd)    
+	CUT OFF REPOS WITH LESS THAN 10  
