@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 # @Author: zeyuanxy
 # @Date:   2016-03-21 01:52:14
-# @Last Modified by:   zeyuanxy
-# @Last Modified time: 2016-04-10 23:18:30
+# @Last Modified by:   Zeyuan Shang
+# @Last Modified time: 2016-05-02 23:32:45
 import sys
 import os
 import numpy as np 
@@ -62,8 +62,8 @@ def plot_clustered_bar_chart(ax, dpoints, ordinal = False, x_label = None, y_lab
     # plt.setp(plt.xticks()[1], rotation=90)
     
     # Add the axis labels
-    ax.set_ylabel(y_label)
-    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label, fontsize=22)
+    ax.set_xlabel(x_label, fontsize=22)
     
     # Add a legend
     handles, labels = ax.get_legend_handles_labels()
@@ -106,7 +106,7 @@ def plot_histogram(directory, csv_file, output_directory, x_label, y_label, bin_
             sub_labels.add(sub_label)
     for label in stats:
         for sub_label in sub_labels:
-            data.append([label, sub_label, round(float(stats[label].get(sub_label, .0)) / count[label] * 100, 2)])
+            data.append([label, sub_label, round(float(stats[label].get(sub_label, .0)) / max(count[label], 1) * 100, 2)])
     data = np.array(data)
 
     plt.clf()
@@ -130,7 +130,7 @@ def plot_tables(directory):
     plot_histogram(directory, 'num_constraints.csv', output_directory, '# of Tables', '% of Applications', bin_size = 20, max_value = 200)
     plot_histogram(directory, 'num_foreignkeys.csv', output_directory, '# of Tables', '% of Applications', bin_size = 10, max_value = 100)
 
-    plot_histogram(directory, 'column_num.csv', output_directory, '# of Columns', '% of Tables', 1, max_value = 10)
+    plot_histogram(directory, 'column_num.csv', output_directory, '# of Columns', '% of Tables', bin_size = 1, max_value = 20)
     plot_histogram(directory, 'column_nullable.csv', output_directory, 'Nullable of Columns', '% of Columns', ordinal = False)
     plot_histogram(directory, 'column_type.csv', output_directory, 'Type of Columns', '% of Columns', ordinal = False)
     plot_histogram(directory, 'column_extra.csv', output_directory, 'Modifier of Columns', '% of Columns', ordinal = False)
@@ -150,7 +150,7 @@ def plot_queries(directory):
     plot_histogram(directory, 'index_coverage.csv', output_directory, 'Coverage of Indexes', '% of Applications', bin_size = 10, max_value = 100)
     plot_histogram(directory, 'table_access.csv', output_directory, '# of Tables Accessed', '% of Queries', bin_size = 1, max_value = 5)
 
-    plot_histogram(directory, 'sort_key_count.csv', output_directory, '# of Sory Keys', '% of Sorts', ordinal = False)
+    plot_histogram(directory, 'sort_key_count.csv', output_directory, '# of Sort Keys', '% of Sorts', bin_size = 1, max_value = 10)
     plot_histogram(directory, 'sort_key_type.csv', output_directory, 'Type of Sort Keys', '% of Sorts', ordinal = False)
 
     plot_histogram(directory, 'scan_type.csv', output_directory, 'Type of Scans', '% of Scans', ordinal = False)
@@ -159,11 +159,11 @@ def plot_queries(directory):
 
     plot_histogram(directory, 'aggregate_operator.csv', output_directory, 'Aggregate Opeators', '% of Aggregate Opeators', ordinal = False)
 
-    plot_histogram(directory, 'nested_count.csv', output_directory, '# of Nested Loops', '% of Nested Queries', ordinal = False)
+    plot_histogram(directory, 'nested_count.csv', output_directory, '# of Nested Loops', '% of Nested Queries', bin_size = 1, max_value = 10)
     plot_histogram(directory, 'nested_operator.csv', output_directory, 'Type of Nested Opeators', '% of Nested Opeators', ordinal = False)
 
-    # plot_table(directory, 'having_count.csv', output_directory)
-    # plot_table(directory, 'group_count.csv', output_directory)
+    plot_histogram(directory, 'having_count.csv', output_directory, '# of Havings', '% of Queries', bin_size = 1, max_value = 10)
+    plot_histogram(directory, 'group_count.csv', output_directory, '# of Groups', '% of Queries', bin_size = 1, max_value = 10)
     
     plot_histogram(directory, 'join_type.csv', output_directory, 'Type of Joins', '% of Joins', ordinal = False)
     plot_histogram(directory, 'join_key_type.csv', output_directory, 'Type of Join Keys', '% of Join Keys', ordinal = False)
@@ -172,10 +172,25 @@ def plot_queries(directory):
     # working
     
     # deprecated
+
+def plot_transactions(directory):
+    output_directory = os.path.join(FIG_DIRECTORY, 'transactions')
+
+    # active
+    plot_histogram(directory, 'action_query_count.csv', output_directory, '# of Queries', '% of Actions', bin_size = 1, max_value = 10)
+    plot_histogram(directory, 'action_transaction_count.csv', output_directory, '# of Transactions', '% of Actions', bin_size = 1, max_value = 10)
+    plot_histogram(directory, 'transaction_query_count.csv', output_directory, '# of Queries', '% of Transactions', bin_size = 1, max_value = 10)
+    plot_histogram(directory, 'transaction_read_count.csv', output_directory, '# of Reads', '% of Transactions', bin_size = 1, max_value = 10)
+    plot_histogram(directory, 'transaction_write_count.csv', output_directory, '# of Writes', '% of Transactions', bin_size = 1, max_value = 10)
    
+    # working
+
+    # deprecated
+
 def main():
     plot_tables('tables')
     plot_queries('queries')
+    plot_transactions('transactions')
 
 if __name__ == "__main__":
     main()
