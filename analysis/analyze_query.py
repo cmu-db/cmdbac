@@ -7,7 +7,7 @@ import csv
 import numpy as np
 import sqlparse
 import traceback
-from dump import dump_stats, dump_all_stats
+from utils import filter_repository, dump_stats, dump_all_stats
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
@@ -21,6 +21,9 @@ def query_stats(directory = '.'):
     stats = {'query_type': {}}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        if filter_repository(repo):
+            continue
+
         actions = Action.objects.filter(attempt = repo.latest_successful_attempt)
         if len(actions) == 0:
             continue
@@ -41,6 +44,9 @@ def coverage_stats(directory = '.'):
     stats = {'table_coverage': {}, 'column_coverage': {}, 'index_coverage': {}, 'table_access': {}}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        if filter_repository(repo):
+            continue
+
         actions = Action.objects.filter(attempt = repo.latest_successful_attempt)
         if len(actions) == 0:
             continue
@@ -150,6 +156,9 @@ def sort_stats(directory = '.'):
     stats = {'sort_key_count': {}, 'sort_key_type': {}}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        if filter_repository(repo):
+            continue
+
         project_type_name = repo.project_type.name
         if project_type_name not in stats['sort_key_count']:
             stats['sort_key_count'][project_type_name] = []
@@ -193,6 +202,9 @@ def scan_stats(directory = '.'):
     stats = {'scan_type': {}}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        if filter_repository(repo):
+            continue
+
         project_type_name = repo.project_type.name
         if project_type_name not in stats['scan_type']:
             stats['scan_type'][project_type_name] = {}  
@@ -209,6 +221,9 @@ def multiset_stats(directory = '.'):
     stats = {'logical_operator': {}, 'set_operator': {}}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        if filter_repository(repo):
+            continue
+
         project_type_name = repo.project_type.name
         if project_type_name not in stats['logical_operator']:
             stats['logical_operator'][project_type_name] = {}
@@ -227,6 +242,9 @@ def aggregate_stats(directory = '.'):
     stats = {'aggregate_operator': {}}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        if filter_repository(repo):
+            continue
+
         project_type_name = repo.project_type.name
         if project_type_name not in stats['aggregate_operator']:
             stats['aggregate_operator'][project_type_name] = {}
@@ -241,6 +259,9 @@ def nested_stats(directory = '.'):
     stats = {'nested_count': {}, 'nested_operator': {}}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        if filter_repository(repo):
+            continue
+
         project_type_name = repo.project_type.name
         if project_type_name not in stats['nested_count']:
             stats['nested_count'][project_type_name] = []
@@ -263,6 +284,9 @@ def having_stats(directory = '.'):
     stats = {'having_count': {}, 'group_count': {}}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        if filter_repository(repo):
+            continue
+
         project_type_name = repo.project_type.name
         if project_type_name not in stats['having_count']:
             stats['having_count'][project_type_name] = []
@@ -284,6 +308,9 @@ def join_stats(directory = '.'):
 
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        if filter_repository(repo):
+            continue
+
         project_type_name = repo.project_type.name
         if project_type_name not in stats['join_type']:
             stats['join_type'][project_type_name] = {}
@@ -392,15 +419,15 @@ def join_stats(directory = '.'):
 
 def main():
     # active
-    # query_stats(QUERIES_DIRECTORY)
+    query_stats(QUERIES_DIRECTORY)
     coverage_stats(QUERIES_DIRECTORY)
-    # sort_stats(QUERIES_DIRECTORY)
-    # scan_stats(QUERIES_DIRECTORY)
-    # multiset_stats(QUERIES_DIRECTORY)
-    # aggregate_stats(QUERIES_DIRECTORY)
-    # nested_stats(QUERIES_DIRECTORY)
-    # having_stats(QUERIES_DIRECTORY)
-    # join_stats(QUERIES_DIRECTORY)
+    sort_stats(QUERIES_DIRECTORY)
+    scan_stats(QUERIES_DIRECTORY)
+    multiset_stats(QUERIES_DIRECTORY)
+    aggregate_stats(QUERIES_DIRECTORY)
+    nested_stats(QUERIES_DIRECTORY)
+    having_stats(QUERIES_DIRECTORY)
+    join_stats(QUERIES_DIRECTORY)
 
     # working
     

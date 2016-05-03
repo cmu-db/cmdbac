@@ -19,6 +19,9 @@ def table_stats(directory = '.'):
     stats = {}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        if filter_repository(repo):
+            continue
+
         statistics = Statistic.objects.filter(attempt = repo.latest_successful_attempt)
         if len(statistics) == 0:
             continue
@@ -39,6 +42,9 @@ def column_stats(directory = '.'):
     stats = {'column_nullable': {}, 'column_type': {}, 'column_extra': {}, 'column_num': {}}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None).filter(project_type = 1):
+        if filter_repository(repo):
+            continue
+
         column_informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'columns')
         constraint_informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'constraints')
         num_table_statistics = Statistic.objects.filter(attempt = repo.latest_successful_attempt).filter(description = 'num_tables')
@@ -73,14 +79,12 @@ def column_stats(directory = '.'):
                 if table not in table_stats['column_nullable']:
                     table_stats['column_nullable'][table] = {}
                 table_stats['column_nullable'][table][nullable] = table_stats['column_nullable'][table].get(nullable, 0) + 1
-                # stats['column_nullable'][project_type_name][nullable] = stats['column_nullable'][project_type_name].get(nullable, 0) + 1.0 / num_tables
-
+                
                 _type = str(cells[7]).replace("'", "").strip()
                 if table not in table_stats['column_type']:
                     table_stats['column_type'][table] = {}
                 table_stats['column_type'][table][_type] = table_stats['column_type'][table].get(_type, 0) + 1
-                # stats['column_type'][project_type_name][_type] = stats['column_type'][project_type_name].get(_type, 0) + 1.0 / num_tables
-
+                
                 extra = str(cells[16]).replace("'", "").strip()
                 if extra:
                     if table not in table_stats['column_extra']:
@@ -90,11 +94,6 @@ def column_stats(directory = '.'):
                 if table not in table_stats['column_num']:
                     table_stats['column_num'][table] = 0
                 table_stats['column_num'][table] += 1
-                
-                # stats['column_extra'][project_type_name][extra] = stats['column_extra'][project_type_name].get(extra, 0) + 1.0 / num_tables
-
-                # stats['column_num'][project_type_name]['TOTAL'] =  stats['column_num'][project_type_name].get('TOTAL', 0) + 1
-
 
             for column in re.findall(regex, constraint_information.description):
                 cells = column.split(',')

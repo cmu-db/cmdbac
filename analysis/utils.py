@@ -2,9 +2,16 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-03-21 01:05:00
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-04-21 02:19:48
+# @Last Modified time: 2016-05-03 22:48:51
 import os
 import csv
+
+COMMITS_COUNT_THRESHOLD = 10
+
+def filter_repository(repo):
+    if repo.commits_count >= 0 and repo.commits_count <= COMMITS_COUNT_THRESHOLD:
+        return True
+    return False
 
 def dump_stats(directory, description, values):
     with open(os.path.join(directory, description + '.csv'), 'wb') as csv_file:   

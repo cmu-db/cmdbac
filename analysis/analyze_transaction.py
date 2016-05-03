@@ -19,6 +19,9 @@ def action_stats(directory = '.'):
     stats = {'action_query_count': {}}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        if filter_repository(repo):
+            continue
+
         project_type_name = repo.project_type.name
         if project_type_name not in stats['action_query_count']:
             stats['action_query_count'][project_type_name] = []
@@ -35,6 +38,9 @@ def transaction_stats(directory = '.'):
     stats = {'transaction_count': {}, 'transaction_query_count': {}, 'transaction_read_count': {}, 'transaction_write_count': {}}
 
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        if filter_repository(repo):
+            continue
+        
         project_type_name = repo.project_type.name
         if project_type_name not in stats['transaction_count']:
             stats['transaction_count'][project_type_name] = []
