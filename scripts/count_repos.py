@@ -14,10 +14,14 @@ from django.db.models import Q
 from library.models import *
 import utils
 
+COMMITS_COUNT_THRESHOLD = 10
+
 def main():
     stats = {}
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
-        if not Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'key_column_usage'):
+        if repo.commits_count >= 0 and repo.commits_count <= COMMITS_COUNT_THRESHOLD:
+            continue
+        if Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'key_column_usage'):
             stats[repo.project_type] = stats.get(repo.project_type, 0) + 1
 
     print stats
