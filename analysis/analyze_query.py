@@ -7,7 +7,7 @@ import csv
 import numpy as np
 import sqlparse
 import traceback
-from utils import filter_repository, dump_stats, dump_all_stats
+from utils import filter_repository, dump_all_stats
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django

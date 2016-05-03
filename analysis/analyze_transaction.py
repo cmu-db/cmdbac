@@ -5,7 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 
 import re
 import csv
-from dump import dump_all_stats
+from utils import filter_repository, dump_all_stats
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
