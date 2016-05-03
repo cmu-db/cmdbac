@@ -3,10 +3,11 @@
 # @Author: zeyuanxy
 # @Date:   2016-03-21 01:52:14
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-05-02 23:32:45
+# @Last Modified time: 2016-05-04 00:14:09
 import sys
 import os
 import numpy as np 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import operator as o
@@ -27,7 +28,7 @@ def plot_clustered_bar_chart(ax, dpoints, ordinal = False, x_label = None, y_lab
     if ordinal:
         # Aggregate the categories according to their
         # values
-        categories = [(c, float(c)) 
+        categories = [(c, float(c.split("-")[0])) 
                       for c in np.unique(dpoints[:,1])]
     else:
         # Aggregate the categories according to their
@@ -57,6 +58,7 @@ def plot_clustered_bar_chart(ax, dpoints, ordinal = False, x_label = None, y_lab
         ax.bar(pos, vals, width=width, label=cond, color=colors[i])
     
     # Set the x-axis tick labels to be equal to the categories
+    ax.grid(False)
     ax.set_xticks(indeces)
     ax.set_xticklabels(categories)
     # plt.setp(plt.xticks()[1], rotation=90)
@@ -67,7 +69,12 @@ def plot_clustered_bar_chart(ax, dpoints, ordinal = False, x_label = None, y_lab
     
     # Add a legend
     handles, labels = ax.get_legend_handles_labels()
-    ax.legend(handles[::-1], labels[::-1], loc=legend_location)
+
+    def flip(items, ncol):
+        import itertools
+        return itertools.chain(*[items[i::ncol] for i in range(ncol)])
+
+    ax.legend(flip(handles[::-1], len(handles)), flip(labels[::-1], len(labels)), loc=legend_location, ncol = len(labels))
 
 def plot_histogram(directory, csv_file, output_directory, x_label, y_label, bin_size = None, max_value = None, ordinal = True):
     count = {}
@@ -88,9 +95,16 @@ def plot_histogram(directory, csv_file, output_directory, x_label, y_label, bin_
                 bin_index = (int(value) / bin_size) * bin_size
                 if max_value != None:
                     bin_index = min(bin_index, max_value)
-                if bin_index not in stats[label]:
-                    stats[label][bin_index] = 0
-                stats[label][bin_index] += 1
+                if bin_index == max_value:
+                    bin_name = str(bin_index) + '-'
+                else:
+                    if bin_size != 1:
+                        bin_name = str(bin_index) + '-' + str(bin_index + bin_size)
+                    else:
+                        bin_name = str(bin_index)
+                if bin_name not in stats[label]:
+                    stats[label][bin_name] = 0
+                stats[label][bin_name] += 1
             else:
                 bin_index = cells[1]
                 value = int(cells[2])
@@ -119,6 +133,23 @@ def plot_histogram(directory, csv_file, output_directory, x_label, y_label, bin_
 
     name = csv_file.split('.')[0]
     fig.savefig(os.path.join(output_directory, name + '.pdf'))
+    plt.close(fig)
+
+def plot_legend(directory, csv_file, output_directory):
+    labels = set()
+    with open(os.path.join(directory, csv_file), 'r') as f:
+        description = f.readline()
+        for line in f.readlines():
+            cells = line.strip().split(',')
+            label = cells[0]
+            labels.add(label)
+    labels = sorted(labels)
+    
+    plt.clf()
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    
+    fig.savefig(os.path.join(output_directory, 'legend.pdf'))
     plt.close(fig)
 
 def plot_tables(directory):
@@ -188,6 +219,7 @@ def plot_transactions(directory):
     # deprecated
 
 def main():
+    # plot_legend('tables', 'num_tables.csv', FIG_DIRECTORY)
     plot_tables('tables')
     plot_queries('queries')
     plot_transactions('transactions')
