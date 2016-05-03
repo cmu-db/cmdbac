@@ -79,6 +79,7 @@ def transaction_stats(directory = '.'):
                         stats['transaction_write_count'][project_type_name].append(write_count)
                         
                         # for each transaction, count the queries
+                        query_count -= 2
                         stats['transaction_query_count'][project_type_name].append(query_count)
 
             if transaction_count > 0:
