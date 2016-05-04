@@ -28,7 +28,7 @@ def count_deployed_repos():
 
 def count_ruby_failed_repos():
     count = 0
-    for repo in Repository.objects.exclude(latest_successful_attempt = None).filter(project_type = 2):
+    for repo in Repository.objects.filter(latest_successful_attempt = None).filter(project_type = 2).exclude(latest_attempt = None):
         if repo.commits_count >= 0 and repo.commits_count <= COMMITS_COUNT_THRESHOLD:
             continue
         if 'Unable to find database.yml' in repo.latest_attempt.log:
