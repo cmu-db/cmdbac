@@ -17,7 +17,7 @@ import utils
 COMMITS_COUNT_THRESHOLD = 10
 
 def count_deployed_repos():
-	stats = {}
+    stats = {}
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
         if repo.commits_count >= 0 and repo.commits_count <= COMMITS_COUNT_THRESHOLD:
             continue
@@ -27,12 +27,12 @@ def count_deployed_repos():
     print stats
 
 def count_ruby_failed_repos():
-	count = 0
-	for repo in Repository.objects.exclude(latest_successful_attempt = None).filter(project_type = 2):
+    count = 0
+    for repo in Repository.objects.exclude(latest_successful_attempt = None).filter(project_type = 2):
         if repo.commits_count >= 0 and repo.commits_count <= COMMITS_COUNT_THRESHOLD:
             continue
         if 'Unable to find database.yml' in repo.latest_attempt.log:
-        	count += 1
+            count += 1
 
     print count
 
