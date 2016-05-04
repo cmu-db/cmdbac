@@ -14,7 +14,7 @@ from django.db.models import Q
 from library.models import *
 import utils
 
-def main():
+def deploy_valid_repos():
     if len(sys.argv) != 5:
         return
     project_type = int(sys.argv[1])
@@ -36,6 +36,30 @@ def main():
             traceback.print_exc()
         finally:
             time.sleep(5)
+
+def deploy_failed_ruby_repos():
+    project_type = 2
+    deploy_id = int(sys.argv[1])
+    total_deployer = int(sys.argv[2])
+    database = Database.objects.get(name=sys.argv[3])
+    
+    for repo in Repository.objects.filter(project_type = project_type):
+        if repo.id % total_deployer != deploy_id - 1:
+            continue
+        if Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'key_column_usage'):
+            continue
+        if repo.latest_attempt == None or 'Unable to find database.yml' in repo.latest_attempt.log:
+            print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
+            try:
+                utils.vagrant_deploy(repo, deploy_id, database)
+            except:
+                traceback.print_exc()
+            finally:
+                time.sleep(5)
+
+def main():
+    # deploy_valid_repos()
+    deploy_failed_ruby_repos()
 
 if __name__ == '__main__':
     main()
