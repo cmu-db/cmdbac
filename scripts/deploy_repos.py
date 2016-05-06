@@ -48,7 +48,7 @@ def deploy_failed_ruby_repos():
             continue
         if Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'key_column_usage'):
             continue
-        if repo.latest_attempt == None or 'Unable to find database.yml' in repo.latest_attempt.log:
+        if repo.latest_attempt == None or 'Unable to find database.yml' in repo.latest_attempt.log or 'Access denied for user' in repo.latest_attempt.log:
             print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
             try:
                 utils.vagrant_deploy(repo, deploy_id, database)
