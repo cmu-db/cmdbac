@@ -105,13 +105,13 @@ class RoRDeployer(BaseDeployer):
 
     def install_requirements(self, path):
         if path:
-        	git_clone_error_cnt = 0
+            git_clone_error_cnt = 0
             while True:
                 out = self.run_command(path, 'bundle install')
                 git_clone_error = re.search('Retrying git clone (.*) due to error', out[1])
                 if git_clone_error:
-                	if git_clone_error_cnt >= 5:
-                		break
+                    if git_clone_error_cnt >= 3:
+                        break
                     command = 'git clone {}'.format(git_clone_error.group(1)).replace('git://github.com/', 'https://github.com/')
                     LOG.info('Fix Git Fetching Error : {}'.format(command))
                     utils.run_command(command)
@@ -155,7 +155,7 @@ class RoRDeployer(BaseDeployer):
     def get_runtime(self, version = None):
         if self.runtime != None:
             return self.runtime
-    	latest_successful_attempt = self.get_latest_successful_attempt()
+        latest_successful_attempt = self.get_latest_successful_attempt()
         if latest_successful_attempt != None:
             return {
                 'executable': latest_successful_attempt.runtime.executable,
