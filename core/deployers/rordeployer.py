@@ -212,7 +212,7 @@ class RoRDeployer(BaseDeployer):
         if not self.sync_server(deploy_path):
             return ATTEMPT_STATUS_DATABASE_ERROR
         
-        LOG.info(self.create_superuser(deploy_path))
+        # LOG.info(self.create_superuser(deploy_path))
 
         self.run_server(deploy_path)
 
