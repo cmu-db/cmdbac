@@ -10,6 +10,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
 django.setup()
 from django.db.models import Q
+import Thread
 
 from library.models import *
 import utils
@@ -38,6 +39,11 @@ def deploy_valid_repos():
             time.sleep(5)
 
 # From http://augustwu.iteye.com/blog/554827
+class TimeoutException(Exception):  
+    pass  
+  
+ThreadStop = Thread._Thread__stop
+
 def timelimited(timeout):  
     def decorator(function):  
         def decorator2(*args,**kwargs):  
