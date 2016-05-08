@@ -37,6 +37,47 @@ def deploy_valid_repos():
         finally:
             time.sleep(5)
 
+# From http://augustwu.iteye.com/blog/554827
+def timelimited(timeout):  
+    def decorator(function):  
+        def decorator2(*args,**kwargs):  
+            class TimeLimited(Thread):  
+                def __init__(self,_error= None,):  
+                    Thread.__init__(self)  
+                    self._error =  _error  
+                      
+                def run(self):  
+                    try:  
+                        self.result = function(*args,**kwargs)  
+                    except Exception,e:  
+                        self._error =e  
+  
+                def _stop(self):  
+                    if self.isAlive():  
+                        ThreadStop(self)  
+  
+            t = TimeLimited()  
+            t.start()  
+            t.join(timeout)  
+       
+            if isinstance(t._error,TimeoutException):  
+                t._stop()  
+                raise TimeoutException('timeout for %s' % (repr(function)))  
+  
+            if t.isAlive():  
+                t._stop()  
+                raise TimeoutException('timeout for %s' % (repr(function)))  
+  
+            if t._error is None:  
+                return t.result  
+  
+        return decorator2  
+    return decorator
+
+@timelimited(1000)
+def deploy_with_timeout(repo, deploy_id, database):
+    utils.vagrant_deploy(repo, deploy_id, database)
+
 def deploy_failed_ruby_repos():
     project_type = 2
     deploy_id = int(sys.argv[1])
@@ -51,7 +92,7 @@ def deploy_failed_ruby_repos():
         if repo.latest_attempt == None or 'Unable to find database.yml' in repo.latest_attempt.log or 'Access denied for user' in repo.latest_attempt.log:
             print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
             try:
-                utils.vagrant_deploy(repo, deploy_id, database)
+                deploy_with_timeout(repo, deploy_id, database)
             except:
                 traceback.print_exc()
             finally:
