@@ -10,7 +10,6 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
 django.setup()
 from django.db.models import Q
-import Thread
 
 from library.models import *
 import utils
