@@ -39,48 +39,33 @@ def deploy_valid_repos():
             time.sleep(5)
 
 # From http://augustwu.iteye.com/blog/554827
-class TimeoutException(Exception):  
-    pass  
-  
-ThreadStop = Thread._Thread__stop
+from functools import wraps
+import errno
+import os
+import signal
 
-def timelimited(timeout):  
-    def decorator(function):  
-        def decorator2(*args,**kwargs):  
-            class TimeLimited(Thread):  
-                def __init__(self,_error= None,):  
-                    Thread.__init__(self)  
-                    self._error =  _error  
-                      
-                def run(self):  
-                    try:  
-                        self.result = function(*args,**kwargs)  
-                    except Exception,e:  
-                        self._error =e  
-  
-                def _stop(self):  
-                    if self.isAlive():  
-                        ThreadStop(self)  
-  
-            t = TimeLimited()  
-            t.start()  
-            t.join(timeout)  
-       
-            if isinstance(t._error,TimeoutException):  
-                t._stop()  
-                raise TimeoutException('timeout for %s' % (repr(function)))  
-  
-            if t.isAlive():  
-                t._stop()  
-                raise TimeoutException('timeout for %s' % (repr(function)))  
-  
-            if t._error is None:  
-                return t.result  
-  
-        return decorator2  
+class TimeoutError(Exception):
+    pass
+
+def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
+    def decorator(func):
+        def _handle_timeout(signum, frame):
+            raise TimeoutError(error_message)
+
+        def wrapper(*args, **kwargs):
+            signal.signal(signal.SIGALRM, _handle_timeout)
+            signal.alarm(seconds)
+            try:
+                result = func(*args, **kwargs)
+            finally:
+                signal.alarm(0)
+            return result
+
+        return wraps(func)(wrapper)
+
     return decorator
 
-@timelimited(1000)
+@timeout(1000)
 def deploy_with_timeout(repo, deploy_id, database):
     utils.vagrant_deploy(repo, deploy_id, database)
 
