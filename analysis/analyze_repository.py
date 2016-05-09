@@ -42,8 +42,8 @@ def repository_stats():
     for project_type_name in stats:
         print project_type_name
 
-        for transaction_count, commits_count, repo in sorted(stats[project_type_name], reverse = True):
-            print repo.name, 'commits:{}'.format(commits_count), 'txns:{}'.format(transaction_count)
+        for commits_count, transaction_count, repo in sorted(stats[project_type_name], reverse = True):
+            print repo.name, 'txns:{}'.format(transaction_count), 'commits:{}'.format(commits_count), 
             print 'http://cmdbac.cs.cmu.edu/attempt/' + str(repo.latest_successful_attempt.id)
 
         print '------------------------------'
