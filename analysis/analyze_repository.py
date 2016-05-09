@@ -37,7 +37,7 @@ def repository_stats():
                             transaction_count += 1
 
             if transaction_count > 0:
-                stats[project_type_name].append((transaction_count, repo.commits_count, repo))
+                stats[project_type_name].append((repo.commits_count, transaction_count, repo))
 
     for project_type_name in stats:
         print project_type_name
