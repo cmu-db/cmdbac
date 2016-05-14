@@ -224,6 +224,8 @@ class BaseDeployer(object):
         if forms != None:
             for f in forms:
                 try:
+                    if '/admin' in f['url']:
+                        continue
                     action = Action()
                     action.url = f['url']
                     if f['method'] == '':
@@ -265,6 +267,8 @@ class BaseDeployer(object):
         if urls != None:
             for u in urls:
                 try:
+                    if '/admin' in u['url']:
+                        continue
                     action = Action()
                     action.url = u['url']
                     action.method = 'GET'
