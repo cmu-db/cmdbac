@@ -10,6 +10,7 @@ from datetime import datetime
 import MySQLdb
 import psycopg2
 import sqlite3
+import re
 
 from library.models import *
 from cmudbac.settings import *
@@ -209,23 +210,24 @@ class BaseDeployer(object):
         self.attempt.stop_time = datetime.now()
         self.attempt.size = utils.get_size(self.base_path)
         self.attempt.runtime = runtime
-        if forms != None:
-            self.attempt.actions_count = len(forms)
-            self.attempt.queries_count = sum(len(form['queries']) for form in forms)
-        if urls != None:
-            self.attempt.actions_count += len(urls)
-            self.attempt.queries_count += sum(len(url['queries']) for url in urls)
-        if self.attempt.actions_count == 0 and self.attempt.result == ATTEMPT_STATUS_SUCCESS:
+        self.attempt.actions_count = 0
+        self.attempt.queries_count = 0
+        if forms == None and urls == None and self.attempt.result == ATTEMPT_STATUS_SUCCESS:
             self.attempt.result = ATTEMPT_STATUS_NO_QUERIES
 
         self.attempt.save()
 
         # save forms
         if forms != None:
+            url_patterns = set()
             for f in forms:
                 try:
                     if '/admin' in f['url']:
                         continue
+                    url_pattern = re.sub('\d', '', f['url'])
+                    if url_pattern in url_patterns:
+                        continue
+                    url_patterns.add(url_pattern)
                     action = Action()
                     action.url = f['url']
                     if f['method'] == '':
@@ -233,6 +235,7 @@ class BaseDeployer(object):
                     action.method = f['method'].upper()
                     action.attempt = self.attempt
                     action.save()
+                    self.attempt.actions_count += 1
                     for q in f['queries']:
                         try:
                             query = Query()
@@ -240,6 +243,7 @@ class BaseDeployer(object):
                             query.matched = q['matched']
                             query.action = action
                             query.save()
+                            self.attempt.queries_count += 1
 
                             if 'explain' in q:
                                 explain = Explain()
@@ -265,21 +269,28 @@ class BaseDeployer(object):
 
         # save urls
         if urls != None:
+            url_patterns = set()
             for u in urls:
                 try:
                     if '/admin' in u['url']:
                         continue
+                    url_pattern = re.sub('\d', '', u['url'])
+                    if url_pattern in url_patterns:
+                        continue
+                    url_patterns.add(url_pattern)
                     action = Action()
                     action.url = u['url']
                     action.method = 'GET'
                     action.attempt = self.attempt
                     action.save()
+                    self.attempt.actions_count += 1
                     for q in u['queries']:
                         try:
                             query = Query()
                             query.content = q['content']
                             query.action = action
                             query.save()
+                            self.attempt.queries_count += 1
 
                             if 'explain' in q:
                                 explain = Explain()
@@ -354,6 +365,7 @@ class BaseDeployer(object):
             self.repo.latest_successful_attempt = self.attempt
         self.repo.attempts_count = self.repo.attempts_count + 1
         self.repo.save()
+        self.attempt.save()
     ## DEF
 
     def deploy(self, save = True):
