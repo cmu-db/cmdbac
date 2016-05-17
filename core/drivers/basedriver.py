@@ -70,8 +70,14 @@ class BaseDriver(object):
                 if query == None:
                     if re.search('LOG:  duration:', line):
                         continue
-                    current_query += ' ' + line
-                    new_query = ''
+                    if re.search('UTC DETAIL:', line):
+                        continue
+                    if re.search('LOG:  execute .*?: (.+)', line):
+                        query = re.search('LOG:  execute .*?: (.+)', line)
+                        new_query = query.group(1)
+                    else:
+                        current_query += ' ' + line
+                        new_query = ''
                 else:
                     new_query = query.group(1)
             elif self.deployer.get_database().name == 'SQLite3':
