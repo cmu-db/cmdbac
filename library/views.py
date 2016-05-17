@@ -116,7 +116,7 @@ def repositories(request):
             repo_type = request.GET['type']
             repo_setup_scripts = request.GET['scripts']
             print 'add ' + repo_type + ' repository : ' + repo_name
-            project_type_map = {'django': 1, 'ror': 2, 'node': 3, 'drupal': 4}
+            project_type_map = {'django': 1, 'ror': 2, 'node': 3, 'drupal': 4, 'grails': 5}
             try:    
                 utils.add_repo(repo_name, project_type_map[repo_type], repo_setup_scripts)
                 messages.success(request, 'Successfully added new repository {}'.format(repo_name))

@@ -42,5 +42,16 @@
     "name": "Drupal", 
     "filename": "install.php"
   }
+},
+{
+  "pk": 5, 
+  "model": "library.projecttype", 
+  "fields": {
+    "logo": "img/drupal.png", 
+    "deployer_class": "GrailsDeployer", 
+    "default_port": 8080, 
+    "name": "Grails", 
+    "filename": "application.properties"
+  }
 }
 ]

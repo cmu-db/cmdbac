@@ -54,5 +54,19 @@
     "max_size": 10000,
     "query": "DRUPAL_ROOT"
   }
+},
+{
+  "pk": 5,
+  "model": "library.crawlerstatus",
+  "fields": {
+    "last_crawler_time": "2015-01-16T15:58:19", 
+    "source": 1, 
+    "project_type": 5, 
+    "next_url": "",
+    "min_size": 100,
+    "cur_size": 100, 
+    "max_size": 10000,
+    "query": "grails"
+  }
 }
 ]
