@@ -36,10 +36,31 @@ def count_ruby_failed_repos():
 
     print count
 
+def count_ruby_repetive_queries():
+    repo_count = (0, 0)
+    action_count = (0, 0)
+    for repo in Repository.objects.exclude(latest_successful_attempt = None).filter(project_type = 2):
+        repo_flag = False
+        for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
+            action_flag = False
+            for query in Query.objects.filter(action = action):
+                if 'SELECT 1' in query.content:
+                    repo_flag = True
+                    action_flag = True
+            if action_flag:
+                action_count += (1, 0)
+            action_count += (0, 1)
+        if repo_flag:
+            repo_count += (1, 0)
+        repo_count += (0, 1)
+
+    print repo_count
+    print action_count  
+
 def main():
     # count_deployed_repos()
-    count_ruby_failed_repos()
-        
+    # count_ruby_failed_repos()
+    count_ruby_repetive_queries()  
 
 if __name__ == '__main__':
     main()
