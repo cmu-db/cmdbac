@@ -36,7 +36,7 @@ class GrailsDeployer(BaseDeployer):
     
     def install_requirements(self, path):
         if path:
-            command = '{} && ./grailsw compile'.format(utils.cd(path))
+            command = '{} && export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64 && ./grailsw compile'.format(utils.cd(path))
             out = utils.run_command(command)
             if out[1] == '':
                 return out[2]
@@ -56,7 +56,7 @@ class GrailsDeployer(BaseDeployer):
     def run_server(self, path):
         self.configure_network()
         LOG.info('Running server ...')
-        command = '{} && ./grailsw -Dreindex=1 run-app'.format(
+        command = '{} && export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64 && ./grailsw run-app'.format(
             utils.cd(path))
         return utils.run_command_async(command)
     ## DEF
@@ -68,9 +68,6 @@ class GrailsDeployer(BaseDeployer):
             'version': out[1][1:]
         }
     ## DEF
-
-    def find_port(self):
-        pass
 
     def try_deploy(self, deploy_path):
         LOG.info('Configuring settings ...')
@@ -88,11 +85,14 @@ class GrailsDeployer(BaseDeployer):
         LOG.info(out)
 
         self.run_server(deploy_path)
-        time.sleep(5)
-
-        self.find_port()
         
-        attemptStatus = self.check_server()
+        retry_times = 0
+        while retry_times < 5:
+            time.sleep(30)
+            attemptStatus = self.check_server()
+            if attemptStatus == ATTEMPT_STATUS_SUCCESS:
+                break
+            retry_times += 1
 
         return attemptStatus
     ## DEF
