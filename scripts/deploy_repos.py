@@ -15,7 +15,7 @@ from library.models import *
 import utils
 
 def deploy_all_repos():
-     if len(sys.argv) != 5:
+    if len(sys.argv) != 5:
         return
     project_type = int(sys.argv[1])
     deploy_id = int(sys.argv[2])
