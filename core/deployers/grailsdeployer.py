@@ -7,6 +7,7 @@ import time
 
 from basedeployer import BaseDeployer
 from library.models import *
+from cmudbac.settings import *
 import utils
 
 ## =====================================================================
@@ -30,8 +31,14 @@ class GrailsDeployer(BaseDeployer):
         self.main_filename = None
     ## DEF
     
-    def configure_settings(self, path):
-        pass
+    def configure_settings(self):
+        if HTTP_PROXY != '':
+            with open(os.path.join(self.setting_path, 'wrapper', 'grails-wrapper.properties'), "a") as my_file:
+                my_file.write('\n')
+                proxy_host, proxy_port = HTTP_PROXY.split(':')
+                my_file.write('systemProp.http.proxyHost={}\n'.format(proxy_host))
+                my_file.write('systemProp.http.proxyPort={}\n'.format(proxy_port))
+                my_file.write('systemProp.http.nonProxyHosts=localhost,127.0.0.1')
     ## DEF
     
     def install_requirements(self, path):
@@ -73,7 +80,7 @@ class GrailsDeployer(BaseDeployer):
         LOG.info('Configuring settings ...')
         self.kill_server()
         self.clear_database()
-        self.configure_settings(deploy_path)
+        self.configure_settings()
         self.runtime = self.get_runtime()
         LOG.info(self.runtime)
 
