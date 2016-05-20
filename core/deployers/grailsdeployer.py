@@ -18,7 +18,33 @@ LOG = logging.getLogger()
 ## =====================================================================
 ## SETTINGS
 ## =====================================================================
+DATABASE_SETTINGS = """
+dataSource {{
+    pooled = true
+    jmxExport = true
+    driverClassName = "{jdbc_class}"
+    url = "jdbc:{adapter}://{host}/{name}"
+    username = "{username}"
+    password = "{password}"
+    dbCreate = "create"
+}}
 
+hibernate {{
+    cache.use_second_level_cache = true
+    cache.use_query_cache = true
+    cache.region.factory_class = 'net.sf.ehcache.hibernate.EhCacheRegionFactory' // Hibernate 3
+    //cache.region.factory_class = 'org.hibernate.cache.ehcache.EhCacheRegionFactory' // Hibernate 4
+    singleSession = true // configure OSIV singleSession mode
+    //flush.mode = 'manual' // OSIV session flush mode outside of transactional context
+
+    cache.use_minimal_puts=false
+    cache.provider_configuration_file_resource_path='/ehcache-hibernate.xml'
+
+    default_batch_fetch_size=32
+    jdbc.batch_size=32
+    jdbc.fetch_size=256
+}}
+"""
 
 ## =====================================================================
 ## GRAILS DEPLOYER
@@ -39,6 +65,20 @@ class GrailsDeployer(BaseDeployer):
                 my_file.write('systemProp.http.proxyHost={}\n'.format(proxy_host))
                 my_file.write('systemProp.http.proxyPort={}\n'.format(proxy_port))
                 my_file.write('systemProp.http.nonProxyHosts=localhost,127.0.0.1')
+
+        adapter = {
+            'MySQL': 'mysql',
+        }[self.database.name]
+
+        jdbc_class = {
+            'MySQL': 'com.mysql.jdbc.Driver'
+        }[self.database.name]
+
+        with open(os.path.join(self.setting_path, 'grails-app', 'conf', 'DataSource.groovy'), "w") as my_file:
+            my_file.write(DATABASE_SETTINGS.format(name=self.database_config['name'], 
+                username=self.database_config['username'], password=self.database_config['password'],
+                host=self.database_config['host'], adapter=adapter, jdbc_class = jdbc_class))
+
     ## DEF
     
     def install_requirements(self, path):
@@ -105,6 +145,9 @@ class GrailsDeployer(BaseDeployer):
     ## DEF
     
     def deploy_repo_attempt(self, deploy_path):
+        if self.database.name != 'MySQL':
+            return ATTEMPT_STATUS_DATABASE_ERROR
+
         grailsw_files = utils.search_file(deploy_path, 'grailsw')
         if not grailsw_files:
             LOG.error('No grailsw found!')
