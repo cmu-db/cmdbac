@@ -112,7 +112,7 @@ def deploy_failed_ruby_repos():
 def main():
     # deploy_valid_repos()
     # deploy_failed_ruby_repos()
-    deploy_all_repos
+    deploy_all_repos()
 
 if __name__ == '__main__':
     main()
