@@ -45,6 +45,10 @@ hibernate {{
     jdbc.fetch_size=256
 }}
 """
+REPOSITORIES_SETTINGS = """
+mavenRepo "http://repo.grails.org/grails/core"
+mavenRepo "http://repo.grails.org/grails/plugins"
+"""
 
 ## =====================================================================
 ## GRAILS DEPLOYER
@@ -79,6 +83,14 @@ class GrailsDeployer(BaseDeployer):
                 username=self.database_config['username'], password=self.database_config['password'],
                 host=self.database_config['host'], adapter=adapter, jdbc_class = jdbc_class))
 
+        with open(os.path.join(self.setting_path, 'grails-app', 'conf', 'BuildConfig.groovy'), "r") as my_file:
+            build_config = my_file.read()
+        with open(os.path.join(self.setting_path, 'grails-app', 'conf', 'BuildConfig.groovy'), "w") as my_file:
+            def add_repositories(matched):
+                s = matched.group(0)
+                s = s[:-1] + REPOSITORIES_SETTINGS + "}"
+                return s
+            my_file.write(re.sub("repositories.*?{.*?}", add_repositories, build_config, flags = re.S))
     ## DEF
     
     def install_requirements(self, path):
