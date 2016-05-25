@@ -78,6 +78,10 @@ class GrailsDeployer(BaseDeployer):
             'MySQL': 'com.mysql.jdbc.Driver'
         }[self.database.name]
 
+        dependency = {
+            'MySQL': "runtime 'mysql:mysql-connector-java:5.1.16'"
+        }[self.database.name]
+
         with open(os.path.join(self.setting_path, 'grails-app', 'conf', 'DataSource.groovy'), "w") as my_file:
             my_file.write(DATABASE_SETTINGS.format(name=self.database_config['name'], 
                 username=self.database_config['username'], password=self.database_config['password'],
@@ -90,7 +94,15 @@ class GrailsDeployer(BaseDeployer):
                 s = matched.group(0)
                 s = s[:-1] + REPOSITORIES_SETTINGS + "}"
                 return s
-            my_file.write(re.sub("repositories.*?{.*?}", add_repositories, build_config, flags = re.S))
+            build_config = re.sub("repositories\s*?{.*?}", add_repositories, build_config, flags = re.S)
+            
+            def add_dependency(matched):
+                s = matched.group(0)
+                s = s[:-1] + dependency + "}"
+                return s
+            build_config = re.sub("dependencies\s*?{.*?}", add_dependency, build_config, flags = re.S)
+            
+            my_file.write(build_config)
     ## DEF
     
     def install_requirements(self, path):
@@ -105,7 +117,13 @@ class GrailsDeployer(BaseDeployer):
     ## DEF
     
     def get_main_url(self):
-        return 'http://127.0.0.1:{}/'.format(self.port)
+        domain = ''
+        for root, dirs, files in os.walk(os.path.join(self.setting_path, 'grails-app', 'domain')):
+            if dirs:
+                domain = dirs[0]
+                break
+
+        return 'http://127.0.0.1:{}/{}'.format(self.port, domain)
     ## DEF
 
     def sync_server(self, path):

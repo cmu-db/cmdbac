@@ -438,6 +438,7 @@ class BaseDeployer(object):
     def check_server(self):
         LOG.info("Checking server ...")
         url = self.get_main_url()
+        LOG.info("Main Url : {}".format(url))
         command = 'wget --spider {}'.format(url)
         out = utils.run_command(command)
         LOG.info(out)
