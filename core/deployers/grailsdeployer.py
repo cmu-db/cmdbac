@@ -133,8 +133,8 @@ class GrailsDeployer(BaseDeployer):
     def run_server(self, path):
         self.configure_network()
         LOG.info('Running server ...')
-        command = '{} && export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64 && chmod 777 grailsw && ./grailsw run-app'.format(
-            utils.cd(path))
+        command = '{} && export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64 && chmod 777 grailsw && ./grailsw -Dserver.port={} run-app'.format(
+            utils.cd(path), self.port)
         return utils.run_command_async(command)
     ## DEF
 
