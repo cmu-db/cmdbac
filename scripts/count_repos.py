@@ -59,11 +59,16 @@ def count_ruby_repetive_queries():
 
 def count_wrong_marked_repos():
     repo_count = 0
-    for repo in Repository.objects.exclude(latest_successful_attempt = None).filter(project_type = 2):
+    for repo in Repository.objects.exclude(latest_successful_attempt = None):
         if repo.latest_successful_attempt.result != 'OK':
             repo_count += 1
-        repo.latest_successful_attempt = None
-        repo.save()
+            repo.latest_successful_attempt = None
+            repo.save()
+    for repo in Repository.objects.filter(project_type = 2):
+        attempts = Attempt.objects.filter(repo = repo).filter(result = 'OK')
+        if attempts:
+            repo.latest_successful_attempt = list(attempts)[-1]
+            repo.save()
     print repo_count
 
 def main():
