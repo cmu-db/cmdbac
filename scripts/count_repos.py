@@ -57,6 +57,13 @@ def count_ruby_repetive_queries():
     print repo_count
     print action_count  
 
+def count_wrong_marked_repos():
+    repo_count = 0
+    for repo in Repository.objects.exclude(latest_successful_attempt = None).filter(project_type = 2):
+        if repo.latest_successful_attempt.result != 'OK':
+            repo_count += 1
+    print repo_count
+
 def main():
     # count_deployed_repos()
     # count_ruby_failed_repos()

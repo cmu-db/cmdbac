@@ -363,7 +363,7 @@ class BaseDeployer(object):
         self.repo.latest_attempt = self.attempt
         if self.attempt.result == ATTEMPT_STATUS_SUCCESS and self.attempt.queries_count == 0:
             self.attempt.result = ATTEMPT_STATUS_NO_QUERIES
-        if attempt_result == ATTEMPT_STATUS_SUCCESS:
+        if self.attempt.result == ATTEMPT_STATUS_SUCCESS:
             self.repo.latest_successful_attempt = self.attempt
         self.repo.attempts_count = self.repo.attempts_count + 1
         self.repo.save()
