@@ -62,12 +62,14 @@ def count_wrong_marked_repos():
     for repo in Repository.objects.exclude(latest_successful_attempt = None).filter(project_type = 2):
         if repo.latest_successful_attempt.result != 'OK':
             repo_count += 1
+        repo.latest_successful_attempt = None
     print repo_count
 
 def main():
     # count_deployed_repos()
     # count_ruby_failed_repos()
-    count_ruby_repetive_queries()  
+    # count_ruby_repetive_queries()  
+    count_wrong_marked_repos()
 
 if __name__ == '__main__':
     main()
