@@ -161,7 +161,10 @@ def repositories(request):
 
     result_list = request.GET.getlist('results')
     if result_list:
-        repositories = repositories.filter(latest_attempt__result__in=result_list)
+        if ATTEMPT_STATUS_SUCCESS in result_list and len(result_list) == 1:
+            repositories = repositories.exclude(latest_successful_attempt = None)
+        else:
+            repositories = repositories.filter(latest_attempt__result__in=result_list)
 
     type_list = request.GET.getlist('types')
     if type_list:
