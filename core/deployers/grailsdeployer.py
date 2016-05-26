@@ -139,10 +139,9 @@ class GrailsDeployer(BaseDeployer):
     ## DEF
 
     def get_runtime(self):
-        out = utils.run_command('node -v')
         return {
-            'executable': 'node',
-            'version': out[1][1:]
+            'executable': 'java',
+            'version': '1.7'
         }
     ## DEF
 
