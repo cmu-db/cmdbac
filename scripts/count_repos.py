@@ -63,6 +63,7 @@ def count_wrong_marked_repos():
         if repo.latest_successful_attempt.result != 'OK':
             repo_count += 1
         repo.latest_successful_attempt = None
+        repo.save()
     print repo_count
 
 def main():
