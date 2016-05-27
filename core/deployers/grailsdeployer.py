@@ -117,13 +117,15 @@ class GrailsDeployer(BaseDeployer):
     ## DEF
     
     def get_main_url(self):
-        domain = ''
-        for root, dirs, files in os.walk(os.path.join(self.setting_path, 'grails-app', 'domain')):
-            if dirs:
-                domain = dirs[0]
-                break
+        main_url = 'http://127.0.0.1:{}'.format(self.port)
 
-        return 'http://127.0.0.1:{}/{}'.format(self.port, domain)
+        with open(os.path.join(self.setting_path, 'grails_output'), "r") as my_file:
+            output = my_file.read()
+            match = re.search('Browse to (.+)', output)
+            if match:
+                main_url = match.group(1)
+
+        return main_url
     ## DEF
 
     def sync_server(self, path):
@@ -133,7 +135,7 @@ class GrailsDeployer(BaseDeployer):
     def run_server(self, path):
         self.configure_network()
         LOG.info('Running server ...')
-        command = '{} && export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64 && chmod 777 grailsw && ./grailsw -Dserver.port={} run-app'.format(
+        command = '{} && export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64 && chmod 777 grailsw && ./grailsw -Dserver.port={} run-app > grails_output'.format(
             utils.cd(path), self.port)
         return utils.run_command_async(command)
     ## DEF
