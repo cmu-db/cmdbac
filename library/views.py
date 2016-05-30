@@ -152,7 +152,12 @@ def repositories(request):
             finally:
                 return redirect(request.META['HTTP_REFERER'])
 
-    repositories = Repository.objects.all()
+    print len(request.GET)
+    if len(request.GET) == 0:
+        repositories = Repository.objects.filter(latest_attempt__result = ATTEMPT_STATUS_SUCCESS)
+    else:
+        repositories = Repository.objects.all()
+    
     if request.GET.get('search', '') != '':
         repo_name = request.GET['search']
         print 'search: ' + repo_name
