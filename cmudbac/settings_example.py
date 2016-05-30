@@ -85,6 +85,13 @@ DATABASES = {
     }
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': '/var/tmp/django_cache',
+    }
+}
+
 LOG_FILE_LOCATION = {
     'mysql': '/var/log/mysql/mysql.log',
     'postgresql': '/var/log/postgresql/postgresql-9.3-main.log'
