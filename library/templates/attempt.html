@@ -114,19 +114,21 @@
                         
                         {% if screenshot %}
                             <script>
-                                function fixHeight() {
                                 var height = document.getElementById('attempt-info').offsetHeight;
-                                document.getElementsByClassName('screenshot-div')[0].style.height = height;
+                                var width = document.getElementById('attempt-info').
+                                    offsetWidth;
+                                document.getElementsByClassName('screenshot-div')[0].style.
+                                    height = height + "px";
+                                document.getElementsByClassName('screenshot-div')[0].style.
+                                    width = width + "px";
                                 document.getElementsByClassName('screenshot-div')[0].style.overflow = 'hidden'; 
-                                // .css('height', height);
-                                // $('.screenshot-div').css('overflow', 'hidden');
-                                // document.getElementById('screenshot-div').style.overflow = "hidden";
-                                // document.getElementById('screenshot-div').setAttribute("height", height);
-                                document.getElementById('screenshot').setAttribute("height", height);
+                                function fixHeight() {
+                                    // document.getElementById('screenshot').setAttribute("height", height);
+                                    document.getElementById('screenshot').setAttribute("width", width);
                                 }
                             </script>
                             <a href="#" data-toggle="modal" data-target="#screenshotModal">
-                                <img src="{{ screenshot }}" id="screenshot" height="1" width="100%" onload="fixHeight()">
+                                <img src="{{ screenshot }}" id="screenshot" onload="fixHeight()">
                             </a>
                         {% else %}
                             <script>
