@@ -106,12 +106,15 @@ class BaseDriver(object):
             display.start()
             from selenium import webdriver
             try:
-                from selenium.webdriver.common.proxy import *
-                proxy = Proxy({
-                    'proxyType': ProxyType.MANUAL,
-                    'httpProxy': HTTP_PROXY
-                })
-                br = webdriver.Firefox(proxy=proxy)
+                if '127.0.0.1' in main_url or 'localhost' in main_url:
+                    br = webdriver.Firefox()
+                else:
+                    from selenium.webdriver.common.proxy import *
+                    proxy = Proxy({
+                        'proxyType': ProxyType.MANUAL,
+                        'httpProxy': HTTP_PROXY
+                    })
+                    br = webdriver.Firefox(proxy=proxy)
             except Exception, e:
                 LOG.exception(e)
                 br = webdriver.Firefox()
