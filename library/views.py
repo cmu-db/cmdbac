@@ -20,11 +20,12 @@ from django.shortcuts import redirect, get_object_or_404
 from django.db.models import Count
 from django.db.models import Max
 from django.http import StreamingHttpResponse
+from django.db.models.query import QuerySet
 from models import *
 from forms import *
 import utils
 
-class Statistic:
+class MainPageStatistic:
     def __init__(self, project_type, last_updated, num_repo, num_suc, num_deploy, num_valid_deploy):
         self.project_type = project_type
         self.last_updated = last_updated
@@ -60,7 +61,7 @@ def home(request):
         # num_pkg = Package.objects.filter(project_type=t).count()
         num_deploy = repos.exclude(latest_attempt=None).count()
         num_valid_deploy = repos.filter(valid_project=True).count()
-        stat = Statistic(t, last_updated, num_repo, num_suc, num_deploy, num_valid_deploy)
+        stat = MainPageStatistic(t, last_updated, num_repo, num_suc, num_deploy, num_valid_deploy)
         stats.append(stat)
     ## FOR
     
@@ -92,7 +93,7 @@ def repositories(request):
 
     context["result_form"] = ResultForm(request.GET)
     context['type_form'] = ProjectTypeForm(request.GET)
-
+    context["statistics_form"] = StatisticsForm(request.GET)
 
     if request.user.is_superuser:
         if request.GET.__contains__('module') and request.GET.__contains__('package') and request.GET.__contains__('type') and request.GET.__contains__('version'):
@@ -174,6 +175,22 @@ def repositories(request):
     type_list = request.GET.getlist('types')
     if type_list:
         repositories = repositories.filter(project_type__name__in=type_list)
+
+    for description in ['num_tables', 'num_indexes', 'num_foreignkeys']:
+        try:
+            lower_bound = int(request.GET.get(description + '_0', 0))
+        except:
+            lower_bound = 0
+        try:
+            upper_bound = int(request.GET.get(description + '_1', 0))
+        except:
+            upper_bound = 0
+        if lower_bound > 0 or upper_bound > 0:
+            attempts = []
+            for statistic in Statistic.objects.filter(description = description).filter(count__gte=lower_bound).filter(count__lte=upper_bound):
+                attempts.append(statistic.attempt)
+            repositories = repositories.filter(latest_successful_attempt__in = attempts)
+            break  
 
     order_by = request.GET.get('order_by', 'crawler_date')
     repositories = repositories.order_by(order_by)
@@ -283,6 +300,7 @@ def search(request):
     context = {}
     context["result_form"] = ResultForm(request.GET)
     context['type_form'] = ProjectTypeForm(request.GET)
+    context["statistics_form"] = StatisticsForm(request.GET)
     
     return render(request, 'search.html', context)
 

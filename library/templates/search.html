@@ -36,6 +36,14 @@
     </div>
 
     <div style="float:left">
+        <button type="button" data-toggle="collapse" data-target="#advanced-search" aria-expanded="false">Advanced</button>
+     
+        <div id="advanced-search" class="collapse">
+           {{ statistics_form }}
+        </div>
+    </div>
+
+    <div style="float:right">
         <b>Name:</b>
         <input type="Search" placeholder='Search by full name' value='{{ search }}' class="form-control" name='search'/>
         <div style="margin: 20px">
