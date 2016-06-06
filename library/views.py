@@ -190,7 +190,6 @@ def repositories(request):
             for statistic in Statistic.objects.filter(description = description).filter(count__gte=lower_bound).filter(count__lte=upper_bound):
                 attempts.append(statistic.attempt)
             repositories = repositories.filter(latest_successful_attempt__in = attempts)
-            break  
 
     order_by = request.GET.get('order_by', 'crawler_date')
     repositories = repositories.order_by(order_by)
