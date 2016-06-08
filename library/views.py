@@ -181,9 +181,13 @@ def repositories(request):
                 bounds = request.GET.get(description).split('-')
                 lower_bound = int(bounds[0])
                 upper_bound = int(bounds[1])
+            else:
+                lower_bound = 0
+                upper_bound = 0
         except:
             lower_bound = 0
             upper_bound = 0
+            print 123
         if lower_bound > 0 or upper_bound > 0:
             attempts = []
             for statistic in Statistic.objects.filter(description = description).filter(count__gte=lower_bound).filter(count__lte=upper_bound):
