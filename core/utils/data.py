@@ -60,3 +60,37 @@ def deploy_repo(repo_name, database = 'PostgreSQL'):
 def delete_repo(repo_name):
     for repo in Repository.objects.filter(name=repo_name):
         repo.delete()
+
+def edit_distance(a, b, threshold = 3):
+    dis = threshold + 1
+    len_a = len(a)
+    len_b = len(b)
+    if abs(len_a - len_b) > threshold: 
+        return dis
+    d0 = [0] * (max(len_a, len_b) + 1)
+    d1 = [0] * (max(len_a, len_b) + 1)
+    for i in range(len_a + 1):
+        l = max(0, i - threshold)
+        r = min(len_b, i + threshold)
+        minDis = threshold + 1
+        for j in range(l, r + 1):
+            if i == 0:
+                d1[j] = j
+            elif j == 0:
+                d1[j] = i
+            else:
+                if a[i - 1] == b[j - 1]:
+                    d1[j] = d0[j - 1]
+                else:
+                    d1[j] = d0[j - 1] + 1
+                if j > l:
+                    d1[j] = min(d1[j], d1[j - 1] + 1)
+                if j < i + threshold:
+                    d1[j] = min(d1[j], d0[j] + 1)
+            minDis = min(minDis, d1[j]) 
+        if minDis > threshold:
+            return dis;
+        d0, d1 = d1, d0
+
+    dis = d0[len_b]
+    return dis

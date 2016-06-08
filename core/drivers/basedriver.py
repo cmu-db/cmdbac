@@ -21,6 +21,7 @@ import count
 LOG = logging.getLogger()
 
 SUBMISSION_FORMS_TIMES = 5
+EDIT_DISTANCE_THRESHOLD = 3
 
 ## =====================================================================
 ## BASE DRIVER
@@ -58,9 +59,12 @@ class BaseDriver(object):
         current_query = None
         new_query = None
         for line in logs:
+            line = line.strip()
             if self.deployer.get_database().name == 'MySQL':
                 query = re.search('Query.?(.+)', line)
                 if query == None:
+                    if len(line) > 0 and line[0].isdigit():
+                        continue
                     if current_query != None:
                         current_query += ' ' + line
                         new_query = None
@@ -161,8 +165,19 @@ class BaseDriver(object):
 
         return True
 
+    def equal_queries(self, queries1, queries2):
+        n = len(queries1)
+        if n != len(queries2):
+            return False
+        for i in xrange(n):
+            if utils.edit_distance(queries1[i]['raw'], queries2[i]['raw'], EDIT_DISTANCE_THRESHOLD) > EDIT_DISTANCE_THRESHOLD:
+                return False
+        return True
+
     def equal_url(self, url1, url2):
         if url1['url'] == url2['url']:
+            return True
+        if self.equal_queries(url1['queries'], url2['queries']):
             return True
         return False
 
@@ -361,18 +376,16 @@ class BaseDriver(object):
         for url in urls:
             url['queries'] = []
             url['counter'] = {}
-            if any(self.equal_url(url, ret_url) for ret_url in self.urls):
-                continue
-
             last_line_no = self.check_log()
             try:
                 submit.query_url(url, self.browser)
             except:
-                # traceback.print_exc()
+                traceback.print_exc()
                 pass
             url['queries'], url['counter'] = self.process_logs(self.check_log(last_line_no), None)
             if len(url['queries']) == 0:
-                self.urls.append(url)
+                continue
+            if any(self.equal_url(url, ret_url) for ret_url in self.urls):
                 continue
 
             self.urls.append(url)
@@ -432,8 +445,6 @@ class BaseDriver(object):
         for url in self.urls:
             url['queries'] = []
             url['counter'] = {}
-            if any(self.equal_url(url, ret_url) for ret_url in ret_urls):
-                continue
 
             last_line_no = self.check_log()
             try:
@@ -443,6 +454,8 @@ class BaseDriver(object):
                 pass
             url['queries'], url['counter'] = self.process_logs(self.check_log(last_line_no), None)
             if len(url['queries']) == 0:
+                continue
+            if any(self.equal_url(url, ret_url) for ret_url in ret_urls):
                 continue
 
             LOG.info('Normal: Query the Url on {} Successfully ...'.format(url['url']))
@@ -479,6 +492,12 @@ class BaseDriver(object):
 
         # save urls
         driver_results['urls'] = urls
+        filtered_urls = []
+        for url in driver_results['urls']:
+            if any(self.equal_url(url, filtered_url) for filtered_url in filtered_urls):
+                continue
+            filtered_urls.append(url)
+        driver_results['urls'] = filtered_urls
 
         LOG.info('Saving Screenshot ...')
         screenshot_path = self.save_screenshot(main_url, os.path.join(self.deployer.base_path, 'screenshot.png'))

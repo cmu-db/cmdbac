@@ -153,7 +153,6 @@ def repositories(request):
             finally:
                 return redirect(request.META['HTTP_REFERER'])
 
-    print len(request.GET)
     if len(request.GET) == 0:
         repositories = Repository.objects.filter(latest_attempt__result = ATTEMPT_STATUS_SUCCESS)
     else:
