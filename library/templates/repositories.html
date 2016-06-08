@@ -24,33 +24,35 @@
 
 <h2 class="page-header">Repositories</h2>
 
+<div class="container">
+    <form action="{% url 'repositories' %}" method="get">
+        <div style="float:left">
+        {{ result_form }}
+        </div>
+
+        <div style="float:left">
+        {{ type_form }}
+        </div>
+
+        <div style="float:left">
+            <button type="button" data-toggle="collapse" data-target="#advanced-search" aria-expanded="false">Advanced</button>
+         
+            <div id="advanced-search" class="collapse">
+               {{ statistics_form }}
+            </div>
+        </div>
+
+        <div style="float:right">
+            <b>Name:</b>
+            <input type="Search" placeholder='Search by full name' value='{{ search }}' class="form-control" name='search'/>
+            <div style="margin: 20px">
+                <input class="btn btn-primary btn-lg" type="submit" value="Filter"/>
+            </div>
+        </div>
+    </form>
+</div>
+
 <ul id="pagination1" class="sync-pagination pagination-sm pagination"></ul>
-
-<form action="{% url 'repositories' %}" method="get">
-    <div style="float:left">
-    {{ result_form }}
-    </div>
-
-    <div style="float:left">
-    {{ type_form }}
-    </div>
-
-    <div style="float:left">
-        <button type="button" data-toggle="collapse" data-target="#advanced-search" aria-expanded="false">Advanced</button>
-     
-        <div id="advanced-search" class="collapse">
-           {{ statistics_form }}
-        </div>
-    </div>
-
-    <div style="float:right">
-        <b>Name:</b>
-        <input type="Search" placeholder='Search by full name' value='{{ search }}' class="form-control" name='search'/>
-        <div style="margin: 20px">
-            <input class="btn btn-primary btn-lg" type="submit" value="Filter"/>
-        </div>
-    </div>
-</form>
 
 <div class="table-responsive" style="clear:both;">
     <table class="table table-striped" style="word-break:break-all">
