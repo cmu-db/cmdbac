@@ -33,8 +33,8 @@ def get_crawler(crawler_status, repo_source):
 
 def add_module(module_name, package_name, package_type_id, package_version):
     project_type = ProjectType.objects.get(id=package_type_id)
-    Package.objects.get_or_create(name = package_name, version = package_version)
-    package = Package.objects.get(name = package_name, version = package_version)
+    Package.objects.get_or_create(name = package_name, version = package_version, project_type = project_type)
+    package = Package.objects.get(name = package_name, version = package_version, project_type = project_type)
     module = Module()
     module.name = module_name
     module.package = package

@@ -55,14 +55,15 @@ class BaseDriver(object):
 
     def process_logs(self, logs, inputs):
         queries = []
-        current_query = ''
-        new_query = ''
+        current_query = None
+        new_query = None
         for line in logs:
             if self.deployer.get_database().name == 'MySQL':
                 query = re.search('Query.?(.+)', line)
                 if query == None:
-                    current_query += ' ' + line
-                    new_query = ''
+                    if current_query != None:
+                        current_query += ' ' + line
+                        new_query = None
                 else:
                     new_query = query.group(1)
             elif self.deployer.get_database().name == 'PostgreSQL':
@@ -76,15 +77,17 @@ class BaseDriver(object):
                         query = re.search('LOG:  execute .*?: (.+)', line)
                         new_query = query.group(1)
                     else:
-                        current_query += ' ' + line
-                        new_query = ''
+                        if current_query != None:
+                            current_query += ' ' + line
+                            new_query = None
                 else:
                     new_query = query.group(1)
             elif self.deployer.get_database().name == 'SQLite3':
                 query = re.search("QUERY = u'(.+)'", line)
                 if query == None:
-                    current_query += ' ' + line
-                    new_query = ''
+                    if current_query != None:
+                        current_query += ' ' + line
+                        new_query = None
                 else:
                     new_query = query.group(1)
 
@@ -92,7 +95,7 @@ class BaseDriver(object):
                 if current_query:
                     self.process_query(current_query, inputs, queries)
                 current_query = new_query
-                new_query = ''
+                new_query = None
         if current_query:
             self.process_query(current_query, inputs, queries)
 
