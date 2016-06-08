@@ -177,12 +177,12 @@ def repositories(request):
 
     for description in ['num_tables', 'num_indexes', 'num_foreignkeys']:
         try:
-            lower_bound = int(request.GET.get(description + '_0', 0))
+            if description in request.GET:
+                bounds = request.GET.get(description).split('-')
+                lower_bound = int(bounds[0])
+                upper_bound = int(bounds[1])
         except:
             lower_bound = 0
-        try:
-            upper_bound = int(request.GET.get(description + '_1', 0))
-        except:
             upper_bound = 0
         if lower_bound > 0 or upper_bound > 0:
             attempts = []
