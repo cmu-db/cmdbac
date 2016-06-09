@@ -74,27 +74,7 @@ def home(request):
     return render(request, 'index.html', context)
 ## DEF
 
-def repositories(request):
-    context = {}
-    context['queries'] = request.GET.copy()
-
-    queries_no_page = request.GET.copy()
-    if queries_no_page.__contains__('page'):
-        del queries_no_page['page']
-    if queries_no_page.__contains__('search') and queries_no_page['search'] == '':
-        del queries_no_page['search']
-    context['queries_no_page'] = queries_no_page
-
-    queries_no_page_order = queries_no_page.copy() 
-    if queries_no_page_order.__contains__('order_by'):
-        context['order_by'] = request.GET.get('order_by')
-        del queries_no_page_order['order_by']
-    context['queries_no_page_order'] = queries_no_page_order
-
-    context["result_form"] = ResultForm(request.GET)
-    context['type_form'] = ProjectTypeForm(request.GET)
-    context["statistics_form"] = StatisticsForm(request.GET)
-
+def super_user_stuff(request):
     if request.user.is_superuser:
         if request.GET.__contains__('module') and request.GET.__contains__('package') and request.GET.__contains__('type') and request.GET.__contains__('version'):
             module_name = request.GET['module']
@@ -152,33 +132,34 @@ def repositories(request):
                 traceback.print_exc()
             finally:
                 return redirect(request.META['HTTP_REFERER'])
+## DEF
 
-    if len(request.GET) == 0:
-        repositories = Repository.objects.filter(latest_attempt__result = ATTEMPT_STATUS_SUCCESS)
-    else:
-        repositories = Repository.objects.all()
+def search_stuff(request):
+    if len(request) == 0:
+        request.setlist('results', [ATTEMPT_STATUS_SUCCESS])
+        print ProjectType.objects.all().values_list('name', flat=True)
+        request.setlist('types', ProjectType.objects.all().values_list('name', flat=True))
     
-    if request.GET.get('search', '') != '':
-        repo_name = request.GET['search']
+    repositories = Repository.objects.all()
+
+    if request.get('search', '') != '':
+        repo_name = request['search']
         print 'search: ' + repo_name
         context['search'] = repo_name
         repositories = repositories.filter(name__contains=repo_name)
 
-    result_list = request.GET.getlist('results')
+    result_list = request.getlist('results')
     if result_list:
-        if ATTEMPT_STATUS_SUCCESS in result_list and len(result_list) == 1:
-            repositories = repositories.exclude(latest_successful_attempt = None)
-        else:
-            repositories = repositories.filter(latest_attempt__result__in=result_list)
+        repositories = repositories.filter(latest_attempt__result__in=result_list)
 
-    type_list = request.GET.getlist('types')
+    type_list = request.getlist('types')
     if type_list:
         repositories = repositories.filter(project_type__name__in=type_list)
 
     for description in ['num_tables', 'num_indexes', 'num_foreignkeys']:
         try:
-            if description in request.GET:
-                bounds = request.GET.get(description).split('-')
+            if description in request:
+                bounds = request.get(description).split('-')
                 lower_bound = int(bounds[0])
                 upper_bound = int(bounds[1])
             else:
@@ -187,18 +168,44 @@ def repositories(request):
         except:
             lower_bound = 0
             upper_bound = 0
-            print 123
         if lower_bound > 0 or upper_bound > 0:
             attempts = []
             for statistic in Statistic.objects.filter(description = description).filter(count__gte=lower_bound).filter(count__lte=upper_bound):
                 attempts.append(statistic.attempt)
             repositories = repositories.filter(latest_successful_attempt__in = attempts)
 
-    order_by = request.GET.get('order_by', 'crawler_date')
+    return repositories
+
+def repositories(request):
+    context = {}
+    context['queries'] = request.GET.copy()
+
+    super_user_stuff(request)
+    
+    repositories = search_stuff(context['queries'])
+
+    queries_no_page = context['queries'].copy()
+    if queries_no_page.__contains__('page'):
+        del queries_no_page['page']
+    if queries_no_page.__contains__('search') and queries_no_page['search'] == '':
+        del queries_no_page['search']
+    context['queries_no_page'] = queries_no_page
+
+    queries_no_page_order = queries_no_page.copy() 
+    if queries_no_page_order.__contains__('order_by'):
+        context['order_by'] = context['queries'].get('order_by')
+        del queries_no_page_order['order_by']
+    context['queries_no_page_order'] = queries_no_page_order
+
+    context["result_form"] = ResultForm(context['queries'])
+    context['type_form'] = ProjectTypeForm(context['queries'])
+    context["statistics_form"] = StatisticsForm(context['queries'])
+
+    order_by = context['queries'].get('order_by', 'crawler_date')
     repositories = repositories.order_by(order_by)
 
     paginator = Paginator(repositories, 50) # Show 50 repos per page
-    page = request.GET.get('page')
+    page = context['queries'].get('page')
     try:
         repositories = paginator.page(page)
     except PageNotAnInteger:
