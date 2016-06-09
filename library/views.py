@@ -137,7 +137,6 @@ def super_user_stuff(request):
 def search_stuff(request):
     if len(request) == 0:
         request.setlist('results', [ATTEMPT_STATUS_SUCCESS])
-        print ProjectType.objects.all().values_list('name', flat=True)
         request.setlist('types', ProjectType.objects.all().values_list('name', flat=True))
     
     repositories = Repository.objects.all()
@@ -169,10 +168,8 @@ def search_stuff(request):
             lower_bound = 0
             upper_bound = 0
         if lower_bound > 0 or upper_bound > 0:
-            attempts = []
-            for statistic in Statistic.objects.filter(description = description).filter(count__gte=lower_bound).filter(count__lte=upper_bound):
-                attempts.append(statistic.attempt)
-            repositories = repositories.filter(latest_successful_attempt__in = attempts)
+            attempts = Statistic.objects.filter(description = description).filter(count__gte=lower_bound).filter(count__lte=upper_bound).values_list('attempt', flat = True)
+            repositories = repositories.filter(latest_attempt = attempts)
 
     return repositories
 
