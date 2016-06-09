@@ -196,7 +196,14 @@
                 {% if actions %}
                 {% for action in actions %}
                 <tr>
-                    <td>{{ action.url }}</td>
+                    <td>
+                        {{ action.url }}
+                        <div style="margin-top: 80%">
+                            <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#queries-details-{{action.id}}" aria-expanded="false" aria-controls="queries-details-{{action.id}}" style="margin-bottom: 30px;">
+                                Details
+                            </a>
+                        </div>
+                    </td>
                     <td>{{ action.method }}</td>
                     <td>
                         {% if action.fields %}
@@ -240,19 +247,19 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div>
-                        <a class="btn btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#queries-details-{{action.id}}" aria-expanded="false" aria-controls="queries-details-{{action.id}}">
-                            Details
-                        </a>
+                        {% endif%}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
                         <div id="queries-details-{{action.id}}" class="collapse">
                         </div>
-                        </div>
-                        <script>
-                            document.addEventListener("DOMContentLoaded", function(event) {
-                                $('#queries-details-{{action.id}}').load("{% url 'queries' action.id %}");
-                            });
-                        </script>
-                        {% endif%}
+                    </td>
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function(event) {
+                            $('#queries-details-{{action.id}}').load("{% url 'queries' action.id %}");
+                        });
+                    </script>
                     </td>
                 </tr>
                 {% endfor %}
