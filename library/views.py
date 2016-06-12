@@ -155,21 +155,22 @@ def search_stuff(request):
     if type_list:
         repositories = repositories.filter(project_type__name__in=type_list)
 
-    for description in ['num_tables', 'num_indexes', 'num_foreignkeys']:
-        try:
-            if description in request:
-                bounds = request.get(description).split('-')
-                lower_bound = int(bounds[0])
-                upper_bound = int(bounds[1])
-            else:
+    if len(result_list) == 1 and result_list[0] == ATTEMPT_STATUS_SUCCESS:
+        for description in ['num_tables', 'num_indexes', 'num_foreignkeys']:
+            try:
+                if description in request:
+                    bounds = request.get(description).split('-')
+                    lower_bound = int(bounds[0])
+                    upper_bound = int(bounds[1])
+                else:
+                    lower_bound = 0
+                    upper_bound = 0
+            except:
                 lower_bound = 0
                 upper_bound = 0
-        except:
-            lower_bound = 0
-            upper_bound = 0
-        if lower_bound > 0 or upper_bound > 0:
-            attempts = Statistic.objects.filter(description = description).filter(count__gte=lower_bound).filter(count__lte=upper_bound).values_list('attempt', flat = True)
-            repositories = repositories.filter(latest_attempt = attempts)
+            if lower_bound > 0 or upper_bound > 0:
+                attempts = Statistic.objects.filter(description = description).filter(count__gte=lower_bound).filter(count__lte=upper_bound).values_list('attempt', flat = True)
+                repositories = repositories.filter(latest_attempt = attempts)
 
     return repositories
 

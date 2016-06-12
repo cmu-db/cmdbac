@@ -175,7 +175,7 @@
     $('#pagination1').twbsPagination({
         totalPages: {{ repositories.paginator.num_pages }},
         visiblePages: 10,
-        href: '?page={% templatetag openvariable %}number{% templatetag closevariable %}&{{ queries_no_page.urlencode|safe}}',
+        href: '?page={% templatetag openvariable %}page{% templatetag closevariable %}&{{ queries_no_page.urlencode|safe}}',
         onPageClick: function (event, page) {
             $('#page-content').text('Page ' + page);
         }
@@ -183,7 +183,7 @@
     $('#pagination2').twbsPagination({
         totalPages: {{ repositories.paginator.num_pages }},
         visiblePages: 10,
-        href: '?page={% templatetag openvariable %}number{% templatetag closevariable %}&{{ queries_no_page.urlencode|safe  }}',
+        href: '?page={% templatetag openvariable %}page{% templatetag closevariable %}&{{ queries_no_page.urlencode|safe  }}',
         onPageClick: function (event, page) {
             $('#page-content').text('Page ' + page);
         }
