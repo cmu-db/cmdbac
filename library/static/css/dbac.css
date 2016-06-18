@@ -94,14 +94,22 @@ pre {
 
 @media(max-width:767px) {
     .intro-message {
-        padding-bottom: 15%;
+/*         padding-bottom: 2%; */
         font-size: 100%;
+        text-align: center;
+    }
+    .intro-header img {
+        width: 55%;
+        margin-top: 7%;
+        margin-bottom: 20px;
     }
 
-    .intro-message > h1 {
-        font-size: 3em;
+    .intro-message h1 {
+        font-size: 2.5em;
     }
-
+    .intro-message h3 {
+        font-size: 1em;
+    }
     ul.intro-social-buttons > li {
         display: block;
         margin-bottom: 20px;
