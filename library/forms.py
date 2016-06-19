@@ -13,7 +13,7 @@ class ProjectTypeForm(forms.Form):
     types = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=options, required=False)
 
 class StatisticsForm(forms.Form):
-    options = [('0-10', 'Less than 10'), ('11-100', 'Between 11 and 100'), ('101-99999', 'More than 100')]
-    num_tables = forms.ChoiceField(choices=options, required = False, label = '# of Tables')
-    num_indexes = forms.ChoiceField(choices=options, required = False, label = '# of Indexes')
-    num_foreignkeys = forms.ChoiceField(choices=options, required = False, label = '# of Foreign Keys')
+    options = [('-1', 'Any'), ('0-10', 'Less than 10'), ('11-100', 'Between 11 and 100'), ('101-99999', 'More than 100')]
+    num_tables = forms.ChoiceField(choices=options, required = False, label = '# of Tables', widget=forms.Select(attrs={'class':'form-control'}))
+    num_indexes = forms.ChoiceField(choices=options, required = False, label = '# of Indexes', widget=forms.Select(attrs={'class':'form-control'}))
+    num_foreignkeys = forms.ChoiceField(choices=options, required = False, label = '# of Foreign Keys', widget=forms.Select(attrs={'class':'form-control'}))
