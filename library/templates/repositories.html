@@ -63,7 +63,7 @@
             </div>
             <script type='text/javascript'>
             {% for field in statistics_form %}
-                {% if field.value != "-1" %}
+                {% if field.value != None and field.value != "-1" %}
                     $('#advanced-search').addClass('in');
                 {% endif %}
             {% endfor %}
@@ -173,7 +173,13 @@
                     
                     <td><img src="{% static repository.project_type.logo %}" alt="{{ repository.project_type.name }}" title="{{ repository.project_type.name }}" class="projecttype-logo" /></td>
 
-                    <td>{{repository.commits_count}}</td>
+                    <td>
+                    {% if repository.commits_count != -1 %}
+                        {{repository.commits_count}}
+                    {% else %}
+                        -
+                    {% endif %}
+                    </td>
 
                     <td>{{repository.attempts_count}}</td>
 

@@ -71,23 +71,53 @@
                 <tbody>
                     <tr>
                         <td>Size</td>
-                        <td>{{repository.size}}</td>
+                        <td>
+                        {% if repository.size != -1 %}
+                            {{repository.size}}
+                        {% else %}
+                            -
+                        {% endif %}
+                        </td>
                     </tr>
                     <tr>
                         <td>Forks Count</td>
-                        <td>{{repository.forks_count}}</td>
+                        <td>
+                        {% if repository.forks_count != -1 %}
+                            {{repository.forks_count}}
+                        {% else %}
+                            -
+                        {% endif %}
+                        </td>
                     </tr>
                     <tr>
                         <td>Commits Count</td>
-                        <td>{{repository.commits_count}}</td>
+                        <td>
+                        {% if repository.commits_count != -1 %}
+                            {{repository.commits_count}}
+                        {% else %}
+                            -
+                        {% endif %}
+                        </td>
                     </tr>
                     <tr>
                         <td>Branches Count</td>
-                        <td>{{repository.branches_count}}</td>
+                        <td>
+                        {% if repository.branches_count != -1 %}
+                            {{repository.branches_count}}
+                        {% else %}
+                            -
+                        {% endif %}
+                        </td>
                     </tr>
                     <tr>
                         <td>Contributors Count</td>
-                        <td>{{repository.contributors_count}}</td>
+                        <td>
+                        {% if repository.contributors_count != -1 %}
+                            {{repository.contributors_count}}
+                        {% else %}
+                            -
+                        {% endif %}
+                        </td>
                     </tr>
                 </tbody>
             </table>
