@@ -96,8 +96,11 @@
                 throw new Error('Page is incorrect.');
             }
 
-            page = parseInt(this.getUrlParam('page'));
-            
+            var new_page = parseInt(this.getUrlParam('page'));
+            if (!isNaN(new_page)) {
+                page = new_page;
+            }
+
             this.render(this.getPages(page));
             this.setupEvents();
             
