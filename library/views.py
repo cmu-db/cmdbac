@@ -296,13 +296,6 @@ def queries(request, id):
 def about(request):
     return render(request, 'about.html')
 
-def tools(request):
-    context = {}
-    content = open(os.path.join(os.path.dirname(__file__), 'static', 'md', 'tools.md'), 'r').read()
-    context['content'] = markdown.markdown(content, extensions = ['markdown.extensions.fenced_code'])
-
-    return render(request, 'tools.html', context)
-
 def search(request):
     context = {}
     context["result_form"] = ResultForm(request.GET)
