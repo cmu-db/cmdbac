@@ -134,7 +134,7 @@ def super_user_stuff(request):
                 return redirect(request.META['HTTP_REFERER'])
 ## DEF
 
-def search_stuff(request):
+def search_stuff(context, request):
     if len(request) == 0:
         request.setlist('results', [ATTEMPT_STATUS_SUCCESS])
         request.setlist('types', ProjectType.objects.all().values_list('name', flat=True))
@@ -180,7 +180,7 @@ def repositories(request):
 
     super_user_stuff(request)
     
-    repositories = search_stuff(context['queries'])
+    repositories = search_stuff(context, context['queries'])
 
     queries_no_page = context['queries'].copy()
     if queries_no_page.__contains__('page'):
