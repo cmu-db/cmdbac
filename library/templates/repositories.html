@@ -24,240 +24,245 @@
 
 <h2 class="page-header">Repositories</h2>
 
-<div class="container">
-    <form action="{% url 'repositories' %}" method="get" class="form-horizontal">
-        <style type="text/css">
-            .cmdbac-search-form li {
-                list-style:none;
-                border: hidden;
-                display: inline-block
-            }
-        </style>    
-        
-        <div class="panel panel-default">
-            <div class="panel-body cmdbac-search-form">
-                {% for field in result_form %}
-                    <label for="{{ field.id_for_label }}" style="font-weight: 700">{{ field.label }}</label>
-                    {{ field }}
-                {% endfor %}
-            </div>
-        </div>
-        
-        <div class="panel panel-default">
-            <div class="panel-body cmdbac-search-form">
-                {% for field in type_form %}
-                    <label for="{{ field.id_for_label }}" style="font-weight: 700">{{ field.label }}</label>
-                    {{ field }}
-                {% endfor %}
-            </div>
-        </div>
-        
-        <div id="advanced-search" class="collapse">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    {% for field in statistics_form %}
+<div class="col-md-12">
+
+<div class="row row-offcanvas row-offcanvas-right active">
+
+    <div class="col-sm-3 sidebar-offcanvas"> 
+    
+        <div class="list-group list-group-snippet">
+
+            <form action="{% url 'repositories' %}" method="get" class="form-horizontal">
+                <a href="#" class="list-group-item is-menu" id="results">
+                    {% for field in result_form %}
                         <label for="{{ field.id_for_label }}" style="font-weight: 700">{{ field.label }}</label>
-                            {{ field }}
+                        {{ field }}
                     {% endfor %}
-                </div>
-            </div>
-            <script type='text/javascript'>
-            {% for field in statistics_form %}
-                {% if field.value != None and field.value != "-1" %}
-                    $('#advanced-search').addClass('in');
-                {% endif %}
-            {% endfor %}
-        </script>
+                </a>
+                
+                <a href="#" class="list-group-item is-menu" id="types">
+                    {% for field in type_form %}
+                        <label for="{{ field.id_for_label }}" style="font-weight: 700">{{ field.label }}</label>
+                        {{ field }}
+                    {% endfor %}
+                </a>
+                
+                <a href="#" class="list-group-item is-menu" id="advance">
+                    <div id="advanced-search" class="collapse">
+                        {% for field in statistics_form %}
+                            <label for="{{ field.id_for_label }}" style="font-weight: 700">{{ field.label }}</label>
+                            {{ field }}
+                        {% endfor %}
+                    </div>
+                    <script type='text/javascript'>
+                        {% for field in statistics_form %}
+                            {% if field.value != None and field.value != "-1" %}
+                                $('#advanced-search').addClass('in');
+                            {% endif %}
+                        {% endfor %}
+                    </script>
+                    <button type="button" class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#advanced-search">
+                        <span class="glyphicon glyphicon-cog"></span> Advanced Search
+                    </button>
+                </a>
+                
+                <a href="#" class="list-group-item is-menu" id="search">
+                    <div style="text-align:center" class="row">
+                        <input class="btn btn-primary btn-lg" type="submit" value="Search"/>
+                    </div>
+                </a>
+            </form>
+
         </div>
 
-        <button type="button" class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#advanced-search">
-            <span class="glyphicon glyphicon-cog"></span> Advanced Search
-        </button>
+    </div>
 
-        <div style="text-align:center" class="row">
-            <input class="btn btn-primary btn-lg" type="submit" value="Search"/>
-        </div>
-    </form>
-</div>
+<div class="col-sm-9">
 
-<ul id="pagination1" class="sync-pagination pagination-sm pagination"></ul>
+    <ul id="pagination1" class="sync-pagination pagination-sm pagination"></ul>
 
-<div class="table-responsive" style="clear:both;">
-    <table class="table table-striped" style="word-break:break-all">
-        <thead>
-            <tr>
-                <th class="col-md-2">
-                    {% if order_by == "name" %}
-                        <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
-                    {% endif %}
-                    {% if order_by == "name" %}
-                        <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
-                    {% endif %}
-                    <a href="?order_by={% if order_by == "name" %}-{% endif %}name&amp;{{ queries_no_page_order.urlencode }}">Full Name
-                </th>
-                <th class="col-md-1">
-                    Source
-                </th>
-                <th class="col-md-1">
-                    {% if order_by == "project_type__name" %}
-                        <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
-                    {% endif %}
-                    {% if order_by == "-project_type__name" %}
-                        <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
-                    {% endif %}
-                    <a href="?order_by={% if order_by == "project_type__name" %}-{% endif %}project_type__name&amp;{{ queries_no_page_order.urlencode }}">Type
-                </th>
-                <th class="col-md-1">
-                    {% if order_by == "commits_count" %}
-                        <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
-                    {% endif %}
-                    {% if order_by == "-commits_count" %}
-                        <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
-                    {% endif %}
-                    <a href="?order_by={% if order_by != "-commits_count" %}-{% endif %}commits_count&amp;{{ queries_no_page_order.urlencode }}">Commits
-                </th>
-                <th class="col-md-1">
-                    {% if order_by == "attempts_count" %}
-                        <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
-                    {% endif %}
-                    {% if order_by == "-attempts_count" %}
-                        <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
-                    {% endif %}
-                    <a href="?order_by={% if order_by != "-attempts_count" %}-{% endif %}attempts_count&amp;{{queries_no_page_order.urlencode }}">Attempts
-                </th>
-                <th class="col-md-2">
-                    {% if order_by == "latest_attempt__result" %}
-                        <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
-                    {% endif %}
-                    {% if order_by == "-latest_attempt__result" %}
-                        <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
-                    {% endif %}
-                    <a href="?order_by={% if order_by != "-latest_attempt__result" %}-{% endif %}latest_attempt__result&amp;{{ queries_no_page_order.urlencode }}">Last Result
-                </th>
-                <th class="col-md-1">
-                    {% if order_by == "latest_attempt__actions_count" %}
-                        <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
-                    {% endif %}
-                    {% if order_by == "-latest_attempt__actions_count" %}
-                        <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
-                    {% endif %}
-                    <a href="?order_by={% if order_by != "-latest_attempt__actions_count" %}-{% endif %}latest_attempt__actions_count&amp;{{queries_no_page_order.urlencode }}">Actions
-                </th>
-                <th class="col-md-1">
-                    {% if order_by == "latest_attempt__queries_count" %}
-                        <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
-                    {% endif %}
-                    {% if order_by == "-latest_attempt__queries_count" %}
-                        <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
-                    {% endif %}
-                    <a href="?order_by={% if order_by != "-latest_attempt__queries_count" %}-{% endif %}latest_attempt__queries_count&amp;{{queries_no_page_order.urlencode }}">Queries
-                </th>
-                <th class="col-md-2">
-                    {% if order_by == "updated_date" %}
-                        <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
-                    {% endif %}
-                    {% if order_by == "-updated_date" %}
-                        <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
-                    {% endif %}
-                    <a href="?order_by={% if order_by != "-updated_date" %}-{% endif %}updated_date&amp;{{queries_no_page_order.urlencode }}">Updated
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            {% if repositories %}
-                {% for repository in repositories %}
+    <div class="table-responsive" style="clear:both;">
+        <table class="table table-striped" style="word-break:break-all">
+            <thead>
                 <tr>
-                    <td><a id="{{ repository.name}}" href="{% url 'repository' repository.user_name repository.repo_name %}?{{ queries.urlencode }}">{{repository.name}}</a></td>
-                    
-                    <td><a href="{{ repository.repo_url }}"><img src="{% static repository.source.logo %}" alt="{{ repository.source.name }}" title="View on {{ repository.source.name }}" class="source-logo" /></a></td>
-                    
-                    <td><img src="{% static repository.project_type.logo %}" alt="{{ repository.project_type.name }}" title="{{ repository.project_type.name }}" class="projecttype-logo" /></td>
-
-                    <td>
-                    {% if repository.commits_count != -1 %}
-                        {{repository.commits_count}}
-                    {% else %}
-                        -
-                    {% endif %}
-                    </td>
-
-                    <td>{{repository.attempts_count}}</td>
-
-                    <td>{% if not repository.latest_attempt %}-{% else %}
-                        <a id="{{repository.latest_attempt.id}}" href="#" data-toggle="modal" data-target="#attemptStatusModal" title="View Status Code Information" class="label label-statuscode label-{{ repository.latest_attempt.result_label }}" style="cursor: help;">{{repository.latest_attempt.result_name}}</a>
-                    {% endif %}
-                    </td>
-
-                    <td>
-                    {% if repository.latest_attempt %}
-                        {{ repository.latest_attempt.actions_count }}
-                    {% else %}
-                        0
-                    {% endif %}
-                    </td>
-
-                    <td>
-                    {% if repository.latest_attempt %}
-                        {{ repository.latest_attempt.queries_count }}
-                    {% else %}
-                        0
-                    {% endif %}
-                    </td>
-                    
-                    <td>{{repository.updated_date|date:'Y-m-d H:i:s' }}</td>
-                    
-                    {% if user.is_staff %}  
-                    <td>
-                        <div class="row">
-                            <div class="col-xs-3">
-                                <form action="{% url 'repositories' %}" method="get">
-                                    <input type="hidden" value="{{repository.name}}" name="deploy"/>
-                                    <label for="deploy{{repository.id}}" class="btn">
-                                        <i class="glyphicon glyphicon-circle-arrow-down" title="deploy"></i>
-                                    </label>
-                                    <input id="deploy{{repository.id}}" class="hidden" type="submit"/> 
-                                </form>
-                                </div>
-
-                                <div class="col-xs-3">
-                                <form action="{% url 'repositories' %}" method="get">
-                                    <input type="hidden" value="{{repository.name}}" name="delete"/>
-                                    <label for="delete{{repository.id}}" class="btn">
-                                        <i class="glyphicon glyphicon-trash" title="delete"></i>
-                                    </label>
-                                    <input id="delete{{repository.id}}" class="hidden" type="submit"/> 
-                                </form>
-                            </div>
-                        </div>
-                    </td>
-                    {% endif %}
-                    
+                    <th class="col-md-2">
+                        {% if order_by == "name" %}
+                            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+                        {% endif %}
+                        {% if order_by == "name" %}
+                            <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+                        {% endif %}
+                        <a href="?order_by={% if order_by == "name" %}-{% endif %}name&amp;{{ queries_no_page_order.urlencode }}">Full Name
+                    </th>
+                    <th class="col-md-1">
+                        Source
+                    </th>
+                    <th class="col-md-1">
+                        {% if order_by == "project_type__name" %}
+                            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+                        {% endif %}
+                        {% if order_by == "-project_type__name" %}
+                            <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+                        {% endif %}
+                        <a href="?order_by={% if order_by == "project_type__name" %}-{% endif %}project_type__name&amp;{{ queries_no_page_order.urlencode }}">Type
+                    </th>
+                    <th class="col-md-1">
+                        {% if order_by == "commits_count" %}
+                            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+                        {% endif %}
+                        {% if order_by == "-commits_count" %}
+                            <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+                        {% endif %}
+                        <a href="?order_by={% if order_by != "-commits_count" %}-{% endif %}commits_count&amp;{{ queries_no_page_order.urlencode }}">Commits
+                    </th>
+                    <th class="col-md-1">
+                        {% if order_by == "attempts_count" %}
+                            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+                        {% endif %}
+                        {% if order_by == "-attempts_count" %}
+                            <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+                        {% endif %}
+                        <a href="?order_by={% if order_by != "-attempts_count" %}-{% endif %}attempts_count&amp;{{queries_no_page_order.urlencode }}">Attempts
+                    </th>
+                    <th class="col-md-2">
+                        {% if order_by == "latest_attempt__result" %}
+                            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+                        {% endif %}
+                        {% if order_by == "-latest_attempt__result" %}
+                            <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+                        {% endif %}
+                        <a href="?order_by={% if order_by != "-latest_attempt__result" %}-{% endif %}latest_attempt__result&amp;{{ queries_no_page_order.urlencode }}">Last Result
+                    </th>
+                    <th class="col-md-1">
+                        {% if order_by == "latest_attempt__actions_count" %}
+                            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+                        {% endif %}
+                        {% if order_by == "-latest_attempt__actions_count" %}
+                            <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+                        {% endif %}
+                        <a href="?order_by={% if order_by != "-latest_attempt__actions_count" %}-{% endif %}latest_attempt__actions_count&amp;{{queries_no_page_order.urlencode }}">Actions
+                    </th>
+                    <th class="col-md-1">
+                        {% if order_by == "latest_attempt__queries_count" %}
+                            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+                        {% endif %}
+                        {% if order_by == "-latest_attempt__queries_count" %}
+                            <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+                        {% endif %}
+                        <a href="?order_by={% if order_by != "-latest_attempt__queries_count" %}-{% endif %}latest_attempt__queries_count&amp;{{queries_no_page_order.urlencode }}">Queries
+                    </th>
+                    <th class="col-md-2">
+                        {% if order_by == "updated_date" %}
+                            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+                        {% endif %}
+                        {% if order_by == "-updated_date" %}
+                            <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+                        {% endif %}
+                        <a href="?order_by={% if order_by != "-updated_date" %}-{% endif %}updated_date&amp;{{queries_no_page_order.urlencode }}">Updated
+                    </th>
                 </tr>
-                {% endfor %}
-            {% endif %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% if repositories %}
+                    {% for repository in repositories %}
+                    <tr>
+                        <td><a id="{{ repository.name}}" href="{% url 'repository' repository.user_name repository.repo_name %}?{{ queries.urlencode }}">{{repository.name}}</a></td>
+                        
+                        <td><a href="{{ repository.repo_url }}"><img src="{% static repository.source.logo %}" alt="{{ repository.source.name }}" title="View on {{ repository.source.name }}" class="source-logo" /></a></td>
+                        
+                        <td><img src="{% static repository.project_type.logo %}" alt="{{ repository.project_type.name }}" title="{{ repository.project_type.name }}" class="projecttype-logo" /></td>
+
+                        <td>
+                        {% if repository.commits_count != -1 %}
+                            {{repository.commits_count}}
+                        {% else %}
+                            -
+                        {% endif %}
+                        </td>
+
+                        <td>{{repository.attempts_count}}</td>
+
+                        <td>{% if not repository.latest_attempt %}-{% else %}
+                            <a id="{{repository.latest_attempt.id}}" href="#" data-toggle="modal" data-target="#attemptStatusModal" title="View Status Code Information" class="label label-statuscode label-{{ repository.latest_attempt.result_label }}" style="cursor: help;">{{repository.latest_attempt.result_name}}</a>
+                        {% endif %}
+                        </td>
+
+                        <td>
+                        {% if repository.latest_attempt %}
+                            {{ repository.latest_attempt.actions_count }}
+                        {% else %}
+                            0
+                        {% endif %}
+                        </td>
+
+                        <td>
+                        {% if repository.latest_attempt %}
+                            {{ repository.latest_attempt.queries_count }}
+                        {% else %}
+                            0
+                        {% endif %}
+                        </td>
+                        
+                        <td>{{repository.updated_date|date:'Y-m-d H:i:s' }}</td>
+                        
+                        {% if user.is_staff %}  
+                        <td>
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <form action="{% url 'repositories' %}" method="get">
+                                        <input type="hidden" value="{{repository.name}}" name="deploy"/>
+                                        <label for="deploy{{repository.id}}" class="btn">
+                                            <i class="glyphicon glyphicon-circle-arrow-down" title="deploy"></i>
+                                        </label>
+                                        <input id="deploy{{repository.id}}" class="hidden" type="submit"/> 
+                                    </form>
+                                    </div>
+
+                                    <div class="col-xs-3">
+                                    <form action="{% url 'repositories' %}" method="get">
+                                        <input type="hidden" value="{{repository.name}}" name="delete"/>
+                                        <label for="delete{{repository.id}}" class="btn">
+                                            <i class="glyphicon glyphicon-trash" title="delete"></i>
+                                        </label>
+                                        <input id="delete{{repository.id}}" class="hidden" type="submit"/> 
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                        {% endif %}
+                        
+                    </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <ul id="pagination2" class="sync-pagination pagination-sm pagination"></ul>
+
+    <script type='text/javascript'>
+        $('#pagination1').twbsPagination({
+            totalPages: {{ repositories.paginator.num_pages }},
+            visiblePages: 10,
+            href: '?page={% templatetag openvariable %}page{% templatetag closevariable %}&{{ queries_no_page.urlencode|safe}}',
+            onPageClick: function (event, page) {
+                $('#page-content').text('Page ' + page);
+            }
+        });
+        $('#pagination2').twbsPagination({
+            totalPages: {{ repositories.paginator.num_pages }},
+            visiblePages: 10,
+            href: '?page={% templatetag openvariable %}page{% templatetag closevariable %}&{{ queries_no_page.urlencode|safe  }}',
+            onPageClick: function (event, page) {
+                $('#page-content').text('Page ' + page);
+            }
+        });
+    </script>
+
 </div>
 
-<ul id="pagination2" class="sync-pagination pagination-sm pagination"></ul>
+</div>
 
-<script type='text/javascript'>
-    $('#pagination1').twbsPagination({
-        totalPages: {{ repositories.paginator.num_pages }},
-        visiblePages: 10,
-        href: '?page={% templatetag openvariable %}page{% templatetag closevariable %}&{{ queries_no_page.urlencode|safe}}',
-        onPageClick: function (event, page) {
-            $('#page-content').text('Page ' + page);
-        }
-    });
-    $('#pagination2').twbsPagination({
-        totalPages: {{ repositories.paginator.num_pages }},
-        visiblePages: 10,
-        href: '?page={% templatetag openvariable %}page{% templatetag closevariable %}&{{ queries_no_page.urlencode|safe  }}',
-        onPageClick: function (event, page) {
-            $('#page-content').text('Page ' + page);
-        }
-    });
-</script>
+</div>
 
 {% endblock %}
