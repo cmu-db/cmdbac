@@ -33,6 +33,17 @@
         <div class="list-group list-group-snippet">
 
             <form action="{% url 'repositories' %}" method="get" class="form-horizontal">
+                <a href="#" class="list-group-item is-menu" id="search">
+                    <div style="text-align:center" class="row">
+                        <input class="btn btn-primary btn-md" type="submit" value="Search"/>
+                    </div>
+                </a>
+
+                <a href="#" class="list-group-item is-menu" id="name">
+                    <b>Name:</b>
+                    <input type="Search" placeholder='Search by full name' value='{{ search }}' class="form-control" name='search'/>
+                </a>
+
                 <a href="#" class="list-group-item is-menu" id="results">
                     {% for field in result_form %}
                         <label for="{{ field.id_for_label }}" style="font-weight: 700">{{ field.label }}</label>
@@ -48,29 +59,11 @@
                 </a>
                 
                 <a href="#" class="list-group-item is-menu" id="advance">
-                    <div id="advanced-search" class="collapse">
-                        {% for field in statistics_form %}
-                            <label for="{{ field.id_for_label }}" style="font-weight: 700">{{ field.label }}</label>
-                            {{ field }}
-                        {% endfor %}
-                    </div>
-                    <script type='text/javascript'>
-                        {% for field in statistics_form %}
-                            {% if field.value != None and field.value != "-1" %}
-                                $('#advanced-search').addClass('in');
-                            {% endif %}
-                        {% endfor %}
-                    </script>
-                    <button type="button" class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#advanced-search">
-                        <span class="glyphicon glyphicon-cog"></span> Advanced Search
-                    </button>
-                </a>
-                
-                <a href="#" class="list-group-item is-menu" id="search">
-                    <div style="text-align:center" class="row">
-                        <input class="btn btn-primary btn-lg" type="submit" value="Search"/>
-                    </div>
-                </a>
+                    {% for field in statistics_form %}
+                        <label for="{{ field.id_for_label }}" style="font-weight: 700">{{ field.label }}</label>
+                        {{ field }}
+                    {% endfor %}
+                </a>s
             </form>
 
         </div>
