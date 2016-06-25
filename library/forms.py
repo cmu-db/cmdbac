@@ -8,7 +8,7 @@ from django.utils.translation import ugettext as _
 class ResultForm(forms.Form):
     results = forms.MultipleChoiceField(
                         widget=forms.CheckboxSelectMultiple,
-                        choices=ATTEMPT_STATUS,
+                        choices=reversed(ATTEMPT_STATUS),
                         required=False,
                         label="Latest Attempt Status")
 
