@@ -36,32 +36,28 @@
                 <div class="list-group-item is-menu row text-center" id="search">
                     <input class="btn btn-primary btn-md" type="submit" value="Search"/>
                 </div>
-
-                <a href="#" class="list-group-item is-menu" id="name">
+                <div class="list-group-item is-menu" id="name">
                     <b>Name:</b>
                     <input type="Search" placeholder='Search by full name' value='{{ search }}' class="form-control" name='search'/>
-                </a>
-
-                <a href="#" class="list-group-item is-menu" id="results">
+                </div>
+                <div class="list-group-item is-menu" id="results">
                     {% for field in result_form %}
                         <label for="{{ field.id_for_label }}"><b>{{ field.label }}</b></label>
                         {{ field }}
                     {% endfor %}
-                </a>
-                
-                <a href="#" class="list-group-item is-menu" id="types">
+                </div>
+                <div class="list-group-item is-menu" id="types">
                     {% for field in type_form %}
                         <label for="{{ field.id_for_label }}"><b>{{ field.label }}</b></label>
                         {{ field }}
                     {% endfor %}
-                </a>
-                
-                <a href="#" class="list-group-item is-menu" id="advance">
+                </div>
+                <div class="list-group-item is-menu" id="advance">
                     {% for field in statistics_form %}
                         <label for="{{ field.id_for_label }}"><b>{{ field.label }}</b></label>
                         {{ field }}
                     {% endfor %}
-                </a>
+                </div>
             </form>
 
         </div>
