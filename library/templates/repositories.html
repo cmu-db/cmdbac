@@ -138,7 +138,7 @@
                         {% endif %}
                         <a href="?order_by={% if order_by != "-latest_attempt__queries_count" %}-{% endif %}latest_attempt__queries_count&amp;{{queries_no_page_order.urlencode }}">Queries</a>
                     </th>
-                    <th class="col-md-2">
+                    <th class="col-md-1">
                         {% if order_by == "updated_date" %}
                             <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
                         {% endif %}
@@ -190,7 +190,7 @@
                         {% endif %}
                         </td>
                         
-                        <td>{{repository.updated_date|date:'Y-m-d H:i:s' }}</td>
+                        <td>{{repository.updated_date|date:'Y-m-d' }}</td>
                         
                         {% if user.is_staff %}  
                         <td>
