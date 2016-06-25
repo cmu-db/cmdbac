@@ -85,7 +85,7 @@
                         {% if order_by == "name" %}
                             <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
                         {% endif %}
-                        <a href="?order_by={% if order_by == "name" %}-{% endif %}name&amp;{{ queries_no_page_order.urlencode }}">Full Name
+                        <a href="?order_by={% if order_by == "name" %}-{% endif %}name&amp;{{ queries_no_page_order.urlencode }}">Full Name</a>
                     </th>
                     <th class="col-md-1">
                         Source
@@ -97,7 +97,7 @@
                         {% if order_by == "-project_type__name" %}
                             <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
                         {% endif %}
-                        <a href="?order_by={% if order_by == "project_type__name" %}-{% endif %}project_type__name&amp;{{ queries_no_page_order.urlencode }}">Type
+                        <a href="?order_by={% if order_by == "project_type__name" %}-{% endif %}project_type__name&amp;{{ queries_no_page_order.urlencode }}">Type</a>
                     </th>
                     <th class="col-md-1">
                         {% if order_by == "commits_count" %}
@@ -106,7 +106,7 @@
                         {% if order_by == "-commits_count" %}
                             <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
                         {% endif %}
-                        <a href="?order_by={% if order_by != "-commits_count" %}-{% endif %}commits_count&amp;{{ queries_no_page_order.urlencode }}">Commits
+                        <a href="?order_by={% if order_by != "-commits_count" %}-{% endif %}commits_count&amp;{{ queries_no_page_order.urlencode }}">Commits</a>
                     </th>
                     <th class="col-md-1">
                         {% if order_by == "attempts_count" %}
@@ -115,16 +115,16 @@
                         {% if order_by == "-attempts_count" %}
                             <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
                         {% endif %}
-                        <a href="?order_by={% if order_by != "-attempts_count" %}-{% endif %}attempts_count&amp;{{queries_no_page_order.urlencode }}">Attempts
+                        <a href="?order_by={% if order_by != "-attempts_count" %}-{% endif %}attempts_count&amp;{{queries_no_page_order.urlencode }}">Attempts</a>
                     </th>
-                    <th class="col-md-2">
+                    <th class="col-md-1">
                         {% if order_by == "latest_attempt__result" %}
                             <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
                         {% endif %}
                         {% if order_by == "-latest_attempt__result" %}
                             <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
                         {% endif %}
-                        <a href="?order_by={% if order_by != "-latest_attempt__result" %}-{% endif %}latest_attempt__result&amp;{{ queries_no_page_order.urlencode }}">Last Result
+                        <a href="?order_by={% if order_by != "-latest_attempt__result" %}-{% endif %}latest_attempt__result&amp;{{ queries_no_page_order.urlencode }}">Last Result</a>
                     </th>
                     <th class="col-md-1">
                         {% if order_by == "latest_attempt__actions_count" %}
@@ -133,7 +133,7 @@
                         {% if order_by == "-latest_attempt__actions_count" %}
                             <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
                         {% endif %}
-                        <a href="?order_by={% if order_by != "-latest_attempt__actions_count" %}-{% endif %}latest_attempt__actions_count&amp;{{queries_no_page_order.urlencode }}">Actions
+                        <a href="?order_by={% if order_by != "-latest_attempt__actions_count" %}-{% endif %}latest_attempt__actions_count&amp;{{queries_no_page_order.urlencode }}">Actions</a>
                     </th>
                     <th class="col-md-1">
                         {% if order_by == "latest_attempt__queries_count" %}
@@ -142,7 +142,7 @@
                         {% if order_by == "-latest_attempt__queries_count" %}
                             <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
                         {% endif %}
-                        <a href="?order_by={% if order_by != "-latest_attempt__queries_count" %}-{% endif %}latest_attempt__queries_count&amp;{{queries_no_page_order.urlencode }}">Queries
+                        <a href="?order_by={% if order_by != "-latest_attempt__queries_count" %}-{% endif %}latest_attempt__queries_count&amp;{{queries_no_page_order.urlencode }}">Queries</a>
                     </th>
                     <th class="col-md-2">
                         {% if order_by == "updated_date" %}
@@ -151,7 +151,7 @@
                         {% if order_by == "-updated_date" %}
                             <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
                         {% endif %}
-                        <a href="?order_by={% if order_by != "-updated_date" %}-{% endif %}updated_date&amp;{{queries_no_page_order.urlencode }}">Updated
+                        <a href="?order_by={% if order_by != "-updated_date" %}-{% endif %}updated_date&amp;{{queries_no_page_order.urlencode }}">Updated</a>
                     </th>
                 </tr>
             </thead>

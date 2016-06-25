@@ -6,11 +6,19 @@ from django.utils.translation import ugettext as _
 
 
 class ResultForm(forms.Form):
-    results = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=ATTEMPT_STATUS, required=False)
+    results = forms.MultipleChoiceField(
+                        widget=forms.CheckboxSelectMultiple,
+                        choices=ATTEMPT_STATUS,
+                        required=False,
+                        label="Latest Attempt Status")
 
 class ProjectTypeForm(forms.Form):
     options = ProjectType.objects.all().values_list('name', 'name')
-    types = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=options, required=False)
+    types = forms.MultipleChoiceField(
+                        widget=forms.CheckboxSelectMultiple,
+                        choices=options,
+                        required=False,
+                        label="Project Type")
 
 class StatisticsForm(forms.Form):
     options = [('-1', 'Any'), ('0-10', 'Less than 10'), ('11-100', 'Between 11 and 100'), ('101-99999', 'More than 100')]
