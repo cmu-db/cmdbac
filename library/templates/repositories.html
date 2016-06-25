@@ -34,7 +34,9 @@
 
             <form action="{% url 'repositories' %}" method="get" class="form-horizontal">
                 <div class="list-group-item is-menu" id="name">
+                    <center>
                     <input class="btn btn-primary btn-md" type="submit" value="Search"/>
+                    </center>
                     <p><b>Name:</b>
                     <input type="Search" placeholder='Search by full name' value='{{ search }}' class="form-control" name='search'/>
                 </div>
