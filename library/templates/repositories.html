@@ -46,21 +46,21 @@
 
                 <a href="#" class="list-group-item is-menu" id="results">
                     {% for field in result_form %}
-                        <label for="{{ field.id_for_label }}" style="font-weight: 700">{{ field.label }}</label>
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                         {{ field }}
                     {% endfor %}
                 </a>
                 
                 <a href="#" class="list-group-item is-menu" id="types">
                     {% for field in type_form %}
-                        <label for="{{ field.id_for_label }}" style="font-weight: 700">{{ field.label }}</label>
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                         {{ field }}
                     {% endfor %}
                 </a>
                 
                 <a href="#" class="list-group-item is-menu" id="advance">
                     {% for field in statistics_form %}
-                        <label for="{{ field.id_for_label }}" style="font-weight: 700">{{ field.label }}</label>
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                         {{ field }}
                     {% endfor %}
                 </a>s
