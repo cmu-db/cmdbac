@@ -81,10 +81,10 @@
                         {% endif %}
                         <a href="?order_by={% if order_by == "name" %}-{% endif %}name&amp;{{ queries_no_page_order.urlencode }}">Full Name</a>
                     </th>
-                    <th class="col-md-1">
+                    <th>
                         Source
                     </th>
-                    <th class="col-md-1">
+                    <th>
                         {% if order_by == "project_type__name" %}
                             <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
                         {% endif %}
