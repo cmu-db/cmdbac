@@ -3,60 +3,49 @@
 {% block title %}About &raquo; {% endblock %}
 
 {% block main %}
+    <h2>About</h2>
 
     <!-- PROJECT OVERVIEW -->
     <section id="info">
-        <h2>About</h2>
         <p>The goal of the <b>Database Application Catalog</b> project is to find a large amount of database applications to use in various projects, including workload analysis, automatic tuning, and benchmarking. It searches the Internet for web-based database applications and run them locally in order to learn how they use a DBMS.
 
-        <p>The first component is a crawler that finds database applications hosted on open-source repositories (i.e., GitHub). The crawler uses heuristics that allows it to identify whether a project uses a database for storage. We target web-based applications that use well-known web frameworks (i.e., Django, Ruby on Rails). Thus, we can identify whether a project is relevant if its source code references libraries from one of these frameworks.
-
-        <p>We then developed a tool for automatically deploying an application in a VM sandbox. Targeting applications that use the common web frameworks listed above makes this step easier because they provide an object-relational mapping library that does not depend on a particular DBMS. Their configurations are also likely to be the same (e.g. setting the DBMS credentials in a common configuration file).
+        <p>All of the source code for the CMDBAC is available on <a href="https://github.com/cmu-db/dbac">GitHub</a> under the Apache Software License.
     </section>
     <!-- END PROJECT OVERVIEW -->
     
     <!-- PEOPLE -->
     <section id="people">
-        <h2>People</h2>
+        <h3>People</h3>
         
         <!-- ACTIVE PEOPLE -->
-        <h3>Active</h3>
-        <table class="table text-center">
-            <colgroup>
-                <col class="col-xs-3">
-                <col class="col-xs-3">
-                <col class="col-xs-3">
-                <col class="col-xs-3">
-            </colgroup>
-            <tbody>
-                <tr>
-                    <td>
-                        <a href="http://www.shangzeyuan.com"><img src="{{STATIC_URL}}img/people/zeyuanshang.jpg" alt="Zeyuan Shang"/><br />
-                        Zeyuan Shang</a><br />Tsinghua University
-                    </td>
-                    <td>
-                        <a href="http://www.cs.cmu.edu/~dvanaken/"><img src="{{STATIC_URL}}img/people/danavanaken.jpg" alt="Dana Van Aken"/><br />Dana Van Aken</a><br />Carnegie Mellon University
-                    </td>
-                    <td>
-                        <a href="http://www.cs.cmu.edu/~pavlo/"><img src="{{STATIC_URL}}img/people/andypavlo.jpg" alt="Andy Pavlo" /><br />Andy Pavlo</a><br />Carnegie Mellon University
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="row text-center people">
+            <div class="col-xs-4">
+                <a href="http://www.shangzeyuan.com"><img src="{{STATIC_URL}}img/people/zeyuanshang.jpg" alt="Zeyuan Shang"/><BR/>Zeyuan Shang</a>
+                <br /><em>Tsinghua University</em>
+            </div>
+            <div class="col-xs-4">
+                <a href="http://www.cs.cmu.edu/~dvanaken/"><img src="{{STATIC_URL}}img/people/danavanaken.jpg" alt="Dana Van Aken"/><br />Dana Van Aken</a>
+                <br /><em>Carnegie Mellon University</em>
+            </div>
+            <div class="col-xs-4">
+                <a href="http://www.cs.cmu.edu/~pavlo/"><img src="{{STATIC_URL}}img/people/andypavlo.jpg" alt="Andy Pavlo" /><br />Andy Pavlo</a>
+                <br /><em>Carnegie Mellon University</em>
+            </div>
+        </div>
         
         <!-- ALUMNI -->
-        <p><a name="alumni"></a></p>
-        <h3>Alumni</h3>
+        <h4>Alumni</h4>
         <ul>
-            <li>Fangyu Gao (CMU)</li>
+            <li><a href="https://www.linkedin.com/in/fangyu-gao-01884067">Fangyu Gao</a> <em>(Carnegie Mellon University)</em></li>
         </ul>
     </section>
     <!-- END PEOPLE -->
     
     <!-- ACKNOWLEDGEMENTS -->
     <section id="ack">
-        <h2>Acknowledgements</h2>
+        <h3>Acknowledgements</h3>
         This research was funded (in part) by the National Science Foundation (<a href="http://www.nsf.gov/awardsearch/showAward?AWD_ID=1423210">III-1423210</a>).
+        <BR/>
     </section>
     <!-- END ACKNOWLEDGEMENTS -->
     

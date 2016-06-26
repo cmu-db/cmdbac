@@ -327,6 +327,22 @@ body {
 }
 
 /*
+ * People
+ */
+div.people img {
+    max-width: 90%;
+    margin-bottom: 4px;
+}
+div.people div {
+    line-height: 98%;
+}
+@media (max-width: 768px) {
+    div.people em {
+        font-size: 85%;
+    }
+}
+
+/*
  * Placeholder dashboard ideas
  */
 
@@ -379,6 +395,7 @@ a.showLink:hover, a.hideLink:hover {
 
 /** FOOTER **/
 footer {
+    margin-top: 20px;
     padding: 20px 0;
     background-color: #f8f8f8;
 }
