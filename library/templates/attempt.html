@@ -35,115 +35,103 @@
 
 <section>
     <h3 class="sub-header">Information</h2>
-    <table class="table table-bordered table-striped">
-        <colgroup>
-            <col class="col-xs-7">
-            <col class="col-xs-5">
-        </colgroup>
-        <tbody>
-            <tr>
-                <td>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
-                            <colgroup>
-                                <col class="col-xs-3">
-                                <col class="col-xs-4">
-                            </colgroup>
-                            <tbody id="attempt-info">
-                                <tr>
-                                    <td>Commit</td>
-                                    <td><a href="{{ attempt.commit_url}}">{{attempt.sha}}</a></td>
-                                </tr>
-                                <tr>
-                                    <td>Deployment Host</td>
-                                    <td>{{attempt.hostname}}</td>
-                                </tr>
-                                <tr>
-                                    <td>Start Time</td>
-                                    <td>
-                                    {% if attempt.start_time %}
-                                        {{ attempt.start_time|date:'Y-m-d H:i:s' }}</td>
-                                    {% else %}
-                                        &mdash;
-                                    {% endif %}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Duration</td>
-                                    <td>
-                                    {% if attempt.duration %}
-                                        {{ attempt.duration|floatformat }}s
-                                    {% else %}
-                                        &mdash;
-                                    {% endif %}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Size</td>
-                                    <td>{{ attempt.readable_size }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Runtime</td>
-                                    <td>{{ attempt.runtime.executable }} {{ attempt.runtime.version }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Tested Database</td>
-                                    <td>{{attempt.database.name}}</td>
-                                </tr>
-                                <tr>
-                                    <td>Attempt Result</td>
-                                    <td>
-                                        <a id="{{attempt.id}}" href="#" data-toggle="modal" data-target="#attemptStatusModal" title="View Status Code Information" class="label label-statuscode label-{{ attempt.result_label }}" style="cursor: help;">{{attempt.result_name}}</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Registration Form </td>
-                                    <td><span class="label label-{{ attempt.register_label }}">{{attempt.register_name}}</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Login Form</td>
-                                    <td><span class="label label-{{ attempt.login_label }}">{{attempt.login_name}}</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </td>
-
-                <td>
-                    <div id="screenshot-div" class="screenshot-div">
-                        
-                        {% if screenshot %}
-                            <script>
-                                var height = document.getElementById('attempt-info').offsetHeight;
-                                var width = document.getElementById('attempt-info').
-                                    offsetWidth;
-                                document.getElementsByClassName('screenshot-div')[0].style.
-                                    height = height + "px";
-                                document.getElementsByClassName('screenshot-div')[0].style.
-                                    width = width + "px";
-                                document.getElementsByClassName('screenshot-div')[0].style.overflow = 'hidden'; 
-                                function fixHeight() {
-                                    // document.getElementById('screenshot').setAttribute("height", height);
-                                    document.getElementById('screenshot').setAttribute("width", width);
-                                }
-                            </script>
-                            <a href="#" data-toggle="modal" data-target="#screenshotModal">
-                                <img src="{{ screenshot }}" id="screenshot" onload="fixHeight()">
-                            </a>
-                        {% else %}
-                            <script>
-                                function fixHeight() {
-                                var height = document.getElementById('attempt-info').offsetHeight;
-                                document.getElementById('screenshot').setAttribute("height", height);
-                                }
-                            </script>
-                            <img src="{{STATIC_URL}}img/no_image.gif" id="screenshot" height="1" width="100%" onload="fixHeight()">
-                        {% endif %}
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="row">
+        <div class="col-xs-6 table-responsive">
+            <table class="table table-bordered table-striped">
+            <colgroup>
+                <col class="col-xs-3">
+                <col class="col-xs-4">
+            </colgroup>
+            <tbody id="attempt-info">
+                <tr>
+                    <td>Commit</td>
+                    <td><a href="{{ attempt.commit_url}}">{{attempt.sha}}</a></td>
+                </tr>
+                <tr>
+                    <td>Deployment Host</td>
+                    <td>{{attempt.hostname}}</td>
+                </tr>
+                <tr>
+                    <td>Start Time</td>
+                    <td>
+                    {% if attempt.start_time %}
+                        {{ attempt.start_time|date:'Y-m-d H:i:s' }}</td>
+                    {% else %}
+                        &mdash;
+                    {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Duration</td>
+                    <td>
+                    {% if attempt.duration %}
+                        {{ attempt.duration|floatformat }}s
+                    {% else %}
+                        &mdash;
+                    {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Size</td>
+                    <td>{{ attempt.readable_size }}</td>
+                </tr>
+                <tr>
+                    <td>Runtime</td>
+                    <td>{{ attempt.runtime.executable }} {{ attempt.runtime.version }}</td>
+                </tr>
+                <tr>
+                    <td>Tested Database</td>
+                    <td>{{attempt.database.name}}</td>
+                </tr>
+                <tr>
+                    <td>Attempt Result</td>
+                    <td>
+                        <a id="{{attempt.id}}" href="#" data-toggle="modal" data-target="#attemptStatusModal" title="View Status Code Information" class="label label-statuscode label-{{ attempt.result_label }}" style="cursor: help;">{{attempt.result_name}}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Registration Form </td>
+                    <td><span class="label label-{{ attempt.register_label }}">{{attempt.register_name}}</span></td>
+                </tr>
+                <tr>
+                    <td>Login Form</td>
+                    <td><span class="label label-{{ attempt.login_label }}">{{attempt.login_name}}</span></td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+        <div class="col-xs-6 well well-sm">
+            <div id="screenshot-div" class="screenshot-div">
+                {% if screenshot %}
+                    <script>
+                        var height = document.getElementById('attempt-info').offsetHeight;
+                        var width = document.getElementById('attempt-info').
+                            offsetWidth;
+                        document.getElementsByClassName('screenshot-div')[0].style.
+                            height = height + "px";
+                        document.getElementsByClassName('screenshot-div')[0].style.
+                            width = width + "px";
+                        document.getElementsByClassName('screenshot-div')[0].style.overflow = 'hidden'; 
+                        function fixHeight() {
+                            // document.getElementById('screenshot').setAttribute("height", height);
+                            document.getElementById('screenshot').setAttribute("width", width);
+                        }
+                    </script>
+                    <a href="#" data-toggle="modal" data-target="#screenshotModal">
+                        <img src="{{ screenshot }}" id="screenshot" onload="fixHeight()">
+                    </a>
+                {% else %}
+                    <script>
+                        function fixHeight() {
+                        var height = document.getElementById('attempt-info').offsetHeight;
+                        document.getElementById('screenshot').setAttribute("height", height);
+                        }
+                    </script>
+                    <img src="{{STATIC_URL}}img/no_image.gif" id="screenshot" height="1" width="100%" onload="fixHeight()">
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </section>
 
 <!-- DEPENDENCIES -->

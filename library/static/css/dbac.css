@@ -121,6 +121,10 @@ pre {
     .intro-divider {
         width: 100%;
     }
+    .breadcrumb {
+        font-size: 75%;
+    }
+
 }
 
 .network-name {
@@ -377,6 +381,10 @@ a.hideLink {
 }
 a.showLink:hover, a.hideLink:hover {
   border-bottom: 1px dotted #36f; 
+}
+
+.screenshot-div {
+    outline: 1px solid #666;
 }
 
 /*
