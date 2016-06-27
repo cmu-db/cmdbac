@@ -222,6 +222,10 @@ pre {
     height: auto;
 }
 
+.homepage-status {
+    word-wrap: break-word;
+}
+
 /*
  * Base structure
  */
