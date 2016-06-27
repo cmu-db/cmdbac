@@ -226,7 +226,7 @@ pre {
     word-wrap: break-word;
 }
 .homepage-status table {
-    max-width: 100%;
+    width: 100%;
 }
 div.homepage-status {
     display: table;
