@@ -26,3 +26,4 @@ class StatisticsForm(forms.Form):
     num_indexes = forms.ChoiceField(choices=options, required = False, label = '# of Indexes', widget=forms.Select(attrs={'class':'form-control'}))
     num_constraints = forms.ChoiceField(choices=options, required = False, label = '# of Constraints', widget=forms.Select(attrs={'class':'form-control'}))
     num_foreignkeys = forms.ChoiceField(choices=options, required = False, label = '# of Foreign Keys', widget=forms.Select(attrs={'class':'form-control'}))
+    num_transactions = forms.ChoiceField(choices=options, required = False, label = '# of Transactions', widget=forms.Select(attrs={'class':'form-control'}))
