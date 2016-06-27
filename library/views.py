@@ -259,7 +259,7 @@ def attempt(request, id):
 
     context['statistics'] = {}
     for statistic in Statistic.objects.filter(attempt=attempt):
-        context['statistics'][statistic.description] = statistic.count
+        context['statistics'][statistic.description] = max(statistic.count, context['statistics'].get(statistic.description, 0))
     
     actions = Action.objects.filter(attempt=attempt)
     context['actions'] = []
