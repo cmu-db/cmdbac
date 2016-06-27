@@ -111,7 +111,7 @@
                                 <td>{{ stat.num_valid_deploy }}</td>
                                 <td>{{ stat.num_suc }}</td>
                                 <td>{{ stat.suc_rate }}%</td>
-                                <td>{{ stat.last_updated|date:'Y-m-d' }}</td>
+                                <td class="nowrap">{{ stat.last_updated|date:'Y-m-d' }}</td>
                             </tr>
                             {% endfor %}
                             {% endif %}
@@ -141,9 +141,9 @@
                                     <a id="{{attempt.id}}" href="#" data-toggle="modal" data-target="#attemptStatusModal" title="View Status Code Information" class="label label-statuscode label-{{ attempt.result_label }}" style="cursor: help;">{{attempt.result_name}}</a>
                                 </td>
                                 {% if attempt.start_time %}
-                                <td>{{ attempt.start_time|date:'Y-m-d' }}</td>
+                                <td class="nowrap">{{ attempt.start_time|date:'Y-m-d' }}</td>
                                 {% else %}
-                                <td>-</td>
+                                <td class="nowrap">-</td>
                                 {% endif %}
                             </tr>
                             {% endfor %}
