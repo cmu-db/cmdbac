@@ -222,10 +222,10 @@ pre {
     height: auto;
 }
 
-/*.homepage-status td {
+.homepage-status td {
     word-wrap: break-word;
 }
-.homepage-status table {
+/*.homepage-status table {
     width: 100%;
 }
 div.homepage-status {
