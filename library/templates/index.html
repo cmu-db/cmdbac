@@ -124,7 +124,7 @@
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>Repository</th>
+                                <th class="homepage-repo">Repository</th>
                                 <th>Database</th>
                                 <th>Result</th>
                                 <th>Date</th>
@@ -135,7 +135,7 @@
                             {% for attempt in attempts %}
                             <tr>
                                 <td><img src="{% static attempt.repo.project_type.logo %}" alt="{{ attempt.repo.project_type.name }}" title="{{ attempt.repo.project_type.name }}" class="projecttype-logo" /></td>
-                                <td><a href="{% url 'repository' attempt.repo.user_name attempt.repo.repo_name %}">{{ attempt.repo.name }}</a></td>
+                                <td class="homepage-repo"><a href="{% url 'repository' attempt.repo.user_name attempt.repo.repo_name %}">{{ attempt.repo.name }}</a></td>
                                 <td>{{attempt.database.name}}</td>
                                 <td>
                                     <a id="{{attempt.id}}" href="#" data-toggle="modal" data-target="#attemptStatusModal" title="View Status Code Information" class="label label-statuscode label-{{ attempt.result_label }}" style="cursor: help;">{{attempt.result_name}}</a>

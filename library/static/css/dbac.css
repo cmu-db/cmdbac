@@ -459,6 +459,9 @@ ul.social-buttons li a:hover,ul.social-buttons li a:focus,ul.social-buttons li a
     table {
         font-size: 70%;
     }
+    .homepage-repo {
+        max-width: 100px;
+    }
     .label-statuscode {
         font-size: 65%;
     }
