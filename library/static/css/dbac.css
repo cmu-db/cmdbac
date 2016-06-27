@@ -460,11 +460,11 @@ ul.social-buttons li a:hover,ul.social-buttons li a:focus,ul.social-buttons li a
         font-size: 70%;
     }
     .homepage-repo {
-        max-width: 100px;
+        max-width: 120px;
     }
-    .label-statuscode {
+/*    .label-statuscode {
         font-size: 65%;
-    }
+    }*/
     .section-heading {
         font-size: 175%;
     }
@@ -480,9 +480,9 @@ ul.social-buttons li a:hover,ul.social-buttons li a:focus,ul.social-buttons li a
     table {
         font-size: 60%;
     }
-    .label-statuscode {
+/*    .label-statuscode {
         font-size: 55%;
-    }
+    }*/
     .projecttype-logo {
         max-width: 24px;
         height: auto;
