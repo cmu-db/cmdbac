@@ -95,9 +95,9 @@ def add_transaction_stat(directory = '.'):
         if filter_repository(repo):
             continue
         
+        transaction_count = 0
         for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
             transaction = False
-            transaction_count = 0
 
             for query in Query.objects.filter(action = action):
                 if 'BEGIN' in query.content.upper() or 'START TRANSACTION' in query.content.upper():
