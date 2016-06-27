@@ -156,7 +156,7 @@ def search_stuff(context, request):
         repositories = repositories.filter(project_type__name__in=type_list)
 
     if len(result_list) == 1 and result_list[0] == ATTEMPT_STATUS_SUCCESS:
-        for description in ['num_tables', 'num_indexes', 'num_foreignkeys']:
+        for description in ['num_tables', 'num_indexes', 'num_constraints', 'num_foreignkeys', ]:
             try:
                 if description in request:
                     bounds = request.get(description).split('-')
@@ -256,6 +256,12 @@ def attempt(request, id):
         'UPDATE': 3,
         'DELETE': 4
     }
+
+    statistics = Statistic.objects.filter(attempt=attempt)
+    context['statistics'] = {}
+    for statistic in statistics:
+        context['statistics'][statistic.description] = statistic.count
+    print context['statistics']
     
     actions = Action.objects.filter(attempt=attempt)
     context['actions'] = []

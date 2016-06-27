@@ -163,6 +163,41 @@
     </div>
 </section>
 
+<!-- STATISTICS -->
+<section>
+    <h3 class="sub-header">Statistics
+        <a class="btn btn-xs btn-primary accordion-toggle" role="button" data-toggle="collapse" href="#statistics" aria-expanded="false" aria-controls="statistics">
+        <i class="glyphicon glyphicon-plus" id="statistics-icon"></i>
+        </a>
+    </h3>
+    <div id="statistics" class="collapse">
+        <table class="table table-bordered table-striped">
+            <colgroup>
+                <col class="col-xs-3">
+                <col class="col-xs-4">
+            </colgroup>
+            <tbody>
+                <tr>
+                    <td># of Tables</td>
+                    <td>{{ statistics.num_tables }}</td>
+                </tr>
+                <tr>
+                    <td># of Indexes</td>
+                    <td>{{ statistics.num_indexes }}</td>
+                </tr>
+                <tr>
+                    <td># of Constrants</td>
+                    <td>{{ statistics.num_constraints }}</td>
+                </tr>
+                <tr>
+                    <td># of Foreign Keys</td>
+                    <td>{{ statistics.num_foreignkeys}} </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
 <!-- ACTIONS -->
 <section>
     <h3 class="sub-header">Actions
