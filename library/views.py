@@ -257,11 +257,9 @@ def attempt(request, id):
         'DELETE': 4
     }
 
-    statistics = Statistic.objects.filter(attempt=attempt)
     context['statistics'] = {}
-    for statistic in statistics:
+    for statistic in Statistic.objects.filter(attempt=attempt):
         context['statistics'][statistic.description] = statistic.count
-    print context['statistics']
     
     actions = Action.objects.filter(attempt=attempt)
     context['actions'] = []

@@ -29,11 +29,17 @@ class BaseAnalyzer(object):
         return True
 
     def count_transaction(self, queries):
-        cnt = 0
+        transaction = False
+        transaction_count = 0
         for query in queries:
-            if 'commit' in query['content'].lower():
-                cnt += 1
-        return cnt
+            if 'BEGIN' in query['content'].upper() or 'START TRANSACTION' in query['content'].upper():
+                transaction = True
+            elif transaction:
+                if 'COMMIT' in query.content.upper():
+                    # for each transaction, count the number of transactions
+                    transaction_count += 1
+                    transaction = False
+        return transaction_count
     
     def analyze_queries(self, queries):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)

@@ -82,17 +82,43 @@ def transaction_stats(directory = '.'):
                         query_count -= 2
                         stats['transaction_query_count'][project_type_name].append(query_count)
 
+                        transaction = ''
+
             if transaction_count > 0:
                 stats['transaction_count'][project_type_name].append(transaction_count)
 
             
     dump_all_stats(directory, stats)
-    
+
+def add_transaction_stat(directory = '.'):
+    for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        if filter_repository(repo):
+            continue
+        
+        transaction_count = 0
+        for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
+            transaction = False
+
+            for query in Query.objects.filter(action = action):
+                if 'BEGIN' in query.content.upper() or 'START TRANSACTION' in query.content.upper():
+                    transaction = True
+                elif transaction:
+                    if 'COMMIT' in query.content.upper():
+                        # for each transaction, count the number of transactions
+                        transaction_count += 1
+                        transaction = False
+
+        statistic = Statistic()
+        statistic.description = 'num_transactions'
+        statistic.count = transaction_count
+        statistic.attempt = repo.latest_successful_attempt
+        statistic.save()  
 
 def main():
     # active
-    action_stats(TRANSACTION_DIRECTORY)
-    transaction_stats(TRANSACTION_DIRECTORY)
+    # action_stats(TRANSACTION_DIRECTORY)
+    # transaction_stats(TRANSACTION_DIRECTORY)
+    add_transaction_stat()
     
     # working
     

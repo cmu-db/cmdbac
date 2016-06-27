@@ -47,6 +47,8 @@ def main():
     analyzer = get_analyzer(deployer)
     for form in driverResult['forms']:
         analyzer.analyze_queries(form['queries'])
+    for url in driverResult['urls']:
+        analyzer.analyze_queries(url['queries'])
     driverResult['statistics'] = analyzer.queries_stats
     analyzer.analyze_database()
     driverResult['statistics'].update(analyzer.database_stats)
