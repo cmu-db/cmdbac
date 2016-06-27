@@ -457,6 +457,9 @@ ul.social-buttons li a:hover,ul.social-buttons li a:focus,ul.social-buttons li a
     table {
         font-size: 60%;
     }
+    .homepage-status {
+        font-size: 50%;
+    }
     .projecttype-logo {
         max-width: 24px;
         height: auto;
