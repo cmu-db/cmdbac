@@ -20,7 +20,7 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
         BaseAnalyzer.__init__(self, deployer)
 
     def analyze_queries(self, queries):
-        self.queries_stats['num_transactions'] = self.count_transaction(queries)
+        self.queries_stats['num_transactions'] = self.count_transaction(queries) + self.queries_stats.get('num_transactions', 0)
 
         try:
             conn = self.deployer.get_database_connection()
