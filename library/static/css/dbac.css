@@ -459,6 +459,9 @@ ul.social-buttons li a:hover,ul.social-buttons li a:focus,ul.social-buttons li a
     table {
         font-size: 70%;
     }
+    .label-statuscode {
+        font-size: 65%;
+    }
     .section-heading {
         font-size: 175%;
     }
@@ -473,6 +476,9 @@ ul.social-buttons li a:hover,ul.social-buttons li a:focus,ul.social-buttons li a
 @media screen and (max-width: 400px) {
     table {
         font-size: 60%;
+    }
+    .label-statuscode {
+        font-size: 55%;
     }
     .projecttype-logo {
         max-width: 24px;
