@@ -444,6 +444,9 @@ ul.social-buttons li a:hover,ul.social-buttons li a:focus,ul.social-buttons li a
     background-color:#fed136
 }
 
+.homepage-status {
+    table-layout: fixed;
+}
 
 /** SMALLER SCREENS **/
 @media screen and (max-width: 600px) {
