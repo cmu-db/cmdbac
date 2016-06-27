@@ -455,7 +455,7 @@ ul.social-buttons li a:hover,ul.social-buttons li a:focus,ul.social-buttons li a
 }
 @media screen and (max-width: 400px) {
     table {
-        font-size: 65%;
+        font-size: 60%;
     }
     .projecttype-logo {
         max-width: 24px;
