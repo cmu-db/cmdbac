@@ -222,8 +222,11 @@ pre {
     height: auto;
 }
 
-.homepage-status {
+.homepage-status td {
     word-wrap: break-word;
+}
+div.homepage-status {
+    display: table;
 }
 
 /*
@@ -451,7 +454,7 @@ ul.social-buttons li a:hover,ul.social-buttons li a:focus,ul.social-buttons li a
 /** SMALLER SCREENS **/
 @media screen and (max-width: 600px) {
     table {
-        font-size: 75%;
+        font-size: 70%;
     }
     .section-heading {
         font-size: 175%;
