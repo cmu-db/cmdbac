@@ -122,7 +122,7 @@ pre {
         width: 100%;
     }
     .breadcrumb {
-        font-size: 75%;
+        font-size: 70%;
     }
 
 }
@@ -385,6 +385,10 @@ a.showLink:hover, a.hideLink:hover {
 
 .screenshot-div {
     outline: 1px solid #666;
+}
+
+.nowrap {
+    white-space:nowrap;
 }
 
 /*
