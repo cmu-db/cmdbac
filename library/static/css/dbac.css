@@ -225,6 +225,9 @@ pre {
 .homepage-status td {
     word-wrap: break-word;
 }
+.homepage-status table {
+    max-width: 100%;
+}
 div.homepage-status {
     display: table;
 }
