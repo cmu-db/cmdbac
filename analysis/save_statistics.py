@@ -5,6 +5,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 
 import re
 import csv
+import numpy as np
+import sqlparse
+import traceback
 from utils import filter_repository
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
