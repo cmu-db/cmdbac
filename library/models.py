@@ -199,6 +199,17 @@ class Repository(models.Model):
             return self.source.get_url(self.repo_name())
         else:
             return self.source.get_url(self.name)
+    def information(self):
+        statistics = {}
+        for statistic in Statistic.objects.filter(attempt=self.latest_successful_attempt):
+            statistics[statistic.description] = max(statistic.count, statistics.get(statistic.description, 0))
+        
+        information = ''
+        for description, count in statistics.iteritems():
+            if information:
+                information += '\n'
+            information += description + ' = ' + str(count)
+        return information
 
     class Meta:
         verbose_name_plural = "repositories"
