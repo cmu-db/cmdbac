@@ -77,7 +77,7 @@ def coverage_stats(directory = '.'):
         for action in actions:
             for query in Query.objects.filter(action = action):
                 for token in query.content.split():
-                    token = token.replace('"', '')
+                    token = token.replace('"', '').replace('`', '')
                     if token in tables:
                         covered_tables.add(token)
         table_percentage = int(float(len(covered_tables) * 100) / table_count)
@@ -103,8 +103,9 @@ def coverage_stats(directory = '.'):
                         parsed = sqlparse.parse(query.content)[0]
                         tokens = parsed.tokens
                         for token in tokens:
+                            token_name = token.value.replace('`', '')
                             if isinstance(token, sqlparse.sql.Identifier):
-                                covered_columns.add(token.value)
+                                covered_columns.add(token_name)
 
                 column_percentage = int(float(len(covered_columns) * 100) / column_count)
                 column_percentage = min(column_percentage, 100)
@@ -163,8 +164,8 @@ def secondary_index_stats():
 
 def main():
     # transaction_stat()
-    # coverage_stats()
-    secondary_index_stats()
+    coverage_stats()
+    # secondary_index_stats()
 
 if __name__ == '__main__':
     main()

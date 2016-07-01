@@ -87,7 +87,7 @@ def coverage_stats(directory = '.'):
             for query in Query.objects.filter(action = action):
                 table_access_count = 0
                 for token in query.content.split():
-                    token = token.replace('"', '')
+                    token = token.replace('"', '').replace('`', '')
                     if token in tables:
                         table_access_count += 1
                         covered_tables.add(token)
@@ -116,8 +116,9 @@ def coverage_stats(directory = '.'):
                         parsed = sqlparse.parse(query.content)[0]
                         tokens = parsed.tokens
                         for token in tokens:
+                            token_name = token.value.replace('`', '')
                             if isinstance(token, sqlparse.sql.Identifier):
-                                covered_columns.add(token.value)
+                                covered_columns.add(token_name)
 
                 column_percentage = int(float(len(covered_columns) * 100) / column_count)
                 column_percentage = min(column_percentage, 100)
@@ -387,8 +388,8 @@ def join_stats(directory = '.'):
                         if isinstance(token, sqlparse.sql.TokenList):
                             if isinstance(token, sqlparse.sql.Comparison):
                                 left_key, right_key = str(token.left), str(token.right)
-                                left_key = left_key.replace('"', '')
-                                right_key = right_key.replace('"', '')
+                                left_key = left_key.replace('"', '').replace('`', '')
+                                right_key = right_key.replace('"', '').replace('`', '')
                                 if left_key in column_map and right_key in column_map:
                                     left_type = column_map[left_key]
                                     right_type = column_map[right_key]
