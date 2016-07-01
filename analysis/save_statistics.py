@@ -137,9 +137,34 @@ def coverage_stats(directory = '.'):
 
                 save_statistic('index_coverage', index_percentage, repo.latest_successful_attempt)
 
+def secondary_index_stats():
+    for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        if filter_repository(repo):
+            continue
+
+        informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'indexes')
+        if len(informations) > 0:
+            information = informations[0]
+            if repo.latest_successful_attempt.database.name == 'PostgreSQL':
+                regex = '(\(.*?\))[,\]]'
+            elif repo.latest_successful_attempt.database.name == 'MySQL':
+                regex = '(\(.*?\))[,\)]'
+            
+            secondary_index_count = 0
+            for index in re.findall(regex, information.description):
+                cells = index.split(',')
+
+                index_name = cells[5].replace("'", "").strip()
+
+                if index_name != 'PRIMARY':
+                    secondary_index_count += 1
+
+            save_statistic('num_secondary_indexes', secondary_index_count, repo.latest_successful_attempt)
+
 def main():
     # transaction_stat()
-    coverage_stats()
+    # coverage_stats()
+    secondary_index_stats()
 
 if __name__ == '__main__':
     main()
