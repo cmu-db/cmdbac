@@ -186,6 +186,10 @@
                     <td>{{ statistics.num_indexes }}</td>
                 </tr>
                 <tr>
+                    <td># of Secondary Indexes</td>
+                    <td>{{ statistics.num_secondary_indexes }}</td>
+                </tr>
+                <tr>
                     <td># of Constrants</td>
                     <td>{{ statistics.num_constraints }}</td>
                 </tr>
@@ -196,6 +200,18 @@
                 <tr>
                     <td># of Transactions</td>
                     <td>{{ statistics.num_transactions }}</td>
+                </tr>
+                <tr>
+                    <td>Table Coverage</td>
+                    <td>{{ statistics.table_coverage }}</td>
+                </tr>
+                <tr>
+                    <td>Column Coverage</td>
+                    <td>{{ statistics.column_coverage }}</td>
+                </tr>
+                <tr>
+                    <td>Index Coverage</td>
+                    <td>{{ statistics.index_coverage }}</td>
                 </tr>
             </tbody>
         </table>
