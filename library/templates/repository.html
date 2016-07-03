@@ -35,7 +35,10 @@
             <tbody>
             <tr>
                 <td>Full Name</td>
-                <td><a href="{{ repository.repo_url }}">{{ repository.name }}</a></td>
+                <td>
+                    <a href="{{ repository.repo_url }}"><img src="{% static repository.source.logo %}" alt="{{ repository.source.name }}" title="View on {{ repository.source.name }}" class="source-logo" /></a>
+                    <a href="{{ repository.repo_url }}">{{ repository.name }}</a>
+                </td>
             </tr>
             <tr>
                 <td>Project Type</td>

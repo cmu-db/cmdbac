@@ -304,6 +304,13 @@ body {
   background-color: #428bca;
 }
 
+.repository-search label, .repository-search select, .repository-search input {
+    font-size: 95%;
+}
+.repository-search li {
+    list-style: none;   
+}
+
 
 /*
  * Main content
