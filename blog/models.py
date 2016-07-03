@@ -74,7 +74,7 @@ class Post(models.Model):
 
     created = models.DateTimeField(default=timezone.now, editable=False)  # when first revision was created
     updated = models.DateTimeField(null=True, blank=True, editable=False)  # when last revision was created (even if not published)
-    published = models.DateTimeField(null=True, blank=True, editable=False)  # when last published
+    published = models.DateTimeField(null=True, blank=True)  # when last published
     state = models.IntegerField(choices=STATE_CHOICES, default=STATE_CHOICES[0][0])
 
     secret_key = models.CharField(
