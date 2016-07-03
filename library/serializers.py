@@ -50,5 +50,5 @@ class AttemptSerializer(serializers.ModelSerializer):
         model = Attempt
         fields = ('id', 'start_time', 'stop_time', 'repo_info', 'sha', 'size', 'log', 'hostname', 
                   'runtime_info', 'database_info', 'result', 'register', 'login', 'actions_count', 'queries_count',
-                  'dependencies', 'forms'
+                  'dependencies', 'actions'
             )

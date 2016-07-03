@@ -313,7 +313,7 @@ class AttemptViewSet(viewsets.ViewSet):
         return Attempt.objects.all()
 
     @detail_route(methods=['get'])
-    def detail(self, request, pk):
+    def info(self, request, pk):
         queryset = Attempt.objects.all()
         attempt = get_object_or_404(queryset, id=pk)
         serializer = AttemptSerializer(attempt)
@@ -338,7 +338,9 @@ class AttemptViewSet(viewsets.ViewSet):
         log_file_path = os.path.join(os.path.dirname(__file__), os.pardir, 'vagrant', str(deployer_id) + '.log')
         
         def stream_response_generator():
-            last_line_no = 0
+            with open(log_file_path, 'r') as log_file:
+                content = log_file.readlines()
+                last_line_no = len(content)
             while process.is_alive():
                 time.sleep(1)
                 with open(log_file_path, 'r') as log_file:

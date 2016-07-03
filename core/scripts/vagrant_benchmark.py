@@ -26,14 +26,14 @@ import utils
 LOG = logging.getLogger()
 
 def run_driver(driver, timeout, queue):
-    forms_cnt = 0
+    cnt = 0
     start_time = time.time()
     stop_time = start_time + timeout
     new_driver = BenchmarkDriver(driver)
     try:
         while time.time() < stop_time:
-            forms_cnt += new_driver.submit_forms()
-        queue.put(forms_cnt)
+            cnt += new_driver.submit()
+        queue.put(cnt)
     except Exception, e:
         traceback.print_exc()
 
@@ -89,7 +89,7 @@ def main():
     except Exception, e:
         traceback.print_exc()
     
-    forms_cnt = 0
+    actions_cnt = 0
     processes = []
     try:
         # disable logging of requests
@@ -104,11 +104,11 @@ def main():
         for process in processes:
             process.join()
         for _ in range(num_threads):
-            forms_cnt += queue.get()
+            cnt += queue.get()
     except Exception, e:
         traceback.print_exc()
     
-    LOG.info('The number of forms submitted : {}'.format(forms_cnt))
+    LOG.info('The number of actions submitted : {}'.format(actions_cnt))
 
     # kill server
     deployer.kill_server()
@@ -118,6 +118,8 @@ def main():
     analyzer = get_analyzer(deployer)
     for form, _ in driver.forms:
         analyzer.analyze_queries(form['queries'])
+    for url in driver.urls:
+        analyzer.analyze_queries(url['queries'])
     LOG.info(analyzer.queries_stats)
 
     # extract database info

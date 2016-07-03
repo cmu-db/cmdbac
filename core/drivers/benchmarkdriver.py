@@ -31,19 +31,27 @@ class BenchmarkDriver(BaseDriver):
         BaseDriver.__init__(self, driver.deployer)
         self.forms = driver.forms
         self.browser = mechanize.Browser()
-        self.browser.set_cookiejar(driver.browser._ua_handlers['_cookies'].cookiejar)
+        if driver.browser != None:
+            self.browser.set_cookiejar(driver.browser._ua_handlers['_cookies'].cookiejar)
         self.browser.set_handle_robots(False)
 
-    def submit_forms(self):
-        forms_cnt = 0
+    def submit_actions(self):
+        actions_cnt = 0
         for form, browser_index in self.forms:
             try:
                 if browser_index == 0:
-                    part_inputs = submit.fill_form_random(self.deployer.base_path, form, self.browser)
+                    submit.fill_form_random(self.deployer.base_path, form, self.browser)
                 else:
-                    part_inputs = submit.fill_form_random(self.deployer.base_path, form, None)
+                    submit.fill_form_random(self.deployer.base_path, form, None)
             except:
                 pass
-            forms_cnt += 1
-            # LOG.info('Normal: Fill in Form on {} Successfully ...'.format(form['url']))
-        return forms_cnt
+            actions_cnt += 1
+        for url in self.urls:
+            try:
+                submit.query_url(url, self.browser)
+            except:
+                pass
+            actions_cnt += 1
+        return actions_cnt
+
+

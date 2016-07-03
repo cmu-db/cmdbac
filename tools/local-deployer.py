@@ -5,16 +5,7 @@ import argparse
 import requests
 import json
 
-############ to be deleted in the future
-sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
-sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
-import django
-django.setup()
-import utils
-###########
-
-ATTEMPT_DETAIL_URL = "http://127.0.0.1:8000/api/attempt/{id}/detail/"
+ATTEMPT_INFO_URL = "http://127.0.0.1:8000/api/attempt/{id}/info/"
 ATTEMPT_BENCHMARK_URL = "http://127.0.0.1:8000/api/attempt/{id}/benchmark/"
 
 def parse_args():
@@ -39,37 +30,12 @@ def parse_args():
 
     return args
 
-def get_attempt_detail(attempt_id):
-    url = ATTEMPT_DETAIL_URL.format(id = attempt_id)
+def get_attempt_info(attempt_id):
+    url = ATTEMPT_INFO_URL.format(id = attempt_id)
     response = requests.get(url)
     return response.json()
 
 def run_attempt_benchmark(attempt_id, database, benchmark):
-    if 0:
-        database = {
-            'database': 'mysql',
-            'host': '127.0.0.1',
-            'port': '3306',
-            'name': 'crawler0',
-            'username': 'root',
-            'password': 'root'
-        }
-        database = {
-            'database': 'postgresql',
-            'host': '127.0.0.1',
-            'port': '5432',
-            'name': 'crawler0',
-            'username': 'postgres',
-            'password': 'postgres'
-        }
-    database = {
-        'database': 'sqlite3',
-        'host': '127.0.0.1',
-        'port': '3306',
-        'name': 'crawler0',
-        'username': 'root',
-        'password': 'root'
-    }
     benchmark = {
         'num_threads': 1,
         'timeout': 60
@@ -83,19 +49,18 @@ def run_attempt_benchmark(attempt_id, database, benchmark):
     for chunk in response.iter_content(chunk_size=1024): 
         if chunk:
             print chunk,
-    ## utils.run_benchmark(attempt_id, database, benchmark)
-
+    
 if __name__ == "__main__":
     args = parse_args()
-    run_attempt_benchmark(args.attempt, 1, 1)
-    sys.exit(0)
+    
     if 'database' not in args:
         attempt_id = args.attempt
-        attempt_info = get_attempt_detail(attempt_id)
-        print attempt_info
+        attempt_info = get_attempt_info(attempt_id)
+        print json.dumps(attempt_info, indent = 4)
     else:
         attempt_id = args.attempt
         database = {
+            'database': args.database,
             'host': args.host,
             'port': args.port,
             'name': args.name,
@@ -106,4 +71,4 @@ if __name__ == "__main__":
             'num_threads': args.num_threads,
             'timeout': args.timeout
         }
-        run_benchmark(attempt_id, database, benchmark)
+        run_attempt_benchmark(attempt_id, database, benchmark)
