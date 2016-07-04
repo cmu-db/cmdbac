@@ -278,12 +278,13 @@ def attempt(request, id):
     try:
         image = Image.objects.get(attempt=attempt)
         screenshot_filename = 'screenshot_{}.png'.format(attempt.id)
-        screenshot = open(os.path.join(os.path.dirname(__file__), 'static', screenshot_filename), 'wb')
+        utils.mk_dir(os.path.join(os.path.dirname(__file__), 'static', 'screenshots'))
+        screenshot = open(os.path.join(os.path.dirname(__file__), 'static', 'screenshots', screenshot_filename), 'wb')
         screenshot.write(image.data)
         screenshot.close()
-        context['screenshot'] = '/static/' + screenshot_filename
+        context['screenshot'] = '/static/screenshots/' + screenshot_filename
     except:
-        pass
+        traceback.print_exc()
 
     return render(request, 'attempt.html', context)
 
