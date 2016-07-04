@@ -32,7 +32,7 @@ def parse_args():
 
     # Database Parameters
     agroup = aparser.add_argument_group('Local Database Parameters')
-    agroup.add_argument('--db-type', choices=DATABASE_TYPES, required=True, \
+    agroup.add_argument('--db-type', choices=DATABASE_TYPES, \
         help='Database Type')
     agroup.add_argument('--db-host', type=str, \
         help='Database Hostname')
@@ -73,7 +73,7 @@ def run_attempt_benchmark(api_url, attempt_id, database, benchmark):
 if __name__ == "__main__":
     args = parse_args()
     
-    if 'db_type' not in args:
+    if args["db_type"] == None:
         attempt_info = get_attempt_info(args["catalog"], args["attempt"])
         print json.dumps(attempt_info, indent = 4)
     else:
