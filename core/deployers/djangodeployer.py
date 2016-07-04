@@ -60,10 +60,10 @@ class DjangoDeployer(BaseDeployer):
         BaseDeployer.__init__(self, repo, database, deploy_id, database_config)
         if database_config == None:
             self.database_config['name'] = 'django_app' + str(deploy_id)
-        if self.database.name == 'SQLite3':
+        if self.database != None and self.database.name == 'SQLite3':
             self.log_file = os.path.join(self.base_path, 'sql.log')
     ## DEF
-    
+
     def configure_settings(self):
         engine = {
             'MySQL': 'mysql',
@@ -80,42 +80,50 @@ class DjangoDeployer(BaseDeployer):
     
     def install_requirements(self, deploy_path, requirement_files):
         ret_packages = []
-        latest_successful_attempt = self.get_latest_successful_attempt()
-        if latest_successful_attempt != None:
-            dependencies = Dependency.objects.filter(attempt = latest_successful_attempt)
+        if self.attempt_info != None:
+            dependencies = self.attempt_info['dependencies']
             for dependency in dependencies:
-                if dependency.source == PACKAGE_SOURCE_FILE:
-                    self.packages_from_file.append(dependency.package)
-                else:
-                    self.packages_from_database.append(dependency.package)
-                LOG.info('pip install {}'.format(dependency.package))
-                pip_output = utils.pip_install(self.base_path, [dependency.package], False)
+                LOG.info('pip install {}'.format(dependency['package_info']['name']))
+                pip_output = utils.pip_install(self.base_path, [dependency['package_info']], False)
                 LOG.info('pip install output: {}'.format(pip_output))
         else:
-            if requirement_files:
-                for requirement_file in requirement_files:
-                    out = utils.pip_install(deploy_path, requirement_file, True)
-                    with open(requirement_file, "r") as my_requirement_file:
-                        ret_packages += my_requirement_file.readlines()
+            latest_successful_attempt = self.get_latest_successful_attempt()
+            if latest_successful_attempt != None:
+                dependencies = Dependency.objects.filter(attempt = latest_successful_attempt)
+                for dependency in dependencies:
+                    if dependency.source == PACKAGE_SOURCE_FILE:
+                        self.packages_from_file.append(dependency.package)
+                    else:
+                        self.packages_from_database.append(dependency.package)
+                    LOG.info('pip install {}'.format(dependency.package))
+                    pip_output = utils.pip_install(self.base_path, [dependency.package], False)
+                    LOG.info('pip install output: {}'.format(pip_output))
+            else:
+                if requirement_files:
+                    for requirement_file in requirement_files:
+                        out = utils.pip_install(deploy_path, requirement_file, True)
+                        with open(requirement_file, "r") as my_requirement_file:
+                            ret_packages += my_requirement_file.readlines()
 
-            for package in ret_packages:
-                package = package.strip()
-                if len(package) == 0:
-                    continue
-                if package[0] == '#':
-                    continue
-                if len(package.split('==')) >= 2:
-                    name, version = package.split('==')
-                elif len(package.split('>=')) >= 2:
-                    name, version = package.split('>=')
-                else:
-                    name, version = package, ''
-                try:
-                    pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
-                    self.packages_from_file.append(pkg)
-                except Exception, e:
-                    LOG.exception(e)
-            ## FOR
+                for package in ret_packages:
+                    package = package.strip()
+                    if len(package) == 0:
+                        continue
+                    if package[0] == '#':
+                        continue
+                    if len(package.split('==')) >= 2:
+                        name, version = package.split('==')
+                    elif len(package.split('>=')) >= 2:
+                        name, version = package.split('>=')
+                    else:
+                        name, version = package, ''
+                    try:
+                        pkg, created = Package.objects.get_or_create(name=name, version=version, project_type=self.repo.project_type)
+                        self.packages_from_file.append(pkg)
+                    except Exception, e:
+                        LOG.exception(e)
+                ## FOR
+            ## IF
     ## DEF
 
     def get_urls(self):

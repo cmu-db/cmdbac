@@ -2,6 +2,7 @@
 import os, sys
 
 import shutil
+import traceback
 
 from run import run_command
 from file import cd
@@ -11,12 +12,13 @@ vagrant_dir = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, 'vag
 copied_files = []
 
 def vagrant_setup():
-    print ('Setuping Vagrant ...')
+    print 'Setuping Vagrant ...'
 
     ## Copy files
     for new_dir in copied_dir:
         old_dir = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, new_dir)
-        shutil.copytree(old_dir, os.path.join(vagrant_dir, new_dir))
+        if os.path.exists(old_dir):
+            shutil.copytree(old_dir, os.path.join(vagrant_dir, new_dir))
 
     # run_command('{} && {}'.format(cd(vagrant_dir), 'vagrant up'))
 
@@ -60,20 +62,34 @@ def vagrant_deploy(repo, deploy_id, database):
 
     return out
 
-def vagrant_benchmark(attempt_id, deploy_id, database, benchmark):
+def vagrant_benchmark(attempt_info, database, benchmark, deploy_id = 1):
     # run the benchmark
-    set_vagrant_database()
-    command = '{} && {}'.format(
-            cd(vagrant_dir),
-            'vagrant ssh -c "{}"'.format(
-                'python /vagrant/core/scripts/vagrant_benchmark.py --attempt={attempt_id} --deploy_id={deploy_id} {database} {benchmark}'
-                .format(attempt_id=attempt_id, deploy_id=deploy_id,
-                        database=' '.join('--{}={}'.format(key, value) for key, value in database.iteritems()), 
-                        benchmark=' '.join('--{}={}'.format(key, value) for key, value in benchmark.iteritems())
+    vagrant_setup()
+    out = None
+    temp_dir = None
+    try:
+        import json
+        attempt_info_file_path = os.path.join(vagrant_dir, 'attempt_info.json')
+        with open(attempt_info_file_path, 'w') as attempt_info_file:
+            json.dump(attempt_info, attempt_info_file)
+        command = '{} && {}'.format(
+                cd(vagrant_dir),
+                'vagrant ssh -c "{}"'.format(
+                    'python /vagrant/core/scripts/vagrant_benchmark.py --attempt_info="{attempt_info}" --deploy_id={deploy_id} {database} {benchmark}'
+                    .format(attempt_info=os.path.join('/vagrant', 'attempt_info.json'), deploy_id=deploy_id,
+                            database=' '.join('--{}={}'.format(key, value) for key, value in database.iteritems()), 
+                            benchmark=' '.join('--{}={}'.format(key, value) for key, value in benchmark.iteritems())
+                    )
                 )
             )
-        )
-    out = os.system(command)
-    unset_vagrant_database()
+        out = os.system(command)
+        return out
+    except:
+        traceback.print_exc()
+    finally:
+        try:
+            vagrant_clear()
+        except:
+            pass
 
     return out

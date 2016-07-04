@@ -18,10 +18,10 @@ import utils
 ## =====================================================================
 LOG = logging.getLogger()
 
-def get_crawler(crawler_status, repo_source):
-    moduleName = "crawlers.%s" % (repo_source.crawler_class.lower())
-    moduleHandle = __import__(moduleName, globals(), locals(), [repo_source.crawler_class])
-    klass = getattr(moduleHandle, repo_source.crawler_class)
+def get_crawler(crawler_status, crawler_class):
+    moduleName = "crawlers.%s" % (crawler_class.lower())
+    moduleHandle = __import__(moduleName, globals(), locals(), [crawler_class])
+    klass = getattr(moduleHandle, crawler_class)
     # FOR GITHUB
     try:
         with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets", "secrets.json"), 'r') as auth_file:

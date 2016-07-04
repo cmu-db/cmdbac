@@ -193,18 +193,21 @@ class GitHubCrawler(BaseCrawler):
         ## IF
     ## DEF
 
-    def get_latest_sha(self, repo):
-        url = GITHUB_API_COMMITS_URL.substitute(name=repo.name)
+    def get_latest_sha(self, repo_name):
+        url = GITHUB_API_COMMITS_URL.substitute(name=repo_name)
         response = self.github_query(url)
         data = response.json()
         time.sleep(1) 
         return data[0]['sha']
     # DEF
 
-    def download_repository(self, attempt, zip_name):
-        with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
-            auth = json.load(auth_file)
-        url = GITHUB_DOWNLOAD_URL_TEMPLATE.substitute(name=attempt.repo.name, sha=attempt.sha)
+    def download_repository(self, repo_name, sha, zip_name):
+        try:
+            with open(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "secrets", "secrets.json"), 'r') as auth_file:
+                auth = json.load(auth_file)
+        except:
+            auth = None
+        url = GITHUB_DOWNLOAD_URL_TEMPLATE.substitute(name=repo_name, sha=sha)
         response = self.github_query(url)
         zip_file = open(zip_name, 'wb')
         for chunk in response.iter_content(chunk_size=1024): 

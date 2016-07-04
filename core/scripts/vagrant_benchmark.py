@@ -9,12 +9,9 @@ import socket
 import traceback
 import time
 import logging
+import json
 from multiprocessing import Process, Queue
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
-import django
-django.setup()
-from library.models import *
 from deployers import *
 from drivers import *
 from analyzers import *
@@ -32,15 +29,16 @@ def run_driver(driver, timeout, queue):
     new_driver = BenchmarkDriver(driver)
     try:
         while time.time() < stop_time:
-            cnt += new_driver.submit()
+            cnt += new_driver.submit_actions()
         queue.put(cnt)
     except Exception, e:
         traceback.print_exc()
+        queue.put(cnt)
 
 def main():
     # parse args
     parser = argparse.ArgumentParser()
-    parser.add_argument('--attempt', type=int)
+    parser.add_argument('--attempt_info', type=str)
     parser.add_argument('--deploy_id', type=int)
     parser.add_argument('--database', type=str)
     parser.add_argument('--host', type=str)
@@ -53,7 +51,8 @@ def main():
     args = parser.parse_args()
 
     # get args
-    attempt_id = args.attempt
+    with open(args.attempt_info, 'r') as attempt_info_file:
+        attempt_info = json.loads(attempt_info_file.read())
     deploy_id = args.deploy_id
     database_config = {
         'database': args.database,
@@ -67,15 +66,22 @@ def main():
     timeout = args.timeout
 
     # get deployer
-    attempt = Attempt.objects.get(id=attempt_id)
-    repo = attempt.repo
-    database = Database.objects.get(name__iexact=database_config['database'])
-    moduleName = "deployers.%s" % (repo.project_type.deployer_class.lower())
-    moduleHandle = __import__(moduleName, globals(), locals(), [repo.project_type.deployer_class])
-    klass = getattr(moduleHandle, repo.project_type.deployer_class)
-    deployer = klass(repo, database, deploy_id, database_config)
+    project_type = attempt_info['repo_info']['project_type']
+    deployer_class = {
+        1: 'DjangoDeployer',
+        2: 'RoRDeployer',
+        3: 'NodeDeployer',
+        4: 'DrupalDeployer',
+        5: 'GrailsDeployer'
+    }[project_type]
 
-    result = deployer.deploy(False)
+    moduleName = "deployers.%s" % (deployer_class.lower())
+    moduleHandle = __import__(moduleName, globals(), locals(), [deployer_class])
+    klass = getattr(moduleHandle, deployer_class)
+
+    deployer = klass(None, None, deploy_id, database_config)
+
+    result = deployer.deploy(attempt_info)
     if result != 0:
         deployer.kill_server()
         sys.exit(-1)
@@ -104,7 +110,7 @@ def main():
         for process in processes:
             process.join()
         for _ in range(num_threads):
-            cnt += queue.get()
+            actions_cnt += queue.get()
     except Exception, e:
         traceback.print_exc()
     

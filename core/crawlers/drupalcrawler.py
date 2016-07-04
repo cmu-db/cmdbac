@@ -135,16 +135,16 @@ class DrupalCrawler(BaseCrawler):
         ## IF
     # DEF
 
-    def get_latest_sha(self, repo):
-        url = BASE_URL.format(name = repo.repo_name())
+    def get_latest_sha(self, repo_name):
+        url = BASE_URL.format(name = repo_name)
         response = utils.query(url)
         data = response.text
         results = re.findall(COMMIT_URL.format(sha='(\d+)'), data)
         return results[1]
     # DEF
 
-    def download_repository(self, attempt, zip_name):
-        url = BASE_URL.format(name = attempt.repo.repo_name())
+    def download_repository(self, repo_name, sha, zip_name):
+        url = BASE_URL.format(name = repo_name)
         response = utils.query(url)
         data = response.text
         download_url = re.search('https://[^ ]*?\.zip', data).group(0)

@@ -1,14 +1,21 @@
 #!/usr/bin/env python
 import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
+sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core", "utils"))
 
 import argparse
 import requests
+import traceback
 import json
+import vagrant
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
+import django
+django.setup()
 
 CMDBAC_URL = "http://cmdbac.cs.cmu.edu/"
 
 ATTEMPT_INFO_URL = "/api/attempt/{id}/info/"
-ATTEMPT_BENCHMARK_URL = "/api/attempt/{id}/benchmark/"
 
 DATABASE_TYPES = (
     "mysql",
@@ -26,9 +33,9 @@ def parse_args():
     agroup.add_argument('--attempt', type=int, metavar='ID', \
         help='Id of the attempt to deploy')
     agroup.add_argument('--num_threads', type=int, default=1, metavar='N', \
-        help='Number of threads you want to use to submit forms')
+        help='Number of threads you want to use to submit actions')
     agroup.add_argument('--timeout', type=int, metavar='T', \
-        help='Timeout for submitting forms (seconds)')
+        help='Timeout for submitting actions (seconds)')
 
     # Database Parameters
     agroup = aparser.add_argument_group('Local Database Parameters')
@@ -50,24 +57,18 @@ def parse_args():
 
 def get_attempt_info(api_url, attempt_id):
     url = api_url + ATTEMPT_INFO_URL.format(id = attempt_id)
+    print url
     response = requests.get(url)
     return response.json()
 ## DEF
 
 def run_attempt_benchmark(api_url, attempt_id, database, benchmark):
-    benchmark = {
-        'num_threads': 1,
-        'timeout': 60
-    }
-    payload = {
-        'database': database, 
-        'benchmark': benchmark
-    }
-    url = api_url + ATTEMPT_BENCHMARK_URL.format(id = attempt_id)
-    response = requests.post(url, json = payload, stream = True, timeout = 10000)
-    for chunk in response.iter_content(chunk_size=1024): 
-        if chunk:
-            print chunk,
+    attempt_info = get_attempt_info(api_url, attempt_id)
+    print 'Running Benchmark for Attempt {}'.format(attempt_id)
+    try:
+        vagrant.vagrant_benchmark(attempt_info, database, benchmark)
+    except Exception, e:
+        traceback.print_exc() 
 ## DEF
     
 if __name__ == "__main__":

@@ -7,14 +7,11 @@ import urlparse
 from StringIO import StringIO
 from string import Template
 from datetime import datetime
-import MySQLdb
-import psycopg2
-import sqlite3
 import re
 
-from library.models import *
-from cmudbac.settings import *
 import utils
+from cmudbac.settings import *
+from library.models import *
 
 ## =====================================================================
 ## LOGGING CONFIGURATION
@@ -44,7 +41,10 @@ class BaseDeployer(object):
         self.zip_file = self.TMP_ZIP_FILE + str(self.deploy_id)
         self.base_path = self.TMP_DEPLOY_PATH + str(self.deploy_id)
         self.setting_path = None
-        self.port = int(self.repo.project_type.default_port) + int(self.deploy_id)
+        if self.repo == None:
+            self.port = 8000 + int(self.deploy_id)
+        else:
+            self.port = int(self.repo.project_type.default_port) + int(self.deploy_id)
         self.log_file = None
         self.runtime = None
 
@@ -99,6 +99,7 @@ class BaseDeployer(object):
     def get_database_connection(self, specify_database = True):
         try:
             if self.database.name == 'MySQL':
+                import MySQLdb
                 if specify_database:
                     conn = MySQLdb.connect(host=self.database_config['host'],
                                            user=self.database_config['username'],
@@ -111,6 +112,7 @@ class BaseDeployer(object):
                                            passwd=self.database_config['password'],
                                            port=self.database_config['port'])
             elif self.database.name == 'PostgreSQL':
+                import psycopg2
                 if specify_database:
                     conn = psycopg2.connect(host=self.database_config['host'],
                                            user=self.database_config['username'],
@@ -123,6 +125,7 @@ class BaseDeployer(object):
                                             password=self.database_config['password'],
                                             port=self.database_config['port'])
             elif self.database.name == 'SQLite3':
+                import sqlite3
                 conn = sqlite3.connect(self.database_config['name'])
             return conn
         except Exception, e:
@@ -370,35 +373,50 @@ class BaseDeployer(object):
         self.attempt.save()
     ## DEF
 
-    def deploy(self, save = True):
-        LOG.info('Deploying Repository: {} ...'.format(self.repo.name))
+    def deploy(self, attempt_info = None):
+        self.attempt_info = attempt_info
+        if attempt_info:
+            repo_name = attempt_info['repo_info']['name']
+            self.database = Database()
+            self.database.name = attempt_info['database_info']['name']
+        else:
+            repo_name = self.repo.name
+        LOG.info('Deploying Repository: {} ...'.format(repo_name))
         
         self.attempt = Attempt()
-        self.attempt.repo = self.repo
-        self.attempt.database = self.database
+        if self.repo:
+            self.attempt.repo = self.repo
+        if self.database:
+            self.attempt.database = self.database
         self.attempt.start_time = datetime.now()
         self.attempt.hostname = socket.gethostname()
 
-        crawler_status = CrawlerStatus.objects.get(id=1)
-        crawler = utils.get_crawler(crawler_status, self.repo.source)
+        if attempt_info:
+            crawler_class = {
+                1: "GitHubCrawler",
+                2: "DrupalCrawler"
+            }[attempt_info['repo_info']['source']]
+            crawler = utils.get_crawler(None, crawler_class)
+        else:
+            crawler_status = CrawlerStatus.objects.get(id=1)
+            crawler = utils.get_crawler(crawler_status, self.repo.source.crawler_class)
 
         LOG.info('Validating Repository ...')
         try:
-            self.attempt.sha = crawler.get_latest_sha(self.repo)
+            self.attempt.sha = crawler.get_latest_sha(repo_name)
         except Exception, e:
             LOG.exception(e)
-            if save:
+            if not attempt_info:
                 self.save_attempt(ATTEMPT_STATUS_DOWNLOAD_ERROR)
-            else:
-                LOG.error('Download Error..')
+            LOG.error('Download Error..')
             return -1
 
         LOG.info('Downloading Repository ...'.format(self.attempt.sha))
         try:
-            crawler.download_repository(self.attempt, self.zip_file)
+            crawler.download_repository(repo_name, self.attempt.sha, self.zip_file)
         except Exception, e:
             LOG.exception(e)
-            if save:
+            if not attempt_info:
                 self.save_attempt(ATTEMPT_STATUS_DOWNLOAD_ERROR)
             else:
                 LOG.error('Download Error..')

@@ -27,12 +27,18 @@ def pip_install(path, names, is_file, has_version = True):
         command = '{} -r {}'.format(command, filename)
     else:
         for name in names:
-            if has_version and name.version != None and name.version != '':
-                command = '{} {}=={} '.format(command, name.name, name.version)
-            elif name.name == 'django':
-                command = '{} {}==1.8.4'.format(command, name.name)
-            else:
-                command = '{} {}'.format(command, name.name)
+            if isinstance(name, dict):
+                if name['version']:
+                    command = '{} {}=={} '.format(command, name['name'], name['version'])
+                else:
+                    command = '{} {}'.format(command, name['name'])
+            else:    
+                if has_version and name.version != None and name.version != '':
+                    command = '{} {}=={} '.format(command, name.name, name.version)
+                elif name.name == 'django':
+                    command = '{} {}==1.8.4'.format(command, name.name)
+                else:
+                    command = '{} {}'.format(command, name.name)
     out = run_command(command)
 
     return out
