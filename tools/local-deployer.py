@@ -5,37 +5,56 @@ import argparse
 import requests
 import json
 
-ATTEMPT_INFO_URL = "http://127.0.0.1:8000/api/attempt/{id}/info/"
-ATTEMPT_BENCHMARK_URL = "http://127.0.0.1:8000/api/attempt/{id}/benchmark/"
+CMDBAC_URL = "http://cmdbac.cs.cmu.edu/"
+
+ATTEMPT_INFO_URL = "/api/attempt/{id}/info/"
+ATTEMPT_BENCHMARK_URL = "/api/attempt/{id}/benchmark/"
+
+DATABASE_TYPES = (
+    "mysql",
+    "postgres",
+    "sqlite"
+)
 
 def parse_args():
-    parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers()
+    aparser = argparse.ArgumentParser(description='CMDBAC Local Deployer Tool')
+    
+    # Attempt Parameters
+    agroup = aparser.add_argument_group('Deployment Parameters')
+    agroup.add_argument('--catalog', default=CMDBAC_URL, metavar='URL', \
+        help='Catalog API URL')
+    agroup.add_argument('--attempt', type=int, metavar='ID', \
+        help='Id of the attempt to deploy')
+    agroup.add_argument('--num_threads', type=int, default=1, metavar='N', \
+        help='Number of threads you want to use to submit forms')
+    agroup.add_argument('--timeout', type=int, metavar='T', \
+        help='Timeout for submitting forms (seconds)')
 
-    parser_info = subparsers.add_parser('info')
-    parser_info.add_argument("-attempt", "--attempt", type=int, help='the id of the attempt')
+    # Database Parameters
+    agroup = aparser.add_argument_group('Local Database Parameters')
+    agroup.add_argument('--db-type', choices=DATABASE_TYPES, required=True, \
+        help='Database Type')
+    agroup.add_argument('--db-host', type=str, \
+        help='Database Hostname')
+    agroup.add_argument('--db-port', type=int, \
+        help='Databsae Port')
+    agroup.add_argument('--db-name', type=str, \
+        help='Database Name')
+    agroup.add_argument('--db-user', type=str, \
+        help='Database User')
+    agroup.add_argument('--db-pass', type=str, \
+        help='Database Password')
 
-    parser_benchmark = subparsers.add_parser('benchmark')
-    parser_benchmark.add_argument('-attempt', '--attempt', type=int, help='the id of the attempt')
-    parser_benchmark.add_argument('-database', '--database', type=str, help='the database you are using, e.g. mysql')
-    parser_benchmark.add_argument('-host', '--host', type=str, help='the host address of your database server')
-    parser_benchmark.add_argument('-port', '--port', type=int, help='the port of your database server')
-    parser_benchmark.add_argument('-name', '--name', type=str, help='the name of your database')
-    parser_benchmark.add_argument('-username', '--username', type=str, help='the username of your database server')
-    parser_benchmark.add_argument('-password', '--password', type=str, help='the password of your database server')
-    parser_benchmark.add_argument('-num_threads', '--num_threads', type=int, help='the number of threads you want to use to submit forms')
-    parser_benchmark.add_argument('-timeout', '--timeout', type=int, help='the timeout for submitting forms')
+    return vars(aparser.parse_args())
+## DEF
 
-    args = parser.parse_args()
-
-    return args
-
-def get_attempt_info(attempt_id):
-    url = ATTEMPT_INFO_URL.format(id = attempt_id)
+def get_attempt_info(api_url, attempt_id):
+    url = api_url + ATTEMPT_INFO_URL.format(id = attempt_id)
     response = requests.get(url)
     return response.json()
+## DEF
 
-def run_attempt_benchmark(attempt_id, database, benchmark):
+def run_attempt_benchmark(api_url, attempt_id, database, benchmark):
     benchmark = {
         'num_threads': 1,
         'timeout': 60
@@ -44,31 +63,31 @@ def run_attempt_benchmark(attempt_id, database, benchmark):
         'database': database, 
         'benchmark': benchmark
     }
-    url = ATTEMPT_BENCHMARK_URL.format(id = attempt_id)
+    url = api_url + ATTEMPT_BENCHMARK_URL.format(id = attempt_id)
     response = requests.post(url, json = payload, stream = True, timeout = 10000)
     for chunk in response.iter_content(chunk_size=1024): 
         if chunk:
             print chunk,
+## DEF
     
 if __name__ == "__main__":
     args = parse_args()
     
-    if 'database' not in args:
-        attempt_id = args.attempt
-        attempt_info = get_attempt_info(attempt_id)
+    if 'db_type' not in args:
+        attempt_info = get_attempt_info(args["catalog"], args["attempt"])
         print json.dumps(attempt_info, indent = 4)
     else:
-        attempt_id = args.attempt
         database = {
-            'database': args.database,
-            'host': args.host,
-            'port': args.port,
-            'name': args.name,
-            'username': args.username,
-            'password': args.password
+            'database': args["db_type"],
+            'host':     args["db_host"],
+            'port':     args["db_port"],
+            'name':     args["db_name"],
+            'username': args["db_user"],
+            'password': args["db_pass"]
         }
         benchmark = {
-            'num_threads': args.num_threads,
-            'timeout': args.timeout
+            'num_threads': args["num_threads"],
+            'timeout': args["timeout"]
         }
-        run_attempt_benchmark(attempt_id, database, benchmark)
+        run_attempt_benchmark(args["catalog"], args["attempt"], database, benchmark)
+## MAIN
