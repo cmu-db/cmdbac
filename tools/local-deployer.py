@@ -14,8 +14,12 @@ import django
 django.setup()
 
 CMDBAC_URL = "http://cmdbac.cs.cmu.edu/"
-
 ATTEMPT_INFO_URL = "/api/attempt/{id}/info/"
+
+ACTION_TYPES = (
+    "info",
+    "deploy",
+)
 
 DATABASE_TYPES = (
     "mysql",
@@ -25,6 +29,10 @@ DATABASE_TYPES = (
 
 def parse_args():
     aparser = argparse.ArgumentParser(description='CMDBAC Local Deployer Tool')
+    
+    # Actions
+    aparser.add_argument('action', choices=ACTION_TYPES, \
+        help='Deployer Action')
     
     # Attempt Parameters
     agroup = aparser.add_argument_group('Deployment Parameters')
@@ -74,10 +82,10 @@ def run_attempt_benchmark(api_url, attempt_id, database, benchmark):
 if __name__ == "__main__":
     args = parse_args()
     
-    if args["db_type"] == None:
+    if args["action"] == "info":
         attempt_info = get_attempt_info(args["catalog"], args["attempt"])
         print json.dumps(attempt_info, indent = 4)
-    else:
+    elif args["action"] == "deploy":
         database = {
             'database': args["db_type"],
             'host':     args["db_host"],
@@ -91,4 +99,8 @@ if __name__ == "__main__":
             'timeout': args["timeout"]
         }
         run_attempt_benchmark(args["catalog"], args["attempt"], database, benchmark)
+    else:
+        print "Invalid action '%s'" % args["action"]
+        sys.exit(1)
+    
 ## MAIN
