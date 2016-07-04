@@ -5,5 +5,4 @@ from pip import home_path, configure_env, to_env, pip_install, pip_install_text,
 from data import get_crawler, add_module, add_repo, delete_repo, deploy_repo, edit_distance
 from vagrant import vagrant_setup, vagrant_clear, vagrant_deploy, vagrant_benchmark
 from rvm import get_ruby_versions, use_ruby_version, install_ruby_version
-from benchmark import run_benchmark
 from timeout import timeout
