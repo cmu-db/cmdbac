@@ -224,6 +224,9 @@ class DjangoDeployer(BaseDeployer):
             output = self.sync_server(deploy_path)
             if output[0] != 0:
                 LOG.info(output)
+                if self.attempt_info != None:
+                    LOG.error("Can not find dependencies!")
+                    return
             else:
                 LOG.info(output)
                 break

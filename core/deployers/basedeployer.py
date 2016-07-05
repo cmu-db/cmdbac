@@ -427,7 +427,7 @@ class BaseDeployer(object):
             utils.unzip(self.zip_file, self.base_path)
         except Exception, e:
             LOG.exception(e)
-            if save:
+            if not attempt_info:
                 self.save_attempt(ATTEMPT_STATUS_DOWNLOAD_ERROR)
             else:
                 LOG.error('Download Error..')
@@ -439,14 +439,14 @@ class BaseDeployer(object):
             attemptStatus = self.deploy_repo_attempt(self.base_path)
         except Exception, e:
             LOG.exception(e)
-            if save:
+            if not attempt_info:
                 self.save_attempt(ATTEMPT_STATUS_RUNNING_ERROR)
             else:
                 LOG.error('Running Error...')
             return -1
            
         if attemptStatus != ATTEMPT_STATUS_SUCCESS:
-            if save:
+            if not attempt_info:
                 self.save_attempt(attemptStatus)
             return -1
         
