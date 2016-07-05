@@ -135,4 +135,6 @@ apt-get -f -y install >/dev/null 2>&1
 # Needed for docs generation.
 update-locale LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
+pip install -r requirements.txt
+
 echo 'all set, rock on!'
