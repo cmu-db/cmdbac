@@ -52,16 +52,4 @@
     </div>
 </form>
 
-{% if user.is_staff %}  
-<div style="float:right">
-    <div style="margin: 20px">
-        <a class="btn btn-primary btn-lg" style="" href="#" data-toggle="modal" data-target="#addModuleModal">Add Module</a>
-    </div>
-
-    <div style="margin: 20px">
-        <a class="btn btn-primary btn-lg" style="" href="#" data-toggle="modal" data-target="#addRepositoryModal">Add Repository</a>
-    </div>
-</div>
-{% endif %}
-
 {% endblock %}
