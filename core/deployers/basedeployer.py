@@ -408,7 +408,7 @@ class BaseDeployer(object):
             LOG.exception(e)
             if not attempt_info:
                 self.save_attempt(ATTEMPT_STATUS_DOWNLOAD_ERROR)
-            LOG.error('Download Error..')
+            LOG.error('Download Error : Can not find it on GitHub...')
             return -1
 
         LOG.info('Downloading Repository ...'.format(self.attempt.sha))
@@ -418,8 +418,7 @@ class BaseDeployer(object):
             LOG.exception(e)
             if not attempt_info:
                 self.save_attempt(ATTEMPT_STATUS_DOWNLOAD_ERROR)
-            else:
-                LOG.error('Download Error..')
+            LOG.error('Download Error : Can not download it from GitHub...')
             return -1
         
         try:
@@ -429,8 +428,7 @@ class BaseDeployer(object):
             LOG.exception(e)
             if not attempt_info:
                 self.save_attempt(ATTEMPT_STATUS_DOWNLOAD_ERROR)
-            else:
-                LOG.error('Download Error..')
+            LOG.error('Download Error : Can not unzip to local..')
             return -1
 
         LOG.info('Deploying at {} ...'.format(self.base_path))
