@@ -29,8 +29,6 @@ class RepositoryAdmin(admin.ModelAdmin):
         return obj.project_type.name
 
     get_project_type.short_description = 'Project Type'
-
-    
 # CLASS
 
 class AttemptAdmin(admin.ModelAdmin):
@@ -56,3 +54,4 @@ admin.site.register(Package, PackageAdmin)
 admin.site.register(Dependency)
 admin.site.register(Attempt, AttemptAdmin)
 admin.site.register(Module)
+admin.site.register(WebStatistic)

@@ -308,6 +308,7 @@ class Action(models.Model):
     url = models.CharField(max_length = 200)
     method = models.CharField(max_length = 10)
     attempt = models.ForeignKey('Attempt', related_name='actions')
+## CLASS
 
 class Field(models.Model):
     name = models.CharField(max_length = 200)
@@ -360,4 +361,9 @@ class Runtime(models.Model):
     version = models.CharField(max_length = 200)
     class Meta:
         unique_together = ('executable', 'version')
+## CLASS
+
+class WebStatistic(models.Model):
+    name = models.CharField(max_length = 200)
+    count = models.IntegerField(default = 0)
 ## CLASS
