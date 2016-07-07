@@ -318,7 +318,10 @@ class AttemptViewSet(viewsets.ViewSet):
         queryset = Attempt.objects.all()
         attempt = get_object_or_404(queryset, id=pk)
         serializer = AttemptSerializer(attempt)
-        attempt_info_api = WebStatistic.objects.get(name = 'Attempt Info API')
-        attempt_info_api.count += 1
-        attempt_info_api.save()
+        web_statistic = WebStatistic.objects.get(name = 'Attempt Info API')
+        web_statistic.count += 1
+        web_statistic.save()
+        attempt_info_count, _ = Statistic.objects.get_or_create(description = 'Attempt Info API', attempt = attempt)
+        attempt_info_count.count += 1
+        attempt_info_count.save()
         return Response(serializer.data)
