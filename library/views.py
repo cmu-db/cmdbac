@@ -170,7 +170,7 @@ def search_stuff(context, request):
                 upper_bound = 0
             if lower_bound > 0 or upper_bound > 0:
                 attempts = Statistic.objects.filter(description = description).filter(count__gte=lower_bound).filter(count__lte=upper_bound).values_list('attempt', flat = True)
-                repositories = repositories.filter(latest_attempt = attempts)
+                repositories = repositories.filter(latest_attempt__in = attempts)
 
     return repositories
 
