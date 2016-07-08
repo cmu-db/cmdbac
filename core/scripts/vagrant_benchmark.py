@@ -35,6 +35,19 @@ def run_driver(driver, timeout, queue):
         traceback.print_exc()
         queue.put(cnt)
 
+def get_database_size(deployer):
+    deployer.database = Database()
+    deployer.database.name = 'MySQL'
+    conn = deployer.get_database_connection(False)
+    cur = conn.cursor()
+    cur.execute('''
+        SELECT Round(SUM(data_length + index_length) / 1024 / 1024, 1)
+        FROM information_schema.tables 
+        WHERE table_schema = 'django_app0'
+    '''.format(deployer.database_config['name']))
+    size = cur.fetchone()[0]
+    return size
+
 def main():
     # parse args
     parser = argparse.ArgumentParser()
@@ -132,6 +145,8 @@ def main():
     LOG.info('Extracting database info ...')
     analyzer.analyze_database()
     LOG.info(analyzer.database_stats)
+
+    LOG.info('Database Size : {} '.format(get_database_size(deployer)))
 
     LOG.info('Finishing ...')
 

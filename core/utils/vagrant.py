@@ -17,7 +17,7 @@ def vagrant_setup():
     ## Copy files
     for new_dir in copied_dir:
         old_dir = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, new_dir)
-        if os.path.exists(old_dir):
+        if os.path.exists(old_dir) and not os.path.exists(os.path.join(vagrant_dir, new_dir)):
             shutil.copytree(old_dir, os.path.join(vagrant_dir, new_dir))
 
     # run_command('{} && {}'.format(cd(vagrant_dir), 'vagrant up'))
