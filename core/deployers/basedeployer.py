@@ -379,6 +379,9 @@ class BaseDeployer(object):
             repo_name = attempt_info['repo_info']['name']
             self.database = Database()
             self.database.name = attempt_info['database_info']['name']
+            self.repo = Repository()
+            self.repo.project_type = ProjectType()
+            self.repo.project_type.id = attempt_info['repo_info']['project_type']
         else:
             repo_name = self.repo.name
         LOG.info('Deploying Repository: {} ...'.format(repo_name))

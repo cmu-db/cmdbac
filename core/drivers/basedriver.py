@@ -195,7 +195,6 @@ class BaseDriver(object):
             forms = extract.extract_all_forms(main_url, json_filename)
         except Exception, e:
             forms = []
-            LOG.exception(e)
         ret_forms = []
 
         # login as admin
@@ -216,7 +215,6 @@ class BaseDriver(object):
                 forms = extract.extract_all_forms_with_cookie(main_url, br._ua_handlers['_cookies'].cookiejar, json_filename)
             except Exception, e:
                 forms = []
-                LOG.exception(e)
 
         # save browser
         self.browser = br
@@ -261,7 +259,6 @@ class BaseDriver(object):
             forms = extract.extract_all_forms(main_url, json_filename)
         except Exception, e:
             forms = []
-            LOG.exception(e)
         ret_forms = []
 
         # register as normal user

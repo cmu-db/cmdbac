@@ -30,6 +30,7 @@ class BenchmarkDriver(BaseDriver):
     def __init__(self, driver):
         BaseDriver.__init__(self, driver.deployer)
         self.forms = driver.forms
+        self.urls = driver.urls
         self.browser = mechanize.Browser()
         if driver.browser != None:
             self.browser.set_cookiejar(driver.browser._ua_handlers['_cookies'].cookiejar)
