@@ -43,7 +43,7 @@ def get_database_size(deployer):
     cur.execute('''
         SELECT Round(SUM(data_length + index_length) / 1024 / 1024, 1)
         FROM information_schema.tables 
-        WHERE table_schema = 'django_app0'
+        WHERE table_schema = '{}'
     '''.format(deployer.database_config['name']))
     size = cur.fetchone()[0]
     return size
@@ -108,6 +108,7 @@ def main():
     except Exception, e:
         traceback.print_exc()
     
+    LOG.info('Start Driving the Database ...')
     actions_cnt = 0
     processes = []
     try:

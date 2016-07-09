@@ -85,6 +85,9 @@ class DjangoDeployer(BaseDeployer):
             for dependency in dependencies:
                 LOG.info('pip install {}'.format(dependency['package_info']['name']))
                 pip_output = utils.pip_install(self.base_path, [dependency['package_info']], False)
+                if pip_output != None and pip_output[0] != 0:
+                    dependency['package_info']['version'] = ''
+                    pip_output = utils.pip_install(self.base_path, [dependency['package_info']], False)
                 LOG.info('pip install output: {}'.format(pip_output))
         else:
             latest_successful_attempt = self.get_latest_successful_attempt()
@@ -235,6 +238,8 @@ class DjangoDeployer(BaseDeployer):
             if match:
                 package_name = match.group(1)
                 output = utils.pip_install_text(self.base_path, package_name)
+                latest_package, created = Package.objects.get_or_create(name=package_name, version = '', project_type=self.repo.project_type)
+                dependencies.append((package_name, [latest_package], 0))
                 continue
                 # LOG.info('pip install output: {}'.format(output))
 

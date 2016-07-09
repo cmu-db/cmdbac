@@ -4,6 +4,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 
 import time
+import traceback
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
@@ -25,7 +26,7 @@ def main():
     try:
         utils.vagrant_deploy(repo, deploy_id, database)
     except:
-        pass
+        traceback.print_exc()
 
 if __name__ == '__main__':
     main()

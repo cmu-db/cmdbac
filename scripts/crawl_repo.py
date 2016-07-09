@@ -18,7 +18,7 @@ from library.models import *
 import utils
 
 def add_module():
-    if len(sys.argv) != 4:
+    if len(sys.argv) != 5:
         return
     module_name = sys.argv[1]
     package_name = sys.argv[2]
@@ -45,7 +45,8 @@ def add_repository():
         traceback.print_exc()
 
 def main():
-    add_repository()
+    add_module()
+    # add_repository()
 ## IF
 
 

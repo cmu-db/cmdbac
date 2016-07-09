@@ -28,7 +28,7 @@ def pip_install(path, names, is_file, has_version = True):
     else:
         for name in names:
             if isinstance(name, dict):
-                if name['version']:
+                if name.get('version', ''):
                     command = '{} {}=={} '.format(command, name['name'], name['version'])
                 else:
                     command = '{} {}'.format(command, name['name'])
