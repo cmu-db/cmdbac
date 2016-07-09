@@ -44,7 +44,7 @@ def add_repo(repo_name, crawler_status_id, repo_setup_scripts):
     cs = CrawlerStatus.objects.get(id=crawler_status_id)
     repo_source = cs.source
     project_type = cs.project_type
-    crawler = get_crawler(cs, repo_source)
+    crawler = get_crawler(cs, repo_source.crawler_class)
     crawler.add_repository(repo_name, repo_setup_scripts)
 
 def deploy_repo(repo_name, database = 'PostgreSQL'):

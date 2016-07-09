@@ -75,63 +75,7 @@ def home(request):
 ## DEF
 
 def super_user_stuff(request):
-    if request.user.is_superuser:
-        if request.GET.__contains__('module') and request.GET.__contains__('package') and request.GET.__contains__('type') and request.GET.__contains__('version'):
-            module_name = request.GET['module']
-            package_name = request.GET['package']
-            package_type = request.GET['type']
-            package_version = request.GET['version']
-            print 'add ' + package_type + ' module : ' + module_name
-            project_type_map = {'django': 1}
-            try:    
-                utils.add_module(module_name, package_name, project_type_map[package_type], package_version)
-                messages.success(request, 'Successfully added new module {}'.format(module_name))
-            except:
-                messages.error(request, 'Failed to add new module {}'.format(repo_name))
-                traceback.print_exc()
-            finally:
-                return redirect(request.META['HTTP_REFERER'])
-
-        if request.GET.__contains__('repo') and request.GET.__contains__('type'):
-            repo_name = request.GET['repo']
-            repo_type = request.GET['type']
-            repo_setup_scripts = request.GET['scripts']
-            print 'add ' + repo_type + ' repository : ' + repo_name
-            project_type_map = {'django': 1, 'ror': 2, 'node': 3, 'drupal': 4, 'grails': 5}
-            try:    
-                utils.add_repo(repo_name, project_type_map[repo_type], repo_setup_scripts)
-                messages.success(request, 'Successfully added new repository {}'.format(repo_name))
-            except:
-                messages.error(request, 'Failed to add new repository {}'.format(repo_name))
-                traceback.print_exc()
-            finally:
-                return redirect(request.META['HTTP_REFERER'])
-
-        if request.GET.__contains__('deploy'):
-            repo_name = request.GET['deploy']
-            print 'deploy: ' + repo_name
-            try:
-                thread = Thread(target = utils.deploy_repo, args = (repo_name, 'MySQL'))
-                thread.start()
-                # thread.join()
-                messages.success(request, 'Deploying repository {}'.format(repo_name))
-            except:
-                messages.error(request, 'Failed to deploy repository {}'.format(repo_name))
-                traceback.print_exc()
-            finally:
-                return redirect(request.META['HTTP_REFERER'])
-
-        if request.GET.__contains__('delete'):
-            repo_name = request.GET['delete']
-            print 'delete: ' + repo_name
-            try:
-                utils.delete_repo(repo_name)
-                messages.success(request, 'Successfully deleted repository {}'.format(repo_name))
-            except:
-                messages.error(request, 'Failed to delete repository {}'.format(repo_name))
-                traceback.print_exc()
-            finally:
-                return redirect(request.META['HTTP_REFERER'])
+    pass
 ## DEF
 
 def search_stuff(context, request):
