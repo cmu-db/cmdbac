@@ -44,6 +44,8 @@ def parse_args():
         help='Number of threads you want to use to submit actions')
     agroup.add_argument('--timeout', type=int, metavar='T', \
         help='Timeout for submitting actions (seconds)')
+    agroup.add_argument('--db-size', type=int, \
+        help='The expected Database size, 10 stands for 10MB')
 
     # Database Parameters
     agroup = aparser.add_argument_group('Local Database Parameters')
@@ -65,7 +67,6 @@ def parse_args():
 
 def get_attempt_info(api_url, attempt_id):
     url = api_url + ATTEMPT_INFO_URL.format(id = attempt_id)
-    print url
     response = requests.get(url)
     return response.json()
 ## DEF
@@ -96,7 +97,8 @@ if __name__ == "__main__":
         }
         benchmark = {
             'num_threads': args["num_threads"],
-            'timeout': args["timeout"]
+            'timeout': args["timeout"],
+            'size': arg["db_size"]
         }
         run_attempt_benchmark(args["catalog"], args["attempt"], database, benchmark)
     else:

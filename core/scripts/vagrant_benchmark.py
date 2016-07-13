@@ -22,14 +22,16 @@ import utils
 ## =====================================================================
 LOG = logging.getLogger()
 
-def run_driver(driver, timeout, queue):
+def run_driver(driver, timeout, size, queue):
     cnt = 0
     start_time = time.time()
     stop_time = start_time + timeout
     new_driver = BenchmarkDriver(driver)
     try:
-        while time.time() < stop_time:
+        while True:
             cnt += new_driver.submit_actions()
+            if time.time() >= stop_time or get_database_size() >= size:
+                break
         queue.put(cnt)
     except Exception, e:
         traceback.print_exc()
@@ -61,6 +63,7 @@ def main():
     parser.add_argument('--password', type=str)
     parser.add_argument('--num_threads', type=int)
     parser.add_argument('--timeout', type=int)
+    parser.add_argument('--size', type=int)
     args = parser.parse_args()
 
     # get args
@@ -77,6 +80,7 @@ def main():
     }
     num_threads = args.num_threads
     timeout = args.timeout
+    size = args.size
 
     # get deployer
     project_type = attempt_info['repo_info']['project_type']
@@ -118,7 +122,7 @@ def main():
         # multi-processing
         queue = Queue()
         for _ in range(num_threads):
-            process = Process(target = run_driver, args = (driver, timeout, queue))
+            process = Process(target = run_driver, args = (driver, timeout, size, queue))
             processes.append(process)
             process.start()
         for process in processes:
