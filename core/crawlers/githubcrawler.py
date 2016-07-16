@@ -90,7 +90,10 @@ class GitHubCrawler(BaseCrawler):
         # Pick through the results and find repos
         for title in titles:
             name = title.contents[1].string
-            self.add_repository(name, '')
+            try:
+                self.add_repository(name, '')
+            except Exception, e:
+                LOG.exception(e)
             # Sleep for a little bit to prevent us from getting blocked
             time.sleep(API_GITHUB_SLEEP)
         ## FOR
