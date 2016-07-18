@@ -82,6 +82,14 @@ def transaction_stats(directory = '.'):
                         query_count -= 2
                         stats['transaction_query_count'][project_type_name].append(query_count)
 
+                        try:
+                            print repo.name
+                            print transaction
+                            print
+                            print
+                        except:
+                            pass
+
                         transaction = ''
 
             if transaction_count > 0:
@@ -93,7 +101,7 @@ def transaction_stats(directory = '.'):
 def main():
     # active
     # action_stats(TRANSACTION_DIRECTORY)
-    # transaction_stats(TRANSACTION_DIRECTORY)
+    transaction_stats(TRANSACTION_DIRECTORY)
     
     # working
     
