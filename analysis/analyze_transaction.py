@@ -98,10 +98,51 @@ def transaction_stats(directory = '.'):
             
     dump_all_stats(directory, stats) 
 
+def blind_write():
+    total = 0
+    count = 0
+
+    def is_write(query):
+        return ('INSERT' in query or 'UPDATE' in query) and ('UTC LOG:  ' not in query)
+
+    transaction = []
+    line = sys.stdin.readline().strip()
+    while line:
+        repo_name = line
+        
+        line = sys.stdin.readline().strip()
+        while True:
+            if line.upper() == 'BEGIN':
+                transaction = []
+                total += 1
+            elif line.upper() == 'COMMIT':
+                is_writes = []
+                for i in xrange(len(transaction)):
+                    if is_write(transaction[i]):
+                        is_writes.append(i)
+                if len(is_writes) > 1:
+                    print 'REPO: ', repo_name
+                    for i in is_writes:
+                        print transaction[i]
+                    print
+                sys.stdin.readline()
+                sys.stdin.readline()
+                break
+            else:
+                transaction.append(line)
+
+            line = sys.stdin.readline().strip()
+
+        line = sys.stdin.readline()
+
+    print 'Total # of Transactions:', total
+    print 'Total # of Blind Writes:', count
+
 def main():
     # active
     # action_stats(TRANSACTION_DIRECTORY)
-    transaction_stats(TRANSACTION_DIRECTORY)
+    # transaction_stats(TRANSACTION_DIRECTORY)
+    blind_write()
     
     # working
     
