@@ -1,2 +1,0 @@
-FOCUS RUBY ON RAILS: DEPLOY MORE AND DRIVE MORE
-RELATED WORK(peter's paper and phd, conferences)
