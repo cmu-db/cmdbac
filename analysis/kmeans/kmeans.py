@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-07-20 23:32:43
+# @Last Modified time: 2016-07-21 01:06:22
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -59,11 +59,13 @@ def prepare_data():
 
     all_data = normalize(all_data, axis = 0)
 
-    return all_data
-        
-def main():
-    data = prepare_data()
+    for repo_data in all_data:
+        print ' '.join(map(str, repo_data))
 
+def read_data():
+    pass
+
+def kmeans():
     k_range = xrange(1, 5)
     for k in k_range:
         # kmeans_var = KMeans(n_clusters = k).fit(data)
@@ -105,6 +107,9 @@ def main():
         plt.xticks(())
         plt.yticks(())
         fig.savefig('kmeans-{}.png'.format(k))
+        
+def main():
+    prepare_data()
     
 if __name__ == "__main__":
     main()
