@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
-sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
+sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
+sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "core"))
 
 import re
 import csv
