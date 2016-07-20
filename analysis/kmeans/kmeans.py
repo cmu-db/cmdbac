@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-07-20 23:08:47
+# @Last Modified time: 2016-07-20 23:32:43
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -17,6 +17,7 @@ from library.models import *
 
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import normalize
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 
@@ -55,6 +56,8 @@ def prepare_data():
         repo_data.append(len(actions))
 
         all_data.append(repo_data)
+
+    all_data = normalize(all_data, axis = 0)
 
     return all_data
         
