@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-07-21 01:06:22
+# @Last Modified time: 2016-07-21 01:25:13
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -63,10 +63,20 @@ def prepare_data():
         print ' '.join(map(str, repo_data))
 
 def read_data():
-    pass
+    all_data = []
 
-def kmeans():
-    k_range = xrange(1, 5)
+    line = sys.stdin.readline()
+    while line:
+        repo_data = map(float, line.split())
+        all_data.append(repo_data)
+
+        line = sys.stdin.readline()
+    print len(all_data)
+
+    return all_data
+
+def kmeans(data):
+    k_range = xrange(1, 11)
     for k in k_range:
         # kmeans_var = KMeans(n_clusters = k).fit(data)
 
@@ -109,7 +119,9 @@ def kmeans():
         fig.savefig('kmeans-{}.png'.format(k))
         
 def main():
-    prepare_data()
-    
+    # prepare_data()
+    data = read_data()
+    kmeans(data)
+
 if __name__ == "__main__":
     main()
