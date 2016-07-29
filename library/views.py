@@ -70,7 +70,7 @@ def home(request):
     # Round down to the nearest thousand
     context['total_success'] = int(math.floor(total_success/1000.0) * 1000)
     
-    context['attempts'] = Attempt.objects.exclude(result=ATTEMPT_STATUS_MISSING_REQUIRED_FILES).order_by('-start_time')[:5]
+    context['attempts'] = Attempt.objects.filter(result=ATTEMPT_STATUS_SUCCESS).order_by('-start_time')[:5]
     return render(request, 'index.html', context)
 ## DEF
 
