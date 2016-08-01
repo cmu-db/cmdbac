@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-02 00:35:08
+# @Last Modified time: 2016-08-02 01:13:03
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -67,19 +67,29 @@ def read_data():
 
         line = sys.stdin.readline()
 
-    print all_data
-
-    all_data = scale(all_data)
-    print all_data
-
     return all_data
 
 def kmeans(data):
-    k_range = xrange(3, 4)
+    k_range = xrange(3, 11)
+    n = len(data)
+    processed_data = scale(data)
     for k in k_range:
-        # kmeans_var = KMeans(n_clusters = k).fit(data)
+        kmeans = KMeans(init='k-means++', n_clusters=k)
+        kmeans.fit(processed_data)
 
-        reduced_data = PCA(n_components=2).fit_transform(data)
+        labels_cnt = {}
+        for i in xrange(n):
+            #print 'Data: ', data[i], ' Label: ', kmeans.labels_[i]
+            label = kmeans.labels_[i]
+            labels_cnt[label] = labels_cnt.get(label, 0) + 1
+
+        print labels_cnt
+
+def kmeans_pca(data):
+    k_range = xrange(3, 4)
+    processed_data = scale(data)
+    for k in k_range:
+        reduced_data = PCA(n_components=2).fit_transform(processed_data)
         kmeans = KMeans(init='k-means++', n_clusters=k)
         kmeans.fit(reduced_data)
 
@@ -103,7 +113,7 @@ def kmeans(data):
                    cmap=plt.cm.Paired,
                    aspect='auto', origin='lower')
 
-        plt.plot(reduced_data[:, 0], reduced_data[:, 1], 'k.', markersize=2)
+        plt.plot(reduced_data[:, 0], reduced_data[:, 1], 'k.', markersize=10)
         # Plot the centroids as a white X
         centroids = kmeans.cluster_centers_
         plt.scatter(centroids[:, 0], centroids[:, 1],
@@ -116,14 +126,30 @@ def kmeans(data):
         plt.xticks(())
         plt.yticks(())
         fig.savefig('kmeans-{}.png'.format(k))
+
+def kmeans_elbow(data):
+    k_range = xrange(2, 7)
+    processed_data = scale(data)
+    for k in k_range:
+        kmeans = KMeans(init='k-means++', n_clusters=k)
+        kmeans.fit(processed_data)
+
+        print kmeans.inertia_
         
 def main():
     if len(sys.argv) > 1:
-        if sys.argv[1] == 'prepare':
+        command = sys.argv[1]
+        if command == 'prepare':
             prepare_data()
-        else:
+        elif command == 'kmeans':
             data = read_data()
             kmeans(data)
+        elif command == 'pca':
+            data = read_data()
+            kmeans_pca(data)
+        elif command == 'elbow':
+            data = read_data()
+            kmeans_elbow(data)
 
 if __name__ == "__main__":
     main()
