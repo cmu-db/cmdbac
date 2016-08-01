@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-02 00:28:24
+# @Last Modified time: 2016-08-02 00:35:08
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -118,9 +118,12 @@ def kmeans(data):
         fig.savefig('kmeans-{}.png'.format(k))
         
 def main():
-    # prepare_data()
-    data = read_data()
-    kmeans(data)
+    if len(sys.argv) > 1:
+        if sys.argv[1] == 'prepare':
+            prepare_data()
+        else:
+            data = read_data()
+            kmeans(data)
 
 if __name__ == "__main__":
     main()
