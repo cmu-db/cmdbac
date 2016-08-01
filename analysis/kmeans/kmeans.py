@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-01 23:50:49
+# @Last Modified time: 2016-08-02 00:28:24
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -17,7 +17,7 @@ from library.models import *
 
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import normalize
+from sklearn.preprocessing import normalize, scale
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 
@@ -29,9 +29,9 @@ def prepare_data():
 
         # basic information
         repo_data.append(repo.size)
-        repo_data.append(repo.forks_count)
         repo_data.append(repo.commits_count)
-        repo_data.append(repo.contributors_count)
+        # repo_data.append(repo.forks_count)
+        # repo_data.append(repo.contributors_count)
         # repo_data.append(repo.stargazers_count)
         # repo_data.append(repo.open_issues_count)
         # repo_data.append(repo.network_count)
@@ -66,14 +66,16 @@ def read_data():
         all_data.append(repo_data)
 
         line = sys.stdin.readline()
-    print len(all_data)
 
-    all_data = normalize(all_data, axis = 0)
+    print all_data
+
+    all_data = scale(all_data)
+    print all_data
 
     return all_data
 
 def kmeans(data):
-    k_range = xrange(1, 11)
+    k_range = xrange(3, 4)
     for k in k_range:
         # kmeans_var = KMeans(n_clusters = k).fit(data)
 
