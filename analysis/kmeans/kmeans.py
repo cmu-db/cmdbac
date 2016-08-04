@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-02 01:13:03
+# @Last Modified time: 2016-08-05 00:11:00
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -28,17 +28,25 @@ def prepare_data():
         repo_data = []
 
         # basic information
-        repo_data.append(repo.size)
         repo_data.append(repo.commits_count)
-        # repo_data.append(repo.forks_count)
-        # repo_data.append(repo.contributors_count)
-        # repo_data.append(repo.stargazers_count)
-        # repo_data.append(repo.open_issues_count)
-        # repo_data.append(repo.network_count)
-        # repo_data.append(repo.subscribers_count)
-        # repo_data.append(repo.branches_count)
-        # repo_data.append(repo.subscribers_count)
-        # repo_data.append(repo.releases_count)
+        repo_data.append(repo.forks_count)
+        repo_data.append(repo.contributors_count)
+        repo_data.append(repo.stargazers_count)
+        repo_data.append(repo.open_issues_count)
+        repo_data.append(repo.network_count)
+        repo_data.append(repo.subscribers_count)
+        repo_data.append(repo.branches_count)
+        repo_data.append(repo.subscribers_count)
+        repo_data.append(repo.releases_count)
+        repo_data.append(int(repo.has_issues))
+        repo_data.append(int(repo.has_downloads))
+        repo_data.append(int(repo.has_wiki))
+        repo_data.append(int(repo.has_pages))
+
+        # attempt information
+        repo_data.append(len(Dependency.objects.filter(attempt = repo.latest_successful_attempt)))
+        repo_data.append(repo.latest_successful_attempt.queries_count)
+        repo_data.append(repo.latest_successful_attempt.actions_count)
 
         def get_counter(name):
             statistics = Statistic.objects.filter(attempt = repo.latest_successful_attempt).filter(description = name)
@@ -50,7 +58,7 @@ def prepare_data():
         repo_data.append(get_counter('num_indexes'))
         repo_data.append(get_counter('num_constraints'))
         repo_data.append(get_counter('num_foreignkeys'))
-        # repo_data.append(get_counter('num_transactions'))
+        repo_data.append(get_counter('num_transactions'))
 
         actions = Action.objects.filter(attempt = repo.latest_successful_attempt)
         repo_data.append(len(actions))
