@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-10 04:20:57
+# @Last Modified time: 2016-08-10 04:21:43
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -53,7 +53,7 @@ def prepare_data():
         actions = Action.objects.filter(attempt = repo.latest_successful_attempt)
         repo_data.append(len(actions))
 
-        query_total_count = 
+        query_total_count = 0
         query_counters = {}
         for action in actions:
             counters = Counter.objects.filter(action = action)
