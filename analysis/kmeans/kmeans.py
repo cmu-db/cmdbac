@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-05 00:11:00
+# @Last Modified time: 2016-08-10 03:33:37
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -78,9 +78,10 @@ def read_data():
     return all_data
 
 def kmeans(data):
-    k_range = xrange(3, 11)
+    k_range = xrange(2, 11)
     n = len(data)
     processed_data = scale(data)
+    
     for k in k_range:
         kmeans = KMeans(init='k-means++', n_clusters=k)
         kmeans.fit(processed_data)
@@ -94,8 +95,9 @@ def kmeans(data):
         print labels_cnt
 
 def kmeans_pca(data):
-    k_range = xrange(3, 4)
+    k_range = xrange(3, 21)
     processed_data = scale(data)
+
     for k in k_range:
         reduced_data = PCA(n_components=2).fit_transform(processed_data)
         kmeans = KMeans(init='k-means++', n_clusters=k)
@@ -136,13 +138,18 @@ def kmeans_pca(data):
         fig.savefig('kmeans-{}.png'.format(k))
 
 def kmeans_elbow(data):
-    k_range = xrange(2, 7)
+    k_range = xrange(2, 21)
     processed_data = scale(data)
+    
+    inertias = []
     for k in k_range:
         kmeans = KMeans(init='k-means++', n_clusters=k)
         kmeans.fit(processed_data)
+        inertias.append(kmeans.inertia_)
 
-        print kmeans.inertia_
+    fig = plt.figure()
+    plt.plot(k_range, inertias)
+    fig.savefig('kmeans-elbow.png')
         
 def main():
     if len(sys.argv) > 1:
