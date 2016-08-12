@@ -24,7 +24,7 @@ def save_statistic(description, count, attempt):
     statistic.attempt = attempt
     statistic.save()  
 
-def transaction_stat(directory = '.'):
+def transaction_stats(directory = '.'):
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
         if filter_repository(repo):
             continue
@@ -175,13 +175,12 @@ def transaction_ratio_stats():
         action_count = repo.latest_successful_attempt.actions_count
         if action_count > 0:
             transaction_ratio = transaction_count * 100 / action_count
-            print transaction_ratio
             save_statistic('transaction_ratio', transaction_ratio, repo.latest_successful_attempt)
 
 def main():
-    # transaction_stat()
-    # coverage_stats()
-    # secondary_index_stats()
+    transaction_stats()
+    coverage_stats()
+    secondary_index_stats()
     transaction_ratio_stats()
 
 if __name__ == '__main__':
