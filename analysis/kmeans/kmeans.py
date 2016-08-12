@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-10 04:23:05
+# @Last Modified time: 2016-08-12 22:45:05
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -32,9 +32,7 @@ def prepare_data():
 
         # attempt information
         repo_data.append(len(Dependency.objects.filter(attempt = repo.latest_successful_attempt)))
-        repo_data.append(repo.latest_successful_attempt.queries_count)
-        repo_data.append(repo.latest_successful_attempt.actions_count)
-
+        
         # database information
         def get_counter(name):
             statistics = Statistic.objects.filter(attempt = repo.latest_successful_attempt).filter(description = name)
@@ -63,6 +61,7 @@ def prepare_data():
                 query_total_count += counter.count
         if query_total_count == 0:
             query_total_count = 1
+        repo_data.append(query_total_count)
         repo_data.append(float(query_counters.get('SELECT', 0)) / query_total_count)
         repo_data.append(float(query_counters.get('INSERT', 0)) / query_total_count)
         repo_data.append(float(query_counters.get('UPDATE', 0)) / query_total_count)
