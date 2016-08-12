@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-12 23:02:53
+# @Last Modified time: 2016-08-13 02:05:15
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -30,9 +30,10 @@ def prepare_data():
         repo_data = []
 
         # basic information
-        repo_data.append(repo.commits_count)
-
+        repo_data.append(repo.size)
+        
         # attempt information
+        repo_data.append(repo.latest_successful_attempt.size)
         repo_data.append(len(Dependency.objects.filter(attempt = repo.latest_successful_attempt)))
         
         # database information
@@ -42,12 +43,19 @@ def prepare_data():
                 return list(statistics)[-1].count
             else:
                 return 0
+
         repo_data.append(get_counter('num_tables'))
-        repo_data.append(get_counter('num_indexes'))
-        repo_data.append(get_counter('num_constraints'))
-        repo_data.append(get_counter('num_foreignkeys'))
+        num_tables = max(get_counter('num_tables'), 1)
+        repo_data.append(float(get_counter('num_indexes')) / num_tables)
+        repo_data.append(float(get_counter('num_constraints')) / num_tables)
+        repo_data.append(float(get_counter('num_foreignkeys')) / num_tables)
+        repo_data.append(float(get_counter('num_secondary_indexes')) / num_tables)
         repo_data.append(get_counter('num_transactions'))
 
+        repo_data.append(get_counter('table_coverage'))
+        repo_data.append(get_counter('column_coverage'))
+        repo_data.append(get_counter('index_coverage'))
+        repo_data.append(get_counter('transaction_ratio'))
 
         # action information
         actions = Action.objects.filter(attempt = repo.latest_successful_attempt)
@@ -61,17 +69,19 @@ def prepare_data():
             for counter in counters:
                 query_counters[counter.description] = query_counters.get(counter.description, 0) + counter.count
                 query_total_count += counter.count
-        if query_total_count == 0:
-            query_total_count = 1
         repo_data.append(query_total_count)
-        repo_data.append(float(query_counters.get('SELECT', 0)) / query_total_count)
-        repo_data.append(float(query_counters.get('INSERT', 0)) / query_total_count)
-        repo_data.append(float(query_counters.get('UPDATE', 0)) / query_total_count)
-        repo_data.append(float(query_counters.get('DELETE', 0)) / query_total_count)
+        query_total_count = max(query_total_count, 1)
+        repo_data.append(float(query_counters.get('SELECT', 0)) * 100 / query_total_count)
+        repo_data.append(float(query_counters.get('INSERT', 0)) * 100 / query_total_count)
+        repo_data.append(float(query_counters.get('UPDATE', 0)) * 100 / query_total_count)
+        repo_data.append(float(query_counters.get('DELETE', 0)) * 100 / query_total_count)
+        repo_data.append(float(query_counters.get('OTHER', 0)) * 100 / query_total_count)
 
         if actions_count == 0:
             actions_count = 1
         repo_data.append(float(query_total_count) / actions_count)
+        repo_data.append(float(get_counter('num_transactions')) / actions_count)
+
 
         print ' '.join(map(str, repo_data))
 
