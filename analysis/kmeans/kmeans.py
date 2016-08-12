@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-12 22:45:05
+# @Last Modified time: 2016-08-12 23:02:53
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -20,6 +20,8 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import normalize, scale
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
+
+K_RANGE = xrange(1, 11)
 
 def prepare_data():
     all_data = []
@@ -86,11 +88,10 @@ def read_data():
     return all_data
 
 def kmeans(data):
-    k_range = xrange(2, 11)
     n = len(data)
     processed_data = scale(data)
     
-    for k in k_range:
+    for k in K_RANGE:
         kmeans = KMeans(init='k-means++', n_clusters=k)
         kmeans.fit(processed_data)
 
@@ -103,10 +104,9 @@ def kmeans(data):
         print labels_cnt
 
 def kmeans_pca(data):
-    k_range = xrange(3, 21)
     processed_data = scale(data)
 
-    for k in k_range:
+    for k in K_RANGE:
         reduced_data = PCA(n_components=2).fit_transform(processed_data)
         kmeans = KMeans(init='k-means++', n_clusters=k)
         kmeans.fit(reduced_data)
@@ -146,17 +146,17 @@ def kmeans_pca(data):
         fig.savefig('kmeans-{}.png'.format(k))
 
 def kmeans_elbow(data):
-    k_range = xrange(2, 21)
     processed_data = scale(data)
     
     inertias = []
-    for k in k_range:
+    for k in K_RANGE:
         kmeans = KMeans(init='k-means++', n_clusters=k)
         kmeans.fit(processed_data)
         inertias.append(kmeans.inertia_)
 
     fig = plt.figure()
-    plt.plot(k_range, inertias)
+    plt.scatter(K_RANGE, inertias)
+    plt.plot(K_RANGE, inertias)
     fig.savefig('kmeans-elbow.png')
         
 def main():
