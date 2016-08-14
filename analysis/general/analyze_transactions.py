@@ -87,7 +87,7 @@ def transaction_stats(directory = '.'):
                         stats['transaction_query_count'][project_type_name].append(query_count)
 
                         try:
-                            transactions.append((repo.name, transaction))
+                            transactions.append((repo.name, repo.project_type, transaction))
                         except:
                             pass
 
