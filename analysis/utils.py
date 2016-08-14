@@ -2,9 +2,10 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-03-21 01:05:00
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-05-03 22:48:51
+# @Last Modified time: 2016-08-14 11:40:14
 import os
 import csv
+import pickle
 
 COMMITS_COUNT_THRESHOLD = 10
 
@@ -34,3 +35,7 @@ def dump_stats(directory, description, values):
 def dump_all_stats(directory, all_stats):
     for description in all_stats:
         dump_stats(directory, description, all_stats[description])
+
+def pickle_dump(directory, description, data):
+    with open(os.path.join(directory, description + '.pkl'), 'wb') as pickle_file:  
+        pickle.dump(data, pickle_file)
