@@ -62,7 +62,7 @@ def transaction_stats(directory = '.'):
             transaction_count = 0
 
             for query in Query.objects.filter(action = action):
-                if 'BEGIN' in query.content.upper() or 'START TRANSACTION' in query.content.upper():
+                if 'BEGIN' in query.content.upper() or 'START TRANSACTION' in query.content.upper() or 'SET AUTOCOMMIT=0' in query.content.upper():
                     transaction = query.content + '\n'
                     query_count = 1
                 elif transaction != '':
@@ -97,7 +97,7 @@ def transaction_stats(directory = '.'):
                 stats['transaction_count'][project_type_name].append(transaction_count)
 
     pickle_dump(directory, 'transactions', transactions)
-            
+
     dump_all_stats(directory, stats)
 
 def main():
