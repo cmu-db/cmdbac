@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-08-14 11:12:48
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-14 19:48:05
+# @Last Modified time: 2016-08-14 20:40:19
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
@@ -45,6 +45,7 @@ def analyze_blind_write():
                     writes.append((i, queries[i]))
 
             is_blind_write = False
+            index, other_index = -1, -1
             if len(writes) > 1:
                 identifiers = [(i, get_identifiers(sqlparse.parse(query))) for (i, query) in writes]
                 for i in xrange(1, len(identifiers)):
@@ -72,10 +73,14 @@ def analyze_blind_write():
                                 # print
                                 # raw_input()
 
-            # if is_blind_write:
-            #    print repo_name
-            #    print transaction.encode('utf-8')
-            #    print '-' * 20
+            if is_blind_write:
+                print repo_name, project_type
+                print queries[index]
+                print queries[other_index]
+                print '+' * 10
+                print transaction.encode('utf-8')
+                print '-' * 20
+
             stats['transaction_count'][project_type] = [stats['transaction_count'].get(project_type, [0])[0] + 1]
                 
     total = len(transactions)
