@@ -2,15 +2,19 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-08-14 11:12:48
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-14 18:39:37
+# @Last Modified time: 2016-08-14 19:48:05
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
-import sys
 import pickle
 import sqlparse
+
+from utils import dump_all_stats
 
 def analyze_blind_write():
     total = 0
     count = 0
+    stats = {'transaction_count': {}, 'blind_write_count': {}}
 
     def is_write(query):
         return ('INSERT' in query or 'UPDATE' in query) and ('UTC LOG:  ' not in query)
@@ -32,7 +36,7 @@ def analyze_blind_write():
     with open('transactions.pkl', 'rb') as pickle_file:
         transactions = pickle.load(pickle_file)
         
-        for repo_name, transaction in transactions:
+        for repo_name, project_type, transaction in transactions:
             queries = transaction.split('\n')
             writes = []
 
@@ -62,20 +66,26 @@ def analyze_blind_write():
 
                             if is_blind_write:
                                 count += 1
+                                stats['blind_write_count'][project_type] = [stats['blind_write_count'].get(project_type, [0])[0] + 1]
                                 # for k in xrange(other_index + 1, index):
                                 #    print 1, queries[k]
                                 # print
                                 # raw_input()
 
-            if is_blind_write:
-                print repo_name
-                print transaction.encode('utf-8')
-                print '-' * 20
+            # if is_blind_write:
+            #    print repo_name
+            #    print transaction.encode('utf-8')
+            #    print '-' * 20
+            stats['transaction_count'][project_type] = [stats['transaction_count'].get(project_type, [0])[0] + 1]
                 
     total = len(transactions)
 
+    print stats
+
     print 'Total # of Transactions:', total
     print 'Total # of Blind Writes:', count
+
+    dump_all_stats('.', stats)
 
 def main():
     analyze_blind_write()
