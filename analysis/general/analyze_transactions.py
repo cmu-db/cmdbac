@@ -44,7 +44,7 @@ def transaction_stats(directory = '.'):
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
         if filter_repository(repo):
             continue
-        
+
         project_type_name = repo.project_type.name
         if project_type_name not in stats['transaction_count']:
             stats['transaction_count'][project_type_name] = []
@@ -87,7 +87,7 @@ def transaction_stats(directory = '.'):
                         stats['transaction_query_count'][project_type_name].append(query_count)
 
                         try:
-                            transactions.append((repo.name, repo.project_type, transaction))
+                            transactions.append((repo.name, repo.project_type.name, transaction))
                         except:
                             pass
 
