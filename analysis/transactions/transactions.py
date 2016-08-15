@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-08-14 11:12:48
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-15 22:56:37
+# @Last Modified time: 2016-08-15 22:57:51
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
@@ -124,10 +124,32 @@ def empty_transaction():
 
     dump_all_stats('.', stats)
 
+def pattern():
+    stats = {'pattern_count': {}}
+
+    with open('transactions.pkl', 'rb') as pickle_file:
+        transactions = pickle.load(pickle_file)
+        
+        for repo_name, project_type, transaction in transactions:
+            queries = transaction.split('\n')
+            
+            if project_type not in stats['pattern_count']:
+                stats['pattern_count'][project_type] = {}
+
+            if 'BEGIN' in queries[0].upper():
+                stats['pattern_count'][project_type]['BEGIN'] = stats['pattern_count'][project_type].get('BEGIN', 0) + 1
+            elif 'AUTOCOMMIT' in queries[0].upper():
+                stats['pattern_count'][project_type]['AUTOCOMMIT'] = stats['pattern_count'][project_type].get('AUTOCOMMIT', 0) + 1
+
+    print stats
+
+    dump_all_stats('.', stats)
+
 def main():
     # count_transaction()
     # blind_write()
-    empty_transaction()
+    # empty_transaction()
+    pattern()
 
 if __name__ == '__main__':
     main()
