@@ -8,7 +8,7 @@ import csv
 import numpy as np
 import sqlparse
 import traceback
-from utils import filter_repository, dump_all_stats
+from utils import filter_repository, dump_all_stats, pickle_dump
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
@@ -419,17 +419,41 @@ def join_stats(directory = '.'):
 
     dump_all_stats(directory, stats)
 
+def repetitive(directory = '.'):
+    stats = {'repetitive_count': {}, 'query_count': {}}
+
+    repetitive_queries = set()
+
+    for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        if filter_repository(repo):
+            continue
+
+        project_type_name = repo.project_type.name
+        
+        for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
+            queries = map(lambda x: x.content.strip(), Query.objects.filter(action = action))
+            for i in xrange(1, len(queries)):
+                if queries[i] == queries[i - 1]:
+                    repetitive_queries.add(queries[i])
+                    stats['repetitive_count'][project_type_name] = stats['repetitive_count'].get(project_type_name, 0) + 1
+            stats['query_count'][project_type_name] = stats['query_count'].get(project_type_name, 0) + len(queries)
+
+    pickle_dump(directory, 'repetitive_queries', repetitive_queries)
+
+    dump_all_stats(directory, stats)
+
 def main():
     # active
-    query_stats(QUERIES_DIRECTORY)
-    coverage_stats(QUERIES_DIRECTORY)
-    sort_stats(QUERIES_DIRECTORY)
-    scan_stats(QUERIES_DIRECTORY)
-    multiset_stats(QUERIES_DIRECTORY)
-    aggregate_stats(QUERIES_DIRECTORY)
-    nested_stats(QUERIES_DIRECTORY)
-    having_stats(QUERIES_DIRECTORY)
-    join_stats(QUERIES_DIRECTORY)
+    # query_stats(QUERIES_DIRECTORY)
+    # coverage_stats(QUERIES_DIRECTORY)
+    # sort_stats(QUERIES_DIRECTORY)
+    # scan_stats(QUERIES_DIRECTORY)
+    # multiset_stats(QUERIES_DIRECTORY)
+    # aggregate_stats(QUERIES_DIRECTORY)
+    # nested_stats(QUERIES_DIRECTORY)
+    # having_stats(QUERIES_DIRECTORY)
+    # join_stats(QUERIES_DIRECTORY)
+    repetitive()
 
     # working
     

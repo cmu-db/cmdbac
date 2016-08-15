@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-03-21 01:05:00
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-14 11:40:14
+# @Last Modified time: 2016-08-15 23:13:45
 import os
 import csv
 import pickle
@@ -30,8 +30,8 @@ def dump_stats(directory, description, values):
                     else:
                         writer.writerow([label, key, value])
             else:
-                print 'can not dump {}'.format(description)
-
+                writer.writerow([label, stats])
+                
 def dump_all_stats(directory, all_stats):
     for description in all_stats:
         dump_stats(directory, description, all_stats[description])
