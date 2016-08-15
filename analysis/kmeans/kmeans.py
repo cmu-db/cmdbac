@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-12 23:02:53
+# @Last Modified time: 2016-08-15 10:38:05
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -21,7 +21,7 @@ from sklearn.preprocessing import normalize, scale
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 
-K_RANGE = xrange(1, 11)
+K_RANGE = xrange(1, 16)
 
 def prepare_data():
     all_data = []
@@ -87,10 +87,87 @@ def read_data():
 
     return all_data
 
+# Reference: https://github.com/dvanaken/ottertune/blob/master/analysis/preprocessing.py
+class Bin(object):
+    
+    def __init__(self, bin_start, axis=None):
+        if axis is not None and \
+                axis != 1 and axis != 0:
+            raise NotImplementedError("Axis={} is not yet implemented"
+                                      .format(axis))
+        self.deciles_ = None
+        self.bin_start_ = bin_start
+        self.axis_ = axis
+    
+    def fit(self, matrix):
+        if self.axis_ is None:
+            self.deciles_ = get_deciles(matrix, self.axis_)
+        elif self.axis_ == 0: # Bin columns
+            self.deciles_ = []
+            for col in matrix.T:
+                self.deciles_.append(get_deciles(col, axis=None))
+        elif self.axis_ == 1: # Bin rows
+            self.deciles_ = []
+            for row in matrix:
+                self.deciles_.append(get_deciles(row, axis=None))
+        return self
+
+    def transform(self, matrix, copy=True):
+        assert self.deciles_ is not None
+        if self.axis_ is None:
+            res = bin_by_decile(matrix, self.deciles_,
+                                 self.bin_start_, self.axis_)
+        elif self.axis_ == 0: # Transform columns
+            columns = []
+            for col, decile in zip(matrix.T, self.deciles_):
+                columns.append(bin_by_decile(col, decile,
+                                             self.bin_start_, axis=None))
+            res = np.vstack(columns).T
+        elif self.axis_ == 1: # Transform rows
+            rows = []
+            for row, decile in zip(matrix, self.deciles_):
+                rows.append(bin_by_decile(row, decile,
+                                          self.bin_start_, axis=None))
+            res = np.vstack(rows)
+        assert res.shape == matrix.shape
+        return res
+
+def get_deciles(matrix, axis=None):
+    if axis is not None:
+        raise NotImplementedError("Axis is not yet implemented")
+    
+    assert matrix.ndim > 0
+    assert matrix.size > 0
+    
+    decile_range = np.arange(10,101,10)
+    deciles = np.percentile(matrix, decile_range, axis=axis)
+    deciles[-1] = np.Inf
+    return deciles
+
+def bin_by_decile(matrix, deciles, bin_start, axis=None):
+    if axis is not None:
+        raise NotImplementedError("Axis is not yet implemented")
+    
+    assert matrix.ndim > 0
+    assert matrix.size > 0
+    assert deciles is not None
+    assert len(deciles) == 10
+    
+    binned_matrix = np.zeros_like(matrix)
+    for i in range(10)[::-1]:
+        decile = deciles[i]
+        binned_matrix[matrix <= decile] = i + bin_start
+    
+    return binned_matrix
+
 def kmeans(data):
     n = len(data)
-    processed_data = scale(data)
-    
+    bin_ = Bin(0, 0)
+    # processed_data = scale(data)
+    data = np.array(data)
+    bin_.fit(data)
+    processed_data = bin_.transform(data)
+
     for k in K_RANGE:
         kmeans = KMeans(init='k-means++', n_clusters=k)
         kmeans.fit(processed_data)
@@ -101,7 +178,7 @@ def kmeans(data):
             label = kmeans.labels_[i]
             labels_cnt[label] = labels_cnt.get(label, 0) + 1
 
-        print labels_cnt
+        print k, labels_cnt
 
 def kmeans_pca(data):
     processed_data = scale(data)
@@ -146,7 +223,12 @@ def kmeans_pca(data):
         fig.savefig('kmeans-{}.png'.format(k))
 
 def kmeans_elbow(data):
-    processed_data = scale(data)
+    bin_ = Bin(0, 0)
+    # processed_data = scale(data)
+    data = np.array(data)
+    bin_.fit(data)
+    processed_data = bin_.transform(data)
+    processed_data = scale(processed_data)
     
     inertias = []
     for k in K_RANGE:
