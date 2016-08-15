@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-08-14 11:12:48
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-14 20:40:19
+# @Last Modified time: 2016-08-15 22:56:37
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
@@ -11,10 +11,23 @@ import sqlparse
 
 from utils import dump_all_stats
 
-def analyze_blind_write():
+def count_transaction():
+    stats = {'transaction_count': {}}
+
+    with open('transactions.pkl', 'rb') as pickle_file:
+        transactions = pickle.load(pickle_file)
+        
+        for repo_name, project_type, transaction in transactions:
+            stats['transaction_count'][project_type] = [stats['transaction_count'].get(project_type, [0])[0] + 1]
+    
+    print stats
+
+    dump_all_stats('.', stats)
+
+def blind_write():
     total = 0
     count = 0
-    stats = {'transaction_count': {}, 'blind_write_count': {}}
+    stats = {'blind_write_count': {}}
 
     def is_write(query):
         return ('INSERT' in query or 'UPDATE' in query) and ('UTC LOG:  ' not in query)
@@ -81,20 +94,40 @@ def analyze_blind_write():
                 print transaction.encode('utf-8')
                 print '-' * 20
 
-            stats['transaction_count'][project_type] = [stats['transaction_count'].get(project_type, [0])[0] + 1]
-                
-    total = len(transactions)
-
     print stats
 
-    print 'Total # of Transactions:', total
     print 'Total # of Blind Writes:', count
 
     dump_all_stats('.', stats)
 
+def empty_transaction():
+    stats = {'empty_transaction_count': {}, 'empty_pattern_count': {}}
+
+    with open('transactions.pkl', 'rb') as pickle_file:
+        transactions = pickle.load(pickle_file)
+        
+        for repo_name, project_type, transaction in transactions:
+            queries = transaction.split('\n')
+            
+            if project_type not in stats['empty_pattern']:
+                stats['empty_pattern'][project_type] = {}
+
+            if len(queries) == 2:
+                stats['empty_transaction_count'][project_type] = [stats['empty_transaction_count'].get(project_type, [0])[0] + 1]
+                
+                if 'BEGIN' in queries[0].upper():
+                    stats['empty_pattern_count'][project_type]['BEGIN'] = stats['empty_pattern_count'][project_type].get('BEGIN', 0) + 1
+                elif 'AUTOCOMMIT' in queries[0].upper():
+                    stats['empty_pattern_count'][project_type]['AUTOCOMMIT'] = stats['empty_pattern_count'][project_type].get('AUTOCOMMIT', 0) + 1
+
+    print stats
+
+    dump_all_stats('.', stats)
+
 def main():
-    analyze_blind_write()
-    # pattern()
+    # count_transaction()
+    # blind_write()
+    empty_transaction()
 
 if __name__ == '__main__':
     main()
