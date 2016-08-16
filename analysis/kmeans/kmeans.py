@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-15 10:38:05
+# @Last Modified time: 2016-08-16 17:05:34
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -22,6 +22,9 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 
 K_RANGE = xrange(1, 16)
+GOOD_K_RANGE = xrange(6, 7)
+# GOOD_K_RANGE = xrange(6, 9)
+SAMPLE = 3
 
 def prepare_data():
     all_data = []
@@ -168,15 +171,28 @@ def kmeans(data):
     bin_.fit(data)
     processed_data = bin_.transform(data)
 
-    for k in K_RANGE:
+    for k in GOOD_K_RANGE:
         kmeans = KMeans(init='k-means++', n_clusters=k)
         kmeans.fit(processed_data)
+        distances = kmeans.transform(processed_data)
+        points = [[] for _ in xrange(k)]
 
         labels_cnt = {}
         for i in xrange(n):
             #print 'Data: ', data[i], ' Label: ', kmeans.labels_[i]
             label = kmeans.labels_[i]
             labels_cnt[label] = labels_cnt.get(label, 0) + 1
+            points[label].append((distances[i][label], i))
+
+        for label in xrange(k):
+            print 'Cluster: {}'.format(label)
+            print map(lambda x: round(x, 2), kmeans.cluster_centers_[label])
+            points[label] = sorted(points[label])
+            for i in xrange(SAMPLE):
+                print 'Sample: {}'.format(i)
+                print points[label][i]
+                print processed_data[points[label][i][1]]
+            print '-' * 20
 
         print k, labels_cnt
 
