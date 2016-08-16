@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-16 23:36:24
+# @Last Modified time: 2016-08-17 00:24:21
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -25,6 +25,35 @@ K_RANGE = xrange(1, 16)
 GOOD_K_RANGE = xrange(6, 7)
 # GOOD_K_RANGE = xrange(6, 9)
 SAMPLE = 3
+
+def get_feature_names():
+    feature_names = []
+    feature_names.append('repo_size')
+    feature_names.append('latest_attempt_size')
+    feature_names.append('# of dependencies')
+    feature_names.append('# of tables')
+    feature_names.append('# of indexes')
+    feature_names.append('# of constraints')
+    feature_names.append('# of foreign keys')
+    feature_names.append('# of secondary indexes')
+    feature_names.append('# of transactions')
+    feature_names.append('table coverage')
+    feature_names.append('column coverage')
+    feature_names.append('index coverage')
+    feature_names.append('transaction ratio')
+    feature_names.append('# of actions')
+    feature_names.append('# of queries(total)')
+    feature_names.append('% of SELECT')
+    feature_names.append('% of INSERT')
+    feature_names.append('% of UPDATE')
+    feature_names.append('% of DELETE')
+    feature_names.append('% of OTHER')
+    feature_names.append('# of queries(average)')
+    feature_names.append('# of transactions(average)')
+
+    return feature_names
+
+FEATURE_NAMES = get_feature_names()
 
 def prepare_data():
     all_data = []
@@ -87,6 +116,7 @@ def prepare_data():
         repo_data.append(float(query_total_count) / actions_count)
         repo_data.append(float(get_counter('num_transactions')) / actions_count)
 
+        assert(len(repo_data) == len(FEATURE_NAMES))
 
         print ' '.join(map(str, repo_data))
 
@@ -178,6 +208,8 @@ def bin_by_decile(matrix, deciles, bin_start, axis=None):
     return binned_matrix
 
 def kmeans(repo, data):
+    assert(len(data[0]) == len(FEATURE_NAMES))
+
     n = len(data)
     bin_ = Bin(0, 0)
     # processed_data = scale(data)
@@ -200,13 +232,13 @@ def kmeans(repo, data):
 
         for label in xrange(k):
             print 'Cluster: {}'.format(label)
-            print map(lambda x: round(x, 2), kmeans.cluster_centers_[label])
+            print zip(FEATURE_NAMES, map(lambda x: round(x, 2), kmeans.cluster_centers_[label]))
             points[label] = sorted(points[label])
             for i in xrange(SAMPLE):
                 print 'Sample: {}'.format(i)
                 print points[label][i]
                 print repo[points[label][i][1]]
-                print processed_data[points[label][i][1]]
+                print zip(FEATURE_NAMES, processed_data[points[label][i][1]])
             print '-' * 20
 
         print k, labels_cnt
