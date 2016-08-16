@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-16 17:09:42
+# @Last Modified time: 2016-08-16 23:36:24
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -31,6 +31,8 @@ def prepare_data():
 
     for repo in Repository.objects.filter(project_type = 1).exclude(latest_successful_attempt = None):
         repo_data = []
+
+        repo_data.append(repo.name)
 
         # basic information
         repo_data.append(repo.size)
@@ -89,16 +91,18 @@ def prepare_data():
         print ' '.join(map(str, repo_data))
 
 def read_data():
+    repo_names = []
     all_data = []
 
     line = sys.stdin.readline()
     while line:
-        repo_data = map(float, line.split())
+        repo_data = map(float, line.split()[1:])
         all_data.append(repo_data)
+        repo_names.append(line.split()[0])
 
         line = sys.stdin.readline()
 
-    return all_data
+    return repo_names, all_data
 
 # Reference: https://github.com/dvanaken/ottertune/blob/master/analysis/preprocessing.py
 class Bin(object):
@@ -173,7 +177,7 @@ def bin_by_decile(matrix, deciles, bin_start, axis=None):
     
     return binned_matrix
 
-def kmeans(data):
+def kmeans(repo, data):
     n = len(data)
     bin_ = Bin(0, 0)
     # processed_data = scale(data)
@@ -201,6 +205,7 @@ def kmeans(data):
             for i in xrange(SAMPLE):
                 print 'Sample: {}'.format(i)
                 print points[label][i]
+                print repo[points[label][i][1]]
                 print processed_data[points[label][i][1]]
             print '-' * 20
 
@@ -272,15 +277,14 @@ def main():
         command = sys.argv[1]
         if command == 'prepare':
             prepare_data()
-        elif command == 'kmeans':
-            data = read_data()
-            kmeans(data)
-        elif command == 'pca':
-            data = read_data()
-            kmeans_pca(data)
-        elif command == 'elbow':
-            data = read_data()
-            kmeans_elbow(data)
+        else:
+            repo, data = read_data()
+            if command == 'kmeans':
+                kmeans(repo, data)
+            elif command == 'pca':
+                kmeans_pca(data)
+            elif command == 'elbow':
+                kmeans_elbow(data)
 
 if __name__ == "__main__":
     main()
