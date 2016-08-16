@@ -8,3 +8,4 @@
 *.csv
 screenshot*.png
 dump/
+*.pkl

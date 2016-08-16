@@ -6,7 +6,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "c
 
 import re
 import csv
-from utils import filter_repository, dump_all_stats
+import pickle
+from utils import filter_repository, dump_all_stats, pickle_dump
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
@@ -38,10 +39,12 @@ def action_stats(directory = '.'):
 def transaction_stats(directory = '.'):
     stats = {'transaction_count': {}, 'transaction_query_count': {}, 'transaction_read_count': {}, 'transaction_write_count': {}}
 
+    transactions = []
+
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
         if filter_repository(repo):
             continue
-        
+
         project_type_name = repo.project_type.name
         if project_type_name not in stats['transaction_count']:
             stats['transaction_count'][project_type_name] = []
@@ -59,7 +62,7 @@ def transaction_stats(directory = '.'):
             transaction_count = 0
 
             for query in Query.objects.filter(action = action):
-                if 'BEGIN' in query.content.upper() or 'START TRANSACTION' in query.content.upper():
+                if 'BEGIN' in query.content.upper() or 'START TRANSACTION' in query.content.upper() or 'SET AUTOCOMMIT=0' in query.content.upper():
                     transaction = query.content + '\n'
                     query_count = 1
                 elif transaction != '':
@@ -84,10 +87,7 @@ def transaction_stats(directory = '.'):
                         stats['transaction_query_count'][project_type_name].append(query_count)
 
                         try:
-                            print repo.name
-                            print transaction
-                            print
-                            print
+                            transactions.append((repo.name, repo.project_type.name, transaction))
                         except:
                             pass
 
@@ -96,54 +96,14 @@ def transaction_stats(directory = '.'):
             if transaction_count > 0:
                 stats['transaction_count'][project_type_name].append(transaction_count)
 
-            
-    dump_all_stats(directory, stats) 
+    pickle_dump(directory, 'transactions', transactions)
 
-def blind_write():
-    total = 0
-    count = 0
-
-    def is_write(query):
-        return ('INSERT' in query or 'UPDATE' in query) and ('UTC LOG:  ' not in query)
-
-    transaction = []
-    line = sys.stdin.readline().strip()
-    while line:
-        repo_name = line
-        
-        line = sys.stdin.readline().strip()
-        while True:
-            if line.upper() == 'BEGIN':
-                transaction = []
-                total += 1
-            elif line.upper() == 'COMMIT':
-                is_writes = []
-                for i in xrange(len(transaction)):
-                    if is_write(transaction[i]):
-                        is_writes.append(i)
-                if len(is_writes) > 1:
-                    print 'REPO: ', repo_name
-                    for i in is_writes:
-                        print transaction[i]
-                    print
-                sys.stdin.readline()
-                sys.stdin.readline()
-                break
-            else:
-                transaction.append(line)
-
-            line = sys.stdin.readline().strip()
-
-        line = sys.stdin.readline()
-
-    print 'Total # of Transactions:', total
-    print 'Total # of Blind Writes:', count
+    dump_all_stats(directory, stats)
 
 def main():
     # active
     # action_stats(TRANSACTION_DIRECTORY)
-    # transaction_stats(TRANSACTION_DIRECTORY)
-    blind_write()
+    transaction_stats(TRANSACTION_DIRECTORY)
     
     # working
     
