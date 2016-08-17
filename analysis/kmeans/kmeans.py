@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-18 02:51:01
+# @Last Modified time: 2016-08-18 02:56:51
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -134,6 +134,8 @@ def read_data():
         all_data.append(repo_data)
         repo_names.append(line.split()[0])
 
+        assert(len(repo_data) + 1 == len(FEATURE_NAMES))
+
         line = sys.stdin.readline()
 
     return repo_names, all_data
@@ -212,8 +214,6 @@ def bin_by_decile(matrix, deciles, bin_start, axis=None):
     return binned_matrix
 
 def kmeans(repo, data):
-    assert(len(data[0]) == len(FEATURE_NAMES))
-
     n = len(data)
     bin_ = Bin(0, 0)
     # processed_data = scale(data)
