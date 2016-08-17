@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-17 00:24:21
+# @Last Modified time: 2016-08-18 02:12:43
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -25,6 +25,7 @@ K_RANGE = xrange(1, 16)
 GOOD_K_RANGE = xrange(6, 7)
 # GOOD_K_RANGE = xrange(6, 9)
 SAMPLE = 3
+RESULT_CSV = "result.csv"
 
 def get_feature_names():
     feature_names = []
@@ -217,6 +218,8 @@ def kmeans(repo, data):
     bin_.fit(data)
     processed_data = bin_.transform(data)
 
+    output = open(RESULT_CSV, 'w')
+
     for k in GOOD_K_RANGE:
         kmeans = KMeans(init='k-means++', n_clusters=k)
         kmeans.fit(processed_data)
@@ -233,15 +236,19 @@ def kmeans(repo, data):
         for label in xrange(k):
             print 'Cluster: {}'.format(label)
             print zip(FEATURE_NAMES, map(lambda x: round(x, 2), kmeans.cluster_centers_[label]))
+            output.write(str(label) + ',' + ','.join(map(lambda x: str(round(x, 2)), kmeans.cluster_centers_[label])) + '\n')
             points[label] = sorted(points[label])
             for i in xrange(SAMPLE):
                 print 'Sample: {}'.format(i)
                 print points[label][i]
                 print repo[points[label][i][1]]
                 print zip(FEATURE_NAMES, processed_data[points[label][i][1]])
+                output.write(str(label) + '-' + str(i) + ',' + ','.join(map(lambda x: str(round(x, 2)), processed_data[points[label][i][1]])) + '\n')
             print '-' * 20
 
         print k, labels_cnt
+
+        output.close()
 
 def kmeans_pca(data):
     processed_data = scale(data)
