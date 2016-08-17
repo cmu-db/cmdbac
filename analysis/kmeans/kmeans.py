@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-18 02:12:43
+# @Last Modified time: 2016-08-18 02:25:27
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -30,7 +30,8 @@ RESULT_CSV = "result.csv"
 def get_feature_names():
     feature_names = []
     feature_names.append('repo_size')
-    feature_names.append('latest_attempt_size')
+    feature_names.append('# of commits')
+    feature_names.append('# of contributors')
     feature_names.append('# of dependencies')
     feature_names.append('# of tables')
     feature_names.append('# of indexes')
@@ -66,9 +67,10 @@ def prepare_data():
 
         # basic information
         repo_data.append(repo.size)
+        repo_data.append(repo.commits_count)
+        repo_data.append(repo.contributors_count)
         
         # attempt information
-        repo_data.append(repo.latest_successful_attempt.size)
         repo_data.append(len(Dependency.objects.filter(attempt = repo.latest_successful_attempt)))
         
         # database information
