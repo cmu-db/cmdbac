@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-18 02:56:51
+# @Last Modified time: 2016-08-29 13:50:39
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -66,14 +66,6 @@ def prepare_data():
 
         repo_data.append(repo.name)
 
-        # basic information
-        repo_data.append(repo.size)
-        repo_data.append(repo.commits_count)
-        repo_data.append(repo.contributors_count)
-        
-        # attempt information
-        repo_data.append(len(Dependency.objects.filter(attempt = repo.latest_successful_attempt)))
-        
         # database information
         def get_counter(name):
             statistics = Statistic.objects.filter(attempt = repo.latest_successful_attempt).filter(description = name)
@@ -254,9 +246,14 @@ def kmeans(repo, data):
         output.close()
 
 def kmeans_pca(data):
-    processed_data = scale(data)
+    n = len(data)
+    bin_ = Bin(0, 0)
+    # processed_data = scale(data)
+    data = np.array(data)
+    bin_.fit(data)
+    processed_data = bin_.transform(data)
 
-    for k in K_RANGE:
+    for k in GOOD_K_RANGE:
         reduced_data = PCA(n_components=2).fit_transform(processed_data)
         kmeans = KMeans(init='k-means++', n_clusters=k)
         kmeans.fit(reduced_data)
