@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-29 13:50:39
+# @Last Modified time: 2016-08-29 16:56:53
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -30,10 +30,6 @@ RESULT_CSV = "result.csv"
 def get_feature_names():
     feature_names = []
     feature_names.append('repo_name')
-    feature_names.append('repo_size')
-    feature_names.append('# of commits')
-    feature_names.append('# of contributors')
-    feature_names.append('# of dependencies')
     feature_names.append('# of tables')
     feature_names.append('# of indexes')
     feature_names.append('# of constraints')
