@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-29 16:56:53
+# @Last Modified time: 2016-08-30 00:02:50
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -210,6 +210,7 @@ def kmeans(repo, data):
     processed_data = bin_.transform(data)
 
     output = open(RESULT_CSV, 'w')
+    output.write(','.join(FEATURE_NAMES) + '\n')
 
     for k in GOOD_K_RANGE:
         kmeans = KMeans(init='k-means++', n_clusters=k)
@@ -234,7 +235,7 @@ def kmeans(repo, data):
                 print points[label][i]
                 print repo[points[label][i][1]]
                 print zip(FEATURE_NAMES, processed_data[points[label][i][1]])
-                output.write(str(label) + '-' + str(i) + ',' + ','.join(map(lambda x: str(round(x, 2)), processed_data[points[label][i][1]])) + '\n')
+                output.write(str(label) + '_' + str(i) + ',' + ','.join(map(lambda x: str(round(x, 2)), processed_data[points[label][i][1]])) + '\n')
             print '-' * 20
 
         print k, labels_cnt
