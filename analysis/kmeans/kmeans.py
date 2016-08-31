@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-01 02:47:29
+# @Last Modified time: 2016-09-01 03:28:41
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -281,8 +281,8 @@ def kmeans_pca(data):
         plt.scatter(centroids[:, 0], centroids[:, 1],
                     marker='x', s=169, linewidths=3,
                     color='w', zorder=10)
-        plt.title('K-means clustering on the digits dataset (PCA-reduced data)\n'
-                  'Centroids are marked with white cross')
+        # plt.title('K-means clustering on the digits dataset (PCA-reduced data)\n'
+        #          'Centroids are marked with white cross')
         plt.xlim(x_min, x_max)
         plt.ylim(y_min, y_max)
         plt.xticks(())
