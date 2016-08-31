@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-01 04:10:24
+# @Last Modified time: 2016-09-01 04:16:13
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -168,7 +168,7 @@ def prepare_transaction_data():
                         print ' '.join(map(str, transaction_data))
 
 def read_data():
-    read_transaction_data()
+    return read_transaction_data()
 
 def read_repo_data():
     repo_names = []
@@ -304,7 +304,7 @@ def kmeans(repo, data):
             print zip(REPO_FEATURE_NAMES, map(lambda x: round(x, 2), kmeans.cluster_centers_[label]))
             output.write(str(label) + ',' + ','.join(map(lambda x: str(round(x, 2)), kmeans.cluster_centers_[label])) + '\n')
             points[label] = sorted(points[label])
-            for i in xrange(SAMPLE):
+            for i in xrange(min(len(points[label]), SAMPLE)):
                 print 'Sample: {}'.format(i)
                 print points[label][i]
                 print repo[points[label][i][1]]
