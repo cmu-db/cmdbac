@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-30 00:02:50
+# @Last Modified time: 2016-09-01 02:47:29
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -251,7 +251,7 @@ def kmeans_pca(data):
     processed_data = bin_.transform(data)
 
     for k in GOOD_K_RANGE:
-        reduced_data = PCA(n_components=2).fit_transform(processed_data)
+        reduced_data = PCA(n_components=5).fit_transform(processed_data)[:, :2]
         kmeans = KMeans(init='k-means++', n_clusters=k)
         kmeans.fit(reduced_data)
 
@@ -287,7 +287,7 @@ def kmeans_pca(data):
         plt.ylim(y_min, y_max)
         plt.xticks(())
         plt.yticks(())
-        fig.savefig('kmeans-{}.png'.format(k))
+        fig.savefig('kmeans-pca.png')
 
 def kmeans_elbow(data):
     bin_ = Bin(0, 0)
@@ -295,7 +295,7 @@ def kmeans_elbow(data):
     data = np.array(data)
     bin_.fit(data)
     processed_data = bin_.transform(data)
-    processed_data = scale(processed_data)
+    # processed_data = scale(processed_data)
     
     inertias = []
     for k in K_RANGE:
