@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-01 04:16:13
+# @Last Modified time: 2016-09-01 04:43:29
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -22,8 +22,9 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 
 K_RANGE = xrange(1, 16)
-GOOD_K_RANGE = xrange(6, 7)
-# GOOD_K_RANGE = xrange(6, 9)
+GOOD_K_RANGE = xrange(4, 5)
+# REPO_GOOD_K_RANGE = xrange(6, 7)
+# TRANSACTION_GOOD_K_RANGE = xrange(4, 5)
 SAMPLE = 3
 RESULT_CSV = "result.csv"
 
