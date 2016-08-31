@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-01 03:35:36
+# @Last Modified time: 2016-09-01 04:05:49
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -27,7 +27,7 @@ GOOD_K_RANGE = xrange(6, 7)
 SAMPLE = 3
 RESULT_CSV = "result.csv"
 
-def get_feature_names():
+def get_repo_feature_names():
     feature_names = []
     feature_names.append('repo_name')
     feature_names.append('# of tables')
@@ -52,9 +52,13 @@ def get_feature_names():
 
     return feature_names
 
-FEATURE_NAMES = get_feature_names()
+REPO_FEATURE_NAMES = get_repo_feature_names()
 
 def prepare_data():
+    # prepare_repo_data()
+    prepare_transaction_data()
+
+def prepare_repo_data():
     all_data = []
 
     for repo in Repository.objects.filter(project_type = 1).exclude(latest_successful_attempt = None):
@@ -108,11 +112,65 @@ def prepare_data():
         repo_data.append(float(query_total_count) / actions_count)
         repo_data.append(float(get_counter('num_transactions')) / actions_count)
 
-        assert(len(repo_data) == len(FEATURE_NAMES))
+        assert(len(repo_data) == len(REPO_FEATURE_NAMES))
 
         print ' '.join(map(str, repo_data))
 
+def get_repo_feature_names():
+    feature_names = []
+    feature_names.append('repo_name')
+    feature_names.append('# of queries')
+    feature_names.append('% of SELECT')
+    feature_names.append('% of INSERT')
+    feature_names.append('% of UPDATE')
+    feature_names.append('% of DELETE')
+    feature_names.append('% of OTHER')
+
+    return feature_names
+
+TRANSACTION_FEATURE_NAMES = prepare_transaction_data()
+
+def prepare_transaction_data():
+    all_data = []
+
+    for repo in Repository.objects.filter(project_type = 1).exclude(latest_successful_attempt = None):
+        for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
+            transaction = []
+            
+            for query in Query.objects.filter(action = action):
+                if 'BEGIN' in query.content.upper() or 'START TRANSACTION' in query.content.upper() or 'SET AUTOCOMMIT=0' in query.content.upper():
+                    transaction = [query.content.strip('\n')]
+                elif len(transaction) > 0:
+                    transaction.append(query.content.strip('\n'))
+                    if 'COMMIT' in query.content.upper():
+                        transaction_data = []
+                        transaction_data.append(repo.name)
+
+                        transaction_data.append(len(transaction))
+
+                        query_type_counter = {}
+                        query_types = ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'OTHER']
+                        for query in transaction:
+                            find_query_type = False
+                            for query_type in query_types:
+                                if query_type in query:
+                                    query_type_counter[query_type] = query_type_counter.get(query_type, 0) + 1
+                                    find_query_type = True
+                                    break
+                            if not find_query_type:
+                                query_type_counter['OTHER'] = query_type_counter.get('OTHER', 0) + 1
+
+                        for query_type in query_types:
+                            transaction_data.append(query_type_counter.get(query_type, 0) * 100 / len(transaction))
+
+                        assert(len(transaction_data) == len(TRANSACTION_FEATURE_NAMES))
+
+                        print ' '.join(map(str, transaction_data))
+
 def read_data():
+    read_transaction_data()
+
+def read_repo_data():
     repo_names = []
     all_data = []
 
@@ -122,11 +180,27 @@ def read_data():
         all_data.append(repo_data)
         repo_names.append(line.split()[0])
 
-        assert(len(repo_data) + 1 == len(FEATURE_NAMES))
+        assert(len(repo_data) + 1 == len(REPO_FEATURE_NAMES))
 
         line = sys.stdin.readline()
 
     return repo_names, all_data
+
+def read_transaction_data():
+    transaction_names = []
+    all_data = []
+
+    line = sys.stdin.readline()
+    while line:
+        transaction_data = map(float, line.split()[1:])
+        all_data.append(transaction_data)
+        transaction_names.append(line.split()[0])
+    
+        assert(len(transaction_data) + 1 == len(TRANSACTION_FEATURE_NAMES))
+
+        line = sys.stdin.readline()
+
+    return transaction_names, all_data
 
 # Reference: https://github.com/dvanaken/ottertune/blob/master/analysis/preprocessing.py
 class Bin(object):
@@ -210,7 +284,7 @@ def kmeans(repo, data):
     processed_data = bin_.transform(data)
 
     output = open(RESULT_CSV, 'w')
-    output.write(','.join(FEATURE_NAMES) + '\n')
+    output.write(','.join(REPO_FEATURE_NAMES) + '\n')
 
     for k in GOOD_K_RANGE:
         kmeans = KMeans(init='k-means++', n_clusters=k)
@@ -227,14 +301,14 @@ def kmeans(repo, data):
 
         for label in xrange(k):
             print 'Cluster: {}'.format(label)
-            print zip(FEATURE_NAMES, map(lambda x: round(x, 2), kmeans.cluster_centers_[label]))
+            print zip(REPO_FEATURE_NAMES, map(lambda x: round(x, 2), kmeans.cluster_centers_[label]))
             output.write(str(label) + ',' + ','.join(map(lambda x: str(round(x, 2)), kmeans.cluster_centers_[label])) + '\n')
             points[label] = sorted(points[label])
             for i in xrange(SAMPLE):
                 print 'Sample: {}'.format(i)
                 print points[label][i]
                 print repo[points[label][i][1]]
-                print zip(FEATURE_NAMES, processed_data[points[label][i][1]])
+                print zip(REPO_FEATURE_NAMES, processed_data[points[label][i][1]])
                 output.write(str(label) + '_' + str(i) + ',' + ','.join(map(lambda x: str(round(x, 2)), processed_data[points[label][i][1]])) + '\n')
             print '-' * 20
 
