@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-02 00:42:44
+# @Last Modified time: 2016-09-02 00:53:03
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -327,7 +327,8 @@ def kmeans_pca(data):
     processed_data = bin_.transform(data)
 
     for k in GOOD_K_RANGE:
-        reduced_data = PCA(n_components=10).fit_transform(processed_data)[:, :2]
+        pca = PCA(n_components=8).fit(processed_data)
+        reduced_data = pca.transform(processed_data)[:, :2]
         kmeans = KMeans(init='k-means++', n_clusters=k)
         kmeans.fit(reduced_data)
 
