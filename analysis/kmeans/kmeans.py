@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-01 04:43:29
+# @Last Modified time: 2016-09-02 00:42:44
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -20,9 +20,10 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import normalize, scale
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
+import string
 
 K_RANGE = xrange(1, 16)
-GOOD_K_RANGE = xrange(4, 5)
+GOOD_K_RANGE = xrange(6, 7)
 # REPO_GOOD_K_RANGE = xrange(6, 7)
 # TRANSACTION_GOOD_K_RANGE = xrange(4, 5)
 SAMPLE = 3
@@ -169,7 +170,7 @@ def prepare_transaction_data():
                         print ' '.join(map(str, transaction_data))
 
 def read_data():
-    return read_transaction_data()
+    return read_repo_data()
 
 def read_repo_data():
     repo_names = []
@@ -326,7 +327,7 @@ def kmeans_pca(data):
     processed_data = bin_.transform(data)
 
     for k in GOOD_K_RANGE:
-        reduced_data = PCA(n_components=5).fit_transform(processed_data)[:, :2]
+        reduced_data = PCA(n_components=10).fit_transform(processed_data)[:, :2]
         kmeans = KMeans(init='k-means++', n_clusters=k)
         kmeans.fit(reduced_data)
 
@@ -352,10 +353,15 @@ def kmeans_pca(data):
 
         plt.plot(reduced_data[:, 0], reduced_data[:, 1], 'k.', markersize=10)
         # Plot the centroids as a white X
-        centroids = kmeans.cluster_centers_
+        centroids = kmeans.cluster_centers_[kmeans.cluster_centers_[:, 0].argsort()]
         plt.scatter(centroids[:, 0], centroids[:, 1],
-                    marker='x', s=169, linewidths=3,
-                    color='w', zorder=10)
+                marker='x', s=169, linewidths=3,
+                color='w', zorder=10)
+        for label, x, y in zip(string.uppercase[:k], centroids[:, 0], centroids[:, 1]):
+            plt.annotate(label, xy = (x, y), xytext = (-20, 20),
+                textcoords = 'offset points', ha = 'right', va = 'bottom',
+                bbox = dict(boxstyle = 'round,pad=0.5', fc = 'yellow', alpha = 0.5),
+                arrowprops = dict(arrowstyle = '->', connectionstyle = 'arc3,rad=0'))
         # plt.title('K-means clustering on the digits dataset (PCA-reduced data)\n'
         #          'Centroids are marked with white cross')
         plt.xlim(x_min, x_max)
