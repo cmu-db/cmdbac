@@ -1,18 +1,18 @@
 """
-WSGI config for cmudbac project.
+WSGI config for CMDBAC project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.6/howto/deployment/wsgi/
 """
 
 import os
 import sys
 
+# Change the env variable where django looks for the settings module
+# http://stackoverflow.com/a/11817088
+import django.conf
+django.conf.ENVIRONMENT_VARIABLE = "DJANGO_CMDBAC_SETTINGS_MODULE"
+os.environ.setdefault("DJANGO_CMDBAC_SETTINGS_MODULE", "cmudbac.settings")
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
