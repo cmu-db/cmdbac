@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-02 00:53:03
+# @Last Modified time: 2016-09-07 02:17:44
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -354,10 +354,24 @@ def kmeans_pca(data):
 
         plt.plot(reduced_data[:, 0], reduced_data[:, 1], 'k.', markersize=10)
         # Plot the centroids as a white X
+        
+        labels_map = {}
+        for i, x in enumerate(kmeans.cluster_centers_[:, 0].argsort()):
+            labels_map[x] = string.uppercase[i]
+        labels_cnt = {}
+        for label in kmeans.labels_:
+            labels_cnt[labels_map[label]] = labels_cnt.get(labels_map[label], 0) + 1
+        print labels_cnt
+        labels_percentage = {}
+        for label, count in labels_cnt.iteritems():
+            labels_percentage[label] = float(count) * 100 / sum(labels_cnt.values())
+        print labels_percentage
+        
         centroids = kmeans.cluster_centers_[kmeans.cluster_centers_[:, 0].argsort()]
         plt.scatter(centroids[:, 0], centroids[:, 1],
                 marker='x', s=169, linewidths=3,
                 color='w', zorder=10)
+
         for label, x, y in zip(string.uppercase[:k], centroids[:, 0], centroids[:, 1]):
             plt.annotate(label, xy = (x, y), xytext = (-20, 20),
                 textcoords = 'offset points', ha = 'right', va = 'bottom',
