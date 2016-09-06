@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-07 02:17:44
+# @Last Modified time: 2016-09-07 02:20:25
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -55,6 +55,20 @@ def get_repo_feature_names():
     return feature_names
 
 REPO_FEATURE_NAMES = get_repo_feature_names()
+
+def get_transaction_feature_names():
+    feature_names = []
+    feature_names.append('repo_name')
+    feature_names.append('# of queries')
+    feature_names.append('% of SELECT')
+    feature_names.append('% of INSERT')
+    feature_names.append('% of UPDATE')
+    feature_names.append('% of DELETE')
+    feature_names.append('% of OTHER')
+
+    return feature_names
+
+TRANSACTION_FEATURE_NAMES = get_transaction_feature_names()
 
 def prepare_data():
     # prepare_repo_data()
@@ -117,20 +131,6 @@ def prepare_repo_data():
         assert(len(repo_data) == len(REPO_FEATURE_NAMES))
 
         print ' '.join(map(str, repo_data))
-
-def get_transaction_feature_names():
-    feature_names = []
-    feature_names.append('repo_name')
-    feature_names.append('# of queries')
-    feature_names.append('% of SELECT')
-    feature_names.append('% of INSERT')
-    feature_names.append('% of UPDATE')
-    feature_names.append('% of DELETE')
-    feature_names.append('% of OTHER')
-
-    return feature_names
-
-TRANSACTION_FEATURE_NAMES = get_transaction_feature_names()
 
 def prepare_transaction_data():
     all_data = []
