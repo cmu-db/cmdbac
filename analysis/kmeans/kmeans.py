@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-08 01:22:43
+# @Last Modified time: 2016-09-08 02:00:29
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -65,6 +65,9 @@ def get_transaction_feature_names():
     feature_names.append('% of UPDATE')
     feature_names.append('% of DELETE')
     feature_names.append('% of OTHER')
+    feature_names.append('# of writes')
+    feature_names.append('# of reads')
+    feature_names.append('# of joins')
 
     return feature_names
 
@@ -164,6 +167,17 @@ def prepare_transaction_data():
 
                         for query_type in query_types:
                             transaction_data.append(query_type_counter.get(query_type, 0) * 100 / len(transaction))
+
+                        write_count = 0
+                        for keyword in ['INSERT', 'DELETE', 'UPDATE']:
+                            write_count += len(re.findall(keyword, ' '.join(transaction).upper()))
+                        transaction_data.append(write_count)
+
+                        read_count = len(re.findall('SELECT', ' '.join(transaction).upper()))
+                        transaction_data.append(read_count)
+
+                        join_count = len(re.findall('JOIN', ' '.join(transaction).upper()))
+                        transaction_data.append(join_count)
 
                         assert(len(transaction_data) == len(TRANSACTION_FEATURE_NAMES))
 
