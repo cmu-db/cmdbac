@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-08 02:00:29
+# @Last Modified time: 2016-09-08 07:21:43
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -81,6 +81,9 @@ def prepare_repo_data():
     all_data = []
 
     for repo in Repository.objects.filter(project_type = 1).exclude(latest_successful_attempt = None):
+        if filter_repository(repo):
+            continue
+
         repo_data = []
 
         repo_data.append(repo.name)
