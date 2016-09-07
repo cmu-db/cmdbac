@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-08 07:55:25
+# @Last Modified time: 2016-09-08 07:57:17
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -21,6 +21,7 @@ from sklearn.preprocessing import normalize, scale
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 import string
+import re
 
 K_RANGE = xrange(1, 16)
 GOOD_K_RANGE = xrange(4, 5)
