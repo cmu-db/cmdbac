@@ -76,7 +76,7 @@ def coverage_stats(directory = '.'):
                     token = token.replace('"', '').replace('`', '')
                     if token in tables:
                         covered_tables.add(token)
-                    elif last_token == 'FROM':
+                    elif last_token == 'FROM' and '(' not in token and ')' not in token:
                         covered_tables.add(token)
                         tables.add(token)
                     last_token = token
