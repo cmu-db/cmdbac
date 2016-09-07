@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-08 07:30:05
+# @Last Modified time: 2016-09-08 07:55:25
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -74,8 +74,8 @@ def get_transaction_feature_names():
 TRANSACTION_FEATURE_NAMES = get_transaction_feature_names()
 
 def prepare_data():
-    prepare_repo_data()
-    # prepare_transaction_data()
+    # prepare_repo_data()
+    prepare_transaction_data()
 
 def prepare_repo_data():
     all_data = []
@@ -187,7 +187,7 @@ def prepare_transaction_data():
                         print ' '.join(map(str, transaction_data))
 
 def read_data():
-    return read_repo_data()
+    return read_transaction_data()
 
 def read_repo_data():
     repo_names = []
@@ -309,30 +309,36 @@ def kmeans(repo, data):
         kmeans = KMeans(init='k-means++', n_clusters=k)
         kmeans.fit(processed_data)
         distances = kmeans.transform(processed_data)
-        points = [[] for _ in xrange(k)]
-        mean_centroids = [[] for _ in xrange(k)]
+        points = {}
+        mean_centroids = {}
+
+        labels_map = {}
+        for i, x in enumerate(kmeans.cluster_centers_[:, 0].argsort()):
+            labels_map[x] = string.uppercase[i]
 
         labels_cnt = {}
         for i in xrange(n):
             #print 'Data: ', data[i], ' Label: ', kmeans.labels_[i]
-            label = kmeans.labels_[i]
+            label = labels_map[kmeans.labels_[i]]
             labels_cnt[label] = labels_cnt.get(label, 0) + 1
-            points[label].append((distances[i][label], i))
-            if len(mean_centroids[label]) > 0:
-                for index, value in enumerate(data[i]):
-                    mean_centroids[label][index] += value
-            else:
+            if label not in points:
+                points[label] = []
+            points[label].append((distances[i][kmeans.labels_[i]], i))
+            if label not in mean_centroids:
                 mean_centroids[label] = data[i]
-
+            for index, value in enumerate(data[i]):
+                mean_centroids[label][index] += value
+            
         for label in xrange(k):
-            print 'Cluster: {}'.format(label)
+            new_label = labels_map[label]
+            print 'Cluster: {}'.format(new_label)
             print zip(REPO_FEATURE_NAMES, map(lambda x: round(x, 2), kmeans.cluster_centers_[label]))
             
             # output.write(str(label) + ',' + ','.join(map(lambda x: str(round(x, 2)), kmeans.cluster_centers_[label])) + '\n')
             # points[label] = sorted(points[label])
 
-            mean_centroids[label] = map(lambda x: x / labels_cnt[label], mean_centroids[label])
-            output.write(str(label) + ',' + ','.join(map(lambda x: str(round(x, 2)), mean_centroids[label])) + '\n')
+            mean_centroids[new_label] = map(lambda x: x / labels_cnt[new_label], mean_centroids[new_label])
+            output.write(str(new_label) + ',' + ','.join(map(lambda x: str(round(x, 2)), mean_centroids[new_label])) + '\n')
             
             if 0:
                 for i in xrange(min(len(points[label]), SAMPLE)):
