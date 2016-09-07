@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-07 02:20:25
+# @Last Modified time: 2016-09-08 00:03:18
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -92,10 +92,10 @@ def prepare_repo_data():
 
         repo_data.append(get_counter('num_tables'))
         num_tables = max(get_counter('num_tables'), 1)
-        repo_data.append(float(get_counter('num_indexes')) / num_tables)
-        repo_data.append(float(get_counter('num_constraints')) / num_tables)
-        repo_data.append(float(get_counter('num_foreignkeys')) / num_tables)
-        repo_data.append(float(get_counter('num_secondary_indexes')) / num_tables)
+        repo_data.append(get_counter('num_indexes'))
+        repo_data.append(get_counter('num_constraints'))
+        repo_data.append(get_counter('num_foreignkeys'))
+        repo_data.append(get_counter('num_secondary_indexes'))
         repo_data.append(get_counter('num_transactions'))
 
         repo_data.append(get_counter('table_coverage'))
@@ -185,7 +185,7 @@ def read_repo_data():
         assert(len(repo_data) + 1 == len(REPO_FEATURE_NAMES))
 
         line = sys.stdin.readline()
-
+    
     return repo_names, all_data
 
 def read_transaction_data():
@@ -306,12 +306,15 @@ def kmeans(repo, data):
             print zip(REPO_FEATURE_NAMES, map(lambda x: round(x, 2), kmeans.cluster_centers_[label]))
             output.write(str(label) + ',' + ','.join(map(lambda x: str(round(x, 2)), kmeans.cluster_centers_[label])) + '\n')
             points[label] = sorted(points[label])
+            
             for i in xrange(min(len(points[label]), SAMPLE)):
                 print 'Sample: {}'.format(i)
                 print points[label][i]
                 print repo[points[label][i][1]]
                 print zip(REPO_FEATURE_NAMES, processed_data[points[label][i][1]])
+                output.write(str(label) + '_' + str(i) + ',' + ','.join(map(lambda x: str(round(x, 2)), data[points[label][i][1]])) + '\n')
                 output.write(str(label) + '_' + str(i) + ',' + ','.join(map(lambda x: str(round(x, 2)), processed_data[points[label][i][1]])) + '\n')
+
             print '-' * 20
 
         print k, labels_cnt
