@@ -71,15 +71,15 @@ def coverage_stats(directory = '.'):
         covered_tables = set()
         for action in actions:
             for query in Query.objects.filter(action = action):
-                find_token = False
+                last_token = None
                 for token in query.content.split():
                     token = token.replace('"', '').replace('`', '')
                     if token in tables:
                         covered_tables.add(token)
-                        find_token = True
-                if 'SELECT' in query.content.upper() and not find_token:
-                    print query.content
-                    print tables
+                    elif last_token == 'FROM':
+                        covered_tables.add(token)
+                        tables.add(token)
+                    last_token = token
         table_percentage = int(float(len(covered_tables) * 100) / table_count)
         table_percentage = min(table_percentage, 100)
 
