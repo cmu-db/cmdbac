@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-08 00:03:18
+# @Last Modified time: 2016-09-08 01:22:43
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -71,8 +71,8 @@ def get_transaction_feature_names():
 TRANSACTION_FEATURE_NAMES = get_transaction_feature_names()
 
 def prepare_data():
-    # prepare_repo_data()
-    prepare_transaction_data()
+    prepare_repo_data()
+    # prepare_transaction_data()
 
 def prepare_repo_data():
     all_data = []
@@ -293,6 +293,7 @@ def kmeans(repo, data):
         kmeans.fit(processed_data)
         distances = kmeans.transform(processed_data)
         points = [[] for _ in xrange(k)]
+        mean_centroids = [[] for _ in xrange(k)]
 
         labels_cnt = {}
         for i in xrange(n):
@@ -300,20 +301,30 @@ def kmeans(repo, data):
             label = kmeans.labels_[i]
             labels_cnt[label] = labels_cnt.get(label, 0) + 1
             points[label].append((distances[i][label], i))
+            if len(mean_centroids[label]) > 0:
+                for index, value in enumerate(data[i]):
+                    mean_centroids[label][index] += value
+            else:
+                mean_centroids[label] = data[i]
 
         for label in xrange(k):
             print 'Cluster: {}'.format(label)
             print zip(REPO_FEATURE_NAMES, map(lambda x: round(x, 2), kmeans.cluster_centers_[label]))
-            output.write(str(label) + ',' + ','.join(map(lambda x: str(round(x, 2)), kmeans.cluster_centers_[label])) + '\n')
-            points[label] = sorted(points[label])
             
-            for i in xrange(min(len(points[label]), SAMPLE)):
-                print 'Sample: {}'.format(i)
-                print points[label][i]
-                print repo[points[label][i][1]]
-                print zip(REPO_FEATURE_NAMES, processed_data[points[label][i][1]])
-                output.write(str(label) + '_' + str(i) + ',' + ','.join(map(lambda x: str(round(x, 2)), data[points[label][i][1]])) + '\n')
-                output.write(str(label) + '_' + str(i) + ',' + ','.join(map(lambda x: str(round(x, 2)), processed_data[points[label][i][1]])) + '\n')
+            # output.write(str(label) + ',' + ','.join(map(lambda x: str(round(x, 2)), kmeans.cluster_centers_[label])) + '\n')
+            # points[label] = sorted(points[label])
+
+            mean_centroids[label] = map(lambda x: x / labels_cnt[label], mean_centroids[label])
+            output.write(str(label) + ',' + ','.join(map(lambda x: str(round(x, 2)), mean_centroids[label])) + '\n')
+            
+            if 0:
+                for i in xrange(min(len(points[label]), SAMPLE)):
+                    print 'Sample: {}'.format(i)
+                    print points[label][i]
+                    print repo[points[label][i][1]]
+                    print zip(REPO_FEATURE_NAMES, processed_data[points[label][i][1]])
+                    # output.write(str(label) + '_' + str(i) + ',' + ','.join(map(lambda x: str(round(x, 2)), data[points[label][i][1]])) + '\n')
+                    # output.write(str(label) + '_' + str(i) + ',' + ','.join(map(lambda x: str(round(x, 2)), processed_data[points[label][i][1]])) + '\n')
 
             print '-' * 20
 
