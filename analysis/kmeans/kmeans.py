@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-08 07:57:17
+# @Last Modified time: 2016-09-10 23:20:27
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -38,21 +38,18 @@ def get_repo_feature_names():
     feature_names.append('# of constraints')
     feature_names.append('# of foreign keys')
     feature_names.append('# of secondary indexes')
-    feature_names.append('# of transactions')
+    feature_names.append('# of columns')
     feature_names.append('table coverage')
     feature_names.append('column coverage')
     feature_names.append('index coverage')
-    feature_names.append('transaction ratio')
     feature_names.append('# of actions')
     feature_names.append('# of queries(total)')
+    feature_names.append('# of queries(average)')
     feature_names.append('% of SELECT')
     feature_names.append('% of INSERT')
     feature_names.append('% of UPDATE')
     feature_names.append('% of DELETE')
-    feature_names.append('% of OTHER')
-    feature_names.append('# of queries(average)')
-    feature_names.append('# of transactions(average)')
-
+    
     return feature_names
 
 REPO_FEATURE_NAMES = get_repo_feature_names()
@@ -75,8 +72,8 @@ def get_transaction_feature_names():
 TRANSACTION_FEATURE_NAMES = get_transaction_feature_names()
 
 def prepare_data():
-    # prepare_repo_data()
-    prepare_transaction_data()
+    prepare_repo_data()
+    # prepare_transaction_data()
 
 def prepare_repo_data():
     all_data = []
@@ -103,13 +100,12 @@ def prepare_repo_data():
         repo_data.append(get_counter('num_constraints'))
         repo_data.append(get_counter('num_foreignkeys'))
         repo_data.append(get_counter('num_secondary_indexes'))
-        repo_data.append(get_counter('num_transactions'))
-
+        repo_data.append(get_counter('num_columns'))
+        
         repo_data.append(get_counter('table_coverage'))
         repo_data.append(get_counter('column_coverage'))
         repo_data.append(get_counter('index_coverage'))
-        repo_data.append(get_counter('transaction_ratio'))
-
+        
         # action information
         actions = Action.objects.filter(attempt = repo.latest_successful_attempt)
         actions_count = len(actions)
@@ -120,24 +116,26 @@ def prepare_repo_data():
         for action in actions:
             counters = Counter.objects.filter(action = action)
             for counter in counters:
+                if counter.description == 'OTHER':
+                    continue
                 query_counters[counter.description] = query_counters.get(counter.description, 0) + counter.count
                 query_total_count += counter.count
+
         repo_data.append(query_total_count)
         query_total_count = max(query_total_count, 1)
+        if actions_count == 0:
+            actions_count = 1
+        repo_data.append(float(query_total_count) / actions_count)
+
         repo_data.append(float(query_counters.get('SELECT', 0)) * 100 / query_total_count)
         repo_data.append(float(query_counters.get('INSERT', 0)) * 100 / query_total_count)
         repo_data.append(float(query_counters.get('UPDATE', 0)) * 100 / query_total_count)
         repo_data.append(float(query_counters.get('DELETE', 0)) * 100 / query_total_count)
-        repo_data.append(float(query_counters.get('OTHER', 0)) * 100 / query_total_count)
-
-        if actions_count == 0:
-            actions_count = 1
-        repo_data.append(float(query_total_count) / actions_count)
-        repo_data.append(float(get_counter('num_transactions')) / actions_count)
-
+        
+        
         assert(len(repo_data) == len(REPO_FEATURE_NAMES))
 
-        print ' '.join(map(str, repo_data))
+        print ' '.join(map(str, zip(repo_data, REPO_FEATURE_NAMES)))
 
 def prepare_transaction_data():
     all_data = []
@@ -188,7 +186,8 @@ def prepare_transaction_data():
                         print ' '.join(map(str, transaction_data))
 
 def read_data():
-    return read_transaction_data()
+    return read_repo_data()
+    # return read_transaction_data()
 
 def read_repo_data():
     repo_names = []

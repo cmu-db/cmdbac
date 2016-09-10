@@ -95,6 +95,7 @@ def coverage_stats(directory = '.'):
                 column_count = min(column_count, len(re.findall('(\(.*?\))[,\]]', information.description)))
             elif repo.latest_successful_attempt.database.name == 'MySQL':
                 column_count = min(column_count, len(re.findall('(\(.*?\))[,\)]', information.description)))
+            save_statistic('num_columns', column_count, repo.latest_successful_attempt)
         
             if column_count > 0:
                 covered_columns = set()
