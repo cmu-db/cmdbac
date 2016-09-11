@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-11 21:14:47
+# @Last Modified time: 2016-09-11 22:02:35
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -22,6 +22,7 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 import string
 import re
+import seaborn as sns
 
 K_RANGE = xrange(1, 16)
 GOOD_K_RANGE = xrange(4, 5)
@@ -85,8 +86,8 @@ def get_transaction_feature_names():
 TRANSACTION_FEATURE_NAMES = get_transaction_feature_names()
 
 def prepare_data():
-    # prepare_repo_data()
-    prepare_transaction_data()
+    prepare_repo_data()
+    # prepare_transaction_data()
 
 def prepare_repo_data():
     all_data = []
@@ -234,8 +235,8 @@ def prepare_transaction_data():
                         # print ' '.join(map(str, zip(transaction_data, TRANSACTION_FEATURE_NAMES)))
 
 def read_data():
-    # return read_repo_data()
-    return read_transaction_data()
+    return read_repo_data()
+    # return read_transaction_data()
 
 def read_repo_data():
     repo_names = []
@@ -417,27 +418,36 @@ def kmeans_pca(data):
         kmeans = KMeans(init='k-means++', n_clusters=k)
         kmeans.fit(reduced_data)
 
-        # Step size of the mesh. Decrease to increase the quality of the VQ.
-        h = .02     # point in the mesh [x_min, m_max]x[y_min, y_max].
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
 
-        # Plot the decision boundary. For that, we will assign a color to each
         x_min, x_max = reduced_data[:, 0].min() - 1, reduced_data[:, 0].max() + 1
         y_min, y_max = reduced_data[:, 1].min() - 1, reduced_data[:, 1].max() + 1
-        xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+        
+        colors = sns.color_palette("muted")
+        for k, col in zip(range(k), colors):
+            my_members = kmeans.labels_ == k
+            cluster_center = kmeans.cluster_centers_[k]
+            ax.plot(reduced_data[my_members, 0], reduced_data[my_members, 1], 'w',
+                markerfacecolor=col, marker='.', markersize=5)
+            ax.plot(cluster_center[0], cluster_center[1], 'o', markerfacecolor=col,
+                markeredgecolor='k', markersize=8)
+        centroids = kmeans.cluster_centers_[kmeans.cluster_centers_[:, 0].argsort()]
+        for label, x, y in zip(string.uppercase[:k + 1], centroids[:, 0], centroids[:, 1]):
+            plt.annotate(label, xy = (x, y), xytext = (-20, 20),
+                textcoords = 'offset points', ha = 'right', va = 'bottom',
+                bbox = dict(boxstyle = 'round,pad=0.5', fc = 'yellow', alpha = 0.5),
+                arrowprops = dict(arrowstyle = '->', connectionstyle = 'arc3,rad=0'))
 
-        # Obtain labels for each point in mesh. Use last trained model.
-        Z = kmeans.predict(np.c_[xx.ravel(), yy.ravel()])
-
-        # Put the result into a color plot
-        Z = Z.reshape(xx.shape)
-        fig = plt.figure()
-        plt.clf()
-        plt.imshow(Z, interpolation='nearest',
-                   extent=(xx.min(), xx.max(), yy.min(), yy.max()),
-                   cmap=plt.cm.Paired,
-                   aspect='auto', origin='lower')
-
-        plt.plot(reduced_data[:, 0], reduced_data[:, 1], 'k.', markersize=3)
+        ax.set_title('KMeans')
+        # ax.ylim(y_min, y_max)
+        # ax.xlim(x_min, x_max)
+        # ax.set_xticks(())
+        # ax.set_yticks(())
+        plt.xlim(x_min, x_max)
+        plt.ylim(y_min, y_max)
+        plt.xticks(())
+        plt.yticks(())
         
         labels_map = {}
         for i, x in enumerate(kmeans.cluster_centers_[:, 0].argsort()):
@@ -451,22 +461,6 @@ def kmeans_pca(data):
             labels_percentage[label] = float(count) * 100 / sum(labels_cnt.values())
         print labels_percentage
         
-        # Plot the centroids as a white X
-        centroids = kmeans.cluster_centers_[kmeans.cluster_centers_[:, 0].argsort()]
-        plt.scatter(centroids[:, 0], centroids[:, 1],
-                marker='x', s=169, linewidths=3,
-                color='w', zorder=10)
-        for label, x, y in zip(string.uppercase[:k], centroids[:, 0], centroids[:, 1]):
-            plt.annotate(label, xy = (x, y), xytext = (-20, 20),
-                textcoords = 'offset points', ha = 'right', va = 'bottom',
-                bbox = dict(boxstyle = 'round,pad=0.5', fc = 'yellow', alpha = 0.5),
-                arrowprops = dict(arrowstyle = '->', connectionstyle = 'arc3,rad=0'))
-        # plt.title('K-means clustering on the digits dataset (PCA-reduced data)\n'
-        #          'Centroids are marked with white cross')
-        plt.xlim(x_min, x_max)
-        plt.ylim(y_min, y_max)
-        plt.xticks(())
-        plt.yticks(())
         fig.savefig('kmeans-pca.pdf')
 
 def kmeans_elbow(data):
