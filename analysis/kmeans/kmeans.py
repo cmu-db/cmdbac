@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-12 01:36:51
+# @Last Modified time: 2016-09-12 01:41:53
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -22,7 +22,6 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 import string
 import re
-import seaborn as sns
 
 K_RANGE = xrange(1, 16)
 GOOD_K_RANGE = xrange(10, 11)
@@ -86,8 +85,8 @@ def get_transaction_feature_names():
 TRANSACTION_FEATURE_NAMES = get_transaction_feature_names()
 
 def prepare_data():
-    prepare_repo_data()
-    # prepare_transaction_data()
+    # prepare_repo_data()
+    prepare_transaction_data()
 
 def prepare_repo_data():
     all_data = []
@@ -411,6 +410,8 @@ def kmeans(repo, data):
         output.close()
 
 def kmeans_pca(data):
+    import seaborn as sns
+    
     n = len(data)
     bin_ = Bin(0, 0)
     # processed_data = scale(data)
