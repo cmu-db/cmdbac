@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-12 02:17:15
+# @Last Modified time: 2016-09-12 02:31:27
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -604,10 +604,11 @@ def kmeans_pca_ellipse(data):
         y_min, y_max = reduced_data[:, 1].min() - 1, reduced_data[:, 1].max() + 1
         
         colors = sns.color_palette("muted")
-        for k, col in zip(range(k), colors):
-            my_members = kmeans.labels_ == k
-            plot_point_cov(reduced_data[my_members], ax = ax, color = col)
-            
+        for i, col in zip(range(k), colors):
+            my_members = kmeans.labels_ == i
+            plt.plot(reduced_data[my_members, 0], reduced_data[my_members, 1], '.', markersize=3, color = col)
+            plot_point_cov(reduced_data[my_members], ax = ax, color = 'white')
+
         centroids = kmeans.cluster_centers_[kmeans.cluster_centers_[:, 0].argsort()]
         for label, x, y in zip(string.uppercase[:k + 1], centroids[:, 0], centroids[:, 1]):
             plt.annotate(label, xy = (x, y), xytext = (0, 0),
