@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-12 01:50:57
+# @Last Modified time: 2016-09-12 02:17:15
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -17,6 +17,7 @@ from library.models import *
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.patches import Ellipse
 from sklearn.preprocessing import normalize, scale
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
@@ -24,7 +25,7 @@ import string
 import re
 
 K_RANGE = xrange(1, 16)
-GOOD_K_RANGE = xrange(10, 11)
+GOOD_K_RANGE = xrange(4, 5)
 # REPO_GOOD_K_RANGE = xrange(6, 7)
 # TRANSACTION_GOOD_K_RANGE = xrange(4, 5)
 SAMPLE = 3
@@ -236,8 +237,8 @@ def prepare_transaction_data():
                         # print ' '.join(map(str, zip(transaction_data, TRANSACTION_FEATURE_NAMES)))
 
 def read_data():
-    # return read_repo_data()
-    return read_transaction_data()
+    return read_repo_data()
+    # return read_transaction_data()
 
 def read_repo_data():
     repo_names = []
@@ -466,6 +467,173 @@ def kmeans_pca(data):
         
         fig.savefig('kmeans-pca.pdf')
 
+def kmeans_pca(data):
+    import seaborn as sns
+    
+    n = len(data)
+    bin_ = Bin(0, 0)
+    # processed_data = scale(data)
+    data = np.array(data)
+    bin_.fit(data)
+    processed_data = bin_.transform(data)
+
+    for k in GOOD_K_RANGE:
+        pca = PCA(n_components=5).fit(processed_data)
+        reduced_data = pca.transform(processed_data)[:, :2]
+        kmeans = KMeans(init='k-means++', n_clusters=k)
+        kmeans.fit(reduced_data)
+
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+
+        x_min, x_max = reduced_data[:, 0].min() - 1, reduced_data[:, 0].max() + 1
+        y_min, y_max = reduced_data[:, 1].min() - 1, reduced_data[:, 1].max() + 1
+        
+        colors = sns.color_palette("muted")
+        for k, col in zip(range(k), colors):
+            my_members = kmeans.labels_ == k
+            cluster_center = kmeans.cluster_centers_[k]
+            ax.plot(reduced_data[my_members, 0], reduced_data[my_members, 1], 'w',
+                markerfacecolor=col, marker='.', markersize=5)
+            ax.plot(cluster_center[0], cluster_center[1], 'o', markerfacecolor=col,
+                markeredgecolor='k', markersize=8)
+        centroids = kmeans.cluster_centers_[kmeans.cluster_centers_[:, 0].argsort()]
+        for label, x, y in zip(string.uppercase[:k + 1], centroids[:, 0], centroids[:, 1]):
+            plt.annotate(label, xy = (x, y), xytext = (-20, 20),
+                textcoords = 'offset points', ha = 'right', va = 'bottom',
+                bbox = dict(boxstyle = 'round,pad=0.5', fc = 'yellow', alpha = 0.5),
+                arrowprops = dict(arrowstyle = '->', connectionstyle = 'arc3,rad=0'))
+
+        ax.set_title('KMeans')
+        plt.xlim(x_min, x_max)
+        plt.ylim(y_min, y_max)
+        plt.xticks(())
+        plt.yticks(())
+        
+        labels_map = {}
+        for i, x in enumerate(kmeans.cluster_centers_[:, 0].argsort()):
+            labels_map[x] = string.uppercase[i]
+        labels_cnt = {}
+        for label in kmeans.labels_:
+            labels_cnt[labels_map[label]] = labels_cnt.get(labels_map[label], 0) + 1
+        print labels_cnt
+        labels_percentage = {}
+        for label, count in labels_cnt.iteritems():
+            labels_percentage[label] = float(count) * 100 / sum(labels_cnt.values())
+        print labels_percentage
+        
+        fig.savefig('kmeans-pca.pdf')
+
+def plot_point_cov(points, nstd=2, ax=None, **kwargs):
+    """
+    Plots an `nstd` sigma ellipse based on the mean and covariance of a point
+    "cloud" (points, an Nx2 array).
+    Parameters
+    ----------
+        points : An Nx2 array of the data points.
+        nstd : The radius of the ellipse in numbers of standard deviations.
+            Defaults to 2 standard deviations.
+        ax : The axis that the ellipse will be plotted on. Defaults to the 
+            current axis.
+        Additional keyword arguments are pass on to the ellipse patch.
+    Returns
+    -------
+        A matplotlib ellipse artist
+    """
+    pos = points.mean(axis=0)
+    cov = np.cov(points, rowvar=False)
+    return plot_cov_ellipse(cov, pos, nstd, ax, **kwargs)
+
+def plot_cov_ellipse(cov, pos, nstd=2, ax=None, **kwargs):
+    """
+    Plots an `nstd` sigma error ellipse based on the specified covariance
+    matrix (`cov`). Additional keyword arguments are passed on to the 
+    ellipse patch artist.
+    Parameters
+    ----------
+        cov : The 2x2 covariance matrix to base the ellipse on
+        pos : The location of the center of the ellipse. Expects a 2-element
+            sequence of [x0, y0].
+        nstd : The radius of the ellipse in numbers of standard deviations.
+            Defaults to 2 standard deviations.
+        ax : The axis that the ellipse will be plotted on. Defaults to the 
+            current axis.
+        Additional keyword arguments are pass on to the ellipse patch.
+    Returns
+    -------
+        A matplotlib ellipse artist
+    """
+    def eigsorted(cov):
+        vals, vecs = np.linalg.eigh(cov)
+        order = vals.argsort()[::-1]
+        return vals[order], vecs[:,order]
+
+    if ax is None:
+        ax = plt.gca()
+
+    vals, vecs = eigsorted(cov)
+    theta = np.degrees(np.arctan2(*vecs[:,0][::-1]))
+
+    # Width and height are "full" widths, not radius
+    width, height = 2 * nstd * np.sqrt(vals)
+    ellip = Ellipse(xy=pos, width=width, height=height, angle=theta, **kwargs)
+
+    ax.add_artist(ellip)
+    return ellip,pos,width,height
+
+def kmeans_pca_ellipse(data):
+    import seaborn as sns
+    
+    n = len(data)
+    bin_ = Bin(0, 0)
+    # processed_data = scale(data)
+    data = np.array(data)
+    bin_.fit(data)
+    processed_data = bin_.transform(data)
+
+    for k in GOOD_K_RANGE:
+        pca = PCA(n_components=5).fit(processed_data)
+        reduced_data = pca.transform(processed_data)[:, :2]
+        kmeans = KMeans(init='k-means++', n_clusters=k)
+        kmeans.fit(reduced_data)
+
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+
+        x_min, x_max = reduced_data[:, 0].min() - 1, reduced_data[:, 0].max() + 1
+        y_min, y_max = reduced_data[:, 1].min() - 1, reduced_data[:, 1].max() + 1
+        
+        colors = sns.color_palette("muted")
+        for k, col in zip(range(k), colors):
+            my_members = kmeans.labels_ == k
+            plot_point_cov(reduced_data[my_members], ax = ax, color = col)
+            
+        centroids = kmeans.cluster_centers_[kmeans.cluster_centers_[:, 0].argsort()]
+        for label, x, y in zip(string.uppercase[:k + 1], centroids[:, 0], centroids[:, 1]):
+            plt.annotate(label, xy = (x, y), xytext = (0, 0),
+                textcoords = 'offset points', ha = 'right', va = 'bottom',
+                bbox = dict(boxstyle = 'round,pad=0.5', fc = 'yellow', alpha = 0.5))
+
+        ax.set_title('KMeans')
+        plt.xlim(x_min, x_max)
+        plt.ylim(y_min, y_max)
+        plt.xticks(())
+        plt.yticks(())
+        
+        labels_map = {}
+        for i, x in enumerate(kmeans.cluster_centers_[:, 0].argsort()):
+            labels_map[x] = string.uppercase[i]
+        labels_cnt = {}
+        for label in kmeans.labels_:
+            labels_cnt[labels_map[label]] = labels_cnt.get(labels_map[label], 0) + 1
+        print labels_cnt
+        labels_percentage = {}
+        for label, count in labels_cnt.iteritems():
+            labels_percentage[label] = float(count) * 100 / sum(labels_cnt.values())
+        print labels_percentage
+        
+        fig.savefig('kmeans-pca.pdf')
+
 def kmeans_elbow(data):
     bin_ = Bin(0, 0)
     # processed_data = scale(data)
@@ -496,6 +664,8 @@ def main():
                 kmeans(repo, data)
             elif command == 'pca':
                 kmeans_pca(data)
+            elif command == 'pca2':
+                kmeans_pca_ellipse(data)
             elif command == 'elbow':
                 kmeans_elbow(data)
 
