@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-11 19:41:56
+# @Last Modified time: 2016-09-11 21:01:43
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -211,6 +211,9 @@ def prepare_transaction_data():
 
                         read_count = len(re.findall('SELECT', ' '.join(transaction).upper()))
                         transaction_data.append(read_count)
+
+                        if write_count == 0 and read_count == 0:
+                            continue
 
                         join_count = len(re.findall('JOIN', ' '.join(transaction).upper()))
                         transaction_data.append(join_count)
