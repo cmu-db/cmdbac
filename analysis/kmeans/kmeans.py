@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-11 22:02:35
+# @Last Modified time: 2016-09-12 01:36:51
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -25,7 +25,7 @@ import re
 import seaborn as sns
 
 K_RANGE = xrange(1, 16)
-GOOD_K_RANGE = xrange(4, 5)
+GOOD_K_RANGE = xrange(10, 11)
 # REPO_GOOD_K_RANGE = xrange(6, 7)
 # TRANSACTION_GOOD_K_RANGE = xrange(4, 5)
 SAMPLE = 3
@@ -228,6 +228,8 @@ def prepare_transaction_data():
                                 last_token = token
                         transaction_data.append(len(tables))
 
+                        if len(tables) == 0:
+                            continue
                         
                         assert(len(transaction_data) == len(TRANSACTION_FEATURE_NAMES))
 
@@ -235,8 +237,8 @@ def prepare_transaction_data():
                         # print ' '.join(map(str, zip(transaction_data, TRANSACTION_FEATURE_NAMES)))
 
 def read_data():
-    return read_repo_data()
-    # return read_transaction_data()
+    # return read_repo_data()
+    return read_transaction_data()
 
 def read_repo_data():
     repo_names = []
@@ -352,7 +354,8 @@ def kmeans(repo, data):
     processed_data = bin_.transform(data)
 
     output = open(RESULT_CSV, 'w')
-    output.write(','.join(REPO_FEATURE_NAMES) + '\n')
+    # output.write(','.join(REPO_FEATURE_NAMES[1:]) + '\n')
+    output.write(','.join(TRANSACTION_FEATURE_NAMES[1:]) + '\n')
 
     for k in GOOD_K_RANGE:
         kmeans = KMeans(init='k-means++', n_clusters=k)
@@ -381,7 +384,9 @@ def kmeans(repo, data):
         for label in xrange(k):
             new_label = labels_map[label]
             print 'Cluster: {}'.format(new_label)
-            print zip(REPO_FEATURE_NAMES, map(lambda x: round(x, 2), kmeans.cluster_centers_[label]))
+            # print zip(REPO_FEATURE_NAMES[1:], map(lambda x: round(x, 2), kmeans.cluster_centers_[label]))
+            print zip(TRANSACTION_FEATURE_NAMES[1:], map(lambda x: round(x, 2), kmeans.cluster_centers_[label]))
+            
             
             # output.write(str(label) + ',' + ','.join(map(lambda x: str(round(x, 2)), kmeans.cluster_centers_[label])) + '\n')
             # points[label] = sorted(points[label])
@@ -394,7 +399,8 @@ def kmeans(repo, data):
                     print 'Sample: {}'.format(i)
                     print points[label][i]
                     print repo[points[label][i][1]]
-                    print zip(REPO_FEATURE_NAMES, processed_data[points[label][i][1]])
+                    # print zip(REPO_FEATURE_NAMES[1:], processed_data[points[label][i][1]])
+                    print zip(TRANSACTION_FEATURE_NAMES[1:], processed_data[points[label][i][1]])
                     # output.write(str(label) + '_' + str(i) + ',' + ','.join(map(lambda x: str(round(x, 2)), data[points[label][i][1]])) + '\n')
                     # output.write(str(label) + '_' + str(i) + ',' + ','.join(map(lambda x: str(round(x, 2)), processed_data[points[label][i][1]])) + '\n')
 
@@ -440,10 +446,6 @@ def kmeans_pca(data):
                 arrowprops = dict(arrowstyle = '->', connectionstyle = 'arc3,rad=0'))
 
         ax.set_title('KMeans')
-        # ax.ylim(y_min, y_max)
-        # ax.xlim(x_min, x_max)
-        # ax.set_xticks(())
-        # ax.set_yticks(())
         plt.xlim(x_min, x_max)
         plt.ylim(y_min, y_max)
         plt.xticks(())
@@ -469,7 +471,7 @@ def kmeans_elbow(data):
     data = np.array(data)
     bin_.fit(data)
     processed_data = bin_.transform(data)
-    # processed_data = scale(processed_data)
+    # processed_data = scale(data)
     
     inertias = []
     for k in K_RANGE:
