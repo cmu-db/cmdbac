@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-10 23:20:27
+# @Last Modified time: 2016-09-11 13:54:21
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -44,11 +44,16 @@ def get_repo_feature_names():
     feature_names.append('index coverage')
     feature_names.append('# of actions')
     feature_names.append('# of queries(total)')
-    feature_names.append('# of queries(average)')
+    feature_names.append('# of queries(average by action)')
     feature_names.append('% of SELECT')
     feature_names.append('% of INSERT')
     feature_names.append('% of UPDATE')
     feature_names.append('% of DELETE')
+    feature_names.append('# of joins')
+    feature_names.append('# of read actions')
+    feature_names.append('# of write actions')
+    feature_names.append('# of table access(average by action)')
+    feature_names.append('# of table access(average by query)')
     
     return feature_names
 
@@ -131,7 +136,12 @@ def prepare_repo_data():
         repo_data.append(float(query_counters.get('INSERT', 0)) * 100 / query_total_count)
         repo_data.append(float(query_counters.get('UPDATE', 0)) * 100 / query_total_count)
         repo_data.append(float(query_counters.get('DELETE', 0)) * 100 / query_total_count)
-        
+
+        repo_data.append(get_counter('num_joins'))
+        repo_data.append(get_counter('num_read_actions'))
+        repo_data.append(get_counter('num_write_actions'))
+        repo_data.append(get_counter('table_access_count_action'))
+        repo_data.append(get_counter('table_access_count_query'))
         
         assert(len(repo_data) == len(REPO_FEATURE_NAMES))
 

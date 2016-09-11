@@ -18,11 +18,10 @@ django.setup()
 from library.models import *
 
 def save_statistic(description, count, attempt):
-    statistic = Statistic()
-    statistic.description = description
-    statistic.count = count
-    statistic.attempt = attempt
-    statistic.save()  
+    try:
+        Statistic.objects.get_or_create(description=description, count=count, attempt=attempt)
+    except:
+        pass
 
 def transaction_stats(directory = '.'):
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
@@ -171,11 +170,54 @@ def transaction_ratio_stats():
             transaction_ratio = transaction_count * 100 / action_count
             save_statistic('transaction_ratio', transaction_ratio, repo.latest_successful_attempt)
 
+
+def join_stats():
+    for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        join_count = 0
+        for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
+            for query in Query.objects.filter(action = action):
+                join_count += len(re.findall('JOIN', query.content.upper()))
+        save_statistic('num_joins', join_count, repo.latest_successful_attempt)
+
+def action_stats():
+    for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        read_count, write_count = 0, 0
+        table_access_count = 0
+        query_count, action_count = 0, 0
+        for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
+            is_read = True
+            for query in Query.objects.filter(action = action):
+                if 'INSERT' in query.content and 'UPDATE' in query.content and 'DELETE' in query.content:
+                    is_read = False
+                
+                last_token = None
+                tables = set()
+                for token in query.content.split():
+                    token = token.replace('"', '').replace('`', '')
+                    if last_token == 'FROM' and '(' not in token and ')' not in token:
+                        tables.add(token)
+                    last_token = token
+                table_access_count += len(tables)
+
+                query_count += 1
+
+            if is_read:
+                read_count += 1
+            else:
+                write_count += 1
+
+        save_statistic('num_read_actions', read_count, repo.latest_successful_attempt)
+        save_statistic('num_write_actions', write_count, repo.latest_successful_attempt)
+        save_statistic('table_access_count_action', float(table_access_count) / max(action_count, 1), repo.latest_successful_attempt)
+        save_statistic('table_access_count_query', float(table_access_count) / max(query_count, 1), repo.latest_successful_attempt)
+        
 def main():
     transaction_stats()
     coverage_stats()
     secondary_index_stats()
     transaction_ratio_stats()
+    join_stats()
+    action_stats()
 
 if __name__ == '__main__':
     main()
