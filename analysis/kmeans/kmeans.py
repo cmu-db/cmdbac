@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-11 21:01:43
+# @Last Modified time: 2016-09-11 21:08:34
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -154,7 +154,7 @@ def prepare_repo_data():
         assert(len(repo_data) == len(REPO_FEATURE_NAMES))
 
         print ' '.join(map(str, zip(repo_data, REPO_FEATURE_NAMES)))
-        print ' '.join(map(str, zip(transaction_data, TRANSACTION_FEATURE_NAMES)))
+        # print ' '.join(map(str, zip(repo_data, REPO_FEATURE_NAMES)))
 
 def prepare_transaction_data():
     all_data = []
@@ -237,8 +237,8 @@ def prepare_transaction_data():
                         # print ' '.join(map(str, zip(transaction_data, TRANSACTION_FEATURE_NAMES)))
 
 def read_data():
-    return read_repo_data()
-    # return read_transaction_data()
+    # return read_repo_data()
+    return read_transaction_data()
 
 def read_repo_data():
     repo_names = []
