@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-11 13:54:21
+# @Last Modified time: 2016-09-11 19:41:56
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -67,18 +67,26 @@ def get_transaction_feature_names():
     feature_names.append('% of INSERT')
     feature_names.append('% of UPDATE')
     feature_names.append('% of DELETE')
-    feature_names.append('% of OTHER')
+    feature_names.append('INSERT after SELECT')
+    feature_names.append('UPDATE after SELECT')
+    feature_names.append('DELETE after SELECT')
+    feature_names.append('SELECT after INSERT')
+    feature_names.append('SELECT after UPDATE')
+    feature_names.append('SELECT after DELETE')
+    feature_names.append('INSERT after DELETE')
+    feature_names.append('UPDATE after INSERT')
     feature_names.append('# of writes')
     feature_names.append('# of reads')
     feature_names.append('# of joins')
+    feature_names.append('# of table access')
 
     return feature_names
 
 TRANSACTION_FEATURE_NAMES = get_transaction_feature_names()
 
 def prepare_data():
-    prepare_repo_data()
-    # prepare_transaction_data()
+    # prepare_repo_data()
+    prepare_transaction_data()
 
 def prepare_repo_data():
     all_data = []
@@ -146,6 +154,7 @@ def prepare_repo_data():
         assert(len(repo_data) == len(REPO_FEATURE_NAMES))
 
         print ' '.join(map(str, zip(repo_data, REPO_FEATURE_NAMES)))
+        print ' '.join(map(str, zip(transaction_data, TRANSACTION_FEATURE_NAMES)))
 
 def prepare_transaction_data():
     all_data = []
@@ -159,6 +168,9 @@ def prepare_transaction_data():
                     transaction = [query.content.strip('\n')]
                 elif len(transaction) > 0:
                     transaction.append(query.content.strip('\n'))
+                    if len(transaction) == 2:
+                        continue
+
                     if 'COMMIT' in query.content.upper():
                         transaction_data = []
                         transaction_data.append(repo.name)
@@ -166,19 +178,31 @@ def prepare_transaction_data():
                         transaction_data.append(len(transaction))
 
                         query_type_counter = {}
-                        query_types = ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'OTHER']
+                        query_types = ['SELECT', 'INSERT', 'UPDATE', 'DELETE']
+                        query_with_types = []
                         for query in transaction:
                             find_query_type = False
                             for query_type in query_types:
                                 if query_type in query:
                                     query_type_counter[query_type] = query_type_counter.get(query_type, 0) + 1
                                     find_query_type = True
+                                    query_with_types.append(query_type)
                                     break
-                            if not find_query_type:
-                                query_type_counter['OTHER'] = query_type_counter.get('OTHER', 0) + 1
 
                         for query_type in query_types:
                             transaction_data.append(query_type_counter.get(query_type, 0) * 100 / len(transaction))
+
+                        pattern_counters = {}
+                        for index, query_type in enumerate(query_with_types):
+                            if index > 0:
+                                last_query_type = query_with_types[index - 1]
+                                feature_name = '{} after {}'.format(query_type, last_query_type)
+                                if feature_name in TRANSACTION_FEATURE_NAMES:
+                                    pattern_counters[feature_name] = pattern_counters.get(feature_name, 0) + 1
+                        for feature_name in TRANSACTION_FEATURE_NAMES:
+                            if 'after' in feature_name:
+                                transaction_data.append(pattern_counters.get(feature_name, 0))
+                    
 
                         write_count = 0
                         for keyword in ['INSERT', 'DELETE', 'UPDATE']:
@@ -191,9 +215,23 @@ def prepare_transaction_data():
                         join_count = len(re.findall('JOIN', ' '.join(transaction).upper()))
                         transaction_data.append(join_count)
 
+                        tables = []
+                        for query in transaction:
+                            last_token = None
+                            for token in query.split():
+                                token = token.replace('"', '').replace('`', '')
+                                if token in tables:
+                                    tables.append(token)
+                                elif last_token == 'FROM' and '(' not in token and ')' not in token:
+                                    tables.append(token)
+                                last_token = token
+                        transaction_data.append(len(tables))
+
+                        
                         assert(len(transaction_data) == len(TRANSACTION_FEATURE_NAMES))
 
                         print ' '.join(map(str, transaction_data))
+                        # print ' '.join(map(str, zip(transaction_data, TRANSACTION_FEATURE_NAMES)))
 
 def read_data():
     return read_repo_data()
