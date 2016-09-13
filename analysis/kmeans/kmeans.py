@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-12 02:31:27
+# @Last Modified time: 2016-09-13 15:50:29
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -19,7 +19,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
 from sklearn.preprocessing import normalize, scale
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, DBSCAN
 from sklearn.decomposition import PCA
 import string
 import re
@@ -476,10 +476,10 @@ def kmeans_pca(data):
     data = np.array(data)
     bin_.fit(data)
     processed_data = bin_.transform(data)
+    pca = PCA(n_components=5).fit(processed_data)
+    reduced_data = pca.transform(processed_data)[:, :2]    
 
     for k in GOOD_K_RANGE:
-        pca = PCA(n_components=5).fit(processed_data)
-        reduced_data = pca.transform(processed_data)[:, :2]
         kmeans = KMeans(init='k-means++', n_clusters=k)
         kmeans.fit(reduced_data)
 
@@ -590,10 +590,10 @@ def kmeans_pca_ellipse(data):
     data = np.array(data)
     bin_.fit(data)
     processed_data = bin_.transform(data)
+    pca = PCA(n_components=5).fit(processed_data)
+    reduced_data = pca.transform(processed_data)[:, :2]    
 
     for k in GOOD_K_RANGE:
-        pca = PCA(n_components=5).fit(processed_data)
-        reduced_data = pca.transform(processed_data)[:, :2]
         kmeans = KMeans(init='k-means++', n_clusters=k)
         kmeans.fit(reduced_data)
 
@@ -635,6 +635,62 @@ def kmeans_pca_ellipse(data):
         
         fig.savefig('kmeans-pca.pdf')
 
+def kmeans_pca_dbscan(data):
+    n = len(data)
+    bin_ = Bin(0, 0)
+    # processed_data = scale(data)
+    data = np.array(data)
+    bin_.fit(data)
+    processed_data = bin_.transform(data)
+    pca = PCA(n_components=5).fit(processed_data)
+    reduced_data = pca.transform(processed_data)[:, :2]
+
+    for eps in np.arange(0.2, 2.1, 0.1):
+        for min_samples in xrange(50, 210, 10):
+            db = DBSCAN(eps=eps, min_samples=min_samples).fit(reduced_data)
+            core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
+            core_samples_mask[db.core_sample_indices_] = True
+            labels = db.labels_
+            n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
+
+            print('Estimated number of clusters: %d' % n_clusters_)
+
+            fig = plt.figure()
+            plt.clf()
+            # x_min, x_max = reduced_data[:, 0].min() - 1, reduced_data[:, 0].max() + 1
+            # y_min, y_max = reduced_data[:, 1].min() - 1, reduced_data[:, 1].max() + 1
+
+            unique_labels = set(labels)
+            colors = plt.cm.Spectral(np.linspace(0, 1, len(unique_labels)))
+            for k, col in zip(unique_labels, colors):
+                if k == -1:
+                    # Black used for noise.
+                    col = 'k'
+                
+                class_member_mask = (labels == k)
+
+                xy = reduced_data[class_member_mask & core_samples_mask]
+                plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=col,
+                         markeredgecolor='k', markersize=10)
+
+                xy = reduced_data[class_member_mask & ~core_samples_mask]
+                plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=col,
+                         markeredgecolor='k', markersize=4)
+            
+            labels_map = {}
+            for i, x in enumerate(unique_labels):
+                labels_map[x] = string.uppercase[i]
+            labels_cnt = {}
+            for label in labels:
+                labels_cnt[labels_map[label]] = labels_cnt.get(labels_map[label], 0) + 1
+            print labels_cnt
+            labels_percentage = {}
+            for label, count in labels_cnt.iteritems():
+                labels_percentage[label] = float(count) * 100 / sum(labels_cnt.values())
+            print labels_percentage
+            
+            fig.savefig('pca/kmeans-pca-{}-{}.pdf'.format(eps, min_samples))
+
 def kmeans_elbow(data):
     bin_ = Bin(0, 0)
     # processed_data = scale(data)
@@ -667,6 +723,8 @@ def main():
                 kmeans_pca(data)
             elif command == 'pca2':
                 kmeans_pca_ellipse(data)
+            elif command == 'pca3':
+                kmeans_pca_dbscan(data)
             elif command == 'elbow':
                 kmeans_elbow(data)
 
