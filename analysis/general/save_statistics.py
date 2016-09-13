@@ -185,11 +185,13 @@ def action_stats():
         table_access_count = 0
         query_count, action_count = 0, 0
         for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
-            is_read = True
+            is_read, is_write = False
             for query in Query.objects.filter(action = action):
-                if 'INSERT' in query.content and 'UPDATE' in query.content and 'DELETE' in query.content:
-                    is_read = False
-                
+                if 'SELECT' in query.content:
+                    is_read = True
+                if 'INSERT' in query.content or 'UPDATE' in query.content or 'DELETE' in query.content:
+                    is_write = True
+
                 last_token = None
                 tables = set()
                 for token in query.content.split():
@@ -203,14 +205,14 @@ def action_stats():
 
             if is_read:
                 read_count += 1
-            else:
+            if is_write:
                 write_count += 1
 
         save_statistic('num_read_actions', read_count, repo.latest_successful_attempt)
         save_statistic('num_write_actions', write_count, repo.latest_successful_attempt)
         save_statistic('table_access_count_action', float(table_access_count) / max(action_count, 1), repo.latest_successful_attempt)
-        save_statistic('table_access_count_query', float(table_access_count) / max(query_count, 1), repo.latest_successful_attempt)
-        
+        save_statistic('table_access_count_query', float(table_access_count) * 100 / max(query_count, 1), repo.latest_successful_attempt)
+
 def main():
     transaction_stats()
     coverage_stats()

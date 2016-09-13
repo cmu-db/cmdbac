@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-13 23:10:56
+# @Last Modified time: 2016-09-13 23:18:22
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -147,7 +147,7 @@ def prepare_repo_data():
         repo_data.append(get_counter('num_read_actions'))
         repo_data.append(get_counter('num_write_actions'))
         repo_data.append(get_counter('table_access_count_action'))
-        repo_data.append(get_counter('table_access_count_query'))
+        repo_data.append(float(get_counter('table_access_count_query')) / 100)
         
         assert(len(repo_data) == len(REPO_FEATURE_NAMES))
 
