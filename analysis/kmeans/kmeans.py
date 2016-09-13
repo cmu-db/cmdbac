@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-13 15:50:29
+# @Last Modified time: 2016-09-13 23:10:56
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -645,8 +645,12 @@ def kmeans_pca_dbscan(data):
     pca = PCA(n_components=5).fit(processed_data)
     reduced_data = pca.transform(processed_data)[:, :2]
 
-    for eps in np.arange(0.2, 2.1, 0.1):
-        for min_samples in xrange(50, 210, 10):
+    output = open(RESULT_CSV, 'w')
+    output.write(','.join(REPO_FEATURE_NAMES) + '\n')
+    # output.write(','.join(TRANSACTION_FEATURE_NAMES[1:]) + '\n')
+
+    for eps in np.arange(1.7, 1.71, 0.1):
+        for min_samples in xrange(60, 70, 10):
             db = DBSCAN(eps=eps, min_samples=min_samples).fit(reduced_data)
             core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
             core_samples_mask[db.core_sample_indices_] = True
@@ -689,7 +693,17 @@ def kmeans_pca_dbscan(data):
                 labels_percentage[label] = float(count) * 100 / sum(labels_cnt.values())
             print labels_percentage
             
-            fig.savefig('pca/kmeans-pca-{}-{}.pdf'.format(eps, min_samples))
+            for k in unique_labels:
+                if k == -1:
+                    continue
+                class_member_mask = (labels == k)
+                centroid = map(lambda x: round(x, 2), data[class_member_mask].mean(axis = 0))
+                bin_centroid = map(lambda x: round(x, 2), processed_data[class_member_mask].mean(axis = 0))
+                new_label = labels_map[k]
+                output.write(str(new_label) + ',' + ','.join(map(str, centroid)) + '\n')
+                # output.write(str(new_label) + ',' + ','.join(map(str, bin_centroid)) + '\n')
+            
+            fig.savefig('kmeans-pca.pdf'.format(eps, min_samples))
 
 def kmeans_elbow(data):
     bin_ = Bin(0, 0)
