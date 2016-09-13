@@ -185,7 +185,7 @@ def action_stats():
         table_access_count = 0
         query_count, action_count = 0, 0
         for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
-            is_read, is_write = False
+            is_read, is_write = False, False
             for query in Query.objects.filter(action = action):
                 if 'SELECT' in query.content:
                     is_read = True
