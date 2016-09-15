@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-16 02:24:21
+# @Last Modified time: 2016-09-16 02:25:28
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -635,7 +635,7 @@ def kmeans_pca_ellipse(data):
         
         fig.savefig('kmeans-pca.pdf')
 
-def kmeans_pca_dbscan(data):
+def pca_dbscan(data):
     n = len(data)
     bin_ = Bin(0, 0)
     # processed_data = scale(data)
@@ -752,7 +752,7 @@ def main():
             elif command == 'pca2':
                 kmeans_pca_ellipse(data)
             elif command == 'pca3':
-                kmeans_pca_dbscan(data)
+                pca_dbscan(data)
             elif command == 'elbow':
                 kmeans_elbow(data)
 
