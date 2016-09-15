@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-16 02:12:02
+# @Last Modified time: 2016-09-16 02:24:21
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -649,11 +649,11 @@ def kmeans_pca_dbscan(data):
     output.write(','.join(REPO_FEATURE_NAMES) + '\n')
     # output.write(','.join(TRANSACTION_FEATURE_NAMES[1:]) + '\n')
 
-    # DJANGO = (1.9, 70)
+    DJANGO_PAR = ([1.9], [70])
 
     # for eps, min_samples in RUBY_PAR:
-    for eps in np.arange(0.1, 1.5, 0.1):
-        for min_samples in xrange(1, 20, 1):
+    for eps in DJANGO_PAR[0]:
+        for min_samples in DJANGO_PAR[1]:
             db = DBSCAN(eps=eps, min_samples=min_samples).fit(reduced_data)
             core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
             core_samples_mask[db.core_sample_indices_] = True
@@ -668,6 +668,19 @@ def kmeans_pca_dbscan(data):
             # y_min, y_max = reduced_data[:, 1].min() - 1, reduced_data[:, 1].max() + 1
 
             unique_labels = set(labels)
+
+            labels_map = {}
+            for i, x in enumerate(unique_labels):
+                labels_map[x] = string.uppercase[i]
+            labels_cnt = {}
+            for label in labels:
+                labels_cnt[labels_map[label]] = labels_cnt.get(labels_map[label], 0) + 1
+            print labels_cnt
+            labels_percentage = {}
+            for label, count in labels_cnt.iteritems():
+                labels_percentage[label] = float(count) * 100 / sum(labels_cnt.values())
+            print labels_percentage
+
             colors = plt.cm.Spectral(np.linspace(0, 1, len(unique_labels)))
             for k, col in zip(unique_labels, colors):
                 if k == -1:
@@ -680,25 +693,17 @@ def kmeans_pca_dbscan(data):
                 plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=col,
                          markeredgecolor='k', markersize=10)
 
+                label = labels_map[k]
+                annotation = False
+                if k != -1:
+                    plt.annotate(label, xy = (xy[0, 0], xy[0, 1]), xytext = (0, 0),
+                        textcoords = 'offset points', ha = 'right', va = 'bottom',
+                        bbox = dict(boxstyle = 'round,pad=0.5', fc = 'yellow', alpha = 0.5))
+                
                 xy = reduced_data[class_member_mask & ~core_samples_mask]
                 plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=col,
                          markeredgecolor='k', markersize=4)
-            
-            if len(unique_labels) > 7:
-                continue
- 
-            labels_map = {}
-            for i, x in enumerate(unique_labels):
-                labels_map[x] = string.uppercase[i]
-            labels_cnt = {}
-            for label in labels:
-                labels_cnt[labels_map[label]] = labels_cnt.get(labels_map[label], 0) + 1
-            print labels_cnt
-            labels_percentage = {}
-            for label, count in labels_cnt.iteritems():
-                labels_percentage[label] = float(count) * 100 / sum(labels_cnt.values())
-            print labels_percentage
-            
+
             for k in unique_labels:
                 if k == -1:
                     continue
@@ -708,6 +713,9 @@ def kmeans_pca_dbscan(data):
                 new_label = labels_map[k]
                 output.write(str(new_label) + ',' + ','.join(map(str, centroid)) + '\n')
                 # output.write(str(new_label) + ',' + ','.join(map(str, bin_centroid)) + '\n')
+
+            plt.xticks(())
+            plt.yticks(())
             
             fig.savefig('pca.pdf'.format(eps, min_samples))
 
