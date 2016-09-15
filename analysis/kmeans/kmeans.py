@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-13 23:18:22
+# @Last Modified time: 2016-09-16 02:12:02
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -649,8 +649,11 @@ def kmeans_pca_dbscan(data):
     output.write(','.join(REPO_FEATURE_NAMES) + '\n')
     # output.write(','.join(TRANSACTION_FEATURE_NAMES[1:]) + '\n')
 
-    for eps in np.arange(1.7, 1.71, 0.1):
-        for min_samples in xrange(60, 70, 10):
+    # DJANGO = (1.9, 70)
+
+    # for eps, min_samples in RUBY_PAR:
+    for eps in np.arange(0.1, 1.5, 0.1):
+        for min_samples in xrange(1, 20, 1):
             db = DBSCAN(eps=eps, min_samples=min_samples).fit(reduced_data)
             core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
             core_samples_mask[db.core_sample_indices_] = True
@@ -681,6 +684,9 @@ def kmeans_pca_dbscan(data):
                 plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=col,
                          markeredgecolor='k', markersize=4)
             
+            if len(unique_labels) > 7:
+                continue
+ 
             labels_map = {}
             for i, x in enumerate(unique_labels):
                 labels_map[x] = string.uppercase[i]
@@ -703,7 +709,7 @@ def kmeans_pca_dbscan(data):
                 output.write(str(new_label) + ',' + ','.join(map(str, centroid)) + '\n')
                 # output.write(str(new_label) + ',' + ','.join(map(str, bin_centroid)) + '\n')
             
-            fig.savefig('kmeans-pca.pdf'.format(eps, min_samples))
+            fig.savefig('pca.pdf'.format(eps, min_samples))
 
 def kmeans_elbow(data):
     bin_ = Bin(0, 0)
