@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-16 02:25:28
+# @Last Modified time: 2016-09-16 23:39:48
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -237,8 +237,8 @@ def prepare_transaction_data():
                         # print ' '.join(map(str, zip(transaction_data, TRANSACTION_FEATURE_NAMES)))
 
 def read_data():
-    return read_repo_data()
-    # return read_transaction_data()
+    # return read_repo_data()
+    return read_transaction_data()
 
 def read_repo_data():
     repo_names = []
@@ -642,18 +642,19 @@ def pca_dbscan(data):
     data = np.array(data)
     bin_.fit(data)
     processed_data = bin_.transform(data)
-    pca = PCA(n_components=5).fit(processed_data)
+    pca = PCA(n_components=2).fit(processed_data)
     reduced_data = pca.transform(processed_data)[:, :2]
 
     output = open(RESULT_CSV, 'w')
     output.write(','.join(REPO_FEATURE_NAMES) + '\n')
     # output.write(','.join(TRANSACTION_FEATURE_NAMES[1:]) + '\n')
 
-    DJANGO_PAR = ([1.9], [70])
+    # DJANGO_PAR = ([1.9], [70])
+    TXN_PAR = ([1.5], [40])
 
     # for eps, min_samples in RUBY_PAR:
-    for eps in DJANGO_PAR[0]:
-        for min_samples in DJANGO_PAR[1]:
+    for eps in TXN_PAR[0]:
+        for min_samples in TXN_PAR[1]:
             db = DBSCAN(eps=eps, min_samples=min_samples).fit(reduced_data)
             core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
             core_samples_mask[db.core_sample_indices_] = True
@@ -668,6 +669,9 @@ def pca_dbscan(data):
             # y_min, y_max = reduced_data[:, 1].min() - 1, reduced_data[:, 1].max() + 1
 
             unique_labels = set(labels)
+
+            if len(unique_labels) > 7:
+                continue
 
             labels_map = {}
             for i, x in enumerate(unique_labels):
