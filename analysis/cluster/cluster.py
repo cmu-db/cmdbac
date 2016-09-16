@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-16 23:39:48
+# @Last Modified time: 2016-09-17 00:46:00
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -179,11 +179,9 @@ def prepare_transaction_data():
                         query_types = ['SELECT', 'INSERT', 'UPDATE', 'DELETE']
                         query_with_types = []
                         for query in transaction:
-                            find_query_type = False
                             for query_type in query_types:
                                 if query_type in query:
                                     query_type_counter[query_type] = query_type_counter.get(query_type, 0) + 1
-                                    find_query_type = True
                                     query_with_types.append(query_type)
                                     break
 
@@ -642,12 +640,12 @@ def pca_dbscan(data):
     data = np.array(data)
     bin_.fit(data)
     processed_data = bin_.transform(data)
-    pca = PCA(n_components=2).fit(processed_data)
+    pca = PCA(n_components=5).fit(processed_data)
     reduced_data = pca.transform(processed_data)[:, :2]
 
     output = open(RESULT_CSV, 'w')
-    output.write(','.join(REPO_FEATURE_NAMES) + '\n')
-    # output.write(','.join(TRANSACTION_FEATURE_NAMES[1:]) + '\n')
+    # output.write(','.join(REPO_FEATURE_NAMES) + '\n')
+    output.write(','.join(TRANSACTION_FEATURE_NAMES) + '\n')
 
     # DJANGO_PAR = ([1.9], [70])
     TXN_PAR = ([1.5], [40])
