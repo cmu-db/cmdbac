@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-17 00:46:00
+# @Last Modified time: 2016-09-19 02:28:07
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -25,7 +25,7 @@ import string
 import re
 
 K_RANGE = xrange(1, 16)
-GOOD_K_RANGE = xrange(4, 5)
+GOOD_K_RANGE = xrange(3, 8)
 # REPO_GOOD_K_RANGE = xrange(6, 7)
 # TRANSACTION_GOOD_K_RANGE = xrange(4, 5)
 SAMPLE = 3
@@ -235,8 +235,8 @@ def prepare_transaction_data():
                         # print ' '.join(map(str, zip(transaction_data, TRANSACTION_FEATURE_NAMES)))
 
 def read_data():
-    # return read_repo_data()
-    return read_transaction_data()
+    return read_repo_data()
+    # return read_transaction_data()
 
 def read_repo_data():
     repo_names = []
@@ -417,63 +417,6 @@ def kmeans_pca(data):
     data = np.array(data)
     bin_.fit(data)
     processed_data = bin_.transform(data)
-
-    for k in GOOD_K_RANGE:
-        pca = PCA(n_components=5).fit(processed_data)
-        reduced_data = pca.transform(processed_data)[:, :2]
-        kmeans = KMeans(init='k-means++', n_clusters=k)
-        kmeans.fit(reduced_data)
-
-        fig = plt.figure()
-        ax = fig.add_subplot(1, 1, 1)
-
-        x_min, x_max = reduced_data[:, 0].min() - 1, reduced_data[:, 0].max() + 1
-        y_min, y_max = reduced_data[:, 1].min() - 1, reduced_data[:, 1].max() + 1
-        
-        colors = sns.color_palette("muted")
-        for k, col in zip(range(k), colors):
-            my_members = kmeans.labels_ == k
-            cluster_center = kmeans.cluster_centers_[k]
-            ax.plot(reduced_data[my_members, 0], reduced_data[my_members, 1], 'w',
-                markerfacecolor=col, marker='.', markersize=5)
-            ax.plot(cluster_center[0], cluster_center[1], 'o', markerfacecolor=col,
-                markeredgecolor='k', markersize=8)
-        centroids = kmeans.cluster_centers_[kmeans.cluster_centers_[:, 0].argsort()]
-        for label, x, y in zip(string.uppercase[:k + 1], centroids[:, 0], centroids[:, 1]):
-            plt.annotate(label, xy = (x, y), xytext = (-20, 20),
-                textcoords = 'offset points', ha = 'right', va = 'bottom',
-                bbox = dict(boxstyle = 'round,pad=0.5', fc = 'yellow', alpha = 0.5),
-                arrowprops = dict(arrowstyle = '->', connectionstyle = 'arc3,rad=0'))
-
-        ax.set_title('KMeans')
-        plt.xlim(x_min, x_max)
-        plt.ylim(y_min, y_max)
-        plt.xticks(())
-        plt.yticks(())
-        
-        labels_map = {}
-        for i, x in enumerate(kmeans.cluster_centers_[:, 0].argsort()):
-            labels_map[x] = string.uppercase[i]
-        labels_cnt = {}
-        for label in kmeans.labels_:
-            labels_cnt[labels_map[label]] = labels_cnt.get(labels_map[label], 0) + 1
-        print labels_cnt
-        labels_percentage = {}
-        for label, count in labels_cnt.iteritems():
-            labels_percentage[label] = float(count) * 100 / sum(labels_cnt.values())
-        print labels_percentage
-        
-        fig.savefig('kmeans-pca.pdf')
-
-def kmeans_pca(data):
-    import seaborn as sns
-    
-    n = len(data)
-    bin_ = Bin(0, 0)
-    # processed_data = scale(data)
-    data = np.array(data)
-    bin_.fit(data)
-    processed_data = bin_.transform(data)
     pca = PCA(n_components=5).fit(processed_data)
     reduced_data = pca.transform(processed_data)[:, :2]    
 
@@ -520,7 +463,7 @@ def kmeans_pca(data):
             labels_percentage[label] = float(count) * 100 / sum(labels_cnt.values())
         print labels_percentage
         
-        fig.savefig('kmeans-pca.pdf')
+        fig.savefig('kmeans-pca-{}.pdf'.format(k))
 
 def plot_point_cov(points, nstd=2, ax=None, **kwargs):
     """
@@ -648,11 +591,13 @@ def pca_dbscan(data):
     output.write(','.join(TRANSACTION_FEATURE_NAMES) + '\n')
 
     # DJANGO_PAR = ([1.9], [70])
-    TXN_PAR = ([1.5], [40])
+    # RUBY_PAR = ([1.8], [20])
+    # TXN_PAR = ([1.5], [40])
+
 
     # for eps, min_samples in RUBY_PAR:
-    for eps in TXN_PAR[0]:
-        for min_samples in TXN_PAR[1]:
+    for eps in RUBY_PAR[0]:
+        for min_samples in RUBY_PAR[1]:
             db = DBSCAN(eps=eps, min_samples=min_samples).fit(reduced_data)
             core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
             core_samples_mask[db.core_sample_indices_] = True
@@ -719,7 +664,7 @@ def pca_dbscan(data):
             plt.xticks(())
             plt.yticks(())
             
-            fig.savefig('pca.pdf'.format(eps, min_samples))
+            fig.savefig('db-pca.pdf'.format(eps, min_samples))
 
 def kmeans_elbow(data):
     bin_ = Bin(0, 0)
