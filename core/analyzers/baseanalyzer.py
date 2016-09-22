@@ -35,7 +35,7 @@ class BaseAnalyzer(object):
             if 'BEGIN' in query['content'].upper() or 'START TRANSACTION' in query['content'].upper():
                 transaction = True
             elif transaction:
-                if 'COMMIT' in query.content.upper():
+                if 'COMMIT' in query['content'].upper():
                     # for each transaction, count the number of transactions
                     transaction_count += 1
                     transaction = False
