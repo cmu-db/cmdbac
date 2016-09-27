@@ -107,7 +107,7 @@ class RoRDeployer(BaseDeployer):
         if path:
             git_clone_error_cnt = 0
             while True:
-                out = self.run_command(path, 'bundle install')
+                out = self.run_command(path, 'bundle install --no-cache')
                 git_clone_error = re.search('Retrying git clone (.*) due to error', out[1])
                 if git_clone_error:
                     if git_clone_error_cnt >= 3:
