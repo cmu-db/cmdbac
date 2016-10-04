@@ -22,7 +22,7 @@ def deploy_all_repos():
     total_deployer = int(sys.argv[3])
     database = Database.objects.get(name=sys.argv[4])
     
-    for repo in Repository.objects.filter(project_type = project_type):
+    for repo in Repository.objects.filter(project_type = project_type).filter(latest_attempt = None):
     # for repo in Repository.objects.filter(project_type = project_type).exclude(Q(latest_attempt__result = 'DE') | Q(latest_attempt__result = 'OK')):
     # for repo in Repository.objects.filter(project_type = 1).filter(latest_attempt__result = 'OK').filter(latest_attempt__log__contains = "[Errno 13] Permission denied: '/var/log/mysql/mysql.log'"):
         if repo.id % total_deployer != deploy_id - 1:
