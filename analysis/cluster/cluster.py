@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-09-19 02:28:07
+# @Last Modified time: 2016-10-09 23:21:55
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -131,6 +131,9 @@ def prepare_repo_data():
                     continue
                 query_counters[counter.description] = query_counters.get(counter.description, 0) + counter.count
                 query_total_count += counter.count
+
+        if query_total_count == 0:
+            continue       
 
         repo_data.append(query_total_count)
         query_total_count = max(query_total_count, 1)
