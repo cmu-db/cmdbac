@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-10-09 23:21:55
+# @Last Modified time: 2016-10-09 23:39:33
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -593,14 +593,15 @@ def pca_dbscan(data):
     # output.write(','.join(REPO_FEATURE_NAMES) + '\n')
     output.write(','.join(TRANSACTION_FEATURE_NAMES) + '\n')
 
-    # DJANGO_PAR = ([1.9], [70])
-    # RUBY_PAR = ([1.8], [20])
-    # TXN_PAR = ([1.5], [40])
+    DJANGO_PAR = ([1.9], [70])
+    RUBY_PAR = ([1.8], [20])
+    TXN_PAR = ([1.5], [40])
 
+    DBSCAN_PAR = DJANGO_PAR
 
     # for eps, min_samples in RUBY_PAR:
-    for eps in RUBY_PAR[0]:
-        for min_samples in RUBY_PAR[1]:
+    for eps in DBSCAN_PAR[0]:
+        for min_samples in DBSCAN_PAR[1]:
             db = DBSCAN(eps=eps, min_samples=min_samples).fit(reduced_data)
             core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
             core_samples_mask[db.core_sample_indices_] = True
