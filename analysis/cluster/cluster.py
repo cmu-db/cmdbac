@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-10-12 23:14:30
+# @Last Modified time: 2016-10-12 23:22:49
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -278,8 +278,8 @@ def prepare_transaction_data():
                                 token = token.replace('"', '').replace('`', '')
                                 if token in constraint_map:
                                     keys_usage[constraint_map[token].upper()] = keys_usage.get(constraint_map[token], 0) + 1
-                        transaction_data.append(keys_usage.get('PRIMARY', 0))
-                        transaction_data.append(keys_usage.get('FOREIGN', 0))
+                        transaction_data.append(keys_usage.get('PRIMARY KEY', 0))
+                        transaction_data.append(keys_usage.get('FOREIGN KEY', 0))
                         
                         assert(len(transaction_data) == len(TRANSACTION_FEATURE_NAMES))
 
