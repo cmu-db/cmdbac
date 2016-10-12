@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-10-12 23:22:49
+# @Last Modified time: 2016-10-12 23:37:20
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -286,9 +286,11 @@ def prepare_transaction_data():
                         print ' '.join(map(str, transaction_data))
                         # print ' '.join(map(str, zip(transaction_data, TRANSACTION_FEATURE_NAMES)))
 
-def read_data():
-    return read_repo_data()
-    # return read_transaction_data()
+def read_data(category):
+    if category == 'repo':
+        return read_repo_data()
+    elif category == 'txn':
+        return read_transaction_data()
 
 def read_repo_data():
     repo_names = []
@@ -628,7 +630,7 @@ def kmeans_pca_ellipse(data):
         
         fig.savefig('kmeans-pca.pdf')
 
-def pca_dbscan(data):
+def pca_dbscan(category, data):
     n = len(data)
     bin_ = Bin(0, 0)
     # processed_data = scale(data)
@@ -639,8 +641,10 @@ def pca_dbscan(data):
     reduced_data = pca.transform(processed_data)[:, :2]
 
     output = open(RESULT_CSV, 'w')
-    # output.write(','.join(REPO_FEATURE_NAMES) + '\n')
-    output.write(','.join(TRANSACTION_FEATURE_NAMES) + '\n')
+    if category == 'repo':
+        output.write(','.join(REPO_FEATURE_NAMES) + '\n')
+    elif category == 'txn':
+        output.write(','.join(TRANSACTION_FEATURE_NAMES) + '\n')
 
     DJANGO_PAR = ([1.9], [70])
     RUBY_PAR = ([1.8], [20])
@@ -744,7 +748,10 @@ def main():
         if command == 'prepare':
             prepare_data()
         else:
-            repo, data = read_data()
+            category = None
+            if len(sys.argv) > 2:
+                category = sys.argv[2]
+            repo, data = read_data(category)
             if command == 'kmeans':
                 kmeans(repo, data)
             elif command == 'pca':
@@ -752,7 +759,7 @@ def main():
             elif command == 'pca2':
                 kmeans_pca_ellipse(data)
             elif command == 'pca3':
-                pca_dbscan(data)
+                pca_dbscan(category, data)
             elif command == 'elbow':
                 kmeans_elbow(data)
 
