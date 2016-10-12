@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-10-09 23:39:33
+# @Last Modified time: 2016-10-12 23:14:30
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -80,6 +80,8 @@ def get_transaction_feature_names():
     feature_names.append('# of reads')
     feature_names.append('# of joins')
     feature_names.append('# of table access')
+    feature_names.append('# of primary key usage')
+    feature_names.append('# of foreign key usage')
 
     return feature_names
 
@@ -231,6 +233,53 @@ def prepare_transaction_data():
 
                         if len(tables) == 0:
                             continue
+
+                        key_column_usage_informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'key_column_usage')
+                        constraint_informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'constraints')
+                        constraint_map = {}
+                        if len(key_column_usage_informations) > 0 and len(constraint_informations) > 0:
+                            if repo.latest_successful_attempt.database.name == 'PostgreSQL':
+                                regex = '(\(.*?\))[,\]]'
+                            elif repo.latest_successful_attempt.database.name == 'MySQL':
+                                regex = '(\(.*?\))[,\)]'
+                            
+                            merge_map = {}
+                            key_column_usage_information = key_column_usage_informations[0]
+                            for column in re.findall(regex, key_column_usage_information.description):
+                                cells = column.split(',')
+                                constraint_name = str(cells[2]).replace("'", "").strip()
+                                table_name = str(cells[5]).replace("'", "").strip()
+                                column_name = str(cells[6]).replace("'", "").strip()
+                                merge_map_key = table_name + '.' + constraint_name 
+                                if merge_map_key in merge_map:
+                                    merge_map[merge_map_key].append(column_name)
+                                else:
+                                    merge_map[merge_map_key] = [column_name]
+
+                            constraint_information = constraint_informations[0]
+                            for column in re.findall(regex, constraint_information.description):
+                                cells = column.split(',')
+                                constraint_name = str(cells[2]).replace("'", "").strip()
+                                if repo.latest_successful_attempt.database.name == 'PostgreSQL':
+                                    table_name = str(cells[5]).replace("'", "").strip()
+                                    constraint_type = str(cells[6]).replace("'", "").strip()
+                                elif repo.latest_successful_attempt.database.name == 'MySQL':
+                                    table_name = str(cells[4]).replace("'", "").strip()
+                                    constraint_type = str(cells[5])[:-1].replace("'", "").strip()
+                                merge_map_key =  table_name + '.' + constraint_name
+                                if merge_map_key in merge_map:
+                                    for column_name in merge_map[merge_map_key]:
+                                        constraint_map[table_name + '.' + column_name] = constraint_type
+                                        constraint_map[column_name] = constraint_type
+
+                        keys_usage = {}
+                        for query in transaction:
+                            for token in query.split():
+                                token = token.replace('"', '').replace('`', '')
+                                if token in constraint_map:
+                                    keys_usage[constraint_map[token].upper()] = keys_usage.get(constraint_map[token], 0) + 1
+                        transaction_data.append(keys_usage.get('PRIMARY', 0))
+                        transaction_data.append(keys_usage.get('FOREIGN', 0))
                         
                         assert(len(transaction_data) == len(TRANSACTION_FEATURE_NAMES))
 
