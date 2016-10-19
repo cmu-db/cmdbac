@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-10-12 23:37:20
+# @Last Modified time: 2016-10-20 01:06:44
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -78,10 +78,14 @@ def get_transaction_feature_names():
     feature_names.append('UPDATE after INSERT')
     feature_names.append('# of writes')
     feature_names.append('# of reads')
+    feature_names.append('only WRITE')
+    feature_names.append('only READ')
     feature_names.append('# of joins')
     feature_names.append('# of table access')
     feature_names.append('# of primary key usage')
     feature_names.append('# of foreign key usage')
+    feature_names.append('# of where clauses')
+    feature_names.append('# of distinct where clauses')
 
     return feature_names
 
@@ -171,10 +175,14 @@ def prepare_transaction_data():
                     transaction = [query.content.strip('\n')]
                 elif len(transaction) > 0:
                     transaction.append(query.content.strip('\n'))
-                    if len(transaction) == 2:
-                        continue
 
                     if 'COMMIT' in query.content.upper():
+                        if len(transaction) == 2:
+                            transaction = []
+                            continue
+                        else:
+                            transaction = transaction[1:-1]
+
                         transaction_data = []
                         transaction_data.append(repo.name)
 
@@ -215,6 +223,16 @@ def prepare_transaction_data():
 
                         if write_count == 0 and read_count == 0:
                             continue
+
+                        if read_count == 0:
+                            transaction_data.append(1)
+                        else:
+                            transaction_data.append(0)
+
+                        if write_count == 0:
+                            transaction_data.append(1)
+                        else:
+                            transaction_data.append(0)    
 
                         join_count = len(re.findall('JOIN', ' '.join(transaction).upper()))
                         transaction_data.append(join_count)
@@ -280,10 +298,26 @@ def prepare_transaction_data():
                                     keys_usage[constraint_map[token].upper()] = keys_usage.get(constraint_map[token], 0) + 1
                         transaction_data.append(keys_usage.get('PRIMARY KEY', 0))
                         transaction_data.append(keys_usage.get('FOREIGN KEY', 0))
-                        
+
+                        where_clauses = set()
+                        where_clauses_count = 0
+                        for query in transaction:
+                            where_pos = query.find('WHERE')
+                            if where_pos != -1:
+                                where_clause = query[where_pos + 5:].strip()
+                                if where_clause != None:
+                                    where_clauses_count += 1
+                                    where_clauses.add(where_clause)
+                        transaction_data.append(where_clauses_count)
+                        transaction_data.append(len(where_clauses))
+
                         assert(len(transaction_data) == len(TRANSACTION_FEATURE_NAMES))
 
+                        # print transaction
+
                         print ' '.join(map(str, transaction_data))
+
+                        transaction = []
                         # print ' '.join(map(str, zip(transaction_data, TRANSACTION_FEATURE_NAMES)))
 
 def read_data(category):
