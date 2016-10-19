@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-07-20 01:09:51
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-10-20 01:06:44
+# @Last Modified time: 2016-10-20 01:39:45
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -682,9 +682,9 @@ def pca_dbscan(category, data):
 
     DJANGO_PAR = ([1.9], [70])
     RUBY_PAR = ([1.8], [20])
-    TXN_PAR = ([1.5], [40])
+    TXN_PAR = ([2.7], [100])
 
-    DBSCAN_PAR = DJANGO_PAR
+    DBSCAN_PAR = TXN_PAR
 
     # for eps, min_samples in RUBY_PAR:
     for eps in DBSCAN_PAR[0]:
@@ -754,7 +754,7 @@ def pca_dbscan(category, data):
 
             plt.xticks(())
             plt.yticks(())
-            
+
             fig.savefig('db-pca.pdf'.format(eps, min_samples))
 
 def kmeans_elbow(data):
