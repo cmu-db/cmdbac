@@ -2,6 +2,7 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
 import logging
+import datetime
 
 from baseanalyzer import BaseAnalyzer
 
@@ -39,6 +40,11 @@ class MySQLAnalyzer(BaseAnalyzer):
                 except Exception, e:
                     pass
                     # LOG.exception(e)
+
+            query_count = len(queries)
+            for i in xrange(query_count):
+                if i + 1 < query_count:
+                    queries[i]['latency'] = (queries[i + 1] - queries[i]).seconds
 
             cur.close()
             conn.close()

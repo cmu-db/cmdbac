@@ -253,6 +253,13 @@ class BaseDeployer(object):
                                 explain.output = q['explain']
                                 explain.query = query
                                 explain.save()
+
+                            if 'latency' in q:
+                                metric = QueryMetric()
+                                metric.name = 'latency'
+                                metric.value = str(q['latency'])
+                                metric.query = query
+                                metric.save()
                         except:
                             pass
                     for input in f['inputs']:
@@ -300,6 +307,13 @@ class BaseDeployer(object):
                                 explain.output = q['explain']
                                 explain.query = query
                                 explain.save()
+
+                            if 'latency' in q:
+                                metric = QueryMetric()
+                                metric.name = 'latency'
+                                metric.value = str(q['latency'])
+                                metric.query = query
+                                metric.save()
                         except:
                             pass
                     for description, count in u['counter'].iteritems():

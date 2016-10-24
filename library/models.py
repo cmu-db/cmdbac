@@ -345,6 +345,12 @@ class Explain(models.Model):
     query = models.ForeignKey('Query', related_name='explains')
 ## CLASS
 
+class QueryMetric(models.Model):
+    name = models.CharField(max_length = 200)
+    value = models.TextField()
+    query = models.ForeignKey('Query', related_name='queryMetrics')
+## CLASS
+
 class Image(models.Model):
     def set_data(self, data):
         self._data = base64.encodestring(data)
