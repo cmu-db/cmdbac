@@ -46,6 +46,21 @@ class MySQLAnalyzer(BaseAnalyzer):
                 if i + 1 < query_count:
                     queries[i]['latency'] = (queries[i + 1] - queries[i]).seconds
 
+            for query in queries:
+                try:
+                    if self.is_valid_for_explain(query['raw']):
+                        stats_query = 'SHOW SESSION STATUS;'
+                        # print explain_query
+                        cur.execute(stats_query)
+                        rows = cur.fetchall()
+                        output = '\n'
+                        for row in rows:
+                            output += str(row) + '\n'
+                        query['stats'] = output
+                except Exception, e:
+                    pass
+                    # LOG.exception(e)       
+
             cur.close()
             conn.close()
         except Exception, e:

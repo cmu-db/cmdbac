@@ -260,6 +260,13 @@ class BaseDeployer(object):
                                 metric.value = str(q['latency'])
                                 metric.query = query
                                 metric.save()
+
+                            if 'stats' in q:
+                                metric = QueryMetric()
+                                metric.name = 'stats'
+                                metric.value = str(q['stats'])
+                                metric.query = query
+                                metric.save()
                         except:
                             pass
                     for input in f['inputs']:
@@ -312,6 +319,13 @@ class BaseDeployer(object):
                                 metric = QueryMetric()
                                 metric.name = 'latency'
                                 metric.value = str(q['latency'])
+                                metric.query = query
+                                metric.save()
+
+                            if 'stats' in q:
+                                metric = QueryMetric()
+                                metric.name = 'stats'
+                                metric.value = str(q['stats'])
                                 metric.query = query
                                 metric.save()
                         except:
