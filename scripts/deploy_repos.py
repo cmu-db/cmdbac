@@ -117,9 +117,9 @@ def need_to_be_deployed(repo):
     for action in actions:
         for query in Query.objects.filter(action = action):
             if len(QueryMetric.objects.filter(query = query)) > 0:
-                return True
+                return False
 
-    return False
+    return True
 
 def deploy_successful_repos():
     if len(sys.argv) != 5:
