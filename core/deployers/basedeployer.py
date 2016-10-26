@@ -254,13 +254,6 @@ class BaseDeployer(object):
                                 explain.query = query
                                 explain.save()
 
-                            if 'latency' in q:
-                                metric = QueryMetric()
-                                metric.name = 'latency'
-                                metric.value = str(q['latency'])
-                                metric.query = query
-                                metric.save()
-
                             if 'stats' in q:
                                 metric = QueryMetric()
                                 metric.name = 'stats'
@@ -314,13 +307,6 @@ class BaseDeployer(object):
                                 explain.output = q['explain']
                                 explain.query = query
                                 explain.save()
-
-                            if 'latency' in q:
-                                metric = QueryMetric()
-                                metric.name = 'latency'
-                                metric.value = str(q['latency'])
-                                metric.query = query
-                                metric.save()
 
                             if 'stats' in q:
                                 metric = QueryMetric()

@@ -45,7 +45,7 @@ class BaseDriver(object):
         else:
             return sql_log_file.readlines()[last_line_no:]
 
-    def process_query(self, query, query_time, inputs, queries, last = False):
+    def process_query(self, query, inputs, queries):
         matched = False
         matched_query = query
         if inputs != None:
@@ -53,19 +53,17 @@ class BaseDriver(object):
                 if str(value) in matched_query:
                     matched_query = matched_query.replace(str(value), '<span style="color:red">{}</span>'.format(name))
                     matched = True
-        queries.append({'content': matched_query, 'matched': matched, 'raw': query, 'time': query_time})
-        if last:
-            queries[-1]['latency'] = (datetime.datetime.now() - query_time).seconds
+        queries.append({'content': matched_query, 'matched': matched, 'raw': query})
 
     def process_logs(self, logs, inputs):
         queries = []
         current_query = None
         new_query = None
-        query_time = None
         for line in logs:
             line = line.strip()
             if self.deployer.get_database().name == 'MySQL':
-                query = re.search('(\d+:\d+:\d+).?Query.?(.+)', line)
+                query = re.search('Query.?(.+)', line)
+                # print query, line
                 if query == None:
                     if len(line) > 0 and line[0].isdigit():
                         continue
@@ -73,8 +71,7 @@ class BaseDriver(object):
                         current_query += ' ' + line
                         new_query = None
                 else:
-                    new_query = query.group(2)
-                    query_time = datetime.datetime.strptime(str(datetime.date.today()) + '-' + g.group(1), '%Y-%m-%d-%H:%M:%S')
+                    new_query = query.group(1)
             elif self.deployer.get_database().name == 'PostgreSQL':
                 query = re.search('LOG:  statement: (.+)', line)
                 if query == None:
@@ -102,11 +99,11 @@ class BaseDriver(object):
 
             if new_query:
                 if current_query:
-                    self.process_query(current_query, query_time, inputs, queries)
+                    self.process_query(current_query, inputs, queries)
                 current_query = new_query
                 new_query = None
         if current_query:
-            self.process_query(current_query, query_time, inputs, queries, True)
+            self.process_query(current_query, inputs, queries)
 
         counter = count.count_query(queries)
         return queries, counter
