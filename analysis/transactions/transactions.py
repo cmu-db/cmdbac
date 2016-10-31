@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-08-14 11:12:48
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-08-15 22:57:51
+# @Last Modified time: 2016-10-31 23:58:02
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
@@ -145,11 +145,33 @@ def pattern():
 
     dump_all_stats('.', stats)
 
+def state_machine_analysis():
+    state_machines = {}
+
+    def find_query_type(query):
+        for query_type in ['SELECT', 'INSERT', 'UPDATE', 'DELETE']:
+            if query_type in query:
+                return query_type[0]
+        return None
+
+    with open('transactions.pkl', 'rb') as pickle_file:
+        transactions = pickle.load(pickle_file)
+
+        for repo_name, project_type, transaction in transactions:
+            queries = transaction.split('\n')
+            queries = filter(lambda query: 'COMMIT' not in query.upper(), queries)
+            states = map(find_query_type, queries)
+            states = filter(lambda x: x != None, states)
+            if states:
+                print states
+
+
 def main():
     # count_transaction()
     # blind_write()
     # empty_transaction()
-    pattern()
+    # pattern()
+    state_machine_analysis()
 
 if __name__ == '__main__':
     main()
