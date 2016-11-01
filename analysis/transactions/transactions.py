@@ -2,7 +2,7 @@
 # @Author: Zeyuan Shang
 # @Date:   2016-08-14 11:12:48
 # @Last Modified by:   Zeyuan Shang
-# @Last Modified time: 2016-10-31 23:58:02
+# @Last Modified time: 2016-11-02 00:45:48
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
@@ -163,7 +163,10 @@ def state_machine_analysis():
             states = map(find_query_type, queries)
             states = filter(lambda x: x != None, states)
             if states:
-                print states
+                states_str = ''.join(states)
+                state_machines[states_str] = state_machines.get(states_str, 0) + 1
+
+        print sorted(state_machines.iteritems(), key = lambda (x,y): y, reverse = True)[:10]
 
 
 def main():
