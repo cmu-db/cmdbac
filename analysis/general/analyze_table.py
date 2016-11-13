@@ -42,7 +42,7 @@ def table_stats(directory = '.'):
 def column_stats(directory = '.'):
     stats = {'column_nullable': {}, 'column_type': {}, 'column_extra': {}, 'column_num': {}}
 
-    for repo in Repository.objects.exclude(latest_successful_attempt = None).filter(project_type = 1):
+    for repo in Repository.objects.exclude(latest_successful_attempt = None):
         if filter_repository(repo):
             continue
 
@@ -122,10 +122,39 @@ def column_stats(directory = '.'):
 
     dump_all_stats(directory, stats)
 
+def index_stats(directory = TABLES_DIRECTORY):
+    stats = {'index_type': {}}
+
+    for repo in Repository.objects.exclude(latest_successful_attempt = None):
+        if filter_repository(repo):
+            continue
+
+        index_informations = Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'indexes')
+        if len(index_informations) > 0:
+            index_information = index_informations[0]
+
+            project_type_name = repo.project_type.name
+            if project_type_name not in stats['index_type']:
+                stats['index_type'][project_type_name] = {}
+
+            if repo.latest_successful_attempt.database.name == 'PostgreSQL':
+                regex = '(\(.*?\))[,\]]'
+            elif repo.latest_successful_attempt.database.name == 'MySQL':
+                regex = '(\(.*?\))[,\)]'
+
+            for column in re.findall(regex, index_information.description):
+                cells = column.split(',')
+                
+                _type = cells[13].replace("'", "").strip()
+                stats['index_type'][project_type_name][_type] = stats['index_type'][project_type_name].get(_type, 0) + 1
+
+    dump_all_stats(directory, stats)
+
 def main():
     # active
     table_stats(TABLES_DIRECTORY)
     column_stats(TABLES_DIRECTORY)
+    index_stats(TABLES_DIRECTORY)
     
     # working
     
