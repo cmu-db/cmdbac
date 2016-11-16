@@ -436,6 +436,9 @@ def repetitive(directory = '.'):
             for i in xrange(1, len(queries)):
                 if queries[i] == queries[i - 1]:
                     repetitive_queries.add(queries[i])
+                    print project_type_name
+                    print queries[i]
+                    print
                     stats['repetitive_count'][project_type_name] = stats['repetitive_count'].get(project_type_name, 0) + 1
             stats['query_count'][project_type_name] = stats['query_count'].get(project_type_name, 0) + len(queries)
 
