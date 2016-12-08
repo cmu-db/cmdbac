@@ -10,10 +10,11 @@ from multiprocessing import Process
 import time
  
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import generics, viewsets
 from rest_framework.decorators import detail_route
+from rest_framework.filters import DjangoFilterBackend
 from rest_framework.response import Response
-from serializers import AttemptSerializer
+from serializers import AttemptSerializer, RepositorySerializer
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
@@ -269,3 +270,20 @@ class AttemptViewSet(viewsets.ViewSet):
         attempt_info_count.count += 1
         attempt_info_count.save()
         return Response(serializer.data)
+
+class RepositoryViewSet(viewsets.ViewSet):
+    def get_queryset(self):
+        return Repository.objects.all()
+
+    @detail_route(methods=['get'])
+    def info(self, request, pk):
+        queryset = Repository.objects.all()
+        repo = get_object_or_404(queryset, id=pk)
+        serializer = RepositorySerializer(repo)
+        return Response(serializer.data)
+
+class RepositoryListView(generics.ListAPIView):
+    queryset = Repository.objects.all()
+    serializer_class = RepositorySerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ('project_type', 'source', 'valid_project')
