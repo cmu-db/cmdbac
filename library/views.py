@@ -283,7 +283,7 @@ class RepositoryViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
 class RepositoryListView(generics.ListAPIView):
-    queryset = Repository.objects.all()
+    queryset = Repository.objects.filter(valid_project=True)
     serializer_class = RepositorySerializer
     filter_backends = (DjangoFilterBackend,)
-    filter_fields = ('project_type', 'source', 'valid_project')
+    filter_fields = ('project_type', 'source')
