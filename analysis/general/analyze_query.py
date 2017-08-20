@@ -28,16 +28,17 @@ def query_stats(directory = '.'):
         actions = Action.objects.filter(attempt = repo.latest_successful_attempt)
         if len(actions) == 0:
             continue
-        
+
+        project_type_name = repo.project_type.name
+        if project_type_name not in stats['query_type']:
+            stats['query_type'][project_type_name] = {}
+                
         for action in actions:
-            counters = Counter.objects.filter(action = action)
-            for counter in counters:
-                project_type_name = repo.project_type.name
-                if project_type_name not in stats['query_type']:
-                    stats['query_type'][project_type_name] = {}
-                if counter.description not in stats['query_type'][project_type_name]:
-                    stats['query_type'][project_type_name][counter.description] = 0
-                stats['query_type'][project_type_name][counter.description] += counter.count
+            for query in Query.objects.filter(action = action):
+                for query_type in ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'OTHER']:
+                    if query_type == 'OTHER' or query_type in query.content:
+                        stats['query_type'][project_type_name][query_type] = stats['query_type'][project_type_name].get(query_type, 0) + 1
+                        break
 
     dump_all_stats(directory, stats)
 
@@ -435,6 +436,9 @@ def repetitive(directory = '.'):
             for i in xrange(1, len(queries)):
                 if queries[i] == queries[i - 1]:
                     repetitive_queries.add(queries[i])
+                    print project_type_name
+                    print queries[i]
+                    print
                     stats['repetitive_count'][project_type_name] = stats['repetitive_count'].get(project_type_name, 0) + 1
             stats['query_count'][project_type_name] = stats['query_count'].get(project_type_name, 0) + len(queries)
 
@@ -444,15 +448,15 @@ def repetitive(directory = '.'):
 
 def main():
     # active
-    # query_stats(QUERIES_DIRECTORY)
-    # coverage_stats(QUERIES_DIRECTORY)
-    # sort_stats(QUERIES_DIRECTORY)
-    # scan_stats(QUERIES_DIRECTORY)
-    # multiset_stats(QUERIES_DIRECTORY)
-    # aggregate_stats(QUERIES_DIRECTORY)
-    # nested_stats(QUERIES_DIRECTORY)
-    # having_stats(QUERIES_DIRECTORY)
-    # join_stats(QUERIES_DIRECTORY)
+    query_stats(QUERIES_DIRECTORY)
+    coverage_stats(QUERIES_DIRECTORY)
+    sort_stats(QUERIES_DIRECTORY)
+    scan_stats(QUERIES_DIRECTORY)
+    multiset_stats(QUERIES_DIRECTORY)
+    aggregate_stats(QUERIES_DIRECTORY)
+    nested_stats(QUERIES_DIRECTORY)
+    having_stats(QUERIES_DIRECTORY)
+    join_stats(QUERIES_DIRECTORY)
     repetitive()
 
     # working

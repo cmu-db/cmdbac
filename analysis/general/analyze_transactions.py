@@ -102,7 +102,7 @@ def transaction_stats(directory = '.'):
 
 def main():
     # active
-    # action_stats(TRANSACTION_DIRECTORY)
+    action_stats(TRANSACTION_DIRECTORY)
     transaction_stats(TRANSACTION_DIRECTORY)
     
     # working

@@ -4,9 +4,11 @@ import views
 
 router = routers.DefaultRouter()
 router.register(r'attempt', views.AttemptViewSet, base_name='attempt')
+router.register(r'repository', views.RepositoryViewSet, base_name='repository')
 
 urlpatterns = patterns('',
-	url(r'^api/', include(router.urls)),
+    url(r'^api/', include(router.urls)),
+    url(r'^api/repositories/', views.RepositoryListView.as_view()),
     url(r'^$', 'library.views.home', name='home'),
     url(r'^repositories/$', 'library.views.repositories', name='repositories'),
     url(r'^repository/(?P<user_name>.+)/(?P<repo_name>.+)/', 'library.views.repository', name='repository'),
