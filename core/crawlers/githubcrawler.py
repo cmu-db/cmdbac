@@ -91,7 +91,7 @@ class GitHubCrawler(BaseCrawler):
         for title in titles:
             name = title.contents[1].string
             try:
-                self.add_repository(name, '')
+                self.add_repository(name)
             except Exception, e:
                 LOG.exception(e)
             # Sleep for a little bit to prevent us from getting blocked
@@ -143,7 +143,7 @@ class GitHubCrawler(BaseCrawler):
         return data
     ## DEF
 
-    def add_repository(self, name, setup_scripts):
+    def add_repository(self, name, setup_scripts = None):
         if Repository.objects.filter(name=name, source=self.crawlerStatus.source).exists():
             LOG.info("Repository '%s' already exists" % name)
         else:

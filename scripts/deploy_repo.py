@@ -15,11 +15,15 @@ from library.models import *
 import utils
 
 def main():
-    if len(sys.argv) != 4:
+    if len(sys.argv) < 3:
         return
     deploy_id = int(sys.argv[1])
     repo_name = sys.argv[2]
-    database = Database.objects.get(name = sys.argv[3])
+    if len(sys.argv) >= 4:
+        database_name = sys.argv[3]
+    else:
+        database_name = 'MySQL'
+    database = Database.objects.get(name = database_name)
 
     repo = Repository.objects.get(name = repo_name)
     print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)

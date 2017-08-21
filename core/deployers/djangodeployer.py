@@ -313,6 +313,15 @@ class DjangoDeployer(BaseDeployer):
     def deploy_repo_attempt(self, deploy_path):
         LOG.info(utils.configure_env(self.base_path))
 
+        if self.repo.setup_scripts != None:
+            code, stdout, stderr = utils.run_command("{} && {}".format(
+                utils.to_env(self.base_path), self.repo.setup_scripts))
+            print 'Code: ', code
+            print 'STDOUT: ', stdout
+            print 'STDERR: ', stderr
+            print '------------------------'
+            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
+        
         manage_files = utils.search_file(deploy_path, 'manage.py')
         if not manage_files:
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES

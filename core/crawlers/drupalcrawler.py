@@ -66,7 +66,7 @@ class DrupalCrawler(BaseCrawler):
         for title in titles:
             name = title.contents[1].contents[0]['href'].split('/')[2]
             try:
-                self.add_repository(name, '')
+                self.add_repository(name)
             except:
                 traceback.print_exc()
             # Sleep for a little bit to prevent us from getting blocked
@@ -100,7 +100,7 @@ class DrupalCrawler(BaseCrawler):
         return data
     # DEF
 
-    def add_repository(self, name, setup_scripts):
+    def add_repository(self, name, setup_scripts = None):
         if Repository.objects.filter(name='drupal/' + name, source=self.crawlerStatus.source).exists():
             LOG.info("Repository '%s' already exists" % name)
         else:

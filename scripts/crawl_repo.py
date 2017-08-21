@@ -32,23 +32,20 @@ def add_module():
         traceback.print_exc()
 
 def add_repository():
-    if len(sys.argv) != 4:
+    if len(sys.argv) != 3:
         return
     repo_name = sys.argv[1]
     repo_type_id = sys.argv[2]
-    repo_setup_scripts = sys.argv[3]
     try:    
-        utils.add_repo(repo_name, repo_type_id, repo_setup_scripts)
+        utils.add_repo(repo_name, repo_type_id, None)
         print 'Successfully added new repository {}'.format(repo_name)
     except:
         print 'Failed to add new repository {}'.format(repo_name)
         traceback.print_exc()
 
 def main():
-    add_module()
-    # add_repository()
-## IF
-
+    # add_module()
+    add_repository()
 
 if __name__ == '__main__':
     main()

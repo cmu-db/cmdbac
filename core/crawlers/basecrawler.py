@@ -19,7 +19,7 @@ class BaseCrawler(object):
         nextResults = self.search()
     ## DEF
 
-    def add_repository(self, name, setup_scripts):
+    def add_repository(self, name, setup_scripts = None):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
     # DEF
 
