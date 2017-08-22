@@ -10,7 +10,7 @@ def home_path(path):
     return os.path.join(HOME_DIR, path)
 
 def configure_env(path):
-    command = 'virtualenv {}'.format(path)
+    command = 'virtualenv --no-site-packages {}'.format(path)
     return run_command(command)
 
 def to_env(path):

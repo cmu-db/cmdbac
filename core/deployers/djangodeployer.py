@@ -314,13 +314,20 @@ class DjangoDeployer(BaseDeployer):
         LOG.info(utils.configure_env(self.base_path))
 
         if self.repo.setup_scripts != None:
-            code, stdout, stderr = utils.run_command("{} && {}".format(
-                utils.to_env(self.base_path), self.repo.setup_scripts))
-            print 'Code: ', code
-            print 'STDOUT: ', stdout
-            print 'STDERR: ', stderr
-            print '------------------------'
-            return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
+            LOG.info("Setup Scripts: {} && {} && {}".format(
+                utils.to_env(self.base_path), 
+                "unset DJANGO_SETTINGS_MODULE",
+                self.repo.setup_scripts))
+            code, stdout, stderr = utils.run_command("{} && {} && {}".format(
+                utils.to_env(self.base_path), 
+                "unset DJANGO_SETTINGS_MODULE",
+                self.repo.setup_scripts))
+
+            LOG.info("Setup Return Code: {}".format(code))
+            LOG.info("Setup Return STDOUT:{}".format(stdout))
+            LOG.info("Setup Return STDERR:{}".format(stderr))
+
+            deploy_path = os.path.join(deploy_path, 'myproject')
         
         manage_files = utils.search_file(deploy_path, 'manage.py')
         if not manage_files:
