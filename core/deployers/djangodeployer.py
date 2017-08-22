@@ -331,6 +331,7 @@ class DjangoDeployer(BaseDeployer):
         
         manage_files = utils.search_file(deploy_path, 'manage.py')
         if not manage_files:
+            LOG.error("Can not find manage.py!")
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
         manage_paths = [os.path.dirname(manage_file) for manage_file in manage_files]
         base_dir = next(name for name in manage_paths if 'lib/python2.7/site-packages/' not in name)
@@ -342,7 +343,12 @@ class DjangoDeployer(BaseDeployer):
             if s:
                 setting_path = s.group(1)
             else:
-                return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
+                setting_paths = utils.search_file(deploy_path, 'settings.py')
+                if len(setting_paths) > 0:
+                    setting_path = setting_paths[0][:-3]
+                else:
+                    LOG.error("Can not find settings.py")
+                    return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
 
         setting_path = setting_path.replace('.', '/')
         if os.path.isdir(os.path.join(manage_path, setting_path)):
@@ -361,7 +367,9 @@ class DjangoDeployer(BaseDeployer):
                 utils.copy_file(candidate_setting_files, setting_path)
                 self.setting_path = setting_path
                 break
+
         if self.setting_path == None:
+            LOG.error("Can not find settings.py!")
             return ATTEMPT_STATUS_MISSING_REQUIRED_FILES
         LOG.info('setting.py path: {}'.format(setting_path))
 
