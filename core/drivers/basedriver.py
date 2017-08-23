@@ -275,11 +275,11 @@ class BaseDriver(object):
             register_result = USER_STATUS_FAIL
         else:
             register_form['queries'], register_form['counter'] = self.process_logs(self.check_log(last_line_no), inputs)
-        
-        if register_form and len(register_form['queries']) > 0:
-            register_result = USER_STATUS_SUCCESS
-        else:
-            register_result = USER_STATUS_FAIL
+            if register_form and len(register_form['queries']) > 0:
+                register_result = USER_STATUS_SUCCESS
+            else:
+                register_result = USER_STATUS_FAIL
+
         if register_result == USER_STATUS_FAIL:
             LOG.info('Fail to register ...')
         else:
@@ -302,11 +302,11 @@ class BaseDriver(object):
                 login_result = USER_STATUS_FAIL
             else:
                 login_form['queries'], login_form['counter'] = self.process_logs(self.check_log(last_line_no), inputs)
-            
-            if login_form and len(login_form['queries']) > 0:
-                login_result = USER_STATUS_SUCCESS
-            else:
-                login_result = USER_STATUS_FAIL
+                if login_form and len(login_form['queries']) > 0:
+                    login_result = USER_STATUS_SUCCESS
+                else:
+                    login_result = USER_STATUS_FAIL
+
             if login_result == USER_STATUS_FAIL:
                 LOG.info('Fail to login ...')
             else:
@@ -321,6 +321,7 @@ class BaseDriver(object):
             except Exception, e:
                 forms = []
                 LOG.exception(e)
+            LOG.info('Forms after logged: {}'.format(forms))
 
         # save browser
         if self.deployer.repo.project_type.id == 1 and self.browser != None: # Django

@@ -46,8 +46,6 @@ def verify_email(deploy_path, form, matched_patterns):
 
 def register(deploy_path, forms):
 	register_form = get_register_form(forms)
-	print 'Forms: {}'.format(forms)
-	print 'Register Form: {}'.format(register_form)
 	if register_form == None:
 		return None, None, None
 	
