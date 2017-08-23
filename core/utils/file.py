@@ -30,6 +30,13 @@ def search_file_norecur(directory_name, file_name):
             return True
     return False
 
+def search_dir(directory_name, query_name):
+    for root, dirs, files in os.walk(directory_name):
+        for _dir in dirs:
+            if query_name in _dir:
+                path = os.path.join(root, _dir)
+                return path
+
 def replace_file_regex(file, string_pattern, string):
     with open(file, "r+") as f:
         s = f.read()
