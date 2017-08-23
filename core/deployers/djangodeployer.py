@@ -187,6 +187,17 @@ class DjangoDeployer(BaseDeployer):
         return utils.run_command(command)
     ## DEF
 
+    def load_fixtures(self, path):
+        LOG.info('Loading fixtures ...')
+        for file in os.listdir(os.path.join(path, 'fixtures')):
+            LOG.info('Loading fixtures: {}'.format(file))
+            command = '{} && {} && unset DJANGO_SETTINGS_MODULE && {}'.format(
+                utils.to_env(self.base_path),
+                utils.cd(path),
+                "python manage.py loaddata {}".format(os.path.join(path, 'fixtures', file)))
+            print utils.run_command(command)
+    ## DEF
+
     def run_server(self, path, port):
         self.configure_network()
         LOG.info('Running server ...')
@@ -208,13 +219,31 @@ class DjangoDeployer(BaseDeployer):
     def try_deploy(self, deploy_path, requirement_files):
         LOG.info('Configuring settings ...')
         self.kill_server()
-        self.clear_database()
         self.configure_settings()
         self.runtime = self.get_runtime()
         LOG.info(self.runtime)
 
         self.attempt.database = self.get_database()
         LOG.info('Database: ' + self.attempt.database.name)
+
+        if self.repo.setup_scripts != None:
+            project_path = utils.search_dir(self.base_path, self.repo.repo_name())
+            LOG.info("Project Path: {}".format(project_path))
+
+            LOG.info("Setup Scripts: {} && {} && {} && {}".format(
+                utils.to_env(self.base_path), 
+                "unset DJANGO_SETTINGS_MODULE",
+                "cd {}".format(project_path),
+                self.repo.setup_scripts))
+            code, stdout, stderr = utils.run_command("{} && {} && {} && {}".format(
+                utils.to_env(self.base_path), 
+                "unset DJANGO_SETTINGS_MODULE",
+                "cd {}".format(project_path),
+                self.repo.setup_scripts))
+
+            LOG.info("Setup Return Code: {}".format(code))
+            LOG.info("Setup Return STDOUT:{}".format(stdout))
+            LOG.info("Setup Return STDERR:{}".format(stderr))
 
         LOG.info('Installing requirements ...')
         self.install_requirements(self.base_path, requirement_files)
@@ -301,6 +330,8 @@ class DjangoDeployer(BaseDeployer):
 
         self.create_superuser(deploy_path)
 
+        self.load_fixtures(deploy_path)
+
         self.run_server(deploy_path, self.port)
 
         time.sleep(5)
@@ -312,6 +343,8 @@ class DjangoDeployer(BaseDeployer):
 
     def deploy_repo_attempt(self, deploy_path):
         LOG.info(utils.configure_env(self.base_path))
+
+        self.clear_database()
 
         if self.repo.setup_scripts != None:
             project_path = utils.search_dir(deploy_path, self.repo.repo_name())
