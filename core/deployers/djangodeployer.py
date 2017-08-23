@@ -195,7 +195,7 @@ class DjangoDeployer(BaseDeployer):
                 utils.to_env(self.base_path),
                 utils.cd(path),
                 "python manage.py loaddata {}".format(os.path.join(path, 'fixtures', file)))
-            print utils.run_command(command)
+            utils.run_command(command)
     ## DEF
 
     def run_server(self, path, port):

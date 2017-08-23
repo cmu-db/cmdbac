@@ -17,6 +17,8 @@ def get_register_form(forms):
 			return form
 		if match_any_pattern(form['url'], register_patterns):
 			return form
+		if match_any_pattern(form.get('id', ''), register_patterns):
+			return form
 	return None
 
 def verify_email(deploy_path, form, matched_patterns):
@@ -44,6 +46,8 @@ def verify_email(deploy_path, form, matched_patterns):
 
 def register(deploy_path, forms):
 	register_form = get_register_form(forms)
+	print 'Forms: {}'.format(forms)
+	print 'Register Form: {}'.format(register_form)
 	if register_form == None:
 		return None, None, None
 	

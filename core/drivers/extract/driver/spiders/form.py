@@ -71,7 +71,10 @@ class FormSpider(CrawlSpider):
                         input_element = self.browser.find_element_by_id(_id)
                         if not input_element.is_displayed():
                             continue
-                name = ip.xpath('@name').extract()[0]
+                try:
+                    name = ip.xpath('@name').extract()[0]
+                except:
+                    name = ''
                 try:
                     _type = ip.xpath('@type').extract()[0]
                 except:
