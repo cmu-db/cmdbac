@@ -33,7 +33,7 @@ LOG.setLevel(logging.INFO)
 ## GITHUB CONFIGURATION
 ## =====================================================================
 
-BASE_URL = "https://github.com/search?utf8=%E2%9C%93&q=${query}+" + \
+BASE_URL = "https://api.github.com/search/code?utf8=%E2%9C%93&q=${query}+" + \
            "filename%3A${filename}+" + \
            "size%3A${size}&" + \
            "type=Code&ref=searchresults"
@@ -52,14 +52,9 @@ class GitHubCrawler(BaseCrawler):
 
         self.template = Template(BASE_URL)
     ## DEF
-    
+
     def next_url(self):
-        # Check whether there is a next url that we need to load
-        # from where we left off from our last run\
-        if not self.crawlerStatus.next_url is None and not self.crawlerStatus.next_url == '':
-            return self.crawlerStatus.next_url
-        
-        # Otherwise, compute what the next page we want to load
+        # compute what the next page we want to load
         args = {
             "query": urllib.urlencode({
                 'q': self.crawlerStatus.query})[2:] if self.crawlerStatus.query != '' else '',
@@ -79,17 +74,19 @@ class GitHubCrawler(BaseCrawler):
 
     def github_query(self, url):
         return utils.query(url, auth = self.auth)
-    
+
     def search(self):
         # Load and parse!
         response = self.github_query(self.next_url())
-        soup = BeautifulSoup(response.text)
-        titles = soup.find_all(class_='title')
-        LOG.info("Found %d repositories" % len(titles))
-        
+        response_json = json.loads(response.text)
+
+        total_count = response_json["total_count"]
+        LOG.info("Found %d repositories" % total_count)
+
         # Pick through the results and find repos
-        for title in titles:
-            name = title.contents[1].string
+        repositories = map(lambda item: item['repository'], response_json['items'])
+        for repo in repositories:
+            name = repo['full_name']
             try:
                 self.add_repository(name)
             except Exception, e:
@@ -98,18 +95,10 @@ class GitHubCrawler(BaseCrawler):
             time.sleep(API_GITHUB_SLEEP)
         ## FOR
 
-        # Figure out what is the next page that we need to load
-        next_page = soup.find(class_='next_page')
-        if not next_page or not next_page.has_attr('href'):
-            LOG.info("No next page link found!")
-            self.crawlerStatus.next_url = None
-        else:
-            self.crawlerStatus.next_url = GITHUB_HOST + next_page['href']
-            
         # Make sure we update our crawler status
         LOG.info("Updating status for %s" % self.crawlerStatus)
         self.crawlerStatus.save()
-            
+
         return
     ## DEF
 
@@ -124,7 +113,7 @@ class GitHubCrawler(BaseCrawler):
         response = self.github_query(urlparse.urljoin(GITHUB_HOST, name))
         soup = BeautifulSoup(response.text)
         numbers = soup.find_all(class_='num text-emphasized')
-        
+
         # The fields that we want to extract integers
         # The order matters here
         fields = [
@@ -153,7 +142,7 @@ class GitHubCrawler(BaseCrawler):
 
             LOG.info("Found new repository '%s'" % name)
             webpage_data = self.get_webpage_data(name)
-            
+
             def none2empty(string):
                 if string:
                     return string
@@ -200,7 +189,7 @@ class GitHubCrawler(BaseCrawler):
         url = GITHUB_API_COMMITS_URL.substitute(name=repo_name)
         response = self.github_query(url)
         data = response.json()
-        time.sleep(1) 
+        time.sleep(1)
         return data[0]['sha']
     # DEF
 
@@ -213,7 +202,7 @@ class GitHubCrawler(BaseCrawler):
         url = GITHUB_DOWNLOAD_URL_TEMPLATE.substitute(name=repo_name, sha=sha)
         response = self.github_query(url)
         zip_file = open(zip_name, 'wb')
-        for chunk in response.iter_content(chunk_size=1024): 
+        for chunk in response.iter_content(chunk_size=1024):
             if chunk:
                 zip_file.write(chunk)
                 zip_file.flush()
