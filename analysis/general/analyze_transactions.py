@@ -27,13 +27,13 @@ def action_stats(directory = '.'):
         project_type_name = repo.project_type.name
         if project_type_name not in stats['action_query_count']:
             stats['action_query_count'][project_type_name] = []
-        
+
         for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
             query_count = len(Query.objects.filter(action = action))
             if query_count > 0:
                 stats['action_query_count'][project_type_name].append(query_count)
 
-            
+
     dump_all_stats(directory, stats)
 
 def transaction_stats(directory = '.'):
@@ -54,7 +54,7 @@ def transaction_stats(directory = '.'):
             stats['transaction_read_count'][project_type_name] = []
         if project_type_name not in stats['transaction_write_count']:
             stats['transaction_write_count'][project_type_name] = []
-        
+
 
         for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
             transaction = ''
@@ -70,7 +70,7 @@ def transaction_stats(directory = '.'):
                     query_count += 1
                     if 'COMMIT' in query.content.upper():
                         transaction = transaction.strip('\n')
-                    
+
                         # for each transaction, count the number of transactions
                         transaction_count += 1
 
@@ -81,7 +81,7 @@ def transaction_stats(directory = '.'):
                         for keyword in ['INSERT', 'DELETE', 'UPDATE']:
                             write_count += len(re.findall(keyword, transaction.upper()))
                         stats['transaction_write_count'][project_type_name].append(write_count)
-                        
+
                         # for each transaction, count the queries
                         query_count -= 2
                         stats['transaction_query_count'][project_type_name].append(query_count)
@@ -104,9 +104,9 @@ def main():
     # active
     action_stats(TRANSACTION_DIRECTORY)
     transaction_stats(TRANSACTION_DIRECTORY)
-    
+
     # working
-    
+
     # deprecated
 if __name__ == '__main__':
     main()

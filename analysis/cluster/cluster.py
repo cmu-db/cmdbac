@@ -55,7 +55,7 @@ def get_repo_feature_names():
     feature_names.append('# of write actions')
     feature_names.append('# of table access(average by action)')
     feature_names.append('# of table access(average by query)')
-    
+
     return feature_names
 
 REPO_FEATURE_NAMES = get_repo_feature_names()
@@ -118,11 +118,11 @@ def prepare_repo_data():
         repo_data.append(get_counter('num_foreignkeys'))
         repo_data.append(get_counter('num_secondary_indexes'))
         repo_data.append(get_counter('num_columns'))
-        
+
         repo_data.append(get_counter('table_coverage'))
         repo_data.append(get_counter('column_coverage'))
         repo_data.append(get_counter('index_coverage'))
-        
+
         # action information
         actions = Action.objects.filter(attempt = repo.latest_successful_attempt)
         actions_count = len(actions)
@@ -139,7 +139,7 @@ def prepare_repo_data():
                 query_total_count += counter.count
 
         if query_total_count == 0:
-            continue       
+            continue
 
         repo_data.append(query_total_count)
         query_total_count = max(query_total_count, 1)
@@ -157,7 +157,7 @@ def prepare_repo_data():
         repo_data.append(get_counter('num_write_actions'))
         repo_data.append(get_counter('table_access_count_action'))
         repo_data.append(float(get_counter('table_access_count_query')) / 100)
-        
+
         assert(len(repo_data) == len(REPO_FEATURE_NAMES))
 
         print ' '.join(map(str, repo_data))
@@ -169,7 +169,7 @@ def prepare_transaction_data():
     for repo in Repository.objects.exclude(latest_successful_attempt = None):
         for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
             transaction = []
-            
+
             for query in Query.objects.filter(action = action):
                 if 'BEGIN' in query.content.upper() or 'START TRANSACTION' in query.content.upper() or 'SET AUTOCOMMIT=0' in query.content.upper():
                     transaction = [query.content.strip('\n')]
@@ -211,7 +211,7 @@ def prepare_transaction_data():
                         for feature_name in TRANSACTION_FEATURE_NAMES:
                             if 'after' in feature_name:
                                 transaction_data.append(pattern_counters.get(feature_name, 0))
-                    
+
 
                         write_count = 0
                         for keyword in ['INSERT', 'DELETE', 'UPDATE']:
@@ -232,7 +232,7 @@ def prepare_transaction_data():
                         if write_count == 0:
                             transaction_data.append(1)
                         else:
-                            transaction_data.append(0)    
+                            transaction_data.append(0)
 
                         join_count = len(re.findall('JOIN', ' '.join(transaction).upper()))
                         transaction_data.append(join_count)
@@ -260,7 +260,7 @@ def prepare_transaction_data():
                                 regex = '(\(.*?\))[,\]]'
                             elif repo.latest_successful_attempt.database.name == 'MySQL':
                                 regex = '(\(.*?\))[,\)]'
-                            
+
                             merge_map = {}
                             key_column_usage_information = key_column_usage_informations[0]
                             for column in re.findall(regex, key_column_usage_information.description):
@@ -268,7 +268,7 @@ def prepare_transaction_data():
                                 constraint_name = str(cells[2]).replace("'", "").strip()
                                 table_name = str(cells[5]).replace("'", "").strip()
                                 column_name = str(cells[6]).replace("'", "").strip()
-                                merge_map_key = table_name + '.' + constraint_name 
+                                merge_map_key = table_name + '.' + constraint_name
                                 if merge_map_key in merge_map:
                                     merge_map[merge_map_key].append(column_name)
                                 else:
@@ -339,7 +339,7 @@ def read_repo_data():
         assert(len(repo_data) + 1 == len(REPO_FEATURE_NAMES))
 
         line = sys.stdin.readline()
-    
+
     return repo_names, all_data
 
 def read_transaction_data():
@@ -351,7 +351,7 @@ def read_transaction_data():
         transaction_data = map(float, line.split()[1:])
         all_data.append(transaction_data)
         transaction_names.append(line.split()[0])
-    
+
         assert(len(transaction_data) + 1 == len(TRANSACTION_FEATURE_NAMES))
 
         line = sys.stdin.readline()
@@ -360,7 +360,7 @@ def read_transaction_data():
 
 # Reference: https://github.com/dvanaken/ottertune/blob/master/analysis/preprocessing.py
 class Bin(object):
-    
+
     def __init__(self, bin_start, axis=None):
         if axis is not None and \
                 axis != 1 and axis != 0:
@@ -369,7 +369,7 @@ class Bin(object):
         self.deciles_ = None
         self.bin_start_ = bin_start
         self.axis_ = axis
-    
+
     def fit(self, matrix):
         if self.axis_ is None:
             self.deciles_ = get_deciles(matrix, self.axis_)
@@ -406,10 +406,10 @@ class Bin(object):
 def get_deciles(matrix, axis=None):
     if axis is not None:
         raise NotImplementedError("Axis is not yet implemented")
-    
+
     assert matrix.ndim > 0
     assert matrix.size > 0
-    
+
     decile_range = np.arange(10,101,10)
     deciles = np.percentile(matrix, decile_range, axis=axis)
     deciles[-1] = np.Inf
@@ -418,17 +418,17 @@ def get_deciles(matrix, axis=None):
 def bin_by_decile(matrix, deciles, bin_start, axis=None):
     if axis is not None:
         raise NotImplementedError("Axis is not yet implemented")
-    
+
     assert matrix.ndim > 0
     assert matrix.size > 0
     assert deciles is not None
     assert len(deciles) == 10
-    
+
     binned_matrix = np.zeros_like(matrix)
     for i in range(10)[::-1]:
         decile = deciles[i]
         binned_matrix[matrix <= decile] = i + bin_start
-    
+
     return binned_matrix
 
 def kmeans(repo, data):
@@ -466,20 +466,20 @@ def kmeans(repo, data):
                 mean_centroids[label] = data[i]
             for index, value in enumerate(data[i]):
                 mean_centroids[label][index] += value
-            
+
         for label in xrange(k):
             new_label = labels_map[label]
             print 'Cluster: {}'.format(new_label)
             # print zip(REPO_FEATURE_NAMES[1:], map(lambda x: round(x, 2), kmeans.cluster_centers_[label]))
             print zip(TRANSACTION_FEATURE_NAMES[1:], map(lambda x: round(x, 2), kmeans.cluster_centers_[label]))
-            
-            
+
+
             # output.write(str(label) + ',' + ','.join(map(lambda x: str(round(x, 2)), kmeans.cluster_centers_[label])) + '\n')
             # points[label] = sorted(points[label])
 
             mean_centroids[new_label] = map(lambda x: x / labels_cnt[new_label], mean_centroids[new_label])
             output.write(str(new_label) + ',' + ','.join(map(lambda x: str(round(x, 2)), mean_centroids[new_label])) + '\n')
-            
+
             if 0:
                 for i in xrange(min(len(points[label]), SAMPLE)):
                     print 'Sample: {}'.format(i)
@@ -498,7 +498,7 @@ def kmeans(repo, data):
 
 def kmeans_pca(data):
     import seaborn as sns
-    
+
     n = len(data)
     bin_ = Bin(0, 0)
     # processed_data = scale(data)
@@ -506,7 +506,7 @@ def kmeans_pca(data):
     bin_.fit(data)
     processed_data = bin_.transform(data)
     pca = PCA(n_components=5).fit(processed_data)
-    reduced_data = pca.transform(processed_data)[:, :2]    
+    reduced_data = pca.transform(processed_data)[:, :2]
 
     for k in GOOD_K_RANGE:
         kmeans = KMeans(init='k-means++', n_clusters=k)
@@ -517,7 +517,7 @@ def kmeans_pca(data):
 
         x_min, x_max = reduced_data[:, 0].min() - 1, reduced_data[:, 0].max() + 1
         y_min, y_max = reduced_data[:, 1].min() - 1, reduced_data[:, 1].max() + 1
-        
+
         colors = sns.color_palette("muted")
         for k, col in zip(range(k), colors):
             my_members = kmeans.labels_ == k
@@ -538,7 +538,7 @@ def kmeans_pca(data):
         plt.ylim(y_min, y_max)
         plt.xticks(())
         plt.yticks(())
-        
+
         labels_map = {}
         for i, x in enumerate(kmeans.cluster_centers_[:, 0].argsort()):
             labels_map[x] = string.uppercase[i]
@@ -550,7 +550,7 @@ def kmeans_pca(data):
         for label, count in labels_cnt.iteritems():
             labels_percentage[label] = float(count) * 100 / sum(labels_cnt.values())
         print labels_percentage
-        
+
         fig.savefig('kmeans-pca-{}.pdf'.format(k))
 
 def plot_point_cov(points, nstd=2, ax=None, **kwargs):
@@ -562,7 +562,7 @@ def plot_point_cov(points, nstd=2, ax=None, **kwargs):
         points : An Nx2 array of the data points.
         nstd : The radius of the ellipse in numbers of standard deviations.
             Defaults to 2 standard deviations.
-        ax : The axis that the ellipse will be plotted on. Defaults to the 
+        ax : The axis that the ellipse will be plotted on. Defaults to the
             current axis.
         Additional keyword arguments are pass on to the ellipse patch.
     Returns
@@ -576,7 +576,7 @@ def plot_point_cov(points, nstd=2, ax=None, **kwargs):
 def plot_cov_ellipse(cov, pos, nstd=2, ax=None, **kwargs):
     """
     Plots an `nstd` sigma error ellipse based on the specified covariance
-    matrix (`cov`). Additional keyword arguments are passed on to the 
+    matrix (`cov`). Additional keyword arguments are passed on to the
     ellipse patch artist.
     Parameters
     ----------
@@ -585,7 +585,7 @@ def plot_cov_ellipse(cov, pos, nstd=2, ax=None, **kwargs):
             sequence of [x0, y0].
         nstd : The radius of the ellipse in numbers of standard deviations.
             Defaults to 2 standard deviations.
-        ax : The axis that the ellipse will be plotted on. Defaults to the 
+        ax : The axis that the ellipse will be plotted on. Defaults to the
             current axis.
         Additional keyword arguments are pass on to the ellipse patch.
     Returns
@@ -612,7 +612,7 @@ def plot_cov_ellipse(cov, pos, nstd=2, ax=None, **kwargs):
 
 def kmeans_pca_ellipse(data):
     import seaborn as sns
-    
+
     n = len(data)
     bin_ = Bin(0, 0)
     # processed_data = scale(data)
@@ -620,7 +620,7 @@ def kmeans_pca_ellipse(data):
     bin_.fit(data)
     processed_data = bin_.transform(data)
     pca = PCA(n_components=5).fit(processed_data)
-    reduced_data = pca.transform(processed_data)[:, :2]    
+    reduced_data = pca.transform(processed_data)[:, :2]
 
     for k in GOOD_K_RANGE:
         kmeans = KMeans(init='k-means++', n_clusters=k)
@@ -631,7 +631,7 @@ def kmeans_pca_ellipse(data):
 
         x_min, x_max = reduced_data[:, 0].min() - 1, reduced_data[:, 0].max() + 1
         y_min, y_max = reduced_data[:, 1].min() - 1, reduced_data[:, 1].max() + 1
-        
+
         colors = sns.color_palette("muted")
         for i, col in zip(range(k), colors):
             my_members = kmeans.labels_ == i
@@ -649,7 +649,7 @@ def kmeans_pca_ellipse(data):
         plt.ylim(y_min, y_max)
         plt.xticks(())
         plt.yticks(())
-        
+
         labels_map = {}
         for i, x in enumerate(kmeans.cluster_centers_[:, 0].argsort()):
             labels_map[x] = string.uppercase[i]
@@ -661,7 +661,7 @@ def kmeans_pca_ellipse(data):
         for label, count in labels_cnt.iteritems():
             labels_percentage[label] = float(count) * 100 / sum(labels_cnt.values())
         print labels_percentage
-        
+
         fig.savefig('kmeans-pca.pdf')
 
 def pca_dbscan(category, data):
@@ -724,7 +724,7 @@ def pca_dbscan(category, data):
                 if k == -1:
                     # Black used for noise.
                     col = 'k'
-                
+
                 class_member_mask = (labels == k)
 
                 xy = reduced_data[class_member_mask & core_samples_mask]
@@ -737,7 +737,7 @@ def pca_dbscan(category, data):
                     plt.annotate(label, xy = (xy[0, 0], xy[0, 1]), xytext = (0, 0),
                         textcoords = 'offset points', ha = 'right', va = 'bottom',
                         bbox = dict(boxstyle = 'round,pad=0.5', fc = 'yellow', alpha = 0.5))
-                
+
                 xy = reduced_data[class_member_mask & ~core_samples_mask]
                 plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=col,
                          markeredgecolor='k', markersize=4)
@@ -764,7 +764,7 @@ def kmeans_elbow(data):
     bin_.fit(data)
     processed_data = bin_.transform(data)
     # processed_data = scale(data)
-    
+
     inertias = []
     for k in K_RANGE:
         kmeans = KMeans(init='k-means++', n_clusters=k)
@@ -775,7 +775,7 @@ def kmeans_elbow(data):
     plt.scatter(K_RANGE, inertias)
     plt.plot(K_RANGE, inertias)
     fig.savefig('kmeans-elbow.png')
-        
+
 def main():
     if len(sys.argv) > 1:
         command = sys.argv[1]

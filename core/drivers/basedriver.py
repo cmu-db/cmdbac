@@ -28,7 +28,7 @@ EDIT_DISTANCE_THRESHOLD = 3
 ## BASE DRIVER
 ## =====================================================================
 class BaseDriver(object):
-    
+
     def __init__(self, deployer):
         self.deployer = deployer
         if deployer.log_file != None:
@@ -238,7 +238,7 @@ class BaseDriver(object):
             if len(form['queries']) == 0:
                 ret_forms.append(form)
                 continue
-                
+
             LOG.info('Admin: Fill in Form on {} Successfully ...'.format(form['url']))
             ret_forms.append(form)
             for i in range(SUBMISSION_FORMS_TIMES):
@@ -353,7 +353,7 @@ class BaseDriver(object):
                 continue
 
             self.forms.append((form, browser_index))
-    
+
         return {'register': register_result, 'login': login_result, 'forms': ret_forms}
 
     def get_urls(self):
@@ -460,8 +460,8 @@ class BaseDriver(object):
 
             LOG.info('Normal: Query the Url on {} Successfully ...'.format(url['url']))
             ret_urls.append(url)
-        
-        return ret_urls        
+
+        return ret_urls
 
     def drive(self):
         LOG.info('Driving Repository: {} ...'.format(self.deployer.repo.name))
@@ -471,7 +471,7 @@ class BaseDriver(object):
 
         # bootstrap
         admin_forms = self.bootstrap()
-        
+
         # initialize
         driver_results = self.initialize()
 

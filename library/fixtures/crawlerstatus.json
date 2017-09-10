@@ -1,11 +1,11 @@
 [
 {
-  "pk": 1, 
-  "model": "library.crawlerstatus", 
+  "pk": 1,
+  "model": "library.crawlerstatus",
   "fields": {
-    "last_crawler_time": "2015-01-16T15:59:45", 
-    "source": 1, 
-    "project_type": 1, 
+    "last_crawler_time": "2015-01-16T15:59:45",
+    "source": 1,
+    "project_type": 1,
     "next_url": "",
     "min_size": 100,
     "cur_size": 100,
@@ -14,43 +14,43 @@
   }
 },
 {
-  "pk": 2, 
-  "model": "library.crawlerstatus", 
+  "pk": 2,
+  "model": "library.crawlerstatus",
   "fields": {
-    "last_crawler_time": "2015-01-16T15:58:19", 
-    "source": 1, 
-    "project_type": 2, 
+    "last_crawler_time": "2015-01-16T15:58:19",
+    "source": 1,
+    "project_type": 2,
     "next_url": "",
     "min_size": 100,
-    "cur_size": 100, 
+    "cur_size": 100,
     "max_size": 10000,
     "query": ""
   }
 },
 {
-  "pk": 3, 
-  "model": "library.crawlerstatus", 
+  "pk": 3,
+  "model": "library.crawlerstatus",
   "fields": {
-    "last_crawler_time": "2015-01-16T15:58:19", 
-    "source": 1, 
-    "project_type": 3, 
+    "last_crawler_time": "2015-01-16T15:58:19",
+    "source": 1,
+    "project_type": 3,
     "next_url": "",
     "min_size": 100,
-    "cur_size": 100, 
+    "cur_size": 100,
     "max_size": 10000,
     "query": "mysql"
   }
 },
 {
-  "pk": 4, 
-  "model": "library.crawlerstatus", 
+  "pk": 4,
+  "model": "library.crawlerstatus",
   "fields": {
-    "last_crawler_time": "2015-01-16T15:58:19", 
-    "source": 2, 
-    "project_type": 4, 
+    "last_crawler_time": "2015-01-16T15:58:19",
+    "source": 2,
+    "project_type": 4,
     "next_url": "",
     "min_size": 100,
-    "cur_size": 100, 
+    "cur_size": 100,
     "max_size": 10000,
     "query": "DRUPAL_ROOT"
   }
@@ -59,12 +59,12 @@
   "pk": 5,
   "model": "library.crawlerstatus",
   "fields": {
-    "last_crawler_time": "2015-01-16T15:58:19", 
-    "source": 1, 
-    "project_type": 5, 
+    "last_crawler_time": "2015-01-16T15:58:19",
+    "source": 1,
+    "project_type": 5,
     "next_url": "",
     "min_size": 100,
-    "cur_size": 100, 
+    "cur_size": 100,
     "max_size": 10000,
     "query": "grails"
   }

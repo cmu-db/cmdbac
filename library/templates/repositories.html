@@ -28,8 +28,8 @@
 
 <div class="row row-offcanvas row-offcanvas-right active">
 
-    <div class="col-sm-3 sidebar-offcanvas"> 
-    
+    <div class="col-sm-3 sidebar-offcanvas">
+
         <div class="list-group list-group-snippet repository-search">
 
             <form action="{% url 'repositories' %}" method="get" class="form-horizontal">
@@ -155,9 +155,9 @@
                     {% for repository in repositories %}
                     <tr>
                         <td><a id="{{ repository.name}}" href="{% url 'repository' repository.user_name repository.repo_name %}?{{ queries.urlencode }}" title="{{repository.information}}">{{repository.name}}</a></td>
-                        
+
                         <td><a href="{{ repository.repo_url }}"><img src="{% static repository.source.logo %}" alt="{{ repository.source.name }}" title="View on {{ repository.source.name }}" class="source-logo" /></a></td>
-                        
+
                         <td><img src="{% static repository.project_type.logo %}" alt="{{ repository.project_type.name }}" title="{{ repository.project_type.name }}" class="projecttype-logo" /></td>
 
                         <td>
@@ -190,7 +190,7 @@
                             0
                         {% endif %}
                         </td>
-                        
+
                         <td>{{repository.updated_date|date:'Y-m-d' }}</td>
                     </tr>
                     {% endfor %}

@@ -21,7 +21,7 @@ def deploy_all_repos():
     deploy_id = int(sys.argv[2])
     total_deployer = int(sys.argv[3])
     database = Database.objects.get(name=sys.argv[4])
-    
+
     for repo in Repository.objects.filter(project_type = project_type).filter(latest_attempt = None):
     # for repo in Repository.objects.filter(project_type = project_type).exclude(Q(latest_attempt__result = 'DE') | Q(latest_attempt__result = 'OK')):
     # for repo in Repository.objects.filter(project_type = 1).filter(latest_attempt__result = 'OK').filter(latest_attempt__log__contains = "[Errno 13] Permission denied: '/var/log/mysql/mysql.log'"):
@@ -42,7 +42,7 @@ def deploy_valid_repos():
     deploy_id = int(sys.argv[2])
     total_deployer = int(sys.argv[3])
     database = Database.objects.get(name=sys.argv[4])
-    
+
     for repo in Repository.objects.filter(project_type = project_type):
     # for repo in Repository.objects.filter(project_type = project_type).exclude(Q(latest_attempt__result = 'DE') | Q(latest_attempt__result = 'OK')):
     # for repo in Repository.objects.filter(project_type = 1).filter(latest_attempt__result = 'OK').filter(latest_attempt__log__contains = "[Errno 13] Permission denied: '/var/log/mysql/mysql.log'"):
@@ -94,7 +94,7 @@ def deploy_failed_ruby_repos():
     deploy_id = int(sys.argv[1])
     total_deployer = int(sys.argv[2])
     database = Database.objects.get(name=sys.argv[3])
-    
+
     for repo in Repository.objects.filter(project_type = project_type):
         if repo.id % total_deployer != deploy_id - 1:
             continue
@@ -113,7 +113,7 @@ def need_to_be_deployed(repo):
     actions = Action.objects.filter(attempt = repo.latest_successful_attempt)
     if len(actions) == 0:
         return False
-        
+
     for action in actions:
         for query in Query.objects.filter(action = action):
             if len(QueryMetric.objects.filter(query = query)) > 0:
@@ -128,7 +128,7 @@ def deploy_successful_repos():
     deploy_id = int(sys.argv[2])
     total_deployer = int(sys.argv[3])
     database = Database.objects.get(name=sys.argv[4])
-    
+
     for repo in Repository.objects.filter(project_type = project_type).exclude(latest_successful_attempt = None):
     # for repo in Repository.objects.filter(project_type = project_type).exclude(Q(latest_attempt__result = 'DE') | Q(latest_attempt__result = 'OK')):
     # for repo in Repository.objects.filter(project_type = 1).filter(latest_attempt__result = 'OK').filter(latest_attempt__log__contains = "[Errno 13] Permission denied: '/var/log/mysql/mysql.log'"):
@@ -137,7 +137,7 @@ def deploy_successful_repos():
 
         if not need_to_be_deployed(repo):
             continue
-            
+
         print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
         try:
             utils.vagrant_deploy(repo, deploy_id, database)

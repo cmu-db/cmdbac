@@ -32,7 +32,7 @@ def query_stats(directory = '.'):
         project_type_name = repo.project_type.name
         if project_type_name not in stats['query_type']:
             stats['query_type'][project_type_name] = {}
-                
+
         for action in actions:
             for query in Query.objects.filter(action = action):
                 for query_type in ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'OTHER']:
@@ -110,7 +110,7 @@ def coverage_stats(directory = '.'):
                 column_count = min(column_count, len(re.findall('(\(.*?\))[,\]]', information.description)))
             elif repo.latest_successful_attempt.database.name == 'MySQL':
                 column_count = min(column_count, len(re.findall('(\(.*?\))[,\)]', information.description)))
-        
+
             if column_count > 0:
                 covered_columns = set()
                 for action in actions:
@@ -138,7 +138,7 @@ def coverage_stats(directory = '.'):
                 continue
             if statistics[0].count > 0:
                 index_count = min(index_count, statistics[0].count)
-            
+
             if index_count > 0:
                 covered_indexes = set()
                 for action in actions:
@@ -147,7 +147,7 @@ def coverage_stats(directory = '.'):
                             for raw_index in re.findall('Index.*?Scan.*?on \S+', explain.output):
                                 index = raw_index.split()[-1]
                                 covered_indexes.add(index)
-                   
+
                 index_percentage = int(float(len(covered_indexes) * 100) / index_count)
                 index_percentage = min(index_percentage, 100)
 
@@ -192,7 +192,7 @@ def sort_stats(directory = '.'):
                     for sort_key in re.findall('Sort Key: .*', explain.output):
                         sort_key_count = len(re.findall(',', sort_key)) + 1
                         stats['sort_key_count'][project_type_name].append(sort_key_count)
-                        
+
                         sort_keys = map(lambda key: str(key).strip(), sort_key[10:].split(','))
                         for key in sort_keys:
                             if key in column_map:
@@ -210,7 +210,7 @@ def scan_stats(directory = '.'):
 
         project_type_name = repo.project_type.name
         if project_type_name not in stats['scan_type']:
-            stats['scan_type'][project_type_name] = {}  
+            stats['scan_type'][project_type_name] = {}
 
         for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
             for query in Query.objects.filter(action = action):
@@ -347,7 +347,7 @@ def join_stats(directory = '.'):
                 regex = '(\(.*?\))[,\]]'
             elif repo.latest_successful_attempt.database.name == 'MySQL':
                 regex = '(\(.*?\))[,\)]'
-            
+
             merge_map = {}
             key_column_usage_information = key_column_usage_informations[0]
             for column in re.findall(regex, key_column_usage_information.description):
@@ -355,7 +355,7 @@ def join_stats(directory = '.'):
                 constraint_name = str(cells[2]).replace("'", "").strip()
                 table_name = str(cells[5]).replace("'", "").strip()
                 column_name = str(cells[6]).replace("'", "").strip()
-                merge_map_key = table_name + '.' + constraint_name 
+                merge_map_key = table_name + '.' + constraint_name
                 if merge_map_key in merge_map:
                     merge_map[merge_map_key].append(column_name)
                 else:
@@ -397,14 +397,14 @@ def join_stats(directory = '.'):
                                     right_type = column_map[right_key]
                                     if left_type > right_type:
                                         left_type, right_type = right_type, left_type
-                                    stats['join_key_type'][project_type_name][left_type + '-' + right_type] = stats['join_key_type'][project_type_name].get(left_type + '-' + right_type, 0) + 1    
+                                    stats['join_key_type'][project_type_name][left_type + '-' + right_type] = stats['join_key_type'][project_type_name].get(left_type + '-' + right_type, 0) + 1
                                 if left_key in constraint_map and right_key in constraint_map:
                                     left_constraint = constraint_map[left_key]
                                     right_constraint = constraint_map[right_key]
                                     if left_constraint > right_constraint:
                                         left_constraint, right_constraint = right_constraint, left_constraint
                                     stats['join_key_constraint'][project_type_name][left_constraint + '-' + right_constraint] = stats['join_key_constraint'][project_type_name].get(left_constraint + '-' + right_constraint, 0) + 1
-                            
+
                             for _token in token.tokens:
                                 process_join_key(_token)
 
@@ -430,7 +430,7 @@ def repetitive(directory = '.'):
             continue
 
         project_type_name = repo.project_type.name
-        
+
         for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
             queries = map(lambda x: x.content.strip(), Query.objects.filter(action = action))
             for i in xrange(1, len(queries)):
@@ -460,7 +460,7 @@ def main():
     repetitive()
 
     # working
-    
+
     # deprecated
 
 if __name__ == '__main__':

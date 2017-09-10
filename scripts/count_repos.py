@@ -55,7 +55,7 @@ def count_ruby_repetive_queries():
         repo_count[1] += 1
 
     print repo_count
-    print action_count  
+    print action_count
 
 def count_wrong_marked_repos():
     repo_count = 0
@@ -74,7 +74,7 @@ def count_wrong_marked_repos():
 def main():
     # count_deployed_repos()
     # count_ruby_failed_repos()
-    # count_ruby_repetive_queries()  
+    # count_ruby_repetive_queries()
     count_wrong_marked_repos()
 
 if __name__ == '__main__':

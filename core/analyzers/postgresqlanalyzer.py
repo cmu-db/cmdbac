@@ -15,7 +15,7 @@ LOG = logging.getLogger()
 ## POSTGRESQL ANALYZER
 ## =====================================================================
 class PostgreSQLAnalyzer(BaseAnalyzer):
-    
+
     def __init__(self, deployer):
         BaseAnalyzer.__init__(self, deployer)
 
@@ -26,7 +26,7 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
             conn = self.deployer.get_database_connection()
             conn.set_isolation_level(0)
             cur = conn.cursor()
-            
+
             for query in queries:
                 try:
                     if self.is_valid_for_explain(query['raw']):
@@ -53,7 +53,7 @@ class PostgreSQLAnalyzer(BaseAnalyzer):
             conn = self.deployer.get_database_connection()
             cur = conn.cursor()
             database = self.deployer.get_database_name()
-            
+
             # the number of tables
             cur.execute("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';")
             self.database_stats['num_tables'] = int(cur.fetchone()[0])

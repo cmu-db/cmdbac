@@ -33,7 +33,7 @@ def repository_stats():
                         transaction += query.content + '\n'
                         if 'COMMIT' in query.content.upper():
                             transaction = transaction.strip('\n')
-                        
+
                             # for each transaction, count the number of transactions
                             transaction_count += 1
 
@@ -44,17 +44,17 @@ def repository_stats():
         print project_type_name
 
         for commits_count, transaction_count, repo in sorted(stats[project_type_name], reverse = True):
-            print repo.name, 'txns:{}'.format(transaction_count), 'commits:{}'.format(commits_count), 
+            print repo.name, 'txns:{}'.format(transaction_count), 'commits:{}'.format(commits_count),
             print 'http://cmdbac.cs.cmu.edu/attempt/' + str(repo.latest_successful_attempt.id)
 
         print '------------------------------'
-        
+
 def main():
     # active
     repository_stats()
-    
+
     # working
-    
+
     # deprecated
 if __name__ == '__main__':
     main()

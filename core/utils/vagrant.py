@@ -77,7 +77,7 @@ def vagrant_benchmark(attempt_info, database, benchmark, deploy_id = 1):
                 'vagrant ssh -c "{}"'.format(
                     'python /vagrant/core/scripts/vagrant_benchmark.py --attempt_info="{attempt_info}" --deploy_id={deploy_id} {database} {benchmark}'
                     .format(attempt_info=os.path.join('/vagrant', 'attempt_info.json'), deploy_id=deploy_id,
-                            database=' '.join('--{}={}'.format(key, value) for key, value in database.iteritems()), 
+                            database=' '.join('--{}={}'.format(key, value) for key, value in database.iteritems()),
                             benchmark=' '.join('--{}={}'.format(key, value) for key, value in benchmark.iteritems())
                     )
                 )

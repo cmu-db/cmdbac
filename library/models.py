@@ -87,7 +87,7 @@ class ProjectType(models.Model):
     deployer_class = models.CharField(max_length=16)
     default_port = models.PositiveSmallIntegerField(null=False)
     logo = models.CharField(max_length=100)
-    
+
     def __unicode__(self):
         return self.name
 ## CLASS
@@ -99,7 +99,7 @@ class RepositorySource(models.Model):
     crawler_class = models.CharField(max_length=16)
     search_token = models.CharField(max_length=128, null=True)
     logo = models.CharField(max_length=100)
-    
+
     def get_url(self, repo_name):
         from string import Template
         t = Template(self.base_url)
@@ -108,7 +108,7 @@ class RepositorySource(models.Model):
         }
         return t.substitute(args)
     ## DEF
-    
+
     def get_commit_url(self, repo_name, commit):
         from string import Template
         t = Template(self.commit_url)
@@ -119,7 +119,7 @@ class RepositorySource(models.Model):
         }
         return t.substitute(args)
     ## DEF
-    
+
     def __unicode__(self):
         return self.name
 ## CLASS
@@ -133,11 +133,11 @@ class CrawlerStatus(models.Model):
     next_url = models.URLField(null=True)
     query = models.CharField(max_length=128, null=True)
     last_crawler_time = models.DateTimeField(auto_now=True)
-    
+
     class Meta:
         unique_together = ('source', 'project_type')
         verbose_name_plural = "crawlers"
-        
+
     def __unicode__(self):
         return "Crawler::%s::%s" % (self.source.name, self.project_type.name)
 ## CLASS
@@ -203,7 +203,7 @@ class Repository(models.Model):
         statistics = {}
         for statistic in Statistic.objects.filter(attempt=self.latest_successful_attempt):
             statistics[statistic.description] = max(statistic.count, statistics.get(statistic.description, 0))
-        
+
         information = ''
         for description, count in statistics.iteritems():
             if information:
@@ -220,13 +220,13 @@ class Package(models.Model):
     name = models.CharField(max_length = 200)
     version = models.CharField(max_length = 200)
     count = models.IntegerField(default=0)
-    
+
     def __unicode__(self):
         return self.name
-    
+
     class Meta:
         unique_together = ('project_type', 'name', 'version')
-        
+
 ## CLASS
 
 class Dependency(models.Model):
@@ -287,7 +287,7 @@ class Attempt(models.Model):
     login = models.CharField(max_length=2, choices=USER_STATUS, default=None, null=True)
     login_label = property(loginLabel)
     login_name = property(loginName)
-    
+
     runtime = models.ForeignKey('Runtime', default=None)
 
     actions_count = models.IntegerField(default = 0)

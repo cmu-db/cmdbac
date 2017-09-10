@@ -30,7 +30,7 @@ LOG.setLevel(logging.INFO)
 class BaseDeployer(object):
     TMP_ZIP_FILE = "tmp.zip"
     TMP_DEPLOY_PATH = "/tmp/crawler"
-    
+
     def __init__(self, repo, database, deploy_id, database_config = None):
         self.repo = repo
         self.database = database
@@ -54,7 +54,7 @@ class BaseDeployer(object):
             fileHandler.setFormatter(LOG_formatter)
             LOG.addHandler(fileHandler)
         except Exception, e:
-            LOG.exception(e)  
+            LOG.exception(e)
 
         if database_config == None:
             if self.database.name == 'MySQL':
@@ -86,9 +86,9 @@ class BaseDeployer(object):
         self.buffer = StringIO()
         self.logHandler = logging.StreamHandler(self.buffer)
         self.logHandler.setFormatter(LOG_formatter)
-        self.log.addHandler(self.logHandler)    
+        self.log.addHandler(self.logHandler)
     ## DEF
-    
+
     def get_database(self):
         return self.database
     ## DEF
@@ -131,7 +131,7 @@ class BaseDeployer(object):
         except Exception, e:
             LOG.exception(e)
     ## DEF
-    
+
     def clear_database(self):
         try:
             conn = self.get_database_connection(False)
@@ -275,7 +275,7 @@ class BaseDeployer(object):
                         counter.action = action
                         counter.save()
                 except Exception, e:
-                    LOG.exception(e)  
+                    LOG.exception(e)
 
         # save urls
         if urls != None:
@@ -323,7 +323,7 @@ class BaseDeployer(object):
                         counter.action = action
                         counter.save()
                 except Exception, e:
-                    LOG.exception(e)  
+                    LOG.exception(e)
 
         # save screenshot
         if screenshot_path != None:
@@ -352,7 +352,7 @@ class BaseDeployer(object):
                 information.save()
 
         LOG.info("Saved Attempt #%s for %s" % (self.attempt, self.attempt.repo))
-        
+
         # populate packages
         for pkg in self.packages_from_file:
             try:
@@ -360,7 +360,7 @@ class BaseDeployer(object):
                 pkg.count = pkg.count + 1
                 pkg.save()
             except Exception, e:
-                LOG.exception(e)  
+                LOG.exception(e)
         ## FOR
         for pkg in self.packages_from_database:
             try:
@@ -399,7 +399,7 @@ class BaseDeployer(object):
         else:
             repo_name = self.repo.name
         LOG.info('Deploying Repository: {} ...'.format(repo_name))
-        
+
         self.attempt = Attempt()
         if self.repo:
             self.attempt.repo = self.repo
@@ -437,7 +437,7 @@ class BaseDeployer(object):
                 self.save_attempt(ATTEMPT_STATUS_DOWNLOAD_ERROR)
             LOG.error('Download Error : Can not download it from GitHub...')
             return -1
-        
+
         try:
             utils.make_dir(self.base_path)
             utils.unzip(self.zip_file, self.base_path)
@@ -459,12 +459,12 @@ class BaseDeployer(object):
             else:
                 LOG.error('Running Error...')
             return -1
-           
+
         if attemptStatus != ATTEMPT_STATUS_SUCCESS:
             if not attempt_info:
                 self.save_attempt(attemptStatus)
             return -1
-        
+
         return 0
     ## DEF
 
@@ -487,5 +487,5 @@ class BaseDeployer(object):
         utils.unblock_network()
         return
     ## DEF
-    
+
 ## CLASS

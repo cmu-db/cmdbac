@@ -26,7 +26,7 @@ LOG = logging.getLogger()
 ## BENCHMARK DRIVER
 ## =====================================================================
 class BenchmarkDriver(BaseDriver):
-    
+
     def __init__(self, driver):
         BaseDriver.__init__(self, driver.deployer)
         self.forms = driver.forms

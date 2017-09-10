@@ -26,7 +26,7 @@ def table_stats(directory = '.'):
         statistics = Statistic.objects.filter(attempt = repo.latest_successful_attempt)
         if len(statistics) == 0:
             continue
-        
+
         for s in statistics:
             if s.description == 'num_transactions':
                 continue
@@ -36,7 +36,7 @@ def table_stats(directory = '.'):
             if project_type_name not in stats[s.description]:
                 stats[s.description][project_type_name] = []
             stats[s.description][project_type_name].append(s.count)
-    
+
     dump_all_stats(directory, stats)
 
 def column_stats(directory = '.'):
@@ -69,29 +69,29 @@ def column_stats(directory = '.'):
                 regex = '(\(.*?\))[,\]]'
             elif repo.latest_successful_attempt.database.name == 'MySQL':
                 regex = '(\(.*?\))[,\)]'
-            
+
             table_stats = {'column_nullable': {}, 'column_type': {}, 'column_extra': {}, 'column_num': {}}
             for column in re.findall(regex, column_information.description):
                 cells = column.split(',')
 
                 table = str(cells[2]).replace("'", "").strip()
-                
+
                 nullable = str(cells[6]).replace("'", "").strip()
                 if table not in table_stats['column_nullable']:
                     table_stats['column_nullable'][table] = {}
                 table_stats['column_nullable'][table][nullable] = table_stats['column_nullable'][table].get(nullable, 0) + 1
-                
+
                 _type = str(cells[7]).replace("'", "").strip()
                 if table not in table_stats['column_type']:
                     table_stats['column_type'][table] = {}
                 table_stats['column_type'][table][_type] = table_stats['column_type'][table].get(_type, 0) + 1
-                
+
                 extra = str(cells[16]).replace("'", "").strip()
                 if extra:
                     if table not in table_stats['column_extra']:
                         table_stats['column_extra'][table] = {}
                     table_stats['column_extra'][table][extra] = table_stats['column_extra'][table].get(extra, 0) + 1
-                
+
                 if table not in table_stats['column_num']:
                     table_stats['column_num'][table] = 0
                 table_stats['column_num'][table] += 1
@@ -144,7 +144,7 @@ def index_stats(directory = TABLES_DIRECTORY):
 
             for column in re.findall(regex, index_information.description):
                 cells = column.split(',')
-                
+
                 _type = cells[13].replace("'", "").strip()
                 stats['index_type'][project_type_name][_type] = stats['index_type'][project_type_name].get(_type, 0) + 1
 
@@ -155,9 +155,9 @@ def main():
     table_stats(TABLES_DIRECTORY)
     column_stats(TABLES_DIRECTORY)
     index_stats(TABLES_DIRECTORY)
-    
+
     # working
-    
+
     # deprecated
 if __name__ == '__main__':
     main()

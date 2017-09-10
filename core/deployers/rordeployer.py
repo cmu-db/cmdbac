@@ -60,7 +60,7 @@ class RoRDeployer(BaseDeployer):
         if database_config == None:
             self.database_config['name'] = 'ror_app' + str(deploy_id)
     ## DEF
-    
+
     def configure_settings(self):
         adapter = {
             'MySQL': 'mysql2',
@@ -68,7 +68,7 @@ class RoRDeployer(BaseDeployer):
             'SQLite3': 'sqlite3'
         }[self.database.name]
         with open(os.path.join(self.setting_path, 'config/database.yml'), "w") as my_file:
-            my_file.write(DATABASE_SETTINGS.format(name=self.database_config['name'], 
+            my_file.write(DATABASE_SETTINGS.format(name=self.database_config['name'],
                 username=self.database_config['username'], password=self.database_config['password'],
                 port=self.database_config['port'], host=self.database_config['host'], adapter=adapter))
         ## WITH
@@ -95,7 +95,7 @@ class RoRDeployer(BaseDeployer):
                     my_file.write(GEMFILE_SETTINGS.format(adapter))
         ## WITH
     ## DEF
-    
+
     def run_command(self, path, command):
         commands = '{} && {} && {}'.format(
             utils.cd(path),
@@ -120,7 +120,7 @@ class RoRDeployer(BaseDeployer):
                     return out[1]
         return ''
     ## DEF
-    
+
     def get_main_url(self):
         return 'http://127.0.0.1:{}/'.format(self.port)
     ## DEF
@@ -187,12 +187,12 @@ class RoRDeployer(BaseDeployer):
         self.runtime = self.get_runtime(ruby_version)
         ruby_version = self.runtime['version']
         LOG.info(self.runtime)
-        
+
         self.attempt.database = self.get_database()
         LOG.info('Database: ' + self.attempt.database.name)
 
         LOG.info('Using Ruby {} ...'.format(ruby_version))
-    
+
         LOG.info('Installing requirements ...')
         out = self.install_requirements(deploy_path)
         if not 'complete!' in out:
@@ -211,7 +211,7 @@ class RoRDeployer(BaseDeployer):
 
         if not self.sync_server(deploy_path):
             return ATTEMPT_STATUS_DATABASE_ERROR
-        
+
         # LOG.info(self.create_superuser(deploy_path))
 
         self.run_server(deploy_path)
@@ -222,7 +222,7 @@ class RoRDeployer(BaseDeployer):
 
         return attemptStatus
     ## DEF
-    
+
     def deploy_repo_attempt(self, deploy_path):
         rake_files = utils.search_file(deploy_path, 'Rakefile')
         if not rake_files:
@@ -261,5 +261,5 @@ class RoRDeployer(BaseDeployer):
 
         return self.try_deploy(base_dir)
     ## DEF
-    
+
 ## CLASS

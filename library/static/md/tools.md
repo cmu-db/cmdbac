@@ -16,7 +16,7 @@ You can get the sufficient information of an attempt by running this command:
 ```sh
 $ ./main.py info -attempt ATTEMPT
 ```
-where *ATTEMPT* is the id of the attempt you want to inquire. 
+where *ATTEMPT* is the id of the attempt you want to inquire.
 
 If you want to know more information, you can type this command to get a help message:
 ```sh

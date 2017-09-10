@@ -60,7 +60,7 @@ class GrailsDeployer(BaseDeployer):
             self.database_config['name'] = 'grails_app' + str(deploy_id)
         self.main_filename = None
     ## DEF
-    
+
     def configure_settings(self):
         if HTTP_PROXY != '':
             with open(os.path.join(self.setting_path, 'wrapper', 'grails-wrapper.properties'), "a") as my_file:
@@ -83,7 +83,7 @@ class GrailsDeployer(BaseDeployer):
         }[self.database.name]
 
         with open(os.path.join(self.setting_path, 'grails-app', 'conf', 'DataSource.groovy'), "w") as my_file:
-            my_file.write(DATABASE_SETTINGS.format(name=self.database_config['name'], 
+            my_file.write(DATABASE_SETTINGS.format(name=self.database_config['name'],
                 username=self.database_config['username'], password=self.database_config['password'],
                 host=self.database_config['host'], adapter=adapter, jdbc_class = jdbc_class))
 
@@ -95,16 +95,16 @@ class GrailsDeployer(BaseDeployer):
                 s = s[:-1] + REPOSITORIES_SETTINGS + "}"
                 return s
             build_config = re.sub("repositories\s*?{.*?}", add_repositories, build_config, flags = re.S)
-            
+
             def add_dependency(matched):
                 s = matched.group(0)
                 s = s[:-1] + dependency + "}"
                 return s
             build_config = re.sub("dependencies\s*?{.*?}", add_dependency, build_config, flags = re.S)
-            
+
             my_file.write(build_config)
     ## DEF
-    
+
     def install_requirements(self, path):
         if path:
             command = '{} && export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64 && chmod 777 grailsw && ./grailsw compile'.format(utils.cd(path))
@@ -115,7 +115,7 @@ class GrailsDeployer(BaseDeployer):
                 return out[1]
         return ''
     ## DEF
-    
+
     def get_main_url(self):
         main_url = 'http://127.0.0.1:{}'.format(self.port)
 
@@ -163,7 +163,7 @@ class GrailsDeployer(BaseDeployer):
         LOG.info(out)
 
         self.run_server(deploy_path)
-        
+
         retry_times = 0
         while retry_times < 5:
             time.sleep(30)
@@ -174,7 +174,7 @@ class GrailsDeployer(BaseDeployer):
 
         return attemptStatus
     ## DEF
-    
+
     def deploy_repo_attempt(self, deploy_path):
         if self.database.name != 'MySQL':
             return ATTEMPT_STATUS_DATABASE_ERROR
@@ -189,5 +189,5 @@ class GrailsDeployer(BaseDeployer):
 
         return self.try_deploy(base_dir)
     ## DEF
-    
+
 ## CLASS

@@ -28,7 +28,7 @@ def foreign_key_stats(directory = '.'):
             stats['foreign_key_count'][project_type_name] = []
         if project_type_name not in stats['foreign_key_type']:
                 stats['foreign_key_type'][project_type_name] = {}
-        if 0:    
+        if 0:
             if project_type_name not in stats['join_key_constraint']:
                 stats['join_key_constraint'][project_type_name] = {}
 
@@ -57,7 +57,7 @@ def foreign_key_stats(directory = '.'):
                 regex = '(\(.*?\))[,\]]'
             elif repo.latest_successful_attempt.database.name == 'MySQL':
                 regex = '(\(.*?\))[,\)]'
-            
+
             merge_map = {}
             key_column_usage_information = key_column_usage_informations[0]
             for column in re.findall(regex, key_column_usage_information.description):
@@ -65,7 +65,7 @@ def foreign_key_stats(directory = '.'):
                 constraint_name = str(cells[2]).replace("'", "").strip()
                 table_name = str(cells[5]).replace("'", "").strip()
                 column_name = str(cells[6]).replace("'", "").strip()
-                merge_map_key = table_name + '.' + constraint_name 
+                merge_map_key = table_name + '.' + constraint_name
                 if merge_map_key in merge_map:
                     merge_map[merge_map_key].append(column_name)
                 else:
@@ -90,7 +90,7 @@ def foreign_key_stats(directory = '.'):
                         if constraint_type == 'FOREIGN KEY':
                             _type = column_map[table_name + '.' + column_name]
                             stats['foreign_key_type'][project_type_name][_type] = stats['foreign_key_type'][project_type_name].get(_type, 0) + 1
-                            
+
             for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
                 queries = Query.objects.filter(action = action)
                 foreign_key_count = 0

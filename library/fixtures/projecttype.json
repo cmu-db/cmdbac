@@ -1,56 +1,56 @@
 [
 {
-  "pk": 1, 
-  "model": "library.projecttype", 
+  "pk": 1,
+  "model": "library.projecttype",
   "fields": {
-    "logo": "img/django.png", 
-    "deployer_class": "DjangoDeployer", 
-    "default_port": 8000, 
-    "name": "Django", 
+    "logo": "img/django.png",
+    "deployer_class": "DjangoDeployer",
+    "default_port": 8000,
+    "name": "Django",
     "filename": "models.py"
   }
 },
 {
-  "pk": 2, 
-  "model": "library.projecttype", 
+  "pk": 2,
+  "model": "library.projecttype",
   "fields": {
-    "logo": "img/ruby_on_rails.png", 
-    "deployer_class": "RoRDeployer", 
-    "default_port": 3000, 
-    "name": "Ruby on Rails", 
+    "logo": "img/ruby_on_rails.png",
+    "deployer_class": "RoRDeployer",
+    "default_port": 3000,
+    "name": "Ruby on Rails",
     "filename": "database.yml"
   }
 },
 {
   "pk": 3,
-  "model": "library.projecttype", 
+  "model": "library.projecttype",
   "fields": {
-    "logo": "img/nodejs.png", 
-    "deployer_class": "NodeDeployer", 
-    "default_port": 8080, 
-    "name": "Node.js", 
+    "logo": "img/nodejs.png",
+    "deployer_class": "NodeDeployer",
+    "default_port": 8080,
+    "name": "Node.js",
     "filename": "package.json"
   }
 },
 {
   "pk": 4,
-  "model": "library.projecttype", 
+  "model": "library.projecttype",
   "fields": {
-    "logo": "img/drupal.png", 
-    "deployer_class": "DrupalDeployer", 
-    "default_port": 8181, 
-    "name": "Drupal", 
+    "logo": "img/drupal.png",
+    "deployer_class": "DrupalDeployer",
+    "default_port": 8181,
+    "name": "Drupal",
     "filename": "install.php"
   }
 },
 {
-  "pk": 5, 
-  "model": "library.projecttype", 
+  "pk": 5,
+  "model": "library.projecttype",
   "fields": {
-    "logo": "img/drupal.png", 
-    "deployer_class": "GrailsDeployer", 
-    "default_port": 8080, 
-    "name": "Grails", 
+    "logo": "img/drupal.png",
+    "deployer_class": "GrailsDeployer",
+    "default_port": 8080,
+    "name": "Grails",
     "filename": "application.properties"
   }
 }

@@ -31,7 +31,7 @@ def get_form_index(br, form):
 def submit_form(form, inputs, br = None):
     if br == None:
         br = mechanize.Browser()
-        cj = cookielib.LWPCookieJar() 
+        cj = cookielib.LWPCookieJar()
         br.set_cookiejar(cj)
         br.set_handle_robots(False)
 
@@ -161,5 +161,5 @@ def fill_form_random_fast(deploy_path, form, session):
             inputs[input['name']] = gen_random_value()
 
     response = submit_form_fast(form, inputs, files, session)
-    
+
     return inputs

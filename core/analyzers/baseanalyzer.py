@@ -12,7 +12,7 @@ LOG = logging.getLogger()
 ## BASE ANALYZER
 ## =====================================================================
 class BaseAnalyzer(object):
-    
+
     def __init__(self, deployer):
         self.queries_stats = {}
         self.database_stats = {}
@@ -40,7 +40,7 @@ class BaseAnalyzer(object):
                     transaction_count += 1
                     transaction = False
         return transaction_count
-    
+
     def analyze_queries(self, queries):
         raise NotImplementedError("Unimplemented %s" % self.__init__.im_class)
 

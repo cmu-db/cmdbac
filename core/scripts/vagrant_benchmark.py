@@ -44,7 +44,7 @@ def get_database_size(deployer):
     cur = conn.cursor()
     cur.execute('''
         SELECT Round(SUM(data_length + index_length) / 1024 / 1024, 1)
-        FROM information_schema.tables 
+        FROM information_schema.tables
         WHERE table_schema = '{}'
     '''.format(deployer.database_config['name']))
     size = cur.fetchone()[0]
@@ -105,13 +105,13 @@ def main():
 
     LOG.info('Running driver ...')
     driver = BaseDriver(deployer)
-    
+
     try:
         driver.bootstrap()
         driver.initialize()
     except Exception, e:
         traceback.print_exc()
-    
+
     LOG.info('Start Driving the Database ...')
     actions_cnt = 0
     processes = []
@@ -131,7 +131,7 @@ def main():
             actions_cnt += queue.get()
     except Exception, e:
         traceback.print_exc()
-    
+
     LOG.info('The number of actions submitted : {}'.format(actions_cnt))
 
     # kill server

@@ -29,9 +29,9 @@ class NodeDeployer(BaseDeployer):
             self.database_config['name'] = 'node_app' + str(deploy_id)
         self.main_filename = None
     ## DEF
-    
+
     def configure_settings(self, path):
-        utils.replace_files_regex(path, "mysql\.createConnection\({.*?}.*?\);", 
+        utils.replace_files_regex(path, "mysql\.createConnection\({.*?}.*?\);",
             """mysql.createConnection({{
                 host     : '{host}',
                 port     : '{port}',
@@ -39,11 +39,11 @@ class NodeDeployer(BaseDeployer):
                 password : '{password}',
                 database : '{database}'
                 }});
-            """.format(host=self.database_config['host'], port=self.database_config['port'], 
+            """.format(host=self.database_config['host'], port=self.database_config['port'],
                 user=self.database_config['username'],password=self.database_config['password'],
                 database=self.database_config['name']))
     ## DEF
-    
+
     def install_requirements(self, path):
         if path:
             command = '{} && npm install'.format(utils.cd(path))
@@ -54,7 +54,7 @@ class NodeDeployer(BaseDeployer):
                 return out[1]
         return ''
     ## DEF
-    
+
     def get_main_url(self):
         return 'http://127.0.0.1:{}/'.format(self.port)
     ## DEF
@@ -143,12 +143,12 @@ class NodeDeployer(BaseDeployer):
         time.sleep(5)
 
         self.find_port()
-        
+
         attemptStatus = self.check_server()
 
         return attemptStatus
     ## DEF
-    
+
     def deploy_repo_attempt(self, deploy_path):
         package_jsons = utils.search_file(deploy_path, 'package.json')
         if not package_jsons:
@@ -168,5 +168,5 @@ class NodeDeployer(BaseDeployer):
 
         return self.try_deploy(base_dir)
     ## DEF
-    
+
 ## CLASS

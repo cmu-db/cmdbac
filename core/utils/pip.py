@@ -18,7 +18,7 @@ def to_env(path):
 
 def pip_install(path, names, is_file, has_version = True):
     command = '{} && pip --no-cache-dir install'.format(to_env(path))
-    
+
     proxy = os.environ.get('http_proxy')
     if proxy:
         command = '{} --proxy {} '.format(command, proxy)
@@ -32,7 +32,7 @@ def pip_install(path, names, is_file, has_version = True):
                     command = '{} {}=={} '.format(command, name['name'], name['version'])
                 else:
                     command = '{} {}'.format(command, name['name'])
-            else:    
+            else:
                 if has_version and name.version != None and name.version != '':
                     command = '{} {}=={} '.format(command, name.name, name.version)
                 elif name.name == 'django':
@@ -45,7 +45,7 @@ def pip_install(path, names, is_file, has_version = True):
 
 def pip_install_text(path, name):
     command = '{} && pip --no-cache-dir install'.format(to_env(path))
-    
+
     proxy = os.environ.get('http_proxy')
     if proxy:
         command = '{} --proxy {} '.format(command, proxy)

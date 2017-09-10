@@ -8,13 +8,13 @@ from driver.items import UrlItem
 
 class UrlSpider(CrawlSpider):
     name = "url"
-    allowed_domains = ["127.0.0.1"]    
+    allowed_domains = ["127.0.0.1"]
 
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args, **kwargs):
         super(UrlSpider, self).__init__(*args, **kwargs)
 
         self.start_urls = [kwargs.get('start_url')]
-        
+
         follow = True if kwargs.get('follow') == 'true' else False
         self.rules = (
             Rule (SgmlLinkExtractor(allow=('')), callback='parse_url', follow=follow),
@@ -29,7 +29,7 @@ class UrlSpider(CrawlSpider):
             ]
         except:
             service_args = None
-        
+
     def parse_url(self, response):
         urlItem = UrlItem()
         urlItem['url'] = response.url

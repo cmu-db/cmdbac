@@ -40,7 +40,7 @@ class DrupalDeployer(BaseDeployer):
     def configure_settings(self, path):
         pass
     ## DEF
-    
+
     def get_main_url(self):
         return 'http://127.0.0.1:{}/'.format(self.port)
     ## DEF
@@ -64,7 +64,7 @@ class DrupalDeployer(BaseDeployer):
                 try:
                     browser.get('http://127.0.0.1:{port}/install.php'.format(port = deployer.port))
                     WebDriverWait(browser, WAIT_TIME_SHORT).until(EC.presence_of_element_located((By.ID, 'content')))
-                    
+
                     # wait for progess
                     if len(browser.find_elements_by_id('progress')) != 0:
                         time.sleep(5)
@@ -113,11 +113,11 @@ class DrupalDeployer(BaseDeployer):
 
             browser = webdriver.PhantomJS()
             browser.get('http://127.0.0.1:{port}/install.php?profile={profile}&welcome=done&locale=en'.format(port = self.port, profile = profile))
-            
+
             t = threading.Thread(target = check_drupal_status, args = (self, ))
             t.daemon = True
             t.start()
-            
+
             database_tag_name = {
                 'MySQL': 'mysql',
                 'PostgreSQL': 'pgsql',
@@ -134,7 +134,7 @@ class DrupalDeployer(BaseDeployer):
                 except:
                     break
 
-                try: 
+                try:
                     browser.find_element_by_class_name('error')
                     error_count += 1
                     if error_count > ERROR_THRESHOLD:
@@ -159,7 +159,7 @@ class DrupalDeployer(BaseDeployer):
                 LOG.info(page_title)
                 if 'Drupal already installed' in page_title:
                     break
-                
+
                 # select all checkboxes
                 for option in browser.find_elements_by_class_name('form-checkbox'):
                     if option.is_displayed() and not option.is_selected():
@@ -168,7 +168,7 @@ class DrupalDeployer(BaseDeployer):
                 # click field set
                 if len(browser.find_elements_by_class_name('fieldset-title')) != 0:
                     browser.find_element_by_class_name('fieldset-title').click()
-            
+
                 # handle database
                 if len(browser.find_elements_by_id('edit-driver-{}'.format(database_tag_name))) != 0:
                     browser.find_element_by_id('edit-driver-{}'.format(database_tag_name)).click()
@@ -209,7 +209,7 @@ class DrupalDeployer(BaseDeployer):
         except Exception, e:
             LOG.exception(e)
             browser.save_screenshot('/tmp/screenshot.png')
-        finally: 
+        finally:
             browser.quit()
             display.stop()
 
@@ -253,12 +253,12 @@ class DrupalDeployer(BaseDeployer):
 
         self.run_server(deploy_path)
         time.sleep(5)
-        
+
         attemptStatus = self.check_server()
 
         return attemptStatus
     ## DEF
-    
+
     def deploy_repo_attempt(self, deploy_path):
         install_phps = utils.search_file(deploy_path, 'install.php')
         if len(install_phps) == 0:
@@ -269,5 +269,5 @@ class DrupalDeployer(BaseDeployer):
 
         return self.try_deploy(base_dir)
     ## DEF
-    
+
 ## CLASS

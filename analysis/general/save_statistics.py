@@ -95,7 +95,7 @@ def coverage_stats(directory = '.'):
             elif repo.latest_successful_attempt.database.name == 'MySQL':
                 column_count = min(column_count, len(re.findall('(\(.*?\))[,\)]', information.description)))
             save_statistic('num_columns', column_count, repo.latest_successful_attempt)
-        
+
             if column_count > 0:
                 covered_columns = set()
                 for action in actions:
@@ -123,7 +123,7 @@ def coverage_stats(directory = '.'):
                 continue
             if statistics[0].count > 0:
                 index_count = min(index_count, statistics[0].count)
-            
+
             if index_count > 0:
                 covered_indexes = set()
                 for action in actions:
@@ -132,7 +132,7 @@ def coverage_stats(directory = '.'):
                             for raw_index in re.findall('Index.*?Scan.*?on \S+', explain.output):
                                 index = raw_index.split()[-1]
                                 covered_indexes.add(index)
-                   
+
                 index_percentage = int(float(len(covered_indexes) * 100) / index_count)
                 index_percentage = min(index_percentage, 100)
 
@@ -147,7 +147,7 @@ def secondary_index_stats():
                 regex = '(\(.*?\))[,\]]'
             elif repo.latest_successful_attempt.database.name == 'MySQL':
                 regex = '(\(.*?\))[,\)]'
-            
+
             secondary_index_count = 0
             for index in re.findall(regex, information.description):
                 cells = index.split(',')

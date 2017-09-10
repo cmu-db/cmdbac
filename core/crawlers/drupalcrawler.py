@@ -50,11 +50,11 @@ class DrupalCrawler(BaseCrawler):
         # from where we left off from our last run\
         if not self.crawlerStatus.next_url is None and not self.crawlerStatus.next_url == '':
             return self.crawlerStatus.next_url
-        
+
         # Otherwise, compute what the next page we want to load
         return SEARCH_URL
     ## DEF
-    
+
     def search(self):
         # Load and parse!
         response = utils.query(self.next_url())
@@ -87,7 +87,7 @@ class DrupalCrawler(BaseCrawler):
         # Make sure we update our crawler status
         LOG.info("Updating status for %s" % self.crawlerStatus)
         self.crawlerStatus.save()
-            
+
         return
     ## DEF
 
@@ -105,7 +105,7 @@ class DrupalCrawler(BaseCrawler):
             LOG.info("Repository '%s' already exists" % name)
         else:
             api_data = self.get_api_data(name)
-            
+
             # Create the new repository
             repo = Repository()
             repo.name = 'drupal/' + name
@@ -151,7 +151,7 @@ class DrupalCrawler(BaseCrawler):
 
         response = utils.query(download_url)
         zip_file = open(zip_name, 'wb')
-        for chunk in response.iter_content(chunk_size=1024): 
+        for chunk in response.iter_content(chunk_size=1024):
             if chunk:
                 zip_file.write(chunk)
                 zip_file.flush()

@@ -8,7 +8,7 @@ import math
 from threading import Thread
 from multiprocessing import Process
 import time
- 
+
 from django.shortcuts import render
 from rest_framework import generics, viewsets
 from rest_framework.decorators import detail_route
@@ -46,31 +46,31 @@ def home(request):
     for t in ProjectType.objects.all():
         repo_type = t.name
         repos = Repository.objects.filter(project_type=t)
-        
+
         # Total number of repositories for this project type
         num_repo = repos.count()
-        
+
         # Total number of succesful attempts for this project type
         num_suc = repos.exclude(latest_successful_attempt=None).count()
         total_success += num_suc
-        
+
         # The timestamp of the last attempt (doesn't have to be succesful)
         last_updated = repos.aggregate(Max('updated_date'))
         if type(last_updated) is dict:
             last_updated = last_updated.values()[0]
-            
+
         # num_pkg = Package.objects.filter(project_type=t).count()
         num_deploy = repos.exclude(latest_attempt=None).count()
         num_valid_deploy = repos.filter(valid_project=True).count()
         stat = MainPageStatistic(t, last_updated, num_repo, num_suc, num_deploy, num_valid_deploy)
         stats.append(stat)
     ## FOR
-    
+
     context['stats'] = stats
-    
+
     # Round down to the nearest thousand
     context['total_success'] = int(math.floor(total_success/1000.0) * 1000)
-    
+
     context['attempts'] = Attempt.objects.filter(result=ATTEMPT_STATUS_SUCCESS).order_by('-start_time')[:5]
     return render(request, 'index.html', context)
 ## DEF
@@ -83,7 +83,7 @@ def search_stuff(context, request):
     if len(request) == 0:
         request.setlist('results', [ATTEMPT_STATUS_SUCCESS])
         request.setlist('types', ProjectType.objects.all().values_list('name', flat=True))
-    
+
     repositories = Repository.objects.all()
 
     if request.get('search', '') != '':
@@ -124,7 +124,7 @@ def repositories(request):
     context['queries'] = request.GET.copy()
 
     super_user_stuff(request)
-    
+
     repositories = search_stuff(context, context['queries'])
 
     queries_no_page = context['queries'].copy()
@@ -134,7 +134,7 @@ def repositories(request):
         del queries_no_page['search']
     context['queries_no_page'] = queries_no_page
 
-    queries_no_page_order = queries_no_page.copy() 
+    queries_no_page_order = queries_no_page.copy()
     if queries_no_page_order.__contains__('order_by'):
         context['order_by'] = context['queries'].get('order_by')
         del queries_no_page_order['order_by']
@@ -157,7 +157,7 @@ def repositories(request):
     except EmptyPage:
         # If page is out of range (e.g. 9999), deliver last page of results.
         repositories = paginator.page(paginator.num_pages)
-        
+
     context["repositories"] = repositories
 
     return render(request, 'repositories.html', context)
@@ -165,7 +165,7 @@ def repositories(request):
 def repository(request, user_name, repo_name):
     context = {}
     context['queries'] = request.GET.copy()
-    
+
     repository = Repository.objects.get(name=user_name + '/' + repo_name)
     context['repository'] = repository
 
@@ -181,12 +181,12 @@ def repository(request, user_name, repo_name):
         # If page is out of range (e.g. 9999), deliver last page of results.
         attempts = paginator.page(paginator.num_pages)
     context['attempts'] = attempts
-    
+
     return render(request, 'repository.html', context)
 
 def attempt(request, id):
     context = {}
-    
+
     context['queries'] = request.GET.copy()
 
     attempt = Attempt.objects.get(id=id)
@@ -205,7 +205,7 @@ def attempt(request, id):
     context['statistics'] = {}
     for statistic in Statistic.objects.filter(attempt=attempt):
         context['statistics'][statistic.description] = max(statistic.count, context['statistics'].get(statistic.description, 0))
-    
+
     actions = Action.objects.filter(attempt=attempt)
     context['actions'] = []
     for action in actions:
@@ -219,7 +219,7 @@ def attempt(request, id):
             'fields': fields,
             'counters': counters
         })
-    
+
     try:
         image = Image.objects.get(attempt=attempt)
         screenshot_filename = 'screenshot_{}.png'.format(attempt.id)
@@ -240,7 +240,7 @@ def queries(request, id):
         action = Action.objects.get(id=id)
         queries = Query.objects.filter(action=action)
         context['queries'] = queries
-        
+
         return render(request, 'queries.html', context)
 
 def about(request):
@@ -251,7 +251,7 @@ def search(request):
     context["result_form"] = ResultForm(request.GET)
     context['type_form'] = ProjectTypeForm(request.GET)
     context["statistics_form"] = StatisticsForm(request.GET)
-    
+
     return render(request, 'search.html', context)
 
 class AttemptViewSet(viewsets.ViewSet):

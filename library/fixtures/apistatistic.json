@@ -1,7 +1,7 @@
 [
 {
-  "pk": 1, 
-  "model": "library.WebStatistic", 
+  "pk": 1,
+  "model": "library.WebStatistic",
   "fields": {
     "name": "Attempt Info API",
     "count": 0

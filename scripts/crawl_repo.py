@@ -24,7 +24,7 @@ def add_module():
     package_name = sys.argv[2]
     package_type_id = sys.argv[3]
     package_version = sys.argv[4]
-    try:    
+    try:
         utils.add_module(module_name, package_name, package_type_id, package_version)
         print 'Successfully added new module {}'.format(module_name)
     except:
@@ -36,7 +36,7 @@ def add_repository():
         return
     repo_name = sys.argv[1]
     repo_type_id = sys.argv[2]
-    try:    
+    try:
         utils.add_repo(repo_name, repo_type_id, None)
         print 'Successfully added new repository {}'.format(repo_name)
     except:

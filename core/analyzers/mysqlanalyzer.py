@@ -16,13 +16,13 @@ LOG = logging.getLogger()
 ## MYSQL ANALYZER
 ## =====================================================================
 class MySQLAnalyzer(BaseAnalyzer):
-    
+
     def __init__(self, deployer):
         BaseAnalyzer.__init__(self, deployer)
 
     def analyze_queries(self, queries):
         self.queries_stats['num_transactions'] = self.count_transaction(queries) + self.queries_stats.get('num_transactions', 0)
-        
+
         try:
             conn = self.deployer.get_database_connection()
             cur = conn.cursor()
@@ -59,7 +59,7 @@ class MySQLAnalyzer(BaseAnalyzer):
                 except Exception, e:
                     traceback.print_exc()
                     # pass
-                    # LOG.exception(e)       
+                    # LOG.exception(e)
 
             cur.close()
             conn.close()
@@ -71,7 +71,7 @@ class MySQLAnalyzer(BaseAnalyzer):
             conn = self.deployer.get_database_connection()
             cur = conn.cursor()
             database = self.deployer.get_database_name()
-            
+
             # the number of tables
             cur.execute("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '{}';".format(database))
             self.database_stats['num_tables'] = int(cur.fetchone()[0])

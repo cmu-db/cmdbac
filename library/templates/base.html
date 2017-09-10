@@ -12,12 +12,12 @@
         <!-- CSS -->
         <link href="{{STATIC_URL}}css/bootstrap.yeti.min.css" type="text/css" rel="stylesheet">
         <link href="{{STATIC_URL}}css/dbac.css" type="text/css" rel="stylesheet">
-        
+
         <!-- Fonts -->
         <link href="{{STATIC_URL}}font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
         <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
         <link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
-        
+
         <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
         <script src="{{STATIC_URL}}js/jquery.twbsPagination.js"></script>
 
@@ -27,7 +27,7 @@
             <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
             <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
         <![endif]-->
-        
+
     </head>
 
     <body>
@@ -70,17 +70,17 @@
         <!-- /.container -->
     </nav>
     <!-- END NAVIGATION -->
-    
+
     <!-- HEADER -->
     {% block header %}{% endblock %}
     <!-- END HEADER -->
-    
+
     <!-- MAIN -->
     <div class="container">
         {% block main %}{% endblock %}
     </div>
     <!-- END MAIN -->
-    
+
     <!-- FOOTER -->
     <footer>
         <div class="container">
@@ -109,6 +109,6 @@
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
     <script src="{{STATIC_URL}}js/collapse.js"></script>
     {{ analytics_code }}
-    
+
     </body>
 </html>

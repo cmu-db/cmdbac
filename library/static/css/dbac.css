@@ -46,7 +46,7 @@ pre {
 }
 
 .topnav {
-    font-size: 14px; 
+    font-size: 14px;
 }
 
 .lead {
@@ -308,7 +308,7 @@ body {
     font-size: 95%;
 }
 .repository-search li {
-    list-style: none;   
+    list-style: none;
 }
 
 
@@ -393,7 +393,7 @@ div.people div {
 .more {
   display: none;
   border-top: 1px solid #666;
-  border-bottom: 1px solid #666; 
+  border-bottom: 1px solid #666;
 }
 a.showLink, a.hideLink {
   text-decoration: none;
@@ -402,10 +402,10 @@ a.showLink, a.hideLink {
   background: transparent no-repeat left;
 }
 a.hideLink {
-  background: transparent no-repeat left; 
+  background: transparent no-repeat left;
 }
 a.showLink:hover, a.hideLink:hover {
-  border-bottom: 1px dotted #36f; 
+  border-bottom: 1px dotted #36f;
 }
 
 .screenshot-div {

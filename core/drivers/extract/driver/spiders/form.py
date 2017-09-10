@@ -9,13 +9,13 @@ from selenium import webdriver
 
 class FormSpider(CrawlSpider):
     name = "form"
-    allowed_domains = ["127.0.0.1"]    
+    allowed_domains = ["127.0.0.1"]
 
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args, **kwargs):
         super(FormSpider, self).__init__(*args, **kwargs)
 
         self.start_urls = [kwargs.get('start_url')]
-        
+
         follow = True if kwargs.get('follow') == 'true' else False
         self.rules = (
             Rule (SgmlLinkExtractor(allow=('')), callback='parse_form', follow=follow),
@@ -34,7 +34,7 @@ class FormSpider(CrawlSpider):
 
     def closed(self, reason):
         self.browser.quit()
- 
+
     def parse_form(self, response):
         register_patterns = ['register', 'signup', 'sign-up', 'sign_up']
         if any(pattern in response.url for pattern in register_patterns):
@@ -107,4 +107,4 @@ class FormSpider(CrawlSpider):
             formItem['enctype'] = enctype
 
             yield formItem
-            
+

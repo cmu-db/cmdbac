@@ -103,7 +103,7 @@
 
             this.render(this.getPages(page));
             this.setupEvents();
-            
+
             this.$element.trigger('page', page);
 
             return this;

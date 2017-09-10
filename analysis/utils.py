@@ -15,7 +15,7 @@ def filter_repository(repo):
     return False
 
 def dump_stats(directory, description, values):
-    with open(os.path.join(directory, description + '.csv'), 'wb') as csv_file:   
+    with open(os.path.join(directory, description + '.csv'), 'wb') as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow([description])
         for label, stats in values.iteritems():
@@ -31,11 +31,11 @@ def dump_stats(directory, description, values):
                         writer.writerow([label, key, value])
             else:
                 writer.writerow([label, stats])
-                
+
 def dump_all_stats(directory, all_stats):
     for description in all_stats:
         dump_stats(directory, description, all_stats[description])
 
 def pickle_dump(directory, description, data):
-    with open(os.path.join(directory, description + '.pkl'), 'wb') as pickle_file:  
+    with open(os.path.join(directory, description + '.pkl'), 'wb') as pickle_file:
         pickle.dump(data, pickle_file)

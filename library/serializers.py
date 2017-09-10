@@ -48,7 +48,7 @@ class AttemptSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Attempt
-        fields = ('id', 'start_time', 'stop_time', 'repo_info', 'sha', 'size', 'log', 'hostname', 
+        fields = ('id', 'start_time', 'stop_time', 'repo_info', 'sha', 'size', 'log', 'hostname',
                   'runtime_info', 'database_info', 'result', 'register', 'login', 'actions_count', 'queries_count',
                   'dependencies', 'actions'
             )

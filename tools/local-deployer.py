@@ -29,11 +29,11 @@ DATABASE_TYPES = (
 
 def parse_args():
     aparser = argparse.ArgumentParser(description='CMDBAC Local Deployer Tool')
-    
+
     # Actions
     aparser.add_argument('action', choices=ACTION_TYPES, \
         help='Deployer Action')
-    
+
     # Attempt Parameters
     agroup = aparser.add_argument_group('Deployment Parameters')
     agroup.add_argument('--catalog', default=CMDBAC_URL, metavar='URL', \
@@ -77,12 +77,12 @@ def run_attempt_benchmark(api_url, attempt_id, database, benchmark):
     try:
         vagrant.vagrant_benchmark(attempt_info, database, benchmark)
     except Exception, e:
-        traceback.print_exc() 
+        traceback.print_exc()
 ## DEF
-    
+
 if __name__ == "__main__":
     args = parse_args()
-    
+
     if args["action"] == "info":
         attempt_info = get_attempt_info(args["catalog"], args["attempt"])
         print json.dumps(attempt_info, indent = 4)
@@ -104,5 +104,5 @@ if __name__ == "__main__":
     else:
         print "Invalid action '%s'" % args["action"]
         sys.exit(1)
-    
+
 ## MAIN

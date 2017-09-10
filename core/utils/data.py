@@ -65,7 +65,7 @@ def edit_distance(a, b, threshold = 3):
     dis = threshold + 1
     len_a = len(a)
     len_b = len(b)
-    if abs(len_a - len_b) > threshold: 
+    if abs(len_a - len_b) > threshold:
         return dis
     d0 = [0] * (max(len_a, len_b) + 1)
     d1 = [0] * (max(len_a, len_b) + 1)
@@ -87,7 +87,7 @@ def edit_distance(a, b, threshold = 3):
                     d1[j] = min(d1[j], d1[j - 1] + 1)
                 if j < i + threshold:
                     d1[j] = min(d1[j], d0[j] + 1)
-            minDis = min(minDis, d1[j]) 
+            minDis = min(minDis, d1[j])
         if minDis > threshold:
             return dis;
         d0, d1 = d1, d0

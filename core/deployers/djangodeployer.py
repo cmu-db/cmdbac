@@ -71,13 +71,13 @@ class DjangoDeployer(BaseDeployer):
             'SQLite3': 'sqlite3'
         }[self.database.name]
         with open(self.setting_path, "a") as my_setting_file:
-            my_setting_file.write(DJANGO_SETTINGS.format(name=self.database_config['name'], 
-                host=self.database_config['host'], port=self.database_config['port'], 
+            my_setting_file.write(DJANGO_SETTINGS.format(name=self.database_config['name'],
+                host=self.database_config['host'], port=self.database_config['port'],
                 username=self.database_config['username'], password=self.database_config['password'],
                 path=self.base_path, engine=engine, log_file=self.log_file))
         ## WITH
     ## DEF
-    
+
     def install_requirements(self, deploy_path, requirement_files):
         ret_packages = []
         if self.attempt_info != None:
@@ -151,7 +151,7 @@ class DjangoDeployer(BaseDeployer):
 
         urls = list(set([re.sub(r'[\^\$]', '', url) for url in urls if '?' not in url]))
         urls = sorted(urls, key=len)
-        
+
         return urls
     ## DEF
 
@@ -231,12 +231,12 @@ class DjangoDeployer(BaseDeployer):
             LOG.info("Project Path: {}".format(project_path))
 
             LOG.info("Setup Scripts: {} && {} && {} && {}".format(
-                utils.to_env(self.base_path), 
+                utils.to_env(self.base_path),
                 "unset DJANGO_SETTINGS_MODULE",
                 "cd {}".format(project_path),
                 self.repo.setup_scripts))
             code, stdout, stderr = utils.run_command("{} && {} && {} && {}".format(
-                utils.to_env(self.base_path), 
+                utils.to_env(self.base_path),
                 "unset DJANGO_SETTINGS_MODULE",
                 "cd {}".format(project_path),
                 self.repo.setup_scripts))
@@ -295,10 +295,10 @@ class DjangoDeployer(BaseDeployer):
                     if not candidate_package_ids:
                         LOG.info('No possible packages!')
                         return ATTEMPT_STATUS_MISSING_DEPENDENCIES
-                    
+
                     candidate_packages = Package.objects.filter(id__in=candidate_package_ids).order_by('-count', '-version', 'name')
                     LOG.info('pip install {}'.format(candidate_packages[0]))
-                    pip_output = utils.pip_install(self.base_path, [candidate_packages[0]], False, False)            
+                    pip_output = utils.pip_install(self.base_path, [candidate_packages[0]], False, False)
                     LOG.info('pip install output: {}'.format(pip_output))
                     try:
                         version = re.search('Successfully installed .*-(.*)', pip_output[1]).group(1)
@@ -335,7 +335,7 @@ class DjangoDeployer(BaseDeployer):
         self.run_server(deploy_path, self.port)
 
         time.sleep(5)
-        
+
         attemptStatus = self.check_server()
 
         return attemptStatus
@@ -351,12 +351,12 @@ class DjangoDeployer(BaseDeployer):
             LOG.info("Project Path: {}".format(project_path))
 
             LOG.info("Setup Scripts: {} && {} && {} && {}".format(
-                utils.to_env(self.base_path), 
+                utils.to_env(self.base_path),
                 "unset DJANGO_SETTINGS_MODULE",
                 "cd {}".format(project_path),
                 self.repo.setup_scripts))
             code, stdout, stderr = utils.run_command("{} && {} && {} && {}".format(
-                utils.to_env(self.base_path), 
+                utils.to_env(self.base_path),
                 "unset DJANGO_SETTINGS_MODULE",
                 "cd {}".format(project_path),
                 self.repo.setup_scripts))
@@ -367,7 +367,7 @@ class DjangoDeployer(BaseDeployer):
 
             if 'myproject' in self.repo.setup_scripts:
                 deploy_path = os.path.join(deploy_path, 'myproject')
-        
+
         manage_files = utils.search_file(deploy_path, 'manage.py')
         if not manage_files:
             LOG.error("Can not find manage.py!")
@@ -415,8 +415,8 @@ class DjangoDeployer(BaseDeployer):
         requirement_files = utils.search_file(deploy_path, 'requirements.txt')
         if requirement_files:
             LOG.info('requirements.txt path: {}'.format(requirement_files))
-        
+
         return self.try_deploy(manage_path, requirement_files)
     ## DEF
-    
+
 ## CLASS

@@ -36,5 +36,4 @@ class StatisticsForm(forms.Form):
     table_coverage = forms.ChoiceField(choices=coverage_options, required = False, label = 'Table Coverage', widget=forms.Select(attrs={'class':'form-control'}))
     column_coverage = forms.ChoiceField(choices=coverage_options, required = False, label = 'Column Coverage', widget=forms.Select(attrs={'class':'form-control'}))
     # index_coverage = forms.ChoiceField(choices=coverage_options, required = False, label = 'Index Coverage', widget=forms.Select(attrs={'class':'form-control'}))
-    
-    
+

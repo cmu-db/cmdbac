@@ -1,25 +1,25 @@
 [
 {
-  "pk": 1, 
-  "model": "library.repositorysource", 
+  "pk": 1,
+  "model": "library.repositorysource",
   "fields": {
-    "name": "GitHub", 
-    "commit_url": "https://github.com/${repo_name}/tree/${commit}", 
-    "base_url": "https://github.com/${repo_name}", 
+    "name": "GitHub",
+    "commit_url": "https://github.com/${repo_name}/tree/${commit}",
+    "base_url": "https://github.com/${repo_name}",
     "search_token": "CHANGE ME",
-    "crawler_class": "GitHubCrawler", 
+    "crawler_class": "GitHubCrawler",
     "logo": "img/github.png"
   }
 },
 {
-  "pk": 2, 
-  "model": "library.repositorysource", 
+  "pk": 2,
+  "model": "library.repositorysource",
   "fields": {
-    "name": "Drupal", 
-    "commit_url": "https://www.drupal.org/node/${commit}", 
-    "base_url": "https://www.drupal.org/project/${repo_name}", 
+    "name": "Drupal",
+    "commit_url": "https://www.drupal.org/node/${commit}",
+    "base_url": "https://www.drupal.org/project/${repo_name}",
     "search_token": "CHANGE ME",
-    "crawler_class": "DrupalCrawler", 
+    "crawler_class": "DrupalCrawler",
     "logo": "img/drupal.png"
   }
 }

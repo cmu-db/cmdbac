@@ -1,42 +1,42 @@
 [
 {
-  "pk": 1, 
-  "model": "library.database", 
+  "pk": 1,
+  "model": "library.database",
   "fields": {
     "name": "Unknown"
   }
 },
 {
-  "pk": 2, 
-  "model": "library.database", 
+  "pk": 2,
+  "model": "library.database",
   "fields": {
     "name": "Oracle"
   }
 },
 {
-  "pk": 3, 
-  "model": "library.database", 
+  "pk": 3,
+  "model": "library.database",
   "fields": {
     "name": "Other"
   }
 },
 {
-  "pk": 4, 
-  "model": "library.database", 
+  "pk": 4,
+  "model": "library.database",
   "fields": {
     "name": "PostgreSQL"
   }
 },
 {
-  "pk": 5, 
-  "model": "library.database", 
+  "pk": 5,
+  "model": "library.database",
   "fields": {
     "name": "SQLite3"
   }
 },
 {
-  "pk": 6, 
-  "model": "library.database", 
+  "pk": 6,
+  "model": "library.database",
   "fields": {
     "name": "MySQL"
   }

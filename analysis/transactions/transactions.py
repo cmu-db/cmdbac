@@ -16,10 +16,10 @@ def count_transaction():
 
     with open('transactions.pkl', 'rb') as pickle_file:
         transactions = pickle.load(pickle_file)
-        
+
         for repo_name, project_type, transaction in transactions:
             stats['transaction_count'][project_type] = [stats['transaction_count'].get(project_type, [0])[0] + 1]
-    
+
     print stats
 
     dump_all_stats('.', stats)
@@ -48,7 +48,7 @@ def blind_write():
 
     with open('transactions.pkl', 'rb') as pickle_file:
         transactions = pickle.load(pickle_file)
-        
+
         for repo_name, project_type, transaction in transactions:
             queries = transaction.split('\n')
             writes = []
@@ -105,16 +105,16 @@ def empty_transaction():
 
     with open('transactions.pkl', 'rb') as pickle_file:
         transactions = pickle.load(pickle_file)
-        
+
         for repo_name, project_type, transaction in transactions:
             queries = transaction.split('\n')
-            
+
             if project_type not in stats['empty_pattern']:
                 stats['empty_pattern'][project_type] = {}
 
             if len(queries) == 2:
                 stats['empty_transaction_count'][project_type] = [stats['empty_transaction_count'].get(project_type, [0])[0] + 1]
-                
+
                 if 'BEGIN' in queries[0].upper():
                     stats['empty_pattern_count'][project_type]['BEGIN'] = stats['empty_pattern_count'][project_type].get('BEGIN', 0) + 1
                 elif 'AUTOCOMMIT' in queries[0].upper():
@@ -129,10 +129,10 @@ def pattern():
 
     with open('transactions.pkl', 'rb') as pickle_file:
         transactions = pickle.load(pickle_file)
-        
+
         for repo_name, project_type, transaction in transactions:
             queries = transaction.split('\n')
-            
+
             if project_type not in stats['pattern_count']:
                 stats['pattern_count'][project_type] = {}
 

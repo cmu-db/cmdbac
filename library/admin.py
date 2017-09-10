@@ -24,7 +24,7 @@ class RepositoryAdmin(admin.ModelAdmin):
         (None,               {'fields': ['name', 'project_type', 'source', 'description']}),
         ('Date information', {'fields': ['created_at', 'updated_at', 'pushed_at']}),
     ]
-    
+
     def get_project_type(self, obj):
         return obj.project_type.name
 

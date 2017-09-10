@@ -14,7 +14,7 @@ LOG = logging.getLogger()
 ## SQLITE3 ANALYZER
 ## =====================================================================
 class SQLite3Analyzer(BaseAnalyzer):
-    
+
     def __init__(self, deployer):
         BaseAnalyzer.__init__(self, deployer)
 
@@ -50,7 +50,7 @@ class SQLite3Analyzer(BaseAnalyzer):
             conn = self.deployer.get_database_connection()
             cur = conn.cursor()
             database = self.deployer.get_database_name()
-            
+
             # the number of tables
             cur.execute("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table';")
             self.database_stats['num_tables'] = int(cur.fetchone()[0])
