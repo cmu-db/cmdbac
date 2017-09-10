@@ -47,7 +47,7 @@ def main():
         random_driver.submit_forms()
         print random_driver.forms
         for form in random_driver.forms:
-            if any(random_driver.equal_form(form_stats, ret_form) for ret_form in driverResult['forms']):
+            if any(random_driver.equal_form(form, ret_form) for ret_form in driverResult['forms']):
                 continue
             driverResult['forms'].append(form)
     except Exception, e:

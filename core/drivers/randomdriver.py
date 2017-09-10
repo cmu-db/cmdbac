@@ -54,9 +54,12 @@ class RandomDriver(BaseDriver):
         try:
             last_line_no = self.check_log()
 
-            forms = list(self.browser.forms())
-            form = random.choice(forms)
-            self.browser.select_form(name = form.name)
+            forms = list(enumerate(list(self.browser.forms())))
+            if len(forms) == 0:
+                return
+
+            idx, form = random.choice(forms)
+            self.browser.select_form(nr = idx)
             form_stats = {
                 'url': self.browser.geturl(),
                 'method': form.method,
@@ -71,7 +74,7 @@ class RandomDriver(BaseDriver):
                     })
             self.browser.submit()
 
-            form_stats['queries'], form_stats['counter'] = self.process_logs(self.check_log(last_line_no))
+            form_stats['queries'], form_stats['counter'] = self.process_logs(self.check_log(last_line_no), None)
 
             if all(not self.equal_form(form_stats, ret_form) for ret_form in self.forms):
                 self.forms.append(form_stats)
