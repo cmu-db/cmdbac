@@ -330,7 +330,10 @@ class DjangoDeployer(BaseDeployer):
 
         self.create_superuser(deploy_path)
 
-        self.load_fixtures(deploy_path)
+        try:
+            self.load_fixtures(deploy_path)
+        except:
+            pass
 
         self.run_server(deploy_path, self.port)
 
