@@ -137,4 +137,10 @@ update-locale LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
 pip install -r requirements.txt
 
+# configure MySQL logging
+mysql -u root --password=root -e "SET GLOBAL general_log = 'ON';"
+mysql -u root --password=root -e "SET GLOBAL general_log_file = '/var/log/mysql/mysql.log';"
+mysql -u root --password=root -e "SELECT 1;"
+chmod 777 /var/log/mysql/mysql.log
+
 echo 'all set, rock on!'
