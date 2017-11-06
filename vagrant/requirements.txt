@@ -1,7 +1,7 @@
 selenium == 2.48.0
 djangorestframework == 3.3.1
 Django == 1.8.6
-Scrapy == 1.0.3
+Scrapy
 mechanize == 0.2.5
 beautifulsoup4 == 4.4.1
 requests == 2.8.1
