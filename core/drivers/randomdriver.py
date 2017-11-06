@@ -34,17 +34,23 @@ class RandomDriver(BaseDriver):
         BaseDriver.__init__(self, driver.deployer)
         self.forms = driver.forms
         self.urls = driver.urls
-        self.browser = mechanize.Browser()
         if driver.browser != None:
-            self.browser.set_cookiejar(driver.browser._ua_handlers['_cookies'].cookiejar)
-        self.browser.set_handle_robots(False)
+            self.cookiejar = driver.browser._ua_handlers['_cookies'].cookiejar
+
+    def new_browser(self, cookiejar = None, url = None):
+        browser = mechanize.Browser()
+        if cookiejar != None:
+            browser.set_cookiejar(self.cookiejar)
+        browser.set_handle_robots(False)
+        if url != None:
+            browser.open(url)
+        return browser
 
     def submit_forms(self):
         self.forms = []
         main_url = self.deployer.get_main_url()
         for _ in xrange(MAX_RANDOM_WALK_COUNT):
-            self.browser.open(main_url)
-            self.random_walk_for_form(self.browser)
+            self.random_walk_for_form(self.new_browser(self.cookiejar, main_url))
 
     def random_walk_for_form(self, browser, depth = MAX_RANDOM_WALK_DEPTH):
         if depth == 0:
@@ -52,6 +58,8 @@ class RandomDriver(BaseDriver):
 
         try:
             last_line_no = self.check_log()
+            url = browser.geturl()
+            cookiejar = browser._ua_handlers['_cookies'].cookiejar
 
             forms = list(enumerate(list(browser.forms())))
             for idx, form in forms:
@@ -79,8 +87,9 @@ class RandomDriver(BaseDriver):
                 if all(not self.equal_form(form_stats, ret_form) for ret_form in self.forms):
                     self.forms.append(form_stats)
 
-                self.random_walk_for_form(browser, depth - 1)
                 if succ:
-                    browser.back()
+                    self.random_walk_for_form(browser, depth - 1)
+
+                browser = self.new_browser(cookiejar, url)
         except:
             traceback.print_exc()

@@ -35,12 +35,16 @@ def main():
         deployer.kill_server()
         sys.exit(-1)
 
+    print 'Driving ...'
+
     try:
         driver = BaseDriver(deployer)
         driverResult = driver.drive()
     except Exception, e:
         LOG.exception(e)
         driverResult = {}
+
+    print 'Random Walking ...'
 
     try:
         random_driver = RandomDriver(driver)

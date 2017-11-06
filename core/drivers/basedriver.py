@@ -35,6 +35,7 @@ class BaseDriver(object):
             self.log_file = deployer.log_file
         else:
             self.log_file = LOG_FILE_LOCATION[deployer.get_database().name.lower()]
+        self.init_forms = []
         self.forms = []
         self.urls = []
 
@@ -199,7 +200,7 @@ class BaseDriver(object):
             forms = extract.extract_all_forms(main_url, json_filename)
         except Exception, e:
             forms = []
-        self.forms = forms
+        self.init_forms = forms
         ret_forms = []
 
         # login as admin
@@ -260,7 +261,7 @@ class BaseDriver(object):
         json_filename = 'forms{}.json'.format(self.deployer.deploy_id)
 
         # extract all the forms
-        forms = self.forms
+        forms = self.init_forms
         ret_forms = []
 
         # register as normal user
