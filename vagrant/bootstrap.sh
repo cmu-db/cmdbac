@@ -111,7 +111,7 @@ pip install virtualenv
 pip install hurry.filesize
 pip install selenium
 install 'phantomjs' phantomjs
-install 'firefox' firefox
+install 'firefox' firefox=28.0+build2-0ubuntu2
 install 'xvfb' xvfb
 pip install pyvirtualdisplay
 pip install djangorestframework
