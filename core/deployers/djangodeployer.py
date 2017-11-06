@@ -88,7 +88,7 @@ class DjangoDeployer(BaseDeployer):
                 if pip_output != None and pip_output[0] != 0:
                     dependency['package_info']['version'] = ''
                     pip_output = utils.pip_install(self.base_path, [dependency['package_info']], False)
-                LOG.info('pip install output: {}'.format(pip_output))
+                LOG.debug('pip install output: {}'.format(pip_output))
         else:
             latest_successful_attempt = self.get_latest_successful_attempt()
             if latest_successful_attempt != None:
@@ -100,7 +100,7 @@ class DjangoDeployer(BaseDeployer):
                         self.packages_from_database.append(dependency.package)
                     LOG.info('pip install {}'.format(dependency.package))
                     pip_output = utils.pip_install(self.base_path, [dependency.package], False)
-                    LOG.info('pip install output: {}'.format(pip_output))
+                    LOG.debug('pip install output: {}'.format(pip_output))
             else:
                 if requirement_files:
                     for requirement_file in requirement_files:
@@ -241,9 +241,9 @@ class DjangoDeployer(BaseDeployer):
                 "cd {}".format(project_path),
                 self.repo.setup_scripts))
 
-            LOG.info("Setup Return Code: {}".format(code))
-            LOG.info("Setup Return STDOUT:{}".format(stdout))
-            LOG.info("Setup Return STDERR:{}".format(stderr))
+            LOG.debug("Setup Return Code: {}".format(code))
+            LOG.debug("Setup Return STDOUT:{}".format(stdout))
+            LOG.debug("Setup Return STDERR:{}".format(stderr))
 
         LOG.info('Installing requirements ...')
         self.install_requirements(self.base_path, requirement_files)
@@ -327,6 +327,8 @@ class DjangoDeployer(BaseDeployer):
 
         for missing_module_name, candidate_packages, index in dependencies:
             self.packages_from_database.append(candidate_packages[index])
+
+        LOG.info("Deploy Path: {}".format(deploy_path))
 
         self.create_superuser(deploy_path)
 
