@@ -5,7 +5,7 @@ import utils
 import json
 from cmudbac.settings import *
 
-EXTRACT_WAIT_TIME = 120
+EXTRACT_WAIT_TIME = 0
 
 def extract_forms(url, follow = "false", cookie_jar = None, filename = "forms.json"):
 	utils.remove_file(os.path.join(os.path.dirname(__file__), filename))

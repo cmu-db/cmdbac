@@ -122,7 +122,7 @@ class BaseDriver(object):
                 if '127.0.0.1' in main_url or 'localhost' in main_url:
                     br = webdriver.Firefox()
                 else:
-                    from selenium.webdriver.common.proxy import *
+                    from selenium.webdriver.common.proxy import Proxy, ProxyType
                     proxy = Proxy({
                         'proxyType': ProxyType.MANUAL,
                         'httpProxy': HTTP_PROXY
@@ -203,6 +203,7 @@ class BaseDriver(object):
             forms = extract.extract_all_forms(main_url, json_filename)
         except Exception, e:
             forms = []
+            traceback.print_exc()
         self.init_forms = forms
         ret_forms = []
 

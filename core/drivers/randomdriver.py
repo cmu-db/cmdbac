@@ -49,7 +49,7 @@ class RandomDriver(BaseDriver):
 
     def submit_forms(self):
         self.forms = []
-        main_url = self.drive.main_url
+        main_url = self.driver.main_url
         for _ in xrange(MAX_RANDOM_WALK_COUNT):
             self.random_walk_for_form(self.new_browser(self.cookiejar, main_url))
 

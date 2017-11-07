@@ -3,6 +3,8 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 
+import json
+import traceback
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
@@ -21,16 +23,17 @@ def main():
     database = Database.objects.get(name = database_name)
 
     print 'Driving ...'
-    base_driver = BaseDriver(main_url, database, 'test')
+    base_driver = BaseDriver(main_url, database, 'test', log_file = '../vagrant/mysql.log')
     try:
-        driverResult = driver.drive()
-    except Exception, e:
+        driverResult = base_driver.drive()
+    except:
+        traceback.print_exc()
         driverResult = {}
 
     print 'Random Walking ...'
 
     try:
-        random_driver = RandomDriver(driver)
+        random_driver = RandomDriver(base_driver)
         random_driver.submit_forms()
         print random_driver.forms
         for form in random_driver.forms:
@@ -38,7 +41,10 @@ def main():
                 continue
             driverResult['forms'].append(form)
     except Exception, e:
-        LOG.exception(e)
+        traceback.print_exc()
 
     print 'Driver Results:'
     print json.dumps(driverResult, indent=4, sort_keys=True)
+
+if __name__ == '__main__':
+    main()
