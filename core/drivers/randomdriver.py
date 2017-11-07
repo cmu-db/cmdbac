@@ -22,7 +22,7 @@ from basedriver import BaseDriver
 ## =====================================================================
 LOG = logging.getLogger()
 
-MAX_RANDOM_WALK_DEPTH = 5
+MAX_RANDOM_WALK_DEPTH = 3
 MAX_RANDOM_WALK_COUNT = 100
 
 ## =====================================================================
@@ -36,6 +36,7 @@ class RandomDriver(BaseDriver):
         self.urls = driver.urls
         if driver.browser != None:
             self.cookiejar = driver.browser._ua_handlers['_cookies'].cookiejar
+        self.walked_path = set()
 
     def new_browser(self, cookiejar = None, url = None):
         browser = mechanize.Browser()
@@ -61,8 +62,15 @@ class RandomDriver(BaseDriver):
             url = browser.geturl()
             cookiejar = browser._ua_handlers['_cookies'].cookiejar
 
+            LOG.info('Walking URL: {}'.format(url))
+
             forms = list(enumerate(list(browser.forms())))
             for idx, form in forms:
+                key = '{}_{}'.format(url, form.name)
+                if key in self.walked_path:
+                    continue
+                self.walked_path.add(key)
+
                 browser.select_form(nr = idx)
                 form_stats = {
                     'url': browser.geturl(),
