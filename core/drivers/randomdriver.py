@@ -31,7 +31,6 @@ MAX_RANDOM_WALK_COUNT = 100
 class RandomDriver(BaseDriver):
 
     def __init__(self, driver):
-        BaseDriver.__init__(self, driver.deployer)
         self.forms = driver.forms
         self.urls = driver.urls
         if driver.browser != None:

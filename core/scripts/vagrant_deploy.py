@@ -37,8 +37,8 @@ def main():
 
     print 'Driving ...'
 
+    driver = BaseDriver(deployer.get_main_url(), deployer.get_database(), deployer.deploy_id, deployer.base_path, deployer.log_file)
     try:
-        driver = BaseDriver(deployer)
         driverResult = driver.drive()
     except Exception, e:
         LOG.exception(e)

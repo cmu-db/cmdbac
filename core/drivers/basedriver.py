@@ -29,12 +29,15 @@ EDIT_DISTANCE_THRESHOLD = 3
 ## =====================================================================
 class BaseDriver(object):
 
-    def __init__(self, deployer):
-        self.deployer = deployer
-        if deployer.log_file != None:
-            self.log_file = deployer.log_file
+    def __init__(self, main_url, database, name, base_path = '/tmp', log_file = None):
+        self.main_url = main_url
+        self.database = database
+        self.name = name
+        self.base_path = base_path
+        if log_file != None:
+            self.log_file = log_file
         else:
-            self.log_file = LOG_FILE_LOCATION[deployer.get_database().name.lower()]
+            self.log_file = LOG_FILE_LOCATION[database.name.lower()]
         self.init_forms = []
         self.forms = []
         self.urls = []
@@ -62,7 +65,7 @@ class BaseDriver(object):
         new_query = None
         for line in logs:
             line = line.strip()
-            if self.deployer.get_database().name == 'MySQL':
+            if self.database.name == 'MySQL':
                 query = re.search('Query.?(.+)', line)
                 # print query, line
                 if query == None:
@@ -73,7 +76,7 @@ class BaseDriver(object):
                         new_query = None
                 else:
                     new_query = query.group(1)
-            elif self.deployer.get_database().name == 'PostgreSQL':
+            elif self.database.name == 'PostgreSQL':
                 query = re.search('LOG:  statement: (.+)', line)
                 if query == None:
                     if re.search('LOG:  duration:', line):
@@ -89,7 +92,7 @@ class BaseDriver(object):
                             new_query = None
                 else:
                     new_query = query.group(1)
-            elif self.deployer.get_database().name == 'SQLite3':
+            elif self.database.name == 'SQLite3':
                 query = re.search("QUERY = u'(.+)'", line)
                 if query == None:
                     if current_query != None:
@@ -188,11 +191,11 @@ class BaseDriver(object):
         LOG.info('Driving : Bootstraping ...')
 
         # get main page
-        main_url = self.deployer.get_main_url()
+        main_url = self.main_url
         LOG.info('Main URL : {}'.format(main_url))
 
         # set json filename
-        json_filename = 'forms{}.json'.format(self.deployer.deploy_id)
+        json_filename = 'forms{}.json'.format(self.name)
 
         # extract all the forms
         LOG.info('Extracting all forms ...')
@@ -231,7 +234,7 @@ class BaseDriver(object):
 
             last_line_no = self.check_log()
             try:
-                part_inputs = submit.fill_form_random(self.deployer.base_path, form, br)
+                part_inputs = submit.fill_form_random(form, br)
             except:
                 part_inputs = None
             form['admin'] = True
@@ -247,7 +250,7 @@ class BaseDriver(object):
             ret_forms.append(form)
             for i in range(SUBMISSION_FORMS_TIMES):
                 try:
-                    submit.fill_form_random(self.deployer.base_path, form, br)
+                    submit.fill_form_random(form, br)
                 except:
                     pass
 
@@ -255,10 +258,10 @@ class BaseDriver(object):
 
     def get_forms(self):
         # get main page
-        main_url = self.deployer.get_main_url()
+        main_url = self.main_url
 
         # set json filename
-        json_filename = 'forms{}.json'.format(self.deployer.deploy_id)
+        json_filename = 'forms{}.json'.format(self.name)
 
         # extract all the forms
         forms = self.init_forms
@@ -268,7 +271,7 @@ class BaseDriver(object):
         register_result = USER_STATUS_UNKNOWN
         last_line_no = self.check_log()
         try:
-            register_form, info, inputs = submit.register(self.deployer.base_path, forms)
+            register_form, info, inputs = submit.register(self.base_path, forms)
         except Exception, e:
             register_form = info = inputs = None
             LOG.exception(e)
@@ -324,12 +327,6 @@ class BaseDriver(object):
                 LOG.exception(e)
             LOG.info('Forms after logged: {}'.format(forms))
 
-        # save browser
-        if self.deployer.repo.project_type.id == 1 and self.browser != None: # Django
-            pass
-        else:
-            self.browser = br
-
         # save forms
         for form in forms:
             if any(self.equal_form(form, ret_form) for ret_form, _ in self.forms):
@@ -338,13 +335,13 @@ class BaseDriver(object):
             last_line_no = self.check_log()
             browser_index = 0
             try:
-                part_inputs = submit.fill_form_random(self.deployer.base_path, form, br)
+                part_inputs = submit.fill_form_random(form, br)
             except:
                 part_inputs = None
             if part_inputs == None:
                 browser_index = 1
                 try:
-                    part_inputs = submit.fill_form_random(self.deployer.base_path, form, None)
+                    part_inputs = submit.fill_form_random(form, None)
                 except:
                     part_inputs = None
             if part_inputs == None:
@@ -359,10 +356,10 @@ class BaseDriver(object):
 
     def get_urls(self):
         # get main page
-        main_url = self.deployer.get_main_url()
+        main_url = self.main_url
 
         # set json filename
-        json_filename = 'urls{}.json'.format(self.deployer.deploy_id)
+        json_filename = 'urls{}.json'.format(self.name)
 
         # extract all the urls
         try:
@@ -400,9 +397,6 @@ class BaseDriver(object):
         return driver_results
 
     def submit_forms(self):
-        # get main page
-        main_url = self.deployer.get_main_url()
-
         ret_forms = []
 
         for form, browser_index in self.forms:
@@ -414,9 +408,9 @@ class BaseDriver(object):
             last_line_no = self.check_log()
             try:
                 if browser_index == 0:
-                    part_inputs = submit.fill_form_random(self.deployer.base_path, form, self.browser)
+                    part_inputs = submit.fill_form_random(form, self.browser)
                 else:
-                    part_inputs = submit.fill_form_random(self.deployer.base_path, form, None)
+                    part_inputs = submit.fill_form_random(form, None)
             except:
                 # traceback.print_exc()
                 part_inputs = None
@@ -431,16 +425,13 @@ class BaseDriver(object):
             ret_forms.append(form)
             for i in range(SUBMISSION_FORMS_TIMES):
                 try:
-                    submit.fill_form_random(self.deployer.base_path, form, self.browser)
+                    submit.fill_form_random(form, self.browser)
                 except:
                     pass
 
         return ret_forms
 
     def query_urls(self):
-        # get main page
-        main_url = self.deployer.get_main_url()
-
         ret_urls = []
 
         for url in self.urls:
@@ -465,10 +456,10 @@ class BaseDriver(object):
         return ret_urls
 
     def drive(self):
-        LOG.info('Driving Repository: {} ...'.format(self.deployer.repo.name))
+        LOG.info('Driving URL: {} ...'.format(self.main_url))
 
         # get main page
-        main_url = self.deployer.get_main_url()
+        main_url = self.main_url
 
         # bootstrap
         admin_forms = self.bootstrap()
@@ -501,7 +492,7 @@ class BaseDriver(object):
         driver_results['urls'] = filtered_urls
 
         LOG.info('Saving Screenshot ...')
-        screenshot_path = self.save_screenshot(main_url, os.path.join(self.deployer.base_path, 'screenshot.png'))
+        screenshot_path = self.save_screenshot(main_url, os.path.join(self.base_path, 'screenshot.png'))
         driver_results['screenshot'] = screenshot_path
 
         return driver_results

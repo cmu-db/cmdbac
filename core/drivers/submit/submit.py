@@ -73,12 +73,12 @@ def gen_random_value(chars = string.ascii_letters + string.digits, length = 0):
 def gen_random_true_false():
     return random.choice([True, False])
 
-def gen_file(deploy_path, input):
+def gen_file(base_path, input):
     if input['name'] != '' and 'image' in input['name']:
         filename = os.path.join(os.path.dirname(__file__), os.pardir, "files", "image.jpg")
         mime_type = 'image/jpeg'
     else:
-        filename = os.path.join(deploy_path, gen_random_value() + '.txt')
+        filename = os.path.join(base_path, gen_random_value() + '.txt')
         with open(filename, 'w') as f:
             f.write(gen_random_value(length = 1000))
         f.close()
@@ -110,13 +110,13 @@ def fill_form(form, matched_patterns = {}, br = None):
 
     return matched_patterns, inputs, response, br
 
-def fill_form_random(deploy_path, form, br):
+def fill_form_random(form, br, base_path = '/tmp'):
     inputs = {}
     for input in form['inputs']:
         if input['value'] != '':
             continue
         if input['type'] == 'file':
-            filename, mime_type = gen_file(deploy_path, input)
+            filename, mime_type = gen_file(base_path, input)
             inputs[input['name']] = {
                     'filename' : filename,
                     'mime_type': mime_type
@@ -138,7 +138,7 @@ def submit_form_fast(form, inputs, files, session):
         response = session.post(new_url, data = inputs, files = files)
     return response
 
-def fill_form_random_fast(deploy_path, form, session):
+def fill_form_random_fast(form, session, base_path = '/tmp'):
     inputs = {}
     files = None
     response = session.get(form['url'])
@@ -152,7 +152,7 @@ def fill_form_random_fast(deploy_path, form, session):
         if input['type'] == 'file':
             if files == None:
                 files = {}
-            filename, mime_type = gen_file(deploy_path, input)
+            filename, mime_type = gen_file(base_path, input)
             upload_filename = os.path.basename(filename)
             files[input['name']] = (upload_filename, open(filename), mime_type)
         elif input['type'] == 'checkbox':

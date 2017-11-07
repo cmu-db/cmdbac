@@ -104,8 +104,7 @@ def main():
         sys.exit(-1)
 
     LOG.info('Running driver ...')
-    driver = BaseDriver(deployer)
-
+    driver = BaseDriver(deployer.get_main_url(), deployer.get_database(), deployer.deploy_id, deployer.base_path, deployer.log_file)
     try:
         driver.bootstrap()
         driver.initialize()

@@ -255,12 +255,12 @@ class DjangoDeployer(BaseDeployer):
         for _ in range(threshold):
             output = self.sync_server(deploy_path)
             if output[0] != 0:
-                LOG.info(output)
+                LOG.debug(output)
                 if self.attempt_info != None:
                     LOG.error("Can not find dependencies!")
                     return
             else:
-                LOG.info(output)
+                LOG.debug(output)
                 break
 
             match = re.search('pip install ([a-zA-Z\-_]+)', output[2].strip())
@@ -270,7 +270,7 @@ class DjangoDeployer(BaseDeployer):
                 latest_package, created = Package.objects.get_or_create(name=package_name, version = '', project_type=self.repo.project_type)
                 dependencies.append((package_name, [latest_package], 0))
                 continue
-                # LOG.info('pip install output: {}'.format(output))
+                # LOG.debug('pip install output: {}'.format(output))
 
             split_output = output[2].strip().splitlines()
             line = split_output[-1].strip()
@@ -285,7 +285,7 @@ class DjangoDeployer(BaseDeployer):
                         dependencies[-1] = (missing_module_name, candidate_packages, index)
                         LOG.info('pip install {}'.format(candidate_packages[index]))
                         pip_output = utils.pip_install(self.base_path, [candidate_packages[index]], False)
-                        LOG.info('pip install output: {}'.format(pip_output))
+                        LOG.debug('pip install output: {}'.format(pip_output))
                     else:
                         LOG.info('No more possible packages!')
                         return ATTEMPT_STATUS_MISSING_DEPENDENCIES
@@ -299,7 +299,7 @@ class DjangoDeployer(BaseDeployer):
                     candidate_packages = Package.objects.filter(id__in=candidate_package_ids).order_by('-count', '-version', 'name')
                     LOG.info('pip install {}'.format(candidate_packages[0]))
                     pip_output = utils.pip_install(self.base_path, [candidate_packages[0]], False, False)
-                    LOG.info('pip install output: {}'.format(pip_output))
+                    LOG.debug('pip install output: {}'.format(pip_output))
                     try:
                         version = re.search('Successfully installed .*-(.*)', pip_output[1]).group(1)
                         if version and any(package.version == version for package in candidate_packages):
@@ -367,8 +367,8 @@ class DjangoDeployer(BaseDeployer):
                 self.repo.setup_scripts))
 
             LOG.info("Setup Return Code: {}".format(code))
-            LOG.info("Setup Return STDOUT:{}".format(stdout))
-            LOG.info("Setup Return STDERR:{}".format(stderr))
+            LOG.debug("Setup Return STDOUT:{}".format(stdout))
+            LOG.debug("Setup Return STDERR:{}".format(stderr))
 
             if 'myproject' in self.repo.setup_scripts:
                 deploy_path = os.path.join(deploy_path, 'myproject')
