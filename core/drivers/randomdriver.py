@@ -37,6 +37,7 @@ class RandomDriver(BaseDriver):
         if driver.browser != None:
             self.cookiejar = driver.browser._ua_handlers['_cookies'].cookiejar
         self.walked_path = set()
+        self.log_file = driver.log_file
 
     def new_browser(self, cookiejar = None, url = None):
         browser = mechanize.Browser()

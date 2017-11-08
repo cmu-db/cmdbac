@@ -277,12 +277,14 @@ class BaseDriver(object):
             register_form = info = inputs = None
             LOG.exception(e)
         if register_form == None or info == None or inputs == None:
+            LOG.warn("Can not submit register form!")
             register_result = USER_STATUS_FAIL
         else:
             register_form['queries'], register_form['counter'] = self.process_logs(self.check_log(last_line_no), inputs)
             if register_form and len(register_form['queries']) > 0:
                 register_result = USER_STATUS_SUCCESS
             else:
+                LOG.warn("Can not get queries from log file: {}!".format(self.log_file))
                 register_result = USER_STATUS_FAIL
 
         if register_result == USER_STATUS_FAIL:
