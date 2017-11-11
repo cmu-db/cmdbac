@@ -57,7 +57,8 @@ class MySQLAnalyzer(BaseAnalyzer):
                             output += str(row) + '\n'
                         query['stats'] = output
                 except Exception, e:
-                    traceback.print_exc()
+                    # traceback.print_exc()
+                    pass
                     # pass
                     # LOG.exception(e)
 

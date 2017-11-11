@@ -49,7 +49,8 @@ def main():
     try:
         random_driver = RandomDriver(driver)
         random_driver.submit_forms()
-        print random_driver.forms
+        print 'Random Walk Forms Count: {}'.format(len(random_driver.forms))
+        print 'Basic Forms Count: {}'.format(len(driverResult['forms']))
         for form in random_driver.forms:
             if any(random_driver.equal_form(form, ret_form) for ret_form in driverResult['forms']):
                 continue

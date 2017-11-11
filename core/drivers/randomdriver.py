@@ -22,8 +22,7 @@ from basedriver import BaseDriver
 ## =====================================================================
 LOG = logging.getLogger()
 
-MAX_RANDOM_WALK_DEPTH = 3
-MAX_RANDOM_WALK_COUNT = 100
+MAX_RANDOM_WALK_DEPTH = 5
 
 ## =====================================================================
 ## RANDOM DRIVER
@@ -32,8 +31,8 @@ class RandomDriver(BaseDriver):
 
     def __init__(self, driver):
         self.driver = driver
-        self.forms = driver.forms
-        self.urls = driver.urls
+        self.urls = set(map(lambda form: form[0]['url'], driver.forms))
+        self.database = self.driver.database
         if driver.browser != None:
             self.cookiejar = driver.browser._ua_handlers['_cookies'].cookiejar
         self.walked_path = set()
@@ -50,9 +49,8 @@ class RandomDriver(BaseDriver):
 
     def submit_forms(self):
         self.forms = []
-        main_url = self.driver.main_url
-        for _ in xrange(MAX_RANDOM_WALK_COUNT):
-            self.random_walk_for_form(self.new_browser(self.cookiejar, main_url))
+        for url in self.urls:
+            self.random_walk_for_form(self.new_browser(self.cookiejar, url))
 
     def random_walk_for_form(self, browser, depth = MAX_RANDOM_WALK_DEPTH):
         if depth == 0:
