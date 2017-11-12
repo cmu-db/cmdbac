@@ -9,3 +9,4 @@
 screenshot*.png
 dump/
 *.pkl
+.env/*
