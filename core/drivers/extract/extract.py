@@ -9,7 +9,7 @@ EXTRACT_WAIT_TIME = 0
 
 def extract_forms(url, follow = "false", cookie_jar = None, filename = "forms.json"):
 	utils.remove_file(os.path.join(os.path.dirname(__file__), filename))
-	
+
 	if cookie_jar == None:
 		try:
 			out = utils.run_command('{} && {}'.format(
@@ -30,7 +30,7 @@ def extract_forms(url, follow = "false", cookie_jar = None, filename = "forms.js
 		forms = json.load(json_forms)
 
 	utils.remove_file(os.path.join(os.path.dirname(__file__), filename))
-		
+
 	return forms
 
 def extract_all_forms(url, filename):
@@ -62,7 +62,6 @@ def extract_urls(url, follow = "false", cookie_jar = None, filename = "urls.json
 		urls = json.load(json_urls)
 
 	utils.remove_file(os.path.join(os.path.dirname(__file__), filename))
-		
 	return urls
 
 def extract_all_urls(url, filename):

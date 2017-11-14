@@ -7,7 +7,7 @@ import traceback
 from run import run_command
 from file import cd
 
-copied_dir = ['cmudbac', 'library', 'blog', 'core', 'secrets']
+copied_dir = ['cmudbac', 'library', 'blog', 'core', 'secrets', 'scripts']
 vagrant_dir = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, 'vagrant')
 copied_files = []
 

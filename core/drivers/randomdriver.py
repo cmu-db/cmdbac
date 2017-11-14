@@ -31,7 +31,7 @@ class RandomDriver(BaseDriver):
 
     def __init__(self, driver):
         self.driver = driver
-        self.start_urls = set(map(lambda form: form[0]['url'], driver.forms))
+        self.start_urls = set(map(lambda url: url['url'], driver.urls))
         self.database = self.driver.database
         if driver.browser != None:
             self.cookiejar = driver.browser._ua_handlers['_cookies'].cookiejar
@@ -86,6 +86,7 @@ class RandomDriver(BaseDriver):
                         })
                 succ = True
                 try:
+                    traceback.print_exc()
                     browser.submit()
                 except:
                     succ = False
@@ -112,6 +113,7 @@ class RandomDriver(BaseDriver):
                 try:
                     br.follow_link(link)
                 except:
+                    traceback.print_exc()
                     succ = False
 
                 url['queries'], url['counter'] = self.process_logs(self.check_log(last_line_no), None)

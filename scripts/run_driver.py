@@ -23,7 +23,7 @@ def main():
     database = Database.objects.get(name = database_name)
 
     print 'Driving ...'
-    base_driver = BaseDriver(main_url, database, 'test', log_file = '../vagrant/mysql.log')
+    base_driver = BaseDriver(main_url, database, 'test')
     try:
         driverResult = base_driver.drive()
     except:
