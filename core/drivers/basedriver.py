@@ -8,6 +8,7 @@ import copy
 import traceback
 import time
 import datetime
+import json
 
 from library.models import *
 from cmudbac.settings import *
@@ -328,7 +329,7 @@ class BaseDriver(object):
             except Exception, e:
                 forms = []
                 LOG.exception(e)
-            LOG.info('Forms after logged: {}'.format(forms))
+            LOG.info('Forms after logged: {}'.format(json.dumps(forms, indent = 2)))
 
         # save forms
         for form in forms:

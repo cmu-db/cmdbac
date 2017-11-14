@@ -31,7 +31,7 @@ class RandomDriver(BaseDriver):
 
     def __init__(self, driver):
         self.driver = driver
-        self.urls = set(map(lambda form: form[0]['url'], driver.forms))
+        self.start_urls = set(map(lambda form: form[0]['url'], driver.forms))
         self.database = self.driver.database
         if driver.browser != None:
             self.cookiejar = driver.browser._ua_handlers['_cookies'].cookiejar
@@ -47,32 +47,33 @@ class RandomDriver(BaseDriver):
             browser.open(url)
         return browser
 
-    def submit_forms(self):
+    def start(self):
         self.forms = []
-        for url in self.urls:
-            self.random_walk_for_form(self.new_browser(self.cookiejar, url))
+        self.urls = []
+        for url in self.start_urls:
+            self.random_walk(self.new_browser(self.cookiejar, url))
 
-    def random_walk_for_form(self, browser, depth = MAX_RANDOM_WALK_DEPTH):
+    def random_walk(self, browser, depth = MAX_RANDOM_WALK_DEPTH):
         if depth == 0:
             return
 
         try:
             last_line_no = self.check_log()
-            url = browser.geturl()
+            browser_url = browser.geturl()
             cookiejar = browser._ua_handlers['_cookies'].cookiejar
 
-            LOG.info('Walking URL: {}'.format(url))
+            LOG.info('Walking URL: {}'.format(browser_url))
 
             forms = list(enumerate(list(browser.forms())))
             for idx, form in forms:
-                key = '{}_{}'.format(url, form.name)
+                key = '{}_{}'.format(browser_url, form.name)
                 if key in self.walked_path:
                     continue
                 self.walked_path.add(key)
 
                 browser.select_form(nr = idx)
                 form_stats = {
-                    'url': browser.geturl(),
+                    'url': browser_url,
                     'method': form.method,
                     'inputs': []
                 }
@@ -95,8 +96,33 @@ class RandomDriver(BaseDriver):
                     self.forms.append(form_stats)
 
                 if succ:
-                    self.random_walk_for_form(browser, depth - 1)
+                    self.random_walk(browser, depth - 1)
 
-                browser = self.new_browser(cookiejar, url)
+                browser = self.new_browser(cookiejar, browser_url)
+
+            links = list(browser.links())
+            for link in links:
+                url = {
+                    'url': link.url,
+                    'queries': [],
+                    'counter': {}
+                }
+
+                succ = True
+                try:
+                    br.follow_link(link)
+                except:
+                    succ = False
+
+                url['queries'], url['counter'] = self.process_logs(self.check_log(last_line_no), None)
+
+                if any(self.equal_url(url, ret_url) for ret_url in self.urls):
+                    continue
+
+                if succ:
+                    self.random_walk(browser, depth - 1)
+
+                browser = self.new_browser(cookiejar, browser_url)
+
         except:
             traceback.print_exc()

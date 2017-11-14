@@ -48,7 +48,7 @@ def main():
 
     try:
         random_driver = RandomDriver(driver)
-        random_driver.submit_forms()
+        random_driver.start()
         print 'Random Walk Forms Count: {}'.format(len(random_driver.forms))
         print 'Basic Forms Count: {}'.format(len(driverResult['forms']))
         for form in random_driver.forms:
