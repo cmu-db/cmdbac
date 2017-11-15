@@ -111,7 +111,7 @@ class RandomDriver(BaseDriver):
 
                 succ = True
                 try:
-                    br.follow_link(link)
+                    browser.follow_link(link)
                 except:
                     traceback.print_exc()
                     succ = False
