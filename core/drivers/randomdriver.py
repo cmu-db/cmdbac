@@ -103,6 +103,11 @@ class RandomDriver(BaseDriver):
 
             links = list(browser.links())
             for link in links:
+                key = link.url
+                if key in self.walked_path:
+                    continue
+                self.walked_path.add(key)
+
                 url = {
                     'url': link.url,
                     'queries': [],
