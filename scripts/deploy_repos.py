@@ -27,7 +27,7 @@ def deploy_all_repos():
     # for repo in Repository.objects.filter(project_type = 1).filter(latest_attempt__result = 'OK').filter(latest_attempt__log__contains = "[Errno 13] Permission denied: '/var/log/mysql/mysql.log'"):
         if repo.id % total_deployer != deploy_id - 1:
             continue
-        print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
+        print('Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class))
         try:
             utils.vagrant_deploy(repo, deploy_id, database)
         except:
@@ -50,7 +50,7 @@ def deploy_valid_repos():
             continue
         if Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'key_column_usage'):
             continue
-        print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
+        print('Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class))
         try:
             utils.vagrant_deploy(repo, deploy_id, database)
         except:
@@ -101,7 +101,7 @@ def deploy_failed_ruby_repos():
         if Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'key_column_usage'):
             continue
         if repo.latest_attempt == None or 'Unable to find database.yml' in repo.latest_attempt.log or 'Access denied for user' in repo.latest_attempt.log or 'No space left on device' in repo.latest_attempt.log:
-            print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
+            print('Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class))
             try:
                 deploy_with_timeout(repo, deploy_id, database)
             except:
@@ -138,7 +138,7 @@ def deploy_successful_repos():
         if not need_to_be_deployed(repo):
             continue
 
-        print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
+        print('Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class))
         try:
             utils.vagrant_deploy(repo, deploy_id, database)
         except:

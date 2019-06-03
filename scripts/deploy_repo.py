@@ -26,7 +26,7 @@ def main():
     database = Database.objects.get(name = database_name)
 
     repo = Repository.objects.get(name = repo_name)
-    print 'Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class)
+    print('Attempting to deploy {} using {} ...'.format(repo, repo.project_type.deployer_class))
     try:
         utils.vagrant_deploy(repo, deploy_id, database)
     except:

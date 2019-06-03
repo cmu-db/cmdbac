@@ -24,8 +24,8 @@ from sklearn.decomposition import PCA
 import string
 import re
 
-K_RANGE = xrange(1, 16)
-GOOD_K_RANGE = xrange(3, 8)
+K_RANGE = range(1, 16)
+GOOD_K_RANGE = range(3, 8)
 # REPO_GOOD_K_RANGE = xrange(6, 7)
 # TRANSACTION_GOOD_K_RANGE = xrange(4, 5)
 SAMPLE = 3
@@ -160,7 +160,7 @@ def prepare_repo_data():
 
         assert(len(repo_data) == len(REPO_FEATURE_NAMES))
 
-        print ' '.join(map(str, repo_data))
+        print(' '.join(map(str, repo_data)))
         # print ' '.join(map(str, zip(repo_data, REPO_FEATURE_NAMES)))
 
 def prepare_transaction_data():
@@ -315,7 +315,7 @@ def prepare_transaction_data():
 
                         # print transaction
 
-                        print ' '.join(map(str, transaction_data))
+                        print(' '.join(map(str, transaction_data)))
 
                         transaction = []
                         # print ' '.join(map(str, zip(transaction_data, TRANSACTION_FEATURE_NAMES)))
@@ -332,7 +332,7 @@ def read_repo_data():
 
     line = sys.stdin.readline()
     while line:
-        repo_data = map(float, line.split()[1:])
+        repo_data = list(map(float, line.split()[1:]))
         all_data.append(repo_data)
         repo_names.append(line.split()[0])
 
@@ -348,7 +348,7 @@ def read_transaction_data():
 
     line = sys.stdin.readline()
     while line:
-        transaction_data = map(float, line.split()[1:])
+        transaction_data = list(map(float, line.split()[1:]))
         all_data.append(transaction_data)
         transaction_names.append(line.split()[0])
 
@@ -455,7 +455,7 @@ def kmeans(repo, data):
             labels_map[x] = string.uppercase[i]
 
         labels_cnt = {}
-        for i in xrange(n):
+        for i in range(n):
             #print 'Data: ', data[i], ' Label: ', kmeans.labels_[i]
             label = labels_map[kmeans.labels_[i]]
             labels_cnt[label] = labels_cnt.get(label, 0) + 1
@@ -467,32 +467,32 @@ def kmeans(repo, data):
             for index, value in enumerate(data[i]):
                 mean_centroids[label][index] += value
 
-        for label in xrange(k):
+        for label in range(k):
             new_label = labels_map[label]
-            print 'Cluster: {}'.format(new_label)
+            print('Cluster: {}'.format(new_label))
             # print zip(REPO_FEATURE_NAMES[1:], map(lambda x: round(x, 2), kmeans.cluster_centers_[label]))
-            print zip(TRANSACTION_FEATURE_NAMES[1:], map(lambda x: round(x, 2), kmeans.cluster_centers_[label]))
+            print(list(zip(TRANSACTION_FEATURE_NAMES[1:], [round(x, 2) for x in kmeans.cluster_centers_[label]])))
 
 
             # output.write(str(label) + ',' + ','.join(map(lambda x: str(round(x, 2)), kmeans.cluster_centers_[label])) + '\n')
             # points[label] = sorted(points[label])
 
-            mean_centroids[new_label] = map(lambda x: x / labels_cnt[new_label], mean_centroids[new_label])
-            output.write(str(new_label) + ',' + ','.join(map(lambda x: str(round(x, 2)), mean_centroids[new_label])) + '\n')
+            mean_centroids[new_label] = [x / labels_cnt[new_label] for x in mean_centroids[new_label]]
+            output.write(str(new_label) + ',' + ','.join([str(round(x, 2)) for x in mean_centroids[new_label]]) + '\n')
 
             if 0:
-                for i in xrange(min(len(points[label]), SAMPLE)):
-                    print 'Sample: {}'.format(i)
-                    print points[label][i]
-                    print repo[points[label][i][1]]
+                for i in range(min(len(points[label]), SAMPLE)):
+                    print('Sample: {}'.format(i))
+                    print(points[label][i])
+                    print(repo[points[label][i][1]])
                     # print zip(REPO_FEATURE_NAMES[1:], processed_data[points[label][i][1]])
-                    print zip(TRANSACTION_FEATURE_NAMES[1:], processed_data[points[label][i][1]])
+                    print(list(zip(TRANSACTION_FEATURE_NAMES[1:], processed_data[points[label][i][1]])))
                     # output.write(str(label) + '_' + str(i) + ',' + ','.join(map(lambda x: str(round(x, 2)), data[points[label][i][1]])) + '\n')
                     # output.write(str(label) + '_' + str(i) + ',' + ','.join(map(lambda x: str(round(x, 2)), processed_data[points[label][i][1]])) + '\n')
 
-            print '-' * 20
+            print('-' * 20)
 
-        print k, labels_cnt
+        print(k, labels_cnt)
 
         output.close()
 
@@ -519,7 +519,7 @@ def kmeans_pca(data):
         y_min, y_max = reduced_data[:, 1].min() - 1, reduced_data[:, 1].max() + 1
 
         colors = sns.color_palette("muted")
-        for k, col in zip(range(k), colors):
+        for k, col in zip(list(range(k)), colors):
             my_members = kmeans.labels_ == k
             cluster_center = kmeans.cluster_centers_[k]
             ax.plot(reduced_data[my_members, 0], reduced_data[my_members, 1], 'w',
@@ -545,11 +545,11 @@ def kmeans_pca(data):
         labels_cnt = {}
         for label in kmeans.labels_:
             labels_cnt[labels_map[label]] = labels_cnt.get(labels_map[label], 0) + 1
-        print labels_cnt
+        print(labels_cnt)
         labels_percentage = {}
-        for label, count in labels_cnt.iteritems():
+        for label, count in labels_cnt.items():
             labels_percentage[label] = float(count) * 100 / sum(labels_cnt.values())
-        print labels_percentage
+        print(labels_percentage)
 
         fig.savefig('kmeans-pca-{}.pdf'.format(k))
 
@@ -633,7 +633,7 @@ def kmeans_pca_ellipse(data):
         y_min, y_max = reduced_data[:, 1].min() - 1, reduced_data[:, 1].max() + 1
 
         colors = sns.color_palette("muted")
-        for i, col in zip(range(k), colors):
+        for i, col in zip(list(range(k)), colors):
             my_members = kmeans.labels_ == i
             plt.plot(reduced_data[my_members, 0], reduced_data[my_members, 1], '.', markersize=3, color = col)
             plot_point_cov(reduced_data[my_members], ax = ax, color = 'white')
@@ -656,11 +656,11 @@ def kmeans_pca_ellipse(data):
         labels_cnt = {}
         for label in kmeans.labels_:
             labels_cnt[labels_map[label]] = labels_cnt.get(labels_map[label], 0) + 1
-        print labels_cnt
+        print(labels_cnt)
         labels_percentage = {}
-        for label, count in labels_cnt.iteritems():
+        for label, count in labels_cnt.items():
             labels_percentage[label] = float(count) * 100 / sum(labels_cnt.values())
-        print labels_percentage
+        print(labels_percentage)
 
         fig.savefig('kmeans-pca.pdf')
 
@@ -695,7 +695,7 @@ def pca_dbscan(category, data):
             labels = db.labels_
             n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
 
-            print('Estimated number of clusters: %d' % n_clusters_)
+            print(('Estimated number of clusters: %d' % n_clusters_))
 
             fig = plt.figure()
             plt.clf()
@@ -713,11 +713,11 @@ def pca_dbscan(category, data):
             labels_cnt = {}
             for label in labels:
                 labels_cnt[labels_map[label]] = labels_cnt.get(labels_map[label], 0) + 1
-            print labels_cnt
+            print(labels_cnt)
             labels_percentage = {}
-            for label, count in labels_cnt.iteritems():
+            for label, count in labels_cnt.items():
                 labels_percentage[label] = float(count) * 100 / sum(labels_cnt.values())
-            print labels_percentage
+            print(labels_percentage)
 
             colors = plt.cm.Spectral(np.linspace(0, 1, len(unique_labels)))
             for k, col in zip(unique_labels, colors):
@@ -746,8 +746,8 @@ def pca_dbscan(category, data):
                 if k == -1:
                     continue
                 class_member_mask = (labels == k)
-                centroid = map(lambda x: round(x, 2), data[class_member_mask].mean(axis = 0))
-                bin_centroid = map(lambda x: round(x, 2), processed_data[class_member_mask].mean(axis = 0))
+                centroid = [round(x, 2) for x in data[class_member_mask].mean(axis = 0)]
+                bin_centroid = [round(x, 2) for x in processed_data[class_member_mask].mean(axis = 0)]
                 new_label = labels_map[k]
                 output.write(str(new_label) + ',' + ','.join(map(str, centroid)) + '\n')
                 # output.write(str(new_label) + ',' + ','.join(map(str, bin_centroid)) + '\n')

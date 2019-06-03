@@ -18,12 +18,12 @@ def dump_stats(directory, description, values):
     with open(os.path.join(directory, description + '.csv'), 'wb') as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow([description])
-        for label, stats in values.iteritems():
+        for label, stats in values.items():
             if isinstance(stats, list):
                 for i in stats:
                     writer.writerow([label, i])
             elif isinstance(stats, dict):
-                for key, value in stats.iteritems():
+                for key, value in stats.items():
                     if isinstance(value, list):
                         for second_value in value:
                             writer.writerow([label, key, second_value])

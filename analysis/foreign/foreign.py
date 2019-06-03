@@ -109,7 +109,7 @@ def foreign_key_stats(directory = '.'):
 
                     for explain in Explain.objects.filter(query = query):
                         if 'FOREIGN' in explain.output:
-                            print explain.output
+                            print(explain.output)
 
                 stats['foreign_key_count'][project_type_name].append(foreign_key_count)
 

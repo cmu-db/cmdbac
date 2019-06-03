@@ -24,7 +24,7 @@ def count_deployed_repos():
         if Information.objects.filter(attempt = repo.latest_successful_attempt).filter(name = 'key_column_usage'):
             stats[repo.project_type] = stats.get(repo.project_type, 0) + 1
 
-    print stats
+    print(stats)
 
 def count_ruby_failed_repos():
     count = 0
@@ -34,7 +34,7 @@ def count_ruby_failed_repos():
         if 'Unable to find database.yml' in repo.latest_attempt.log:
             count += 1
 
-    print count
+    print(count)
 
 def count_ruby_repetive_queries():
     repo_count = [0, 0]
@@ -54,8 +54,8 @@ def count_ruby_repetive_queries():
             repo_count[0] += 1
         repo_count[1] += 1
 
-    print repo_count
-    print action_count
+    print(repo_count)
+    print(action_count)
 
 def count_wrong_marked_repos():
     repo_count = 0
@@ -69,7 +69,7 @@ def count_wrong_marked_repos():
         if attempts:
             repo.latest_successful_attempt = list(attempts)[-1]
             repo.save()
-    print repo_count
+    print(repo_count)
 
 def main():
     # count_deployed_repos()

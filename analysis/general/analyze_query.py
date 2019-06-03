@@ -193,7 +193,7 @@ def sort_stats(directory = '.'):
                         sort_key_count = len(re.findall(',', sort_key)) + 1
                         stats['sort_key_count'][project_type_name].append(sort_key_count)
 
-                        sort_keys = map(lambda key: str(key).strip(), sort_key[10:].split(','))
+                        sort_keys = [str(key).strip() for key in sort_key[10:].split(',')]
                         for key in sort_keys:
                             if key in column_map:
                                 _type = column_map[key]
@@ -408,7 +408,7 @@ def join_stats(directory = '.'):
                             for _token in token.tokens:
                                 process_join_key(_token)
 
-                    for index in xrange(0, len(tokens)):
+                    for index in range(0, len(tokens)):
                         if tokens[index].is_keyword:
                             if 'JOIN' in tokens[index].value:
                                 join_type = tokens[index].value
@@ -432,13 +432,13 @@ def repetitive(directory = '.'):
         project_type_name = repo.project_type.name
 
         for action in Action.objects.filter(attempt = repo.latest_successful_attempt):
-            queries = map(lambda x: x.content.strip(), Query.objects.filter(action = action))
-            for i in xrange(1, len(queries)):
+            queries = [x.content.strip() for x in Query.objects.filter(action = action)]
+            for i in range(1, len(queries)):
                 if queries[i] == queries[i - 1]:
                     repetitive_queries.add(queries[i])
-                    print project_type_name
-                    print queries[i]
-                    print
+                    print(project_type_name)
+                    print(queries[i])
+                    print()
                     stats['repetitive_count'][project_type_name] = stats['repetitive_count'].get(project_type_name, 0) + 1
             stats['query_count'][project_type_name] = stats['query_count'].get(project_type_name, 0) + len(queries)
 

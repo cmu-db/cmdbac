@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block header %}
+	<div class="intro-header">
+		<div class="container">
+			<div class="row intro-message">
+				<div class="col-lg-4">
+					<img src="{{STATIC_URL}}img/cmdbac-logo-white.png" />
+				</div>
+				<div class="col-lg-8">
+					<h1>Carnegie Mellon Database Application Catalog</h1>
+					<h3>A repository of over {{ total_success }} ready-to-run database applications for analysis and benchmarking</h3>
+				</div>
+			</div>
+			<hr class="intro-divider">
+		</div>
+		<!-- /.container -->
+	</div>
+{% endblock %}
+
+{% block main %}
+{% include "status/attempt_status_codes.html" %}
+
+	<!-- Services Section -->
+	<section id="services">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12 text-center">
+					<h2 class="section-heading">Project Overview</h2>
+				</div>
+			</div>
+			<div class="row text-center">
+				<div class="col-md-3">
+					<span class="fa-stack fa-4x">
+						<i class="fas fa-circle fa-stack-2x text-primary"></i>
+						<i class="fas fa-cloud-download-alt fa-stack-1x fa-inverse"></i>
+					</span>
+					<h4 class="service-heading">Discovery</h4>
+					<p class="text-muted">
+						We crawl on-line source code repositories (e.g., <a href="https://github.com/">GitHub</a>, <a href="https://bitbucket.org/">Bitbucket</a>) to find open-source database applications using common web frameworks.
+					</p>
+				</div>
+				<div class="col-md-3">
+					<span class="fa-stack fa-4x">
+						<i class="fa fa-circle fa-stack-2x text-primary"></i>
+						<i class="fa fa-puzzle-piece fa-stack-1x fa-inverse"></i>
+					</span>
+					<h4 class="service-heading">Deployment</h4>
+					<p class="text-muted">
+						Our deployment tool downloads each application, automatically determines the dependencies need to run it, and deploys it in a <a href="https://www.vagrantup.com/">Vagrant</a> sandbox.
+					</p>
+				</div>
+				<div class="col-md-3">
+					<span class="fa-stack fa-4x">
+						<i class="fas fa-circle fa-stack-2x text-primary"></i>
+						<i class="fas fa-cog fa-stack-1x fa-inverse"></i>
+					</span>
+					<h4 class="service-heading">Execution</h4>
+					<p class="text-muted">
+						We inject a driver in the sandbox that causes the application to interact with the database and monitor the DBMS's log to capture the workload.
+					</p>
+				</div>
+				<div class="col-md-3">
+					<span class="fa-stack fa-4x">
+						<i class="fas fa-circle fa-stack-2x text-primary"></i>
+						<i class="fas fa-chart-bar fa-stack-1x fa-inverse"></i>
+					</span>
+					<h4 class="service-heading">Analysis</h4>
+					<p class="text-muted">
+						We then analyze these query workloads and extrapolate information about the nature of real-world database applications.
+					</p>
+				</div>
+			</div>
+		</div>
+		<hr class="intro-divider">
+	</section>
+
+	<!-- Statistics -->
+	<section id="statistics">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12 text-center">
+					<h2 class="section-heading">Current Status</h2>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-6 homepage-status">
+					<h4 class="sub-header">Applications</h4>
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th></th>
+								<th>Project Type</th>
+<!--                                 <th><del># of Repo</del></th> -->
+<!--                                 <th><del># of Deploy</del></th> -->
+								<th>Found Apps</th>
+								<th>Runnable Apps</th>
+								<th>Success Rate</th>
+								<th>Updated</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% if stats %}
+							{% for stat in stats %}
+							<tr>
+								<td><img src="{% static stat.project_type.logo %}" alt="{{ stat.project_type.name }}" title="{{ stat.project_type.name }}" class="projecttype-logo" /></td>
+								<td><a href="{% url 'repositories' %}?types={{ stat.project_type.name }}">{{ stat.project_type.name }}</a></td>
+<!--                                 <td><del>{{ stat.num_repo }}</del></td> -->
+<!--                                 <td><del>{{ stat.num_deploy }}</del></td> -->
+								<td>{{ stat.num_valid_deploy }}</td>
+								<td>{{ stat.num_suc }}</td>
+								<td>{{ stat.suc_rate }}%</td>
+								<td>{{ stat.last_updated|date:'Y-m-d' }}</td>
+							</tr>
+							{% endfor %}
+							{% endif %}
+						</tbody>
+					</table>
+				</div>
+				<div class="col-lg-6 homepage-status">
+					<h4 class="sub-header">Recent Deployment Attempts</h4>
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th></th>
+								<th class="homepage-repo">Repository</th>
+								<th>Database</th>
+								<th>Result</th>
+								<th>Date</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% if attempts %}
+							{% for attempt in attempts %}
+							<tr>
+								<td><img src="{% static attempt.repo.project_type.logo %}" alt="{{ attempt.repo.project_type.name }}" title="{{ attempt.repo.project_type.name }}" class="projecttype-logo" /></td>
+								<td class="homepage-repo"><a href="{% url 'repository' attempt.repo.user_name attempt.repo.repo_name %}">{{ attempt.repo.name }}</a></td>
+								<td>{{attempt.database.name}}</td>
+								<td>
+									<a id="{{attempt.id}}" href="#" data-toggle="modal" data-target="#attemptStatusModal" title="View Status Code Information" class="label label-statuscode label-{{ attempt.result_label }}" style="cursor: help;">{{attempt.result_name}}</a>
+								</td>
+								{% if attempt.start_time %}
+								<td>{{ attempt.start_time|date:'Y-m-d' }}</td>
+								{% else %}
+								<td>-</td>
+								{% endif %}
+							</tr>
+							{% endfor %}
+							{% endif %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</section>
+
+{% endblock %}

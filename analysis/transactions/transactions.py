@@ -20,7 +20,7 @@ def count_transaction():
         for repo_name, project_type, transaction in transactions:
             stats['transaction_count'][project_type] = [stats['transaction_count'].get(project_type, [0])[0] + 1]
 
-    print stats
+    print(stats)
 
     dump_all_stats('.', stats)
 
@@ -53,7 +53,7 @@ def blind_write():
             queries = transaction.split('\n')
             writes = []
 
-            for i in xrange(len(queries)):
+            for i in range(len(queries)):
                 if is_write(queries[i]):
                     writes.append((i, queries[i]))
 
@@ -61,11 +61,11 @@ def blind_write():
             index, other_index = -1, -1
             if len(writes) > 1:
                 identifiers = [(i, get_identifiers(sqlparse.parse(query))) for (i, query) in writes]
-                for i in xrange(1, len(identifiers)):
+                for i in range(1, len(identifiers)):
                     if is_blind_write:
                         break
 
-                    for j in xrange(i):
+                    for j in range(i):
                         if is_blind_write:
                             break
 
@@ -73,7 +73,7 @@ def blind_write():
                         other_index, other_identifier = identifiers[j]
                         if identifier.intersection(other_identifier):
                             is_blind_write = True
-                            for k in xrange(other_index + 1, index):
+                            for k in range(other_index + 1, index):
                                 if is_read_by(identifier, queries[k]):
                                     is_blind_write = False
                                     break
@@ -87,16 +87,16 @@ def blind_write():
                                 # raw_input()
 
             if is_blind_write:
-                print repo_name, project_type
-                print queries[index]
-                print queries[other_index]
-                print '+' * 10
-                print transaction.encode('utf-8')
-                print '-' * 20
+                print(repo_name, project_type)
+                print(queries[index])
+                print(queries[other_index])
+                print('+' * 10)
+                print(transaction.encode('utf-8'))
+                print('-' * 20)
 
-    print stats
+    print(stats)
 
-    print 'Total # of Blind Writes:', count
+    print('Total # of Blind Writes:', count)
 
     dump_all_stats('.', stats)
 
@@ -120,7 +120,7 @@ def empty_transaction():
                 elif 'AUTOCOMMIT' in queries[0].upper():
                     stats['empty_pattern_count'][project_type]['AUTOCOMMIT'] = stats['empty_pattern_count'][project_type].get('AUTOCOMMIT', 0) + 1
 
-    print stats
+    print(stats)
 
     dump_all_stats('.', stats)
 
@@ -141,7 +141,7 @@ def pattern():
             elif 'AUTOCOMMIT' in queries[0].upper():
                 stats['pattern_count'][project_type]['AUTOCOMMIT'] = stats['pattern_count'][project_type].get('AUTOCOMMIT', 0) + 1
 
-    print stats
+    print(stats)
 
     dump_all_stats('.', stats)
 
@@ -159,14 +159,14 @@ def state_machine_analysis():
 
         for repo_name, project_type, transaction in transactions:
             queries = transaction.split('\n')
-            queries = filter(lambda query: 'COMMIT' not in query.upper(), queries)
-            states = map(find_query_type, queries)
-            states = filter(lambda x: x != None, states)
+            queries = [query for query in queries if 'COMMIT' not in query.upper()]
+            states = list(map(find_query_type, queries))
+            states = [x for x in states if x != None]
             if states:
                 states_str = ''.join(states)
                 state_machines[states_str] = state_machines.get(states_str, 0) + 1
 
-        print sorted(state_machines.iteritems(), key = lambda (x,y): y, reverse = True)[:10]
+        print(sorted(iter(state_machines.items()), key = lambda x_y: x_y[1], reverse = True)[:10])
 
 
 def main():

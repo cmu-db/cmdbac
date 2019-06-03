@@ -73,10 +73,10 @@ def get_attempt_info(api_url, attempt_id):
 
 def run_attempt_benchmark(api_url, attempt_id, database, benchmark):
     attempt_info = get_attempt_info(api_url, attempt_id)
-    print 'Running Benchmark for Attempt {}'.format(attempt_id)
+    print('Running Benchmark for Attempt {}'.format(attempt_id))
     try:
         vagrant.vagrant_benchmark(attempt_info, database, benchmark)
-    except Exception, e:
+    except Exception as e:
         traceback.print_exc()
 ## DEF
 
@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
     if args["action"] == "info":
         attempt_info = get_attempt_info(args["catalog"], args["attempt"])
-        print json.dumps(attempt_info, indent = 4)
+        print(json.dumps(attempt_info, indent = 4))
     elif args["action"] == "deploy":
         database = {
             'database': args["db_type"],
@@ -102,7 +102,7 @@ if __name__ == "__main__":
         }
         run_attempt_benchmark(args["catalog"], args["attempt"], database, benchmark)
     else:
-        print "Invalid action '%s'" % args["action"]
+        print("Invalid action '%s'" % args["action"])
         sys.exit(1)
 
 ## MAIN

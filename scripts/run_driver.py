@@ -22,7 +22,7 @@ def main():
         database_name = 'MySQL'
     database = Database.objects.get(name = database_name)
 
-    print 'Driving ...'
+    print('Driving ...')
     base_driver = BaseDriver(main_url, database, 'test')
     try:
         driverResult = base_driver.drive()
@@ -30,21 +30,21 @@ def main():
         traceback.print_exc()
         driverResult = {}
 
-    print 'Random Walking ...'
+    print('Random Walking ...')
 
     try:
         random_driver = RandomDriver(base_driver)
         random_driver.submit_forms()
-        print random_driver.forms
+        print(random_driver.forms)
         for form in random_driver.forms:
             if any(random_driver.equal_form(form, ret_form) for ret_form in driverResult['forms']):
                 continue
             driverResult['forms'].append(form)
-    except Exception, e:
+    except Exception as e:
         traceback.print_exc()
 
-    print 'Driver Results:'
-    print json.dumps(driverResult, indent=4, sort_keys=True)
+    print('Driver Results:')
+    print(json.dumps(driverResult, indent=4, sort_keys=True))
 
 if __name__ == '__main__':
     main()

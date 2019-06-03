@@ -3,7 +3,7 @@ import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), "core"))
 
-import utils
+#import utils
 
 def vagrant_init():
     utils.vagrant_clear()
@@ -17,12 +17,13 @@ if __name__ == "__main__":
 
     from django.core.management import execute_from_command_line
 
-    vagrant_init()
+    #vagrant_init()
 
     try:
         execute_from_command_line(sys.argv)
     finally:
-        vagrant_final()
+        #vagrant_final()
+        pass
 
 
 
