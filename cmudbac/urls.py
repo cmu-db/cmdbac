@@ -4,16 +4,14 @@ from django.conf.urls import include
 from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
-
-
-admin.autodiscover()
+from django.urls import path
 
 
 urlpatterns = [
     url(r'', include('cmudbac.library.urls')),
     #url(r'^blog/', include('cmudbac.blog.urls')),
 
-    #url(r'^admin/', include(admin.site.urls)),
+    path('admin/', admin.site.urls),
 ]
 
 
