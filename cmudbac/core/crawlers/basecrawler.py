@@ -3,7 +3,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 
 import utils
-from library.models import *
+from cmudbac.library.models import *
 
 class BaseCrawler(object):
     def __init__(self, crawlerStatus, auth = None):

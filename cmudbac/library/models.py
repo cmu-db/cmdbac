@@ -92,8 +92,10 @@ class ProjectType(models.Model):
     default_port = models.PositiveSmallIntegerField(null=False)
     logo = models.CharField(max_length=100)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
+
+    pass
 ## CLASS
 
 class RepositorySource(models.Model):
@@ -104,6 +106,9 @@ class RepositorySource(models.Model):
     crawler_class = models.CharField(max_length=16)
     search_token = models.CharField(max_length=128, null=True)
     logo = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
 
     def get_url(self, repo_name):
         from string import Template
@@ -125,11 +130,11 @@ class RepositorySource(models.Model):
         return t.substitute(args)
     ## DEF
 
-    def __unicode__(self):
-        return self.name
+    pass
 ## CLASS
 
 class CrawlerStatus(models.Model):
+
     source = models.ForeignKey('RepositorySource', models.PROTECT)
     project_type = models.ForeignKey('ProjectType', models.PROTECT)
     min_size = models.IntegerField()
@@ -143,18 +148,20 @@ class CrawlerStatus(models.Model):
         unique_together = ('source', 'project_type')
         verbose_name_plural = "crawlers"
 
-    def __unicode__(self):
+    def __str__(self):
         return "Crawler::%s::%s" % (self.source.name, self.project_type.name)
 ## CLASS
 
 class Database(models.Model):
+
     name = models.CharField(max_length=16)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 ## CLASS
 
 class Repository(models.Model):
+
     name = models.CharField(max_length=128, null=False, unique=True)
     project_type = models.ForeignKey('ProjectType', models.PROTECT)
     source = models.ForeignKey('RepositorySource', models.PROTECT)
@@ -193,17 +200,21 @@ class Repository(models.Model):
 
     latest_successful_attempt = models.ForeignKey('Attempt', models.PROTECT, blank=True, null=True, related_name='latest_successful_attempt')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
+
     def user_name(self):
         return self.name.split('/')[0]
+
     def repo_name(self):
         return self.name.split('/')[1]
+
     def repo_url(self):
         if self.project_type.id == 4:
             return self.source.get_url(self.repo_name())
         else:
             return self.source.get_url(self.name)
+
     def information(self):
         statistics = {}
         for statistic in Statistic.objects.filter(attempt=self.latest_successful_attempt):
@@ -218,37 +229,47 @@ class Repository(models.Model):
 
     class Meta:
         verbose_name_plural = "repositories"
+
+    pass
 ## CLASS
 
 class Package(models.Model):
+
     project_type = models.ForeignKey('ProjectType', models.PROTECT)
+
     name = models.CharField(max_length = 200)
     version = models.CharField(max_length = 200)
     count = models.IntegerField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
         unique_together = ('project_type', 'name', 'version')
 
+    pass
 ## CLASS
 
 class Dependency(models.Model):
+
+    attempt = models.ForeignKey('Attempt', models.PROTECT)
+    package = models.ForeignKey('Package', models.PROTECT)
+
+    source = models.CharField(max_length=2, choices=PACKAGE_SOURCE, default=None, null=True)
+
+    class Meta:
+        unique_together = ('attempt', 'package')
+        verbose_name_plural = "dependencies"
+
     def sourceLabel(self):
         return PACKAGE_SOURCE_CODES[self.source]
     def sourceName(self):
         return PACKAGE_SOURCE_NAMES[self.source]
 
-    attempt = models.ForeignKey('Attempt', models.PROTECT)
-    package = models.ForeignKey('Package', models.PROTECT)
-    source = models.CharField(max_length=2, choices=PACKAGE_SOURCE, default=None, null=True)
     source_label = property(sourceLabel)
     source_name = property(sourceName)
 
-    class Meta:
-        unique_together = ('attempt', 'package')
-        verbose_name_plural = "dependencies"
+    pass
 ## CLASS
 
 class Attempt(models.Model):
@@ -299,18 +320,26 @@ class Attempt(models.Model):
     actions_count = models.IntegerField(default = 0)
     queries_count = models.IntegerField(default = 0)
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.id)
 ## CLASS
 
 class Module(models.Model):
+
     name = models.CharField(max_length = 200)
     package = models.ForeignKey('Package', models.PROTECT)
+
     class Meta:
         unique_together = ('name', 'package')
+
+    def __str__(self):
+        return self.name
+
+    pass
 ## CLASS
 
 class Action(models.Model):
+
     url = models.CharField(max_length = 200)
     method = models.CharField(max_length = 10)
     attempt = models.ForeignKey('Attempt', models.PROTECT, related_name='actions')
@@ -335,9 +364,15 @@ class Statistic(models.Model):
 ## CLASS
 
 class Information(models.Model):
+
     name = models.CharField(max_length = 200)
     description = models.TextField()
     attempt = models.ForeignKey('Attempt', models.PROTECT)
+
+    def __str__(self):
+        return self.name
+
+    pass
 ## CLASS
 
 class Query(models.Model):
@@ -358,6 +393,7 @@ class QueryMetric(models.Model):
 ## CLASS
 
 class Image(models.Model):
+
     def set_data(self, data):
         self._data = base64.encodestring(data)
     def get_data(self):
@@ -369,6 +405,7 @@ class Image(models.Model):
 ## CLASS
 
 class Runtime(models.Model):
+
     executable = models.CharField(max_length = 200)
     version = models.CharField(max_length = 200)
     class Meta:
@@ -376,6 +413,12 @@ class Runtime(models.Model):
 ## CLASS
 
 class WebStatistic(models.Model):
+
     name = models.CharField(max_length = 200)
     count = models.IntegerField(default = 0)
+
+    def __str__(self):
+        return self.name
+
+    pass
 ## CLASS
