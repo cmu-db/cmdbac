@@ -3,6 +3,7 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 #sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 
+# setup django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
 django.setup()
