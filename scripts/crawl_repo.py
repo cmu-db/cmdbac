@@ -23,7 +23,7 @@ import cmudbac.core.crawlers
 
 
 def add_module():
-     # parse command line arguments
+    # parse command line arguments
     parser = argparse.ArgumentParser(description='Adds a module to the system.')
     parser.add_argument('module_name')
     parser.add_argument('package_name')
