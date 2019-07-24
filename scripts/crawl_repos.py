@@ -1,26 +1,24 @@
 #!/usr/bin/env python
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
-sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
-
-# stdlib importa
-import argparse
-import json
-import logging ; logging.basicConfig(filename='repo_crawler.log',level=logging.DEBUG)
-import time
-import traceback
+#sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 
 # setup django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
 django.setup()
 
+# stdlib imports
+import argparse
+import json
+import logging ; logging.basicConfig(filename='repo_crawler.log',level=logging.DEBUG)
+import time
+import traceback
 # django imports
 from django.conf import settings
 # project imports
-import cmudbac.core.crawlers
-#from cmudbac.library.models import *
 from cmudbac.library.models import CrawlerStatus
+import cmudbac.core.crawlers
 
 
 def main():
@@ -58,7 +56,6 @@ def main():
         except:
             traceback.print_exc()
 
-        break
         time.sleep(10)
         pass
 
