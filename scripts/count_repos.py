@@ -1,20 +1,26 @@
 #!/usr/bin/env python
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
-sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
-
-import time
-import traceback
+#sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "core"))
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cmudbac.settings")
 import django
 django.setup()
-from django.db.models import Q
 
-from library.models import *
-import utils
+# stdlib imports
+import time
+import traceback
+# django imports
+from django.conf import settings
+from django.db.models import Q
+# project imports
+from cmudbac.library.models import Attempt
+from cmudbac.library.models import Repository
+from cmudbac.core import utils
+
 
 COMMITS_COUNT_THRESHOLD = 10
+
 
 def count_deployed_repos():
     stats = {}
@@ -59,23 +65,30 @@ def count_ruby_repetive_queries():
 
 def count_wrong_marked_repos():
     repo_count = 0
-    for repo in Repository.objects.exclude(latest_successful_attempt = None):
+
+    for repo in Repository.objects.exclude(latest_successful_attempt=None):
         if repo.latest_successful_attempt.result != 'OK':
             repo_count += 1
             repo.latest_successful_attempt = None
             repo.save()
-    for repo in Repository.objects.filter(project_type = 2):
-        attempts = Attempt.objects.filter(repo = repo).filter(result = 'OK')
+
+    for repo in Repository.objects.filter(project_type=2):
+        attempts = Attempt.objects.filter(repo=repo).filter(result='OK')
+        attempts = list(attempts)
         if attempts:
-            repo.latest_successful_attempt = list(attempts)[-1]
+            repo.latest_successful_attempt = attempts[-1]
             repo.save()
+
     print(repo_count)
+    return
 
 def main():
     # count_deployed_repos()
     # count_ruby_failed_repos()
     # count_ruby_repetive_queries()
     count_wrong_marked_repos()
+    pass
+
 
 if __name__ == '__main__':
     main()
