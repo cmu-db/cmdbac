@@ -5,7 +5,7 @@ twitter == 1.17.1
 selenium == 2.48.0
 djangorestframework == 3.3.1
 djangorestframework-filters==0.9.1
-Django == 1.8.6
+Django == 1.11.28
 Scrapy == 1.0.3
 Pygments == 2.0.2
 django_appconf == 1.0.1
