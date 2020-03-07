@@ -1,17 +1,17 @@
-<!DOCTYPE html>
+{% load staticfiles %}<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="icon" href="{{STATIC_URL}}img/favicon.png">
+        <link rel="icon" href="{% static 'img/favicon.png' %}">
 
         <title>{% block title %}{% endblock %}Carnegie Mellon Database Application Catalog (CMDBAC)</title>
 
         <!-- CSS -->
-        <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/bootstrap.yeti.min.css">
-        <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/dbac.css">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.yeti.min.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/dbac.css' %}">
 
         <!-- Fonts -->
         <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}font-awesome/fontawesome-free-5.8.2-web/css/all.min.css">
@@ -19,7 +19,7 @@
         <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Inconsolata">
 
         <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
-        <script src="{{STATIC_URL}}js/jquery.twbsPagination.js"></script>
+        <script src="{% static 'js/jquery.twbsPagination.js' %}"></script>
 
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -104,7 +104,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-    <script src="{{STATIC_URL}}js/collapse.js"></script>
+    <script src="{% static 'js/collapse.js' %}"></script>
 
     {{ analytics_code }}
 

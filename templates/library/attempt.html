@@ -127,7 +127,7 @@
                         document.getElementById('screenshot').setAttribute("height", height);
                         }
                     </script>
-                    <img src="{{STATIC_URL}}img/no_image.gif" id="screenshot" height="1" width="100%" onload="fixHeight()">
+                    <img src="{% static 'img/no_image.gif' %}" id="screenshot" height="1" width="100%" onload="fixHeight()">
                 {% endif %}
             </div>
         </div>
