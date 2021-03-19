@@ -1,5 +1,5 @@
 selenium == 2.48.0
-djangorestframework == 3.3.1
+djangorestframework == 3.11.2
 Django == 1.8.6
 Scrapy
 mechanize
